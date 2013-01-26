@@ -1,1 +1,2 @@
-# Welcome to Slick RSS, the news reader extension for Google Chrome.
+# Welcome to Slick RSS
+###The news reader extension for Google Chrome.
