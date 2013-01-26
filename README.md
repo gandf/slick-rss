@@ -1,1 +1,1 @@
-This is my first commit.
+# Welcome to Slick RSS, the news reader extension for Google Chrome.
