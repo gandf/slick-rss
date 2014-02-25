@@ -1,7 +1,7 @@
 ## Welcome to Slick RSS
 ###The news reader extension for Google Chrome.
 
-As of 2014 Slick is no longer under active development.  V3 was in the works, but I lost interest.  Why?
+####As of 2014 Slick is no longer under active development.  V3 was in the works, but I lost interest.  Why?
 
 1) There are plenty of other kick ass news readers out there, many with more features that are cross device capable.
 
