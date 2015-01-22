@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+    <title>Slick RSS : Options</title>
+    <link rel="stylesheet" href="common.css" type="text/css" />
+    <link rel="stylesheet" href="options.css" type="text/css" />
+    <script type="text/javascript" src="jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="options.js"></script>
+</head>
+<body>
+
+<table id="header" cellpadding="5" cellspacing="0" border="0">
+<tr>
+<td></td>
+<td>Options</td>
+<td><a id='save' href='#'>Save</a> | <a id='cancel' href='#'>Cancel</a></td>
+</tr>
+</table>
+
+<div id="workArea">
+<form>
+
+<table id="optionTable" cellpadding="2" cellspacing="3">
+<tr><td colspan="2" class="optionHeader">Feed Behavior Options</td></tr>
+<tr>
+<td>Feed management</td>
+<td>
+    <select name="feedSource" id="feedSource">
+    <option value="0">Slick RSS Feed Manager</option>
+    <option value="1">Bookmark Folder</option>
+    </select>
+
+    <button type="button" id='importFeeds'>Import Feeds</button>
+    <button type="button" id='exportFeeds'>Export Feeds</button>
+</td>
+</tr>
+<tr id="feedFolder" style="display:none;">
+<td>Folder</td>
+<td>
+<select name="feedFolderID" id="feedFolderID">
+</select>
+</td>
+</tr>
+<tr>
+<td>Default max items</td>
+<td><input type="text" name="maxItems" maxlength="3" id="maxItems" /></td>
+</tr>
+<tr><td></td></tr>
+<tr><td colspan="2" class="optionHeader">Feed Display Options</td></tr>
+<tr>
+<td>Description</td>
+<td>
+<select id="showDescriptions">
+<option value="0">Off</option>
+<option value="1">On</option>
+</select>
+</td>
+</tr>
+<tr><td>Images</td>
+<td>
+<select id="showFeedImages">
+<option value="0">Off</option>
+<option value="1">On</option>
+</select>
+</td></tr>
+<tr><td>Objects (like movies)</td>
+<td>
+<select id="showFeedObjects">
+<option value="0">Off</option>
+<option value="1">On</option>
+</select>
+</td></tr>
+<tr><td>IFrames</td>
+<td>
+<select id="showFeedIframes">
+<option value="0">Off</option>
+<option value="1">On</option>
+</select>
+</td></tr>
+<tr><td>Load links in background</td>
+<td>
+<select id="loadLinksInBackground">
+<option value="0">Off</option>
+<option value="1">On</option>
+</select>
+</td></tr>
+<tr>
+<td>Columns</td>
+<td>
+<select id="columns">
+<option value="1">1</option>
+<option value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+</select>
+</td>
+</tr>
+<tr><td>Content</td>
+<td>
+<select id="showFeedContent">
+<option value="0">Show only summary</option>
+<option value="1">Show feed content (if available)</option>
+</select>
+</td></tr>
+
+<tr><td>Date format</td>
+<td><input type="text" id="dateFormat" value=""/><button type="button" id="dateDone" style="display:none;">Done</button>
+<div id="dateHelp" style="display:none;">
+<table cellpadding="2" cellspacing="0">
+<tr><th>Code</th><th>Description</th></tr>
+<tr><td>[u]</td><td>Makes the output use GMT. (Otherwise local)</td></tr>
+<tr><td>[yyyy]</td><td>4 digit year</td></tr>
+<tr><td>[yy]</td><td>2 digit year</td></tr>
+<tr><td>[mmmm]</td><td>Full text month</td></tr>
+<tr><td>[mmm]</td><td>3 letter month</td></tr>
+<tr><td>[mm]</td><td>Zero padded month</td></tr>
+<tr><td>[m]</td><td>Month</td></tr>
+<tr><td>[ddd]</td><td>The day with suffix</td></tr>
+<tr><td>[dd]</td><td>Zero padded day</td></tr>
+<tr><td>[d]</td><td>Day</td></tr>
+<tr><td>[hh]</td><td>Zero padded hours</td></tr>
+<tr><td>[h]</td><td>Hours</td></tr>
+<tr><td>[12hh]</td><td>Hours in zero padded 12 hour format</td></tr>
+<tr><td>[12h]</td><td>The hour in 12 hour format</td></tr>
+<tr><td>[nn]</td><td>Zero padded minutes</td></tr>
+<tr><td>[n]</td><td>Minutes</td></tr>
+<tr><td>[ss]</td><td>Zero padded seconds</td></tr>
+<tr><td>[s]</td><td>Seconds</td></tr>
+<tr><td>[ww]</td><td>Full text weekday</td></tr>
+<tr><td>[w]</td><td>3 letter weekday</td></tr>
+<tr><td>[a]</td><td>AM/PM</td></tr>
+</table>
+</div>
+</td></tr>
+</table>
+
+<table cellpadding="2" cellspacing="4">
+<tr><td colspan="2" class="optionHeader">Information</td></tr>
+<tr><td class="bold">Home page URL:</td><td id="homePageURL"></td></tr>
+<tr><td class="bold">Feed finder:</td><td id="snifferInfo"></td></tr>
+<tr><td></td></tr>
+<tr><td colspan="2" class="optionHeader">Feed Unread Options</td></tr>
+<tr><td>Update interval</td><td><input type="text" id="checkInterval" maxlength="4" /> minutes</td></tr>
+<tr><td>Mark all read after</td><td><input type="text" id="markReadAfter" maxlength="4" /> seconds (0 = disabled)</td></tr>
+<tr><td>Mark all read after title click</td><td><select id="markReadOnClick">
+<option value="0">Off</option>
+<option value="1">On</option></select></td></tr>
+<tr><td>Read item display</td><td><select id="readItemDisplay">
+<option value="0">Gray</option>
+<option value="1">Condensed</option></select></td></tr>
+<tr><td>Show total unread</td><td>
+<select id="unreadTotalDisplay">
+<option value="0">Off</option>
+<option value="1">On toolbar</option>
+<option value="2">On tab</option>
+<option value="3">On toolbar &amp; tab</option></select></td></tr>
+
+<tr><td>Show totals in feed list</td><td>
+<select id="unreadItemTotalDisplay">
+<option value="0">Off</option>
+<option value="1">On</option></select></td></tr>
+
+<tr><td colspan="2" class="optionHeader">Read Later Options</td></tr>
+<tr><td>Read later support</td><td><select id="readLaterEnabled">
+<option value="0">Off</option>
+<option value="1">On</option></select></td></tr>
+<tr><td>Remove when viewed</td><td><select id="readLaterRemoveWhenViewed">
+<option value="0">Off</option>
+<option value="1">On</option></select></td></tr>
+<tr><td>Include items in unread totals</td><td><select id="readLaterIncludeTotal">
+<option value="0">Off</option>
+<option value="1">On</option></select></td></tr>
+</table>
+
+</form>
+</div>
+
+</body>
+</html>

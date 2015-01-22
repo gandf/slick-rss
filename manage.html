@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+    <title>Slick RSS : Manage Feeds</title>
+    <link rel="stylesheet" href="common.css" type="text/css" />
+    <link rel="stylesheet" href="manage.css" type="text/css" />
+    <script type="text/javascript" src="jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="manage.js"></script>
+</head>
+<body>
+
+<table id="header" cellpadding="5" cellspacing="0" border="0">
+<tr>
+<td></td>
+<td>Manage Feeds</td>
+<td><a href="#" id='save'>Save</a> | <a href="viewer.html">Cancel</a></td></tr>
+</table>
+
+<table id="feedGrid" cellpadding="5" cellspacing="0" border="0">
+<tr>
+<th>Name</th>
+<th>URL</th>
+<th>Max Items</th>
+<th>Order</th>
+<th></th>
+</tr>
+<tr class="add">
+<td><input type="text" id="newTitle" value="" maxlength="50" /></td>
+<td><input type="text" id="newUrl" value="" maxlength="500" /></td>
+<td><input type="text" id="newMaxItems" value="" maxlength="3" /></td>
+<td><input type="text" id="newOrder" value="" maxlength="6" /></td>
+<td><button type="button" id='add'>Add</button></td>
+</tr>
+</table>
+
+</body>
+</html>

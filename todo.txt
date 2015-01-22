@@ -1,0 +1,9 @@
+Play sound when new feeds are avail
+open link in background?
+unread feed that shows all unread for all feeds
+2way sync with google reader?
+export feeds (opml?)
+group folders
+fix unread bug !
+mark unread, all unread support
+collapse each message with +/- (remember only for session?)

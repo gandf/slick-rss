@@ -1,0 +1,70 @@
+﻿html
+{
+	height: 100%;	
+}
+
+body
+{
+	margin: 0px;
+	padding: 0px;
+	font-family: tahoma, arial, sans-serif;
+	font-size: 11px;
+	color: Black;
+	background-color: white;
+	width: 100%;
+	height: 100%;	
+}
+
+#header
+{	
+	font-size: 20px;	
+	/*border-bottom: 1px solid #DEDEDE;*/
+	background-color: #454D5E;
+	color: White;	
+}
+
+#headerMessage span
+{
+	font-size: smaller;	
+}
+
+#header td
+{
+	width: 1%;
+	vertical-align: middle;
+}
+
+#header tr > td:first-child
+{
+	min-width: 26px;
+	height: 26px;
+	background-image: url("rss.png");
+	background-repeat: no-repeat;
+	background-position: center;	
+}
+
+#header td+td
+{	
+	width: 98%;
+}
+
+#header td+td+td
+{	
+	text-align: right;	
+	white-space: nowrap;
+	font-size: 14px;
+	color: #AAAAAA;
+	padding-right: 10px;
+}
+
+#header a
+{
+	font-size: 12px;
+	color: white;
+	text-decoration: none;	
+}
+
+#header a:hover
+{
+	text-decoration: underline;	
+}
