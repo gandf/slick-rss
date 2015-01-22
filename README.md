@@ -11,9 +11,8 @@
 
 4) RSS is a dieing technology.  This may be a little "out there", but if you ask me, RSS is showing some age.  Now days, people get their data from a wide variety of sources.  RSS, Facebook, Tweets, Pins etc..  RSS seems to be the old way of sharing data.
 
-I'm including the source to V2 of Slick.  Keep in mind, this was my very first Google Chrome Extension, and the code is a bit sloppy.  It was even before I got into jQuery, so.. Have fun :)
 
-** NOTE: This code is very very old and pretty crusty. **
+######I'm including the source to V2 of Slick.  Keep in mind, this was my very first Google Chrome Extension, and the code is a bit sloppy.  I started it before I got into jQuery, so.. Have fun :)
 
 If for some reason you decide to do something with this code, it's licensed under MIT License.
 http://opensource.org/licenses/MIT
