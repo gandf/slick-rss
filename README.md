@@ -14,3 +14,6 @@
 I'm including the source to V2 of Slick.  Keep in mind, this was my very first Google Chrome Extension, and the code is a bit sloppy.  It was even before I got into jQuery, so.. Have fun :)
 
 ** NOTE: This code is very very old and pretty crusty. **
+
+If for some reason you decide to do something with this code, it's licensed under MIT License.
+http://opensource.org/licenses/MIT
