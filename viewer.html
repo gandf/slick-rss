@@ -1,77 +1,77 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" >
-<head>
-    <title></title>
-    <link rel="stylesheet" href="common.css" type="text/css" />
-    <link rel="stylesheet" href="viewer.css" type="text/css" />
-    <script type="text/javascript" src="jquery-1.7.2.min.js"></script>
-    <script type="text/javascript" src="md5.js"></script>
-    <script type="text/javascript" src="common.js"></script>
-    <script type="text/javascript" src="viewer.js"></script>
-</head>
-<body>
+<!DOCTYPE html>
+<link rel="stylesheet" href="common.css" type="text/css"/>
+<link rel="stylesheet" href="viewer.css" type="text/css"/>
+<script type="text/javascript" src="jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="md5.js"></script>
+<script type="text/javascript" src="common.js"></script>
+<script type="text/javascript" src="viewer.js"></script>
 <table id="containerArea" border="0" cellpadding="0" cellspacing="0">
-<tr>
-<td id="feedHeader">
-
-    <table id="feedsLoading" cellpadding="0" cellspacing="0">
-    <tr><td>Refreshing</td>
-    <td><div id="feedsLoadingProgressBox"><div id="feedsLoadingProgress"></div></div></td>
-    </tr>
-    </table>
-
-    <span id="feedsOptions">
-        <a href="#" id='refreshAll'>Refresh All</a> <span id="markAllRead"> | <a href="#" id='markAllRead'>Mark All Read</a></span>
-    </span>
-</td>
-<td>
-    <table id="header" cellpadding="5" cellspacing="0" border="0">
     <tr>
-    <td></td>
-    <td id="headerMessage"></td>
-    <td>
-    <span id="manage"><a href="manage.html">Manage</a> | </span>
-    <span id="refresh"><a href="#" id='refreshButton'>Refresh</a> | </span>
-    <span id="markFeedRead"><a href="#" id='markFeedReadButton'>Mark Read</a> | </span>
-    <a href="#" id='showOptions'>Options</a>
-    </td></tr>
-    </table>
-</td>
-</tr>
-<tr>
-<td id="feedArea">
+        <td id="feedHeader">
 
-<div id="feedScroller">
-    <ul id="feedList"></ul>
-</div>
-</td>
-<td id="workArea">
+            <table id="feedsLoading" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td>Refreshing</td>
+                    <td>
+                        <div id="feedsLoadingProgressBox">
+                            <div id="feedsLoadingProgress"></div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
 
-<div id="noFeedsManaged" style="display:none;">
-<br />You have no feeds.  Now is a great time to add some.<br /><br />
-<button type="button" id='addFeeds'>Add Feeds</button>
-</div>
+            <span id="feedsOptions">
+        <a href="javascript:" id="refreshAll">Refresh All</a> <span id="markAllRead"> | <a href="javascript:">Mark All Read</a></span>
+    </span>
+        </td>
+        <td>
+            <table id="header" cellpadding="5" cellspacing="0" border="0">
+                <tr>
+                    <td></td>
+                    <td id="headerMessage"></td>
+                    <td>
+                        <span id="manage"><a href="manage.html">Manage</a> | </span>
+                        <span id="refresh"><a href="javascript:" id="refreshButton">Refresh</a> | </span>
+                        <span id="markFeedRead"><a href="javascript:" id="markFeedReadButton">Mark Read</a> | </span>
+                        <a href="javascript:" id="showOptions">Options</a>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td id="feedArea">
 
-<div id="noFeedsBookmarks" style="display:none;">
-<br />Uh oh, I don't see any bookmarks here.  Since you are using a bookmark folder, I'd go back into options and check that.  Or you could add bookmarks to it :)<br /><br />
-</div>
+            <div id="feedScroller">
+                <ul id="feedList"></ul>
+            </div>
+        </td>
+        <td id="workArea">
 
-<div id="feedError" style="display:none;">
-<br />The feed selected seems to be invalid.  Please check the URL.<br /><br />
-<span id="feedErrorDetail">Nerdy Details<br /><span id="feedErrorMessage"></span></span>
-</div>
+            <div id="noFeedsManaged" style="display:none;">
+                <br/>You have no feeds. Now is a great time to add some.<br/><br/>
+                <button type="button" id="addFeeds">Add Feeds</button>
+            </div>
 
-<div id="noItems" style="display:none;">
-<br />There are no items in this feed.
-</div>
+            <div id="noFeedsBookmarks" style="display:none;">
+                <br/>Uh oh, I don't see any bookmarks here. Since you are using a bookmark folder, I'd go back into
+                options and check that. Or you could add bookmarks to it :)<br/><br/>
+            </div>
 
-<div id="feedPreviewScroller">
-    <table id="feedPreview" cellpadding="0" cellspacing="10" border="0"></table>
-</div>
+            <div id="feedError" style="display:none;">
+                <br/>The feed selected seems to be invalid. Please check the URL.<br/><br/>
+                <span id="feedErrorDetail">Nerdy Details<br/><span id="feedErrorMessage"></span></span>
+            </div>
 
-</td>
-</tr>
+            <div id="noItems" style="display:none;">
+                <br/>There are no items in this feed.
+            </div>
+
+            <div id="feedPreviewScroller">
+                <table id="feedPreview" cellpadding="0" cellspacing="10" border="0" tabindex="-1"></table>
+            </div>
+
+        </td>
+    </tr>
 </table>
-
-</body>
 </html>
