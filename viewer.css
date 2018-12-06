@@ -113,13 +113,14 @@ body
 {
 	font-family: Verdana, Arial, sans-serif;
 	font-size: 12px;
+	outline:none;
 	width: 100%;	
 }
 
 
 #feedPreview td
 {
-	vertical-align: top;	
+	vertical-align: top;
 }
 
 
@@ -179,6 +180,12 @@ body
     word-break: break-word;
     max-height:400px;
     overflow:auto;
+}
+.feedPreviewSummary table{
+    width:auto;
+}
+blockquote>blockquote>blockquote>blockquote{
+	display:none;
 }
 
 .feedPreviewDate
