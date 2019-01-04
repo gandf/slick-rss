@@ -477,7 +477,7 @@ function RenderFeed()
 
         feedLink = document.createElement("a");
         feedLink.setAttribute("href", item.url);
-        feedLink.innerHTML = (i+1) + ".&nbsp;&nbsp;" + item.title;
+        feedLink.innerText = (i+1) + ". " + item.title;
 
         $(feedLink).click({url:item.url}, function(event){LinkProxy(event.data.url);return false;});
         //ClickBuilder(feedLink, "LinkProxy('" + item.url + "');return false;");
