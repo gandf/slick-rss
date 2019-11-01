@@ -523,7 +523,7 @@ function RenderFeed()
 
         feedSummary = document.createElement("div");
         feedSummary.setAttribute("class", "feedPreviewSummary");
-        feedSummary.innerHTML = item.content.replace(/style/g, 'sty&#108;e');
+        feedSummary.innerHTML = item.content.replace(/style/g, 'sty&#108;e').replace(/width/g, 'w&#105;dth');
 
         feedContainer = document.createElement("div");
         feedContainer.setAttribute("id", "item_" + feedID + "_" + itemID);
