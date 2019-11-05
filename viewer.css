@@ -121,6 +121,7 @@ body
 #feedPreview td
 {
 	vertical-align: top;
+	word-break: break-word;
 }
 
 
@@ -177,7 +178,6 @@ body
 .feedPreviewSummary
 {
 	padding: 5px;
-    word-break: break-word;
     max-height:200px;
     overflow:auto;
 }
