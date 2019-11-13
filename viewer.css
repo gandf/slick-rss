@@ -1,220 +1,186 @@
 
-body
-{
-	overflow: hidden;	
+body {
+	overflow: hidden;
 }
 
-#containerArea
-{
-	width: 100%;	
+#containerArea {
+	width: 100%;
 	height: 100%;
 }
 
-#feedScroller
-{
+#feedScroller {
 	overflow-y: auto;
 	overflow-x: hidden;
-	background-color: #FCFCFC;	
-	border-right: 1px solid #DEDEDE;
+	background-color: #fcfcfc;
+	border-right: 1px solid #dedede;
 }
 
-#feedPreviewScroller
-{
+#feedPreviewScroller {
 	overflow: auto;
-    width:100%!important;
+	width: 100% !important;
 }
 
-#feedHeader
-{	
-	font-size: 15px;	
+#feedHeader {
+	font-size: 15px;
 	background-color: #666d7c;
-	color: #AAAAAA;	
-	padding-left: 10px;	
+	color: #aaa;
+	padding-left: 10px;
 }
 
-#feedHeader a
-{
+#feedHeader a {
 	font-size: 12px;
 	color: white;
-	text-decoration: none;	
+	text-decoration: none;
 }
 
-#feedHeader a:hover
-{
-	text-decoration: underline;	
+#feedHeader a:hover {
+	text-decoration: underline;
 }
 
-#feedList
-{ 
+#feedList {
 	list-style-type: none;
 	margin: 0px;
 	padding: 10px;
 }
 
-#feedList li
-{
+#feedList li {
 	padding: 3px;
 	white-space: nowrap;
-	cursor: pointer;	
-	border: 1px solid #FCFCFC;
+	cursor: pointer;
+	border: 1px solid #fcfcfc;
 	margin-bottom: 1px;
 }
 
-#feedList li:hover
-{
-	border: 1px solid #D8D8D8;
+#feedList li:hover {
+	border: 1px solid #d8d8d8;
 }
 
-#feedArea, #workArea
-{
-	vertical-align: top;	
+#feedArea, #workArea {
+	vertical-align: top;
 	height: 99%; /* keeps headers on top when there isn't enough content since master table is 100% height */
 }
 
-#feedsLoading
-{
-	display: none;	
+#feedsLoading {
+	display: none;
 	width: 99%;
 	color: White;
-	font-size: small;	
+	font-size: small;
 }
 
-#feedsLoading td+td
-{
+#feedsLoading td + td {
 	width: 99%;
 	padding: 10px;
 }
 
-#feedsLoadingProgressBox
-{
-	border: 1px solid #AAAAAA;
+#feedsLoadingProgressBox {
+	border: 1px solid #aaa;
 	width: 100%;
 }
 
-#feedsLoadingProgress
-{
+#feedsLoadingProgress {
 	width: 0%;
 	height: 5px;
-	background-color: #EEEEEE;	
+	background-color: #eee;
 }
 
-#feedsOptions
-{
-	white-space: nowrap;	
+#feedsOptions {
+	white-space: nowrap;
 }
 
-.loading tr > td:first-child
-{
+.loading tr > td:first-child {
 	background-image: url("loading.gif") !important;
 }
 
-
-#feedPreview
-{
+#feedPreview {
 	font-family: Verdana, Arial, sans-serif;
 	font-size: 12px;
-	outline:none;
-	width: 100%;	
+	outline: none;
+	width: 100%;
 }
 
-
-#feedPreview td
-{
+#feedPreview td {
 	vertical-align: top;
 	word-break: break-word;
 }
 
-
-.feedPreviewContainerCondensed .feedPreviewSummary, .feedPreviewContainerCondensed .feedPreviewDate, .feedPreviewContainerCondensed .feedPreviewAuthor
-{
-	display: none;	
+.feedPreviewContainerCondensed .feedPreviewSummary, .feedPreviewContainerCondensed .feedPreviewDate, .feedPreviewContainerCondensed .feedPreviewAuthor {
+	display: none;
 }
 
-.feedPreviewContainerRead
-{	
-	border: 1px solid #D0D0D0 !important;		
+.feedPreviewContainerRead {
+	border: 1px solid #d0d0d0 !important;
 }
 
-.feedPreviewContainerRead .feedPreviewTitle
-{	
-	background-color: #EFEFEF;		
+.feedPreviewContainerRead .feedPreviewTitle {
+	background-color: #efefef;
 }
 
-.feedPreviewContainerRead .feedPreviewMarkRead, .feedPreviewContainerRead .feedPreviewReadLater 
-{
-	display: none;	
+.feedPreviewContainerRead .feedPreviewMarkRead, .feedPreviewContainerRead .feedPreviewReadLater {
+	display: none;
 }
 
-.feedPreviewContainer
-{	
-	border: 1px solid #96B6DF;
+.feedPreviewContainer {
+	border: 1px solid #96b6df;
 }
 
 /* And the king decreed, let there be wrapping for all */
-.feedPreviewContainer *
-{
-	white-space: normal;	
+.feedPreviewContainer * {
+	white-space: normal;
 }
 
-.feedPreviewTitle
-{
-	background-color: #D7E6F8;	
+.feedPreviewTitle {
+	background-color: #d7e6f8;
 	margin: 0px;
 	padding: 5px;
 }
 
-.feedPreviewTitle a
-{
+.feedPreviewTitle a {
 	text-decoration: none;
-	color: Black;	
+	color: Black;
 	font-size: 12px;
 }
 
-.feedPreviewTitle a:hover
-{
-	text-decoration: underline;	
+.feedPreviewTitle a:hover {
+	text-decoration: underline;
 }
 
-.feedPreviewSummary
-{
+.feedPreviewSummary {
 	padding: 5px;
-    max-height:200px;
-    overflow:auto;
-}
-.feedPreviewSummary table{
-    width:auto;
-}
-blockquote>blockquote>blockquote>blockquote{
-	display:none;
+	max-height: 200px;
+	overflow: auto;
 }
 
-.feedPreviewDate
-{
-	padding: 5px;	
-	font-size: smaller;	
+.feedPreviewSummary table {
+	width: auto;
+}
+
+blockquote > blockquote > blockquote > blockquote {
+	display: none;
+}
+
+.feedPreviewDate {
+	padding: 5px;
+	font-size: smaller;
 	float: left;
 	white-space: nowrap;
 	width: 1%;
 }
 
-.feedPreviewAuthor
-{
-	padding: 5px;	
-	font-size: smaller;	
-	text-align: right;	
+.feedPreviewAuthor {
+	padding: 5px;
+	font-size: smaller;
+	text-align: right;
 }
 
-.feedPreviewMarkRead
-{
+.feedPreviewMarkRead {
 	float: right;
-	border: 1px solid transparent;	
+	border: 1px solid transparent;
 	cursor: pointer;
 	width: 12px;
 	height: 12px;
 }
 
-.feedPreviewReadLater
-{
+.feedPreviewReadLater {
 	float: right;
 	margin-top: -1px;
 	margin-right: 7px;
@@ -223,50 +189,41 @@ blockquote>blockquote>blockquote>blockquote{
 	height: 16px;
 }
 
-.selectedFeed
-{
-	background-color: #E5EEFA;	
-	border: 1px solid #A9CAF8 !important;
+.selectedFeed {
+	background-color: #e5eefa;
+	border: 1px solid #a9caf8 !important;
 	color: #285491;
 }
 
-#noFeedsManaged, #noFeedsBookmarks
-{
-	font-size: 12px;	
-	padding: 5px;
-}
-
-#feedError
-{	
+#noFeedsManaged, #noFeedsBookmarks {
 	font-size: 12px;
-	padding: 5px;	
-}
-
-#feedErrorDetail
-{
-	font-weight: bold;	
-}
-
-#feedErrorMessage
-{
-	color: Red;
-	font-weight: normal;	
-}
-
-
-#feedTitle9999999999
-{
-	border-bottom: 1px solid #DEDEDE !important;	
-}
-
-#feedTitle9999999999[class=selectedFeed]
-{
-	border-bottom: 1px solid #A9CAF8 !important;	
-}
-
-#noItems
-{
 	padding: 5px;
-	font-size: 12px;	
+}
+
+#feedError {
+	font-size: 12px;
+	padding: 5px;
+}
+
+#feedErrorDetail {
+	font-weight: bold;
+}
+
+#feedErrorMessage {
+	color: Red;
+	font-weight: normal;
+}
+
+#feedTitle9999999999 {
+	border-bottom: 1px solid #dedede !important;
+}
+
+#feedTitle9999999999[class=selectedFeed] {
+	border-bottom: 1px solid #a9caf8 !important;
+}
+
+#noItems {
+	padding: 5px;
+	font-size: 12px;
 }
 
