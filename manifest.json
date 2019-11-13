@@ -1,11 +1,25 @@
 {
   "manifest_version": 2,
-  "name"			: "Slick RSS",
-  "version"		: "2.993",
-  "description"	: "A full featured RSS reader that's fully contained within the browser.",
-  "options_page"	: "options.html",
-  "icons": { "128"	: "icon_128.png", "16":"transmit.png"},
-  "browser_action"	: {"default_icon": "transmit.png", "default_title": "Slick RSS"},     
-  "background"		: {"page": "background.html"}, 
-  "permissions"	: ["http://*/", "https://*/", "tabs", "bookmarks"]   
+  "name": "Slick RSS",
+  "version": "2.993",
+  "description": "A full featured RSS reader that's fully contained within the browser.",
+  "options_page": "options.html",
+  "icons": {
+    "128": "icon_128.png",
+    "16": "transmit.png"
+  },
+  "browser_action": {
+    "default_icon": "transmit.png",
+    "default_title": "Slick RSS"
+  },
+  "background": {
+    "page": "background.html"
+  },
+  "permissions": [
+    "http://*/",
+    "https://*/",
+    "tabs",
+    "bookmarks"
+  ],
+  "content_security_policy": "script-src 'self'; object-src 'self'"
 }
