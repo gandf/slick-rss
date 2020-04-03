@@ -46,9 +46,10 @@ port.onMessage.addListener(function (msg) {
         if (!bgPage.refreshFeed) {
             UpdateRefreshAllProgress();
         }
-
-        if (msg.id == feeds[selectedFeedKey].id) {
-            document.getElementById("header").className = "loading";
+        if (selectedFeedKey != null) {
+          if (msg.id == feeds[selectedFeedKey].id) {
+              document.getElementById("header").className = "loading";
+          }
         }
     }
 
@@ -56,9 +57,11 @@ port.onMessage.addListener(function (msg) {
         UpdateFeedUnread(msg.id);
 
         // refresh page if you are on the one that changed
-        if (msg.id == feeds[selectedFeedKey].id) {
-            SelectFeed(selectedFeedKey);
-            document.getElementById("header").className = "";
+        if (selectedFeedKey != null) {
+          if (msg.id == feeds[selectedFeedKey].id) {
+              SelectFeed(selectedFeedKey);
+              document.getElementById("header").className = "";
+          }
         }
     }
 
