@@ -17,7 +17,7 @@ var readLaterFeedID = 9999999999;
 var viewPortTabID = null;
 
 chrome.browserAction.onClicked.addListener(ButtonClicked);
-chrome.extension.onRequestExternal.addListener(ExternalRequest);
+chrome.runtime.onMessageExternal.addListener(ExternalRequest);
 chrome.extension.onConnect.addListener(InternalConnection);
 chrome.bookmarks.onChanged.addListener(BookmarkChanged);
 chrome.bookmarks.onCreated.addListener(CheckFeedChange);
