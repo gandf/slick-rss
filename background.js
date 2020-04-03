@@ -290,6 +290,7 @@ function GetRandomID() {
 
 // as this project gets larger there will be upgrades to storage items this will help
 function DoUpgrades() {
+    /* Disable upgrade because this is first version. Nothing to upgrade.
     var lastVersion = parseFloat(options.lastversion);
 
     // since 2.0 requires ids for feeds, lets make sure they have them
@@ -327,6 +328,7 @@ function DoUpgrades() {
     // update the last version to now
     options.lastversion = manifest.version;
     localStorage["options"] = JSON.stringify(options);
+    */
 }
 
 // updates, shows and hides the badge
