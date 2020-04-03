@@ -307,7 +307,7 @@ function DoUpgrades() {
         localStorage["feeds"] = JSON.stringify(feeds);
     }
 
-    // 2.6 makes unread key MD5(title + date)
+    // 2.6 makes unread key sha256(title + date)
     if (lastVersion < 2.6) {
         alert("Sorry, I have to nuke your unread information for this upgrade.  Trust me, it's for the best.");
         delete localStorage["unreadinfo"];
@@ -488,7 +488,7 @@ function CheckForUnread() {
                             }
 
                             feedInfo[feedID].items.push(item);
-                            entryIDs[MD5(item.title + item.date)] = 1;
+                            entryIDs[sha256(item.title + item.date)] = 1;
                         }
 
                         // count read that are in current feed

@@ -245,7 +245,7 @@ function MarkFeedRead(feedID) {
         SelectFeed(0);
     } else {
         for (var i = 0; i < bgPage.feedInfo[feedID].items.length; i++) {
-            itemID = MD5(bgPage.feedInfo[feedID].items[i].title + bgPage.feedInfo[feedID].items[i].date);
+            itemID = sha256(bgPage.feedInfo[feedID].items[i].title + bgPage.feedInfo[feedID].items[i].date);
             bgPage.unreadInfo[feedID].readitems[itemID] = expireMs;
             container = document.getElementById("item_" + feedID + "_" + itemID);
 
@@ -282,7 +282,7 @@ function MarkItemRead(itemID) {
 }
 
 function MarkItemReadLater(feedID, itemIndex) {
-    var itemID = MD5(bgPage.feedInfo[feedID].items[itemIndex].title + bgPage.feedInfo[feedID].items[itemIndex].date);
+    var itemID = sha256(bgPage.feedInfo[feedID].items[itemIndex].title + bgPage.feedInfo[feedID].items[itemIndex].date);
 
     bgPage.feedInfo[bgPage.readLaterFeedID].items.push(bgPage.feedInfo[feedID].items[itemIndex]);
     bgPage.unreadInfo[bgPage.readLaterFeedID].unreadtotal++;
@@ -417,7 +417,7 @@ function RenderFeed() {
 
     for (var i = 0; i < bgPage.feedInfo[feedID].items.length && i < feeds[selectedFeedKey].maxitems; i++) {
         item = bgPage.feedInfo[feedID].items[i];
-        itemID = MD5(item.title + item.date);
+        itemID = sha256(item.title + item.date);
 
         feedMarkRead = null;
         feedMarkRead = document.createElement("img");
@@ -485,7 +485,7 @@ function RenderFeed() {
                 MarkItemReadLater(event.data.feedID, event.data.i);
                 return false;
             });
-            //ClickBuilder(feedReadLater, "MarkItemReadLater(\"" + feedID + "\", " + i + ");");      
+            //ClickBuilder(feedReadLater, "MarkItemReadLater(\"" + feedID + "\", " + i + ");");
             feedTitle.appendChild(feedReadLater);
         }
 
@@ -559,7 +559,7 @@ function RenderFeed() {
             }
         }
 
-        // show snug objects, or nuke them        
+        // show snug objects, or nuke them
         summaryObjects = feedSummary.getElementsByTagName("object");
         for (var o = summaryObjects.length - 1; o >= 0; o--) {
             if (!options.showfeedobjects) {
@@ -573,7 +573,7 @@ function RenderFeed() {
             }
         }
 
-        // show snug objects, or nuke them        
+        // show snug objects, or nuke them
         summaryObjects = feedSummary.getElementsByTagName("embed");
         for (var o = summaryObjects.length - 1; o >= 0; o--) {
             if (!options.showfeedobjects) {
@@ -648,7 +648,7 @@ function ClickBuilder(el, newFunction) {
         clickEvents = clickEvents.replace(/return false;/i, "") + "return false;";
     }
 
-    // hack  
+    // hack
     obj
         .data('clickEvents', clickEvents)
         .unbind('click')
@@ -663,9 +663,3 @@ function ClickBuilder(el, newFunction) {
 function LinkProxy(uRL) {
     chrome.tabs.create({url: uRL, selected: !bgPage.options.loadlinksinbackground});
 }
-
-
-
-
-
-
