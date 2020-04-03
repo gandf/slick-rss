@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Slick RSS",
-  "version": "2.993",
+  "version": "3.000",
   "description": "A full featured RSS reader that's fully contained within the browser.",
   "options_page": "options.html",
   "icons": {
@@ -13,7 +13,12 @@
     "default_title": "Slick RSS"
   },
   "background": {
-    "page": "background.html"
+    "scripts": [
+      "sha256.js",
+      "common.js",
+      "background.js"
+    ],
+    "persistent": false
   },
   "permissions": [
     "http://*/",
