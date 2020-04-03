@@ -142,9 +142,9 @@ function GetDefaultOptions() {
         "lastversion": manifest.version,
         "feedsource": 0,
         "feedfolderid": "",
-        "maxitems": 15,
+        "maxitems": 50,
         "showdescriptions": true,
-        "dateformat": "[w], [mmmm] [ddd], [yyyy] [12h]:[nn] [a]",
+        "dateformat": "[ww] [dd]/[mm]/[yy] [hh]:[nn]",
         "showfeedimages": true,
         "showfeedobjects": true,
         "showfeediframes": false,
@@ -152,14 +152,14 @@ function GetDefaultOptions() {
         "checkinterval": 60,
         "markreadonclick": false,
         "markreadafter": 0,
-        "readitemdisplay": 0,
+        "readitemdisplay": 1,
         "unreaditemtotaldisplay": true,
         "unreadtotaldisplay": 3,
         "columns": 2,
         "readlaterenabled": true,
         "readlaterremovewhenviewed": true,
         "readlaterincludetotal": true,
-        "loadlinksinbackground": false
+        "loadlinksinbackground": true
     };
 }
 
