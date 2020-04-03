@@ -20,7 +20,7 @@ $(document).ready(function () {
     });
 });
 
-var bgPage = chrome.extension.getBackgroundPage();
+var bgPage = chrome.runtime.getBackgroundPage();
 var options = bgPage.options;
 var feeds = bgPage.feeds;
 var selectedFeedKey = null;

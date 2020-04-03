@@ -1,5 +1,5 @@
 
-var bgPage = chrome.extension.getBackgroundPage();
+var bgPage = chrome.runtime.getBackgroundPage();
 
 $(document).ready(function()
 {
@@ -7,7 +7,7 @@ $(document).ready(function()
 	$('#cancel').click(function(){window.close();});
 });
 
-// starts import    
+// starts import
 function Import()
 {
     if(document.getElementById("opml").value == "")
@@ -15,15 +15,15 @@ function Import()
         alert("Nothing to import");
         return;
     }
-    
+
     if(bgPage.options.feedsource == 1)
     {
-        chrome.bookmarks.get(bgPage.options.feedfolderid, ImportBookmarks);        
-    } 
-    else    
+        chrome.bookmarks.get(bgPage.options.feedfolderid, ImportBookmarks);
+    }
+    else
     {
         ImportFeeds();
-    }      
+    }
 }
 
 // imports opml -> bookmarks
@@ -31,16 +31,16 @@ function ImportBookmarks(startNode)
 {
     var nodes = null;
     var importCount = 0;
-    var opml = new DOMParser().parseFromString(document.getElementById("opml").value, 'text/xml');                
-               
+    var opml = new DOMParser().parseFromString(document.getElementById("opml").value, 'text/xml');
+
     if(!startNode || startNode.length == 0)
     {
         alert("Could not import because your bookmark folder is not found.");
         return;
-    }   
-      
-    nodes = opml.getElementsByTagName("outline");       
-    
+    }
+
+    nodes = opml.getElementsByTagName("outline");
+
     for(var i = 0;i < nodes.length;i++)
     {
         if(nodes[i].getAttribute("type") == "rss")
@@ -49,16 +49,16 @@ function ImportBookmarks(startNode)
             importCount ++;
         }
     }
-    
+
     if(nodes.length == 0)
     {
         alert("No outline nodes of type 'rss' were found to import.");
         return;
-    }  
-    
-    alert("Imported " + importCount + " feeds.");    
-     
-    window.close(); 
+    }
+
+    alert("Imported " + importCount + " feeds.");
+
+    window.close();
 }
 
 // imports opml -> feed list
@@ -67,10 +67,10 @@ function ImportFeeds()
     var nodes = null;
     var importCount = 0;
     var maxOrder = 0;
-    var opml = new DOMParser().parseFromString(document.getElementById("opml").value, 'text/xml');                
-                 
-    nodes = opml.getElementsByTagName("outline");       
-    
+    var opml = new DOMParser().parseFromString(document.getElementById("opml").value, 'text/xml');
+
+    nodes = opml.getElementsByTagName("outline");
+
     // get max order
     for(var i = 0;i < bgPage.feeds.length; i++)
     {
@@ -79,7 +79,7 @@ function ImportFeeds()
             maxOrder = bgPage.feeds[i].order;
         }
     }
-    
+
     for(var i = 0;i < nodes.length; i++)
     {
         if(nodes[i].getAttribute("type") == "rss")
@@ -89,19 +89,18 @@ function ImportFeeds()
             importCount ++;
         }
     }
-    
+
     if(nodes.length == 0)
     {
         alert("No outline nodes of type 'rss' were found to import.");
         return;
-    }  
-    
-    localStorage["feeds"] = JSON.stringify(bgPage.feeds); 
+    }
+
+    localStorage["feeds"] = JSON.stringify(bgPage.feeds);
     alert("Imported " + importCount + " feeds.");
-    
+
     bgPage.UpdateSniffer();
     bgPage.ReloadViewer();
-    
-    window.close();    
-}
 
+    window.close();
+}
