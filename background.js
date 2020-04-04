@@ -184,7 +184,7 @@ function GetFeeds(callBack) {
 }
 
 function GetReadLaterFeed() {
-    return CreateNewFeed("Read Later", "about:blank", 99999, -9, readLaterFeedID);
+    return CreateNewFeed("Read Later", chrome.extension.getURL("readlater.html"), 99999, -9, readLaterFeedID);
 }
 
 // fills feeds with bookmark items, for now it's not recursive
