@@ -52,7 +52,7 @@ function ReloadViewer() {
 // manage viewer spawning or focus
 function ButtonClicked(tab) {
     if (viewerPort == null) {
-        chrome.tabs.create({url: "viewer.html"}, function (tab) {
+        chrome.tabs.create({url: chrome.extension.getURL("viewer.html")}, function (tab) {
             viewerPortTabID = tab.id;
         });
     } else {

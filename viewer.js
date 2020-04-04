@@ -13,10 +13,10 @@ $(document).ready(function () {
         MarkFeedRead(feeds[selectedFeedKey].id);
     });
     $('#showOptions').click(function () {
-        chrome.tabs.create({url: 'options.html'});
+        chrome.tabs.create({url: chrome.extension.getURL("options.html")});
     });
     $('#addFeeds').click(function () {
-        window.location = 'manage.html';
+        window.location = chrome.extension.getURL("manage.html");
     });
 });
 
@@ -30,7 +30,7 @@ var port = chrome.extension.connect({name: "viewerPort"});
 
 port.onMessage.addListener(function (msg) {
     if (msg.type == "feedschanged") {
-        location = 'viewer.html';
+        location = chrome.extension.getURL("viewer.html");
     }
 
     if (msg.type == "refreshallstarted") {
