@@ -40,7 +40,6 @@ function SetupScreen()
 
     chrome.bookmarks.getTree(FillFolderList);
     ShowDateSample(false);
-    document.getElementById("homePageURL").innerText = chrome.extension.getURL("viewer.html");
 }
 
 function Save()
