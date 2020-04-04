@@ -4,9 +4,6 @@ var unreadInfo = GetUnreadCounts();
 var unreadTotal = 0;
 var feedInfo = [];
 var feeds = [];
-var snifferName = null;
-var snifferVersion = null;
-var snifferID = null;
 var viewerPort = null;
 var checkingForUnread = false;
 var checkForUnreadTimerID = null;
@@ -80,7 +77,6 @@ function ExternalRequest(request, sender, sendResponse) {
 
             feeds.push(CreateNewFeed(request.title, request.url, options.maxitems, maxOrder));
             localStorage["feeds"] = JSON.stringify(feeds);
-            UpdateSniffer();
             ReloadViewer();
         }
 
@@ -95,23 +91,12 @@ function ExternalRequest(request, sender, sendResponse) {
                 } else {
                     feeds.splice(i, 1);
                     localStorage["feeds"] = JSON.stringify(feeds);
-                    UpdateSniffer();
                     ReloadViewer();
                 }
             }
         }
 
         sendResponse({});
-    }
-
-    if (request.type == "updateme") {
-        sendResponse({confirmed: true, version: manifest.version, name: manifest.name});
-
-        snifferID = sender.id;
-        snifferName = request.name;
-        snifferVersion = request.version;
-
-        chrome.extension.sendRequest(snifferID, feeds);
     }
 }
 
@@ -173,7 +158,6 @@ function GetFeeds(callBack) {
             feeds = JSON.parse(localStorage["feeds"]).sort(function (a, b) {
                 return a.order - b.order;
             });
-            UpdateSniffer();
         }
 
         feeds.unshift(GetReadLaterFeed());
@@ -189,7 +173,7 @@ function GetReadLaterFeed() {
 
 // fills feeds with bookmark items, for now it's not recursive
 function GetFeedFolderChildren(nodeChildren) {
-    feeds = [];  // if via sniffer you remove a link and that link is in your bookmarks more than once, you get double the list because of multi-threading
+    feeds = [];
     feeds.push(GetReadLaterFeed());
 
     for (var i = 0; i < nodeChildren.length; i++) {
@@ -198,7 +182,6 @@ function GetFeedFolderChildren(nodeChildren) {
         }
     }
 
-    UpdateSniffer();
     getFeedsCallBack();
 }
 
@@ -214,16 +197,6 @@ function GetReadLaterItems() {
     }
 
     return JSON.parse(localStorage["readlater"]);
-}
-
-// send new feeds to sniffer
-function UpdateSniffer() {
-    if (snifferID != null) {
-        chrome.extension.sendRequest(snifferID, feeds, function (response) {
-            snifferName = response.name;
-            snifferVersion = response.version;
-        });
-    }
 }
 
 // if a bookmark changes and it's one of our feeds then refresh

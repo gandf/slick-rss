@@ -109,7 +109,6 @@ function ImportFeeds()
 		localStorage["feeds"] = JSON.stringify(bgPage.feeds.filter(filterByID));
     alert("Imported " + importCount + " feeds.");
 
-    bgPage.UpdateSniffer();
     bgPage.ReloadViewer();
 
     window.close();

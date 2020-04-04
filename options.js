@@ -41,17 +41,6 @@ function SetupScreen()
     chrome.bookmarks.getTree(FillFolderList);
     ShowDateSample(false);
     document.getElementById("homePageURL").innerText = chrome.extension.getURL("viewer.html");
-
-    if(bgPage.snifferID != null)
-    {
-        document.getElementById("snifferInfo").innerText = bgPage.snifferName + " (v" + bgPage.snifferVersion + ")";
-        document.getElementById("snifferInfo").style.color = "black";
-    }
-    else
-    {
-        document.getElementById("snifferInfo").innerHTML = "None, <a href=\"https://chrome.google.com/extensions/detail/mpajmofiejfjgeaakelmjklenjaekppa\" onclick=\"window.close();\"target=\"_blank\" style=\"color: red;\">install Slick RSS Feed Finder</a>";
-        document.getElementById("snifferInfo").style.color = "red";
-    }
 }
 
 function Save()

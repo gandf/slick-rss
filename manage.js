@@ -231,14 +231,13 @@ function Save()
 
     localStorage["feeds"] = JSON.stringify(feeds);
 
-    bgPage.UpdateSniffer();
     bgPage.CleanUpUnreadOrphans();
 
     // get feeds to re-order the feeds
     bgPage.GetFeeds(function()
     {
         bgPage.CheckForUnreadStart();
-        window.location = chrome.extension.getURL("viewer.html");  
+        window.location = chrome.extension.getURL("viewer.html");
     });
 }
 
