@@ -403,16 +403,16 @@ function RenderFeed() {
     }
 
     switch (options.columns) {
-        case "1":
+        case 1:
             colWidth = "100%";
             break;
-        case "2":
+        case 2:
             colWidth = "50%";
             break;
-        case "3":
+        case 3:
             colWidth = "33%";
             break;
-        case "4":
+        case 4:
             colWidth = "25%";
             break;
     }
