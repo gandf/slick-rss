@@ -69,13 +69,16 @@ window.onresize = FixFeedList;
 
 
 function UpdateRefreshAllProgress() {
-    document.getElementById("feedsOptions").style.display = "none";
-    document.getElementById("feedsLoading").style.display = "block";
-    var ProgressWidth = Math.round(((bgPage.checkForUnreadCounter + 1) / feeds.length) * 100);
-    if (ProgressWidth > 100) {
-      ProgressWidth = 100;
-    }
-    document.getElementById("feedsLoadingProgress").style.width = ProgressWidth + "%";
+    if (bgPage.checkingForUnread) {
+      document.getElementById("feedsOptions").style.display = "none";
+      document.getElementById("feedsLoading").style.display = "block";
+      var ProgressWidth;
+      ProgressWidth = (bgPage.refreshFeed) ? 100 : Math.round(((bgPage.checkForUnreadCounter + 1) / feeds.length) * 100);
+      if (ProgressWidth > 100) {
+        ProgressWidth = 100;
+      }
+      document.getElementById("feedsLoadingProgress").style.width = ProgressWidth + "%";
+  }
 }
 
 function UpdateTitle() {

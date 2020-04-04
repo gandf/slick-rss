@@ -518,6 +518,11 @@ function CheckForUnread() {
                         unreadInfo[feedID].unreadtotal = feedInfo[feedID].items.length;
                     }
                 }
+                if (feedID == readLaterFeedID) {
+                  // cheat the system, fill in read later info
+                  feedInfo[feedID] = GetReadLaterItems();
+                  unreadInfo[feedID].unreadtotal = feedInfo[feedID].items.length;
+                }
 
                 localStorage["unreadinfo"] = JSON.stringify(unreadInfo);
 
@@ -549,13 +554,13 @@ function CheckForUnread() {
 
 // ran after checking for unread is done
 function CheckForUnreadComplete() {
+  checkingForUnread = false;
+  refreshFeed = false;
     if (viewerPort != null && !refreshFeed) {
         viewerPort.postMessage({type: "refreshallcomplete"});
     }
 
     UpdateUnreadBadge();
-    checkingForUnread = false;
-    refreshFeed = false;
 }
 
 // since the key for unread is the feed id, it's possible that you removed some, as such we should update and clean house
