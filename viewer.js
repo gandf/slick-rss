@@ -12,12 +12,6 @@ $(document).ready(function () {
     $('#markFeedReadButton').click(function () {
         MarkFeedRead(feeds[selectedFeedKey].id);
     });
-    $('#showOptions').click(function () {
-        chrome.tabs.create({url: chrome.extension.getURL("options.html")});
-    });
-    $('#addFeeds').click(function () {
-        window.location = chrome.extension.getURL("manage.html");
-    });
 });
 
 var bgPage = chrome.extension.getBackgroundPage();
