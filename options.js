@@ -143,7 +143,7 @@ function GetBookmarkNodes(node, arr, depth)
             detail[1] = depth + node.children[i].title;
             arr.push(detail);
 
-            GetBookmarkNodes(node.children[i], arr, depth + "&nbsp;&nbsp;&nbsp;");
+            GetBookmarkNodes(node.children[i], arr, depth + "\u00a0\u00a0\u00a0");
         }
     }
 }

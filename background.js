@@ -458,7 +458,7 @@ function CheckForUnread() {
                                         item.author = GetNodeTextValue(author);
                                     }
                                 } else {   // for some reason the author gets funky with floats if it's empty..  so whatever
-                                    item.author = "&nbsp;";
+                                    item.author = '\u00a0';
                                 }
                             }
 
