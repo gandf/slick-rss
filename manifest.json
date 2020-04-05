@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Slick RSS by users",
-  "version": "3.000",
+  "version": "3.001",
   "description": "A full featured RSS reader that's fully contained within the browser.",
   "options_page": "options.html",
   "icons": {
