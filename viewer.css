@@ -118,6 +118,10 @@ body {
 	display: none;
 }
 
+.feedPreviewContainerRead .feedPreviewUnread {
+	display: block;
+}
+
 .feedPreviewContainer {
 	border: 1px solid #96b6df;
 }
@@ -188,6 +192,15 @@ blockquote > blockquote > blockquote > blockquote {
 	height: 16px;
 }
 
+.feedPreviewUnread {
+	float: right;
+	border: 1px solid transparent;
+	cursor: pointer;
+	width: 16px;
+	height: 16px;
+	display: none;
+}
+
 .selectedFeed {
 	background-color: #e5eefa;
 	border: 1px solid #a9caf8 !important;
@@ -225,4 +238,3 @@ blockquote > blockquote > blockquote > blockquote {
 	padding: 5px;
 	font-size: 12px;
 }
-

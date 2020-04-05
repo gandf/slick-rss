@@ -284,6 +284,24 @@ function MarkItemRead(itemID) {
     }
 }
 
+function MarkItemUnread(itemID) {
+    var feedID = feeds[selectedFeedKey].id;
+    var className = (options.readitemdisplay == 0) ? " feedPreviewContainerRead" : " feedPreviewContainerRead feedPreviewContainerCondensed";
+
+    if (bgPage.unreadInfo[feedID].readitems[itemID] != null) {
+        delete bgPage.unreadInfo[feedID].readitems[itemID];
+        document.getElementById("item_" + feedID + "_" + itemID).className = document.getElementById("item_" + feedID + "_" + itemID).className.replace(className, "");
+
+        bgPage.unreadInfo[feedID].unreadtotal++;
+
+        localStorage["unreadinfo"] = JSON.stringify(bgPage.unreadInfo);
+
+        UpdateFeedUnread(feedID);
+        UpdateReadAllIcon();
+        bgPage.UpdateUnreadBadge();
+    }
+}
+
 function MarkItemReadLater(feedID, itemIndex) {
     var itemID = sha256(bgPage.feedInfo[feedID].items[itemIndex].title + bgPage.feedInfo[feedID].items[itemIndex].date);
 
@@ -490,6 +508,18 @@ function RenderFeed() {
             });
             //ClickBuilder(feedReadLater, "MarkItemReadLater(\"" + feedID + "\", " + i + ");");
             feedTitle.appendChild(feedReadLater);
+
+            feedUnread = document.createElement("img");
+            feedUnread.setAttribute("src", "revert_blue.png");
+            feedUnread.setAttribute("class", "feedPreviewUnread");
+            feedUnread.setAttribute("title", "Mark unread");
+            feedUnread.setAttribute("display", "none");
+            $(feedUnread).click({itemID: itemID}, function (event) {
+                MarkItemUnread(event.data.itemID);
+                return false;
+            });
+
+            feedTitle.appendChild(feedUnread);
         }
 
         feedTitle.appendChild(feedLink);
