@@ -442,7 +442,9 @@ function RenderFeed() {
 
         feedMarkRead = null;
         feedMarkRead = document.createElement("img");
-        feedMarkRead.setAttribute("src", "x_blue.gif");
+        feedMarkRead.setAttribute("src", "x.gif");
+        feedMarkRead.setAttribute("onmouseover", "hover(this);");
+        feedMarkRead.setAttribute("onmouseout", "unhover(this);");
         //feedMarkRead.setAttribute("id", 'markItemRead' + itemID);
 
         if (feedID == bgPage.readLaterFeedID) {
@@ -500,6 +502,8 @@ function RenderFeed() {
         if (options.readlaterenabled && feedID != bgPage.readLaterFeedID) {
             feedReadLater = document.createElement("img");
             feedReadLater.setAttribute("src", "star.gif");
+            feedReadLater.setAttribute("onmouseover", "hover(this);");
+            feedReadLater.setAttribute("onmouseout", "unhover(this);");
             feedReadLater.setAttribute("class", "feedPreviewReadLater");
             feedReadLater.setAttribute("title", "Read later");
             $(feedReadLater).click({feedID: feedID, i: i}, function (event) {
@@ -510,7 +514,9 @@ function RenderFeed() {
             feedTitle.appendChild(feedReadLater);
 
             feedUnread = document.createElement("img");
-            feedUnread.setAttribute("src", "revert_blue.png");
+            feedUnread.setAttribute("src", "revert.png");
+            feedUnread.setAttribute("onmouseover", "hover(this);");
+            feedUnread.setAttribute("onmouseout", "unhover(this);");
             feedUnread.setAttribute("class", "feedPreviewUnread");
             feedUnread.setAttribute("title", "Mark unread");
             feedUnread.setAttribute("display", "none");
@@ -695,4 +701,12 @@ function ClickBuilder(el, newFunction) {
 // central function to control creation of tabs so we can put them in the background
 function LinkProxy(uRL) {
     chrome.tabs.create({url: uRL, selected: !bgPage.options.loadlinksinbackground});
+}
+
+function hover(element) {
+  element.setAttribute('src', element.getAttribute('src').replace(".", "_hover."));
+}
+
+function unhover(element) {
+  element.setAttribute('src', element.getAttribute('src').replace("_hover.", "."));
 }
