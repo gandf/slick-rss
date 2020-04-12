@@ -45,7 +45,7 @@ function ImportBookmarks(startNode)
     {
         if(nodes[i].getAttribute("type") == "rss")
         {
-            chrome.bookmarks.create({parentId: startNode[0].id, "title" : nodes[i].getAttribute("text"), "url" : nodes[i].getAttribute("xmlUrl")}, null);
+            chrome.bookmarks.create({parentId: startNode[0].id, "title" : nodes[i].getAttribute("text"), "url" : nodes[i].getAttribute("xmlUrl"), "group" : nodes[i].getAttribute("group")}, null);
             importCount ++;
         }
     }
@@ -94,7 +94,7 @@ function ImportFeeds()
         if(nodes[i].getAttribute("type") == "rss")
         {
             maxOrder ++;
-            bgPage.feeds.push(bgPage.CreateNewFeed(nodes[i].getAttribute("text"), nodes[i].getAttribute("xmlUrl"), bgPage.options.maxitems, maxOrder));
+            bgPage.feeds.push(bgPage.CreateNewFeed(nodes[i].getAttribute("text"), nodes[i].getAttribute("xmlUrl"), nodes[i].getAttribute("group"), bgPage.options.maxitems, maxOrder));
             importCount ++;
         }
     }

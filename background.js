@@ -62,7 +62,7 @@ function ButtonClicked(tab) {
 function ExternalRequest(request, sender, sendResponse) {
     if (request.type == "addfeed") {
         if (options.feedsource == 1) {
-            chrome.bookmarks.create({parentId: options.feedfolderid, title: request.title, url: request.url}, null);
+            chrome.bookmarks.create({parentId: options.feedfolderid, title: request.title, url: request.url, group: request.group}, null);
         } else {
             var maxOrder = 0;
             var order = 0;
@@ -77,7 +77,7 @@ function ExternalRequest(request, sender, sendResponse) {
 
             maxOrder++;
 
-            feeds.push(CreateNewFeed(request.title, request.url, options.maxitems, maxOrder));
+            feeds.push(CreateNewFeed(request.title, request.url, request.group, options.maxitems, maxOrder));
             localStorage["feeds"] = JSON.stringify(feeds);
             ReloadViewer();
         }
@@ -174,12 +174,12 @@ function GetFeeds(callBack) {
 }
 
 function GetReadLaterFeed() {
-    return CreateNewFeed("Read Later", chrome.extension.getURL("readlater.html"), 99999, -9, readLaterFeedID);
+    return CreateNewFeed("Read Later", chrome.extension.getURL("readlater.html"), "", 99999, -9, readLaterFeedID);
 }
 
 function GetAllFeeds() {
     if (options.showallfeeds == true) {
-        return CreateNewFeed("All Feeds", chrome.extension.getURL("readlater.html"), 99999, -8, allFeedsID);
+        return CreateNewFeed("All Feeds", chrome.extension.getURL("readlater.html"), "", 99999, -8, allFeedsID);
     }
 }
 
@@ -193,7 +193,7 @@ function GetFeedFolderChildren(nodeChildren) {
 
     for (var i = 0; i < nodeChildren.length; i++) {
         if (nodeChildren[i].url != "") {
-            feeds.push(CreateNewFeed(nodeChildren[i].title, nodeChildren[i].url, options.maxitems, i, nodeChildren[i].id));
+            feeds.push(CreateNewFeed(nodeChildren[i].title, nodeChildren[i].url, nodeChildren[i].group, options.maxitems, i, nodeChildren[i].id));
         }
     }
 
@@ -205,6 +205,7 @@ function GetReadLaterItems() {
         localStorage["readlater"] = JSON.stringify({
             title: "Read Later",
             description: "Items you marked to read later",
+            group: "",
             loading: false,
             items: [],
             error: ""
@@ -241,14 +242,13 @@ function CheckFeedChange(id, notUsed) {
 }
 
 // helper function for creating new feeds
-function CreateNewFeed(title, url, maxitems, order, id) {
+function CreateNewFeed(title, url, group, maxitems, order, id) {
     // managed feed doesn't have an id yet
     if (id == null) {
         id = GetRandomID();
     }
 
-    return {title: title, url: url, maxitems: maxitems, order: order, id: id};
-
+    return {title: title, url: url, group: group, maxitems: maxitems, order: order, id: id};
 }
 
 // converts the text date into a formatted one if possible
@@ -278,45 +278,26 @@ function GetRandomID() {
 
 // as this project gets larger there will be upgrades to storage items this will help
 function DoUpgrades() {
-    /* Disable upgrade because this is first version. Nothing to upgrade.
     var lastVersion = parseFloat(options.lastversion);
 
-    // since 2.0 requires ids for feeds, lets make sure they have them
-    if (localStorage["feeds"] != null && lastVersion < 2.0) {
+    // since 3.001 requires group for feeds, lets make sure they have them
+    if (localStorage["feeds"] != null && lastVersion < 3.001) {
         var feeds = JSON.parse(localStorage["feeds"]).sort(function (a, b) {
             return a.order - b.order;
         });
 
         for (var key in feeds) {
-            if (feeds[key].id == null) {
-                feeds[key].id = GetRandomID();
+            if (feeds[key].group == null) {
+                feeds[key] = CreateNewFeed(feeds[key].title, feeds[key].url, "", feeds[key].maxitems, feeds[key].order, feeds[key].id)
             }
         }
 
         localStorage["feeds"] = JSON.stringify(feeds);
     }
 
-    // 2.6 makes unread key sha256(title + date)
-    if (lastVersion < 2.6) {
-        alert("Sorry, I have to nuke your unread information for this upgrade.  Trust me, it's for the best.");
-        delete localStorage["unreadinfo"];
-        unreadInfo = GetUnreadCounts();
-    }
-
-    if (lastVersion == 2.97) {
-        var result = confirm("Ok, last time I'll bug you.\n\nSlick RSS now has a Google Group for news and support.  Help shape Slick 3.0!  Do you want to check it out now?\n\nhttps://groups.google.com/d/forum/slick-rss");
-
-        localStorage["alerted_group"] = 1;
-
-        if (result) {
-            chrome.tabs.create({url: "https://groups.google.com/d/forum/slick-rss"});
-        }
-    }
-
     // update the last version to now
     options.lastversion = manifest.version;
     localStorage["options"] = JSON.stringify(options);
-    */
 }
 
 // updates, shows and hides the badge
@@ -425,11 +406,11 @@ function CheckForUnread() {
     var now = new Date();
 
     if (feedID != allFeedsID) {
-      feedInfo[feedID] = {title: "", description: "", loading: true, items: [], error: ""};
+      feedInfo[feedID] = {title: "", description: "", group: "", loading: true, items: [], error: ""};
     }
     if (options.showallfeeds == true) {
         if (feedInfo[allFeedsID] == null) {
-          feedInfo[allFeedsID] = {title: "All Feeds", description: "All Feeds are show here.", loading: true, items: [], error: ""};
+          feedInfo[allFeedsID] = {title: "All Feeds", description: "All Feeds are show here.", group: "", loading: true, items: [], error: ""};
         }
     }
 

@@ -16,18 +16,19 @@ function Add()
 {
     var title = document.getElementById("newTitle").value;
     var url = document.getElementById("newUrl").value;
+		var group = document.getElementById("newGroup").value;
     var maxItems = document.getElementById("newMaxItems").value;
     var order = document.getElementById("newOrder").value;
     var key = null;
     var maxOrder = 0;
     var itemOrder = 0;
 
-    if(!IsValid(title, url, maxItems, order))
+    if(!IsValid(title, url, group, maxItems, order))
     {
         return;
     }
 
-    AddRow(feeds.push(bgPage.CreateNewFeed(title, url, maxItems, order)) - 1);
+    AddRow(feeds.push(bgPage.CreateNewFeed(title, url, group, maxItems, order)) - 1);
 
     for(feedKey in feeds)
     {
@@ -42,10 +43,11 @@ function Add()
     document.getElementById("newOrder").value = maxOrder + 1;
     document.getElementById("newTitle").value = "";
     document.getElementById("newUrl").value = "";
+		document.getElementById("newGroup").value = "";
 
 }
 
-function IsValid(title, url, maxItems, order)
+function IsValid(title, url, group, maxItems, order)
 {
 
     if(title == "")
@@ -118,19 +120,26 @@ function AddRow(feedKey)
 
     row.insertCell(1).appendChild(input);
 
+		input = document.createElement('input');
+    input.setAttribute("type", "text");
+    input.setAttribute("class", "group");
+    input.setAttribute("value", feeds[feedKey].group);
+
+    row.insertCell(2).appendChild(input);
+
     input = document.createElement('input');
     input.setAttribute("type", "text");
     input.setAttribute("class", "maxItems");
     input.setAttribute("value", feeds[feedKey].maxitems);
 
-    row.insertCell(2).appendChild(input);
+    row.insertCell(3).appendChild(input);
 
     input = document.createElement('input');
     input.setAttribute("type", "text");
     input.setAttribute("class", "order");
     input.setAttribute("value", feeds[feedKey].order);
 
-    row.insertCell(3).appendChild(input);
+    row.insertCell(4).appendChild(input);
 
     button = document.createElement("img");
     button.setAttribute("src", "x_gray.gif");
@@ -144,7 +153,7 @@ function AddRow(feedKey)
     });
     //button.setAttribute("onclick", "MarkDelete(this.parentNode.parentNode);");
     button.setAttribute("title", "Delete feed");
-    row.insertCell(4).appendChild(button);
+    row.insertCell(5).appendChild(button);
 }
 
 function MarkDelete(row)
@@ -169,8 +178,9 @@ function MarkDelete(row)
 
     row.childNodes[0].childNodes[0].disabled = !marked; // title
     row.childNodes[1].childNodes[0].disabled = !marked; // url
-    row.childNodes[2].childNodes[0].disabled = !marked; // max items
-    row.childNodes[3].childNodes[0].disabled = !marked; // order
+		row.childNodes[2].childNodes[0].disabled = !marked; // group
+    row.childNodes[3].childNodes[0].disabled = !marked; // max items
+    row.childNodes[4].childNodes[0].disabled = !marked; // order
 
 }
 
@@ -179,6 +189,7 @@ function Save()
     var row = null;
     var title;
     var url;
+		var group;
     var maxItems;
     var order;
 
@@ -199,10 +210,11 @@ function Save()
 
         title = row.childNodes[0].childNodes[0].value;
         url = row.childNodes[1].childNodes[0].value;
-        maxItems = row.childNodes[2].childNodes[0].value;
-        order = row.childNodes[3].childNodes[0].value;
+				group = row.childNodes[2].childNodes[0].value;
+        maxItems = row.childNodes[3].childNodes[0].value;
+        order = row.childNodes[4].childNodes[0].value;
 
-        if(row.className != "markDelete" && !IsValid(title, url, maxItems, order))
+        if(row.className != "markDelete" && !IsValid(title, url, group, maxItems, order))
         {
             row.className = "badRow";
             lastBadRow = row;
@@ -211,6 +223,7 @@ function Save()
 
         feeds[feedKey].title = title;
         feeds[feedKey].url = url;
+				feeds[feedKey].group = group;
         feeds[feedKey].maxitems = maxItems;
         feeds[feedKey].order = order;
     }
@@ -253,7 +266,7 @@ function ShowFeeds()
 				{
 					AddRow(feedKey);
 	        itemOrder = parseInt(feeds[feedKey].order);
-	
+
 	        if(itemOrder > maxOrder)
 	        {
 	            maxOrder = itemOrder;

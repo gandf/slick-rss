@@ -89,8 +89,8 @@ function Save()
     bgPage.options.readlaterenabled = (document.getElementById("readLaterEnabled").selectedIndex == 1);
     bgPage.options.readlaterremovewhenviewed = (document.getElementById("readLaterRemoveWhenViewed").selectedIndex == 1);
     bgPage.options.readlaterincludetotal = (document.getElementById("readLaterIncludeTotal").selectedIndex == 1);
-    bgPage.options.loadlinksinbackground = (document.getElementById("loadLinksInBackground").selectedIndex == 1)
-		bgPage.options.showallfeeds = (document.getElementById("showAllFeeds").selectedIndex == 1)
+    bgPage.options.loadlinksinbackground = (document.getElementById("loadLinksInBackground").selectedIndex == 1);
+		bgPage.options.showallfeeds = (document.getElementById("showAllFeeds").selectedIndex == 1);
 
     localStorage["options"] = JSON.stringify(bgPage.options);
 
