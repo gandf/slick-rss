@@ -167,7 +167,6 @@ function ShowFeed(key) {
         UpdateTitle();
         return false;
     });
-    //ClickBuilder(li, "SelectFeed('" + key + "')");
 
     li.appendChild(span);
 
@@ -519,13 +518,11 @@ function RenderFeed() {
                 UnMarkItemReadLater(event.data.i);
                 return false;
             });
-            //ClickBuilder(feedMarkRead, "UnMarkItemReadLater(" + i + ");");
         } else {
             $(feedMarkRead).click({itemID: itemID}, function (event) {
                 MarkItemRead(event.data.itemID);
                 return false;
             });
-            //ClickBuilder(feedMarkRead, "MarkItemRead(\"" + itemID + "\");");
         }
 
         feedMarkRead.title = "Mark read";
@@ -541,7 +538,6 @@ function RenderFeed() {
             LinkProxy(event.data.url);
             return false;
         });
-        //ClickBuilder(feedLink, "LinkProxy('" + item.url + "');return false;");
 
         if (feedID == bgPage.readLaterFeedID) {
             if (options.readlaterremovewhenviewed) {
@@ -549,7 +545,6 @@ function RenderFeed() {
                     UnMarkItemReadLater(event.data.i);
                     return false;
                 });
-                //ClickBuilder(feedLink, "UnMarkItemReadLater(" + i + ");");
             }
         } else {
             $(feedLink).click({feedID: feedID, itemID: itemID}, function (event) {
@@ -559,7 +554,6 @@ function RenderFeed() {
                 }
                 return false;
             });
-            //ClickBuilder(feedLink, "MarkItemRead(\"" + itemID + "\");if(options.markreadonclick){MarkFeedRead(" + feedID + ");}");
         }
 
         feedTitle = document.createElement("h2");
@@ -577,7 +571,6 @@ function RenderFeed() {
                 MarkItemReadLater(event.data.feedID, event.data.i);
                 return false;
             });
-            //ClickBuilder(feedReadLater, "MarkItemReadLater(\"" + feedID + "\", " + i + ");");
             feedTitle.appendChild(feedReadLater);
 
             feedUnread = document.createElement("img");
@@ -632,7 +625,6 @@ function RenderFeed() {
                 LinkProxy(event.data.href);
                 return false;
             });
-            //ClickBuilder(summaryLinks[l], "LinkProxy('" + href + "');return false;");
 
             if (feedID == bgPage.readLaterFeedID) {
                 if (options.readlaterremovewhenviewed) {
@@ -640,14 +632,12 @@ function RenderFeed() {
                         UnMarkItemReadLater(event.data.i);
                         return false;
                     });
-                    //ClickBuilder(summaryLinks[l], "UnMarkItemReadLater(" + i + ");");
                 }
             } else {
                 $(summaryLinks[l]).click({itemID: itemID}, function (event) {
                     MarkItemRead(event.data.itemID);
                     return false;
                 });
-                //ClickBuilder(summaryLinks[l], "MarkItemRead(\"" + itemID + "\");");
             }
         }
 
@@ -736,33 +726,6 @@ function ShowFeedError(message) {
     document.getElementById("feedError").style.display = "";
     document.getElementById("feedErrorMessage").innerText = message;
     document.getElementById("headerMessage").innerText = "Feed Problems";
-}
-
-// since we have multiple click events, this should allow us
-// to build them easily
-function ClickBuilder(el, newFunction) {
-    var obj = $(el);
-    var clickEvents = obj.data("clickEvents");
-
-    if (clickEvents == undefined) {
-        clickEvents = "";
-    }
-
-    clickEvents = clickEvents + newFunction;
-
-    if (/return false/i.test(clickEvents)) {
-        clickEvents = clickEvents.replace(/return false;/i, "") + "return false;";
-    }
-
-    // hack
-    obj
-        .data('clickEvents', clickEvents)
-        .unbind('click')
-        .bind('click', function () {
-            $.globalEval($(this).data('clickEvents'));
-        });
-
-    return;
 }
 
 // central function to control creation of tabs so we can put them in the background
