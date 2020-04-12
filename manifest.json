@@ -1,9 +1,10 @@
 {
   "manifest_version": 2,
-  "name": "Slick RSS by users",
+  "name": "__MSG_appName__",
   "version": "3.001",
-  "description": "A full featured RSS reader that's fully contained within the browser.",
+  "description": "__MSG_appDesc__",
   "options_page": "options.html",
+  "default_locale": "en",
   "icons": {
     "128": "icon_128.png",
     "16": "transmit.png"
