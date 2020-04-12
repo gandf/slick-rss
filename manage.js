@@ -249,18 +249,16 @@ function ShowFeeds()
     for(feedKey in feeds)
     {
         // skip read later feed
-        if(feedKey == 0)
-        {
-            continue;
-        }
-
-        AddRow(feedKey);
-        itemOrder = parseInt(feeds[feedKey].order);
-
-        if(itemOrder > maxOrder)
-        {
-            maxOrder = itemOrder;
-        }
+				if (feeds[feedKey].id < bgPage.allFeedsID)
+				{
+					AddRow(feedKey);
+	        itemOrder = parseInt(feeds[feedKey].order);
+	
+	        if(itemOrder > maxOrder)
+	        {
+	            maxOrder = itemOrder;
+	        }
+				}
     }
 
     document.getElementById("newOrder").value = maxOrder + 1;

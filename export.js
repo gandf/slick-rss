@@ -4,16 +4,16 @@ var bgPage = chrome.extension.getBackgroundPage();
 $(document).ready(function()
 {
 	$('#close').click(function(){window.close();});
-	
+
 	if(bgPage.options.feedsource == 1)
 	        chrome.bookmarks.get(bgPage.options.feedfolderid, ExportBookmarks);
 	    else
     		ExportFeeds();
 });
 
-    
 
-    
+
+
 
 
 
@@ -40,13 +40,12 @@ function ExportFeeds()
 
 	    for(var i = 0; i < bgPage.feeds.length;i++)
 	    {
-	        if(bgPage.feeds[i].title != "Read Later")
+	        if ((bgPage.feeds[i].id != bgPage.readLaterFeedID) && (bgPage.feeds[i].id != bgPage.allFeedsID))
 	            opml += "<outline type=\"rss\" text=\"" + bgPage.feeds[i].title.replace("&", "&amp;") + "\" xmlUrl=\"" + bgPage.feeds[i].url.replace("&", "&amp;") + "\"/>\n";
 	    }
 
 	    opml += "</body>\n</opml>";
-		
+
 	    document.getElementById("opml").innerText = opml;
 
 }
-   

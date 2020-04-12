@@ -197,6 +197,16 @@ function UpdateFeedUnread(id) {
         document.getElementById("feedUnread" + id).innerText = "";
     }
 
+    if ((bgPage.options.showallfeeds == true) && (id < bgPage.allFeedsID)) {
+        count = bgPage.unreadInfo[bgPage.allFeedsID].unreadtotal;
+        if (count > 0) {
+            document.getElementById("feedTitle" + bgPage.allFeedsID).style.fontWeight = "bold";
+            document.getElementById("feedUnread" + bgPage.allFeedsID).innerText = " (" + count + ")";
+        } else {
+            document.getElementById("feedTitle" + bgPage.allFeedsID).style.fontWeight = "normal";
+            document.getElementById("feedUnread" + bgPage.allFeedsID).innerText = "";
+        }
+    }
     FixFeedList();
 }
 
@@ -267,15 +277,24 @@ function MarkFeedRead(feedID) {
 
 function MarkItemRead(itemID) {
     var feedID = feeds[selectedFeedKey].id;
+    var clearDoc = feedID
+    if (feedID == bgPage.allFeedsID) {
+      var newItems = bgPage.feedInfo[feedID].items.find(function (el) {
+        return el.itemID == itemID;
+      });
+      if (newItems.length >= 1) {
+        feedID = newItems[0].idOrigin;
+      }
+    }
+
     var className = (options.readitemdisplay == 0) ? " feedPreviewContainerRead" : " feedPreviewContainerRead feedPreviewContainerCondensed";
     var expireMs = new Date().getTime() + 5184000000; // 2 months;
 
-    if (bgPage.unreadInfo[feedID].readitems[itemID] == null) {
-        document.getElementById("item_" + feedID + "_" + itemID).className += className;
-
-        bgPage.unreadInfo[feedID].unreadtotal--;
-        bgPage.unreadInfo[feedID].readitems[itemID] = expireMs;
-
+    var isRead = MarkItemRead_ReadItems(feedID, itemID, clearDoc == feedID, expireMs, className); //******
+    if (bgPage.options.showallfeeds == true) {
+      isRead = MarkItemRead_ReadItems(bgPage.allFeedsID, itemID, clearDoc == bgPage.allFeedsID, expireMs, className) || isRead;
+    }
+    if (isRead == true) {
         localStorage["unreadinfo"] = JSON.stringify(bgPage.unreadInfo);
 
         UpdateFeedUnread(feedID);
@@ -284,19 +303,59 @@ function MarkItemRead(itemID) {
     }
 }
 
+function MarkItemRead_ReadItems(feedID, itemID, clearDoc, expireMs, className){
+  if (bgPage.unreadInfo[feedID].readitems[itemID] == null) {
+      if (clearDoc) {
+          document.getElementById("item_" + feedID + "_" + itemID).className += className;
+      }
+
+      bgPage.unreadInfo[feedID].unreadtotal--;
+      bgPage.unreadInfo[feedID].readitems[itemID] = expireMs;
+      return true;
+  }
+  return false;
+}
+
 function MarkItemUnread(itemID) {
-    var feedID = feeds[selectedFeedKey].id;
+    var feedID = feeds[selectedFeedKey].id; //******
     var className = (options.readitemdisplay == 0) ? " feedPreviewContainerRead" : " feedPreviewContainerRead feedPreviewContainerCondensed";
+
+    if (feedID == bgPage.allFeedsID) {
+      var newItems = bgPage.feedInfo[feedID].items.find(function (el) {
+        return el.itemID == itemID;
+      });
+      if (newItems.length >= 1) {
+        feedID = newItems[0].idOrigin;
+      }
+    }
 
     if (bgPage.unreadInfo[feedID].readitems[itemID] != null) {
         delete bgPage.unreadInfo[feedID].readitems[itemID];
-        document.getElementById("item_" + feedID + "_" + itemID).className = document.getElementById("item_" + feedID + "_" + itemID).className.replace(className, "");
+        if (feedID == feeds[selectedFeedKey].id) {
+            document.getElementById("item_" + feedID + "_" + itemID).className = document.getElementById("item_" + feedID + "_" + itemID).className.replace(className, "");
+        }
 
         bgPage.unreadInfo[feedID].unreadtotal++;
 
+        if (bgPage.options.showallfeeds == true) {
+          if (bgPage.unreadInfo[bgPage.allFeedsID].readitems[itemID] != null) {
+              delete bgPage.unreadInfo[bgPage.allFeedsID].readitems[itemID];
+              if (bgPage.allFeedsID == selectedFeedKey) {
+                  document.getElementById("item_" + bgPage.allFeedsID + "_" + itemID).className = document.getElementById("item_" + bgPage.allFeedsID + "_" + itemID).className.replace(className, "");
+              }
+              bgPage.unreadInfo[bgPage.allFeedsID].unreadtotal++;
+          }
+        }
+
+        UnMarkItemReadLaterWithoutSelectFeed(findWithAttr(bgPage.feedInfo[bgPage.readLaterFeedID].items, 'itemID', itemID));
+
         localStorage["unreadinfo"] = JSON.stringify(bgPage.unreadInfo);
 
+        UpdateFeedUnread(bgPage.readLaterFeedID);
         UpdateFeedUnread(feedID);
+        if (bgPage.options.showallfeeds == true) {
+            UpdateFeedUnread(bgPage.allFeedsID);
+        }
         UpdateReadAllIcon();
         bgPage.UpdateUnreadBadge();
     }
@@ -315,14 +374,22 @@ function MarkItemReadLater(feedID, itemIndex) {
 }
 
 function UnMarkItemReadLater(itemIndex) {
-    bgPage.unreadInfo[bgPage.readLaterFeedID].unreadtotal--;
-    bgPage.feedInfo[bgPage.readLaterFeedID].items.splice(itemIndex, 1);
-    bgPage.UpdateUnreadBadge();
+    if (itemIndex >= 0) {
+        UnMarkItemReadLaterWithoutSelectFeed(itemIndex);
+        SelectFeed(0);
+    }
+}
 
-    localStorage["readlater"] = JSON.stringify(bgPage.feedInfo[bgPage.readLaterFeedID]);
+function UnMarkItemReadLaterWithoutSelectFeed(itemIndex) {
+    if (itemIndex >= 0) {
+        bgPage.unreadInfo[bgPage.readLaterFeedID].unreadtotal--;
+        bgPage.feedInfo[bgPage.readLaterFeedID].items.splice(itemIndex, 1);
+        bgPage.UpdateUnreadBadge();
 
-    UpdateFeedUnread(bgPage.readLaterFeedID);
-    SelectFeed(0);
+        localStorage["readlater"] = JSON.stringify(bgPage.feedInfo[bgPage.readLaterFeedID]);
+
+        UpdateFeedUnread(bgPage.readLaterFeedID);
+    }
 }
 
 function SelectFeed(key) {

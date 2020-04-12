@@ -8,9 +8,11 @@ var viewerPort = null;
 var checkingForUnread = false;
 var checkForUnreadTimerID = null;
 var checkForUnreadCounter = 0;
+var allFeedsUnreadCounter = -1;
 var getFeedsCallBack = null;
 var refreshFeed = false;
 var readLaterFeedID = 9999999999;
+var allFeedsID = 9999999998;
 var viewPortTabID = null;
 
 chrome.browserAction.onClicked.addListener(ButtonClicked);
@@ -144,7 +146,8 @@ function GetDefaultOptions() {
         "readlaterenabled": true,
         "readlaterremovewhenviewed": true,
         "readlaterincludetotal": true,
-        "loadlinksinbackground": true
+        "loadlinksinbackground": true,
+        "showallfeeds": false
     };
 }
 
@@ -160,6 +163,9 @@ function GetFeeds(callBack) {
             });
         }
 
+        if (options.showallfeeds == true) {
+            feeds.unshift(GetAllFeeds());
+        }
         feeds.unshift(GetReadLaterFeed());
         getFeedsCallBack();
     } else {
@@ -171,10 +177,19 @@ function GetReadLaterFeed() {
     return CreateNewFeed("Read Later", chrome.extension.getURL("readlater.html"), 99999, -9, readLaterFeedID);
 }
 
+function GetAllFeeds() {
+    if (options.showallfeeds == true) {
+        return CreateNewFeed("All Feeds", chrome.extension.getURL("readlater.html"), 99999, -8, allFeedsID);
+    }
+}
+
 // fills feeds with bookmark items, for now it's not recursive
 function GetFeedFolderChildren(nodeChildren) {
     feeds = [];
     feeds.push(GetReadLaterFeed());
+    if (options.showallfeeds == true) {
+        feeds.push(GetAllFeeds());
+    }
 
     for (var i = 0; i < nodeChildren.length; i++) {
         if (nodeChildren[i].url != "") {
@@ -314,7 +329,9 @@ function UpdateUnreadBadge() {
     var str = "";
 
     for (var key in unreadInfo) {
-        total = total + unreadInfo[key].unreadtotal;
+        if (key != allFeedsID) {
+            total = total + unreadInfo[key].unreadtotal;
+        }
     }
 
     if (!options.readlaterincludetotal && unreadInfo[readLaterFeedID] != null) {
@@ -359,6 +376,7 @@ function CheckForUnreadStart(key) {
     }
 
     checkForUnreadCounter = (key == null) ? 0 : key;
+    allFeedsUnreadCounter = (key == null) ? -2 : -1; //-2 empty before
     checkingForUnread = true;
 
     // keep timer going on "refresh"
@@ -374,16 +392,46 @@ function CheckForUnreadStart(key) {
     }
 
     CheckForUnread();
+    if ((options.showallfeeds == true) && (feedInfo[allFeedsID] != null)) {
+        feedInfo[allFeedsID].loading = false;
+    }
 }
 
 // goes through each feed and gets how many you haven't read since last time you were there
 function CheckForUnread() {
+    var feedID = feeds[checkForUnreadCounter].id;
+    if (options.showallfeeds == true && allFeedsUnreadCounter < 0) {
+        for (var i = 0; i < feeds.length; i++) {
+            if (feeds[i].id == allFeedsID) {
+                if (allFeedsUnreadCounter == -2) {
+                    //Empty
+                }
+                allFeedsUnreadCounter = i;
+                break;
+            }
+        }
+    }
+
+    /*if (feedID == allFeedsID){
+        checkForUnreadCounter++;
+        if (checkForUnreadCounter >= feeds.length || refreshFeed) {
+            CheckForUnreadComplete();
+            return;
+        }
+        feedID = feeds[checkForUnreadCounter].id;
+    }*/
     var req = new XMLHttpRequest();
     var toID = setTimeout(req.abort, 60000);
-    var feedID = feeds[checkForUnreadCounter].id;
     var now = new Date();
 
-    feedInfo[feedID] = {title: "", description: "", loading: true, items: [], error: ""};
+    if (feedID != allFeedsID) {
+      feedInfo[feedID] = {title: "", description: "", loading: true, items: [], error: ""};
+    }
+    if (options.showallfeeds == true) {
+        if (feedInfo[allFeedsID] == null) {
+          feedInfo[allFeedsID] = {title: "All Feeds", description: "All Feeds are show here.", loading: true, items: [], error: ""};
+        }
+    }
 
     if (viewerPort != null) {
         viewerPort.postMessage({type: "feedupdatestarted", id: feedID});
@@ -400,6 +448,11 @@ function CheckForUnread() {
                 // initialize unread object if not setup yet
                 if (unreadInfo[feedID] == null) {
                     unreadInfo[feedID] = {unreadtotal: 0, readitems: {}};
+                }
+                if (options.showallfeeds == true) {
+                    if (unreadInfo[allFeedsID] == null) {
+                        unreadInfo[allFeedsID] = {unreadtotal: 0, readitems: {}};
+                    }
                 }
 
                 unreadInfo[feedID].unreadtotal = 0;
@@ -434,6 +487,8 @@ function CheckForUnread() {
                             item.title = GetNodeTextValue(GetElementByTagName(entries[e], null, "title"), "No Title");
                             item.date = GetNodeTextValue(GetElementByTagName(entries[e], null, "pubDate", "updated", "dc:date", "date", "published")); // not sure if date is even needed anymore
                             item.content = "";
+                            item.idOrigin = feedID;
+                            item.itemID = sha256(item.title + item.date);
 
                             // don't bother storing extra stuff past max.. only title for Mark All Read
                             if (e <= feeds[checkForUnreadCounter].maxitems) {
@@ -463,6 +518,9 @@ function CheckForUnread() {
                             }
 
                             feedInfo[feedID].items.push(item);
+                            if ((options.showallfeeds == true) && (e <= feeds[allFeedsUnreadCounter].maxitems)) {
+                                feedInfo[allFeedsID].items.push(item);
+                            }
                             entryIDs[sha256(item.title + item.date)] = 1;
                         }
 
@@ -479,12 +537,31 @@ function CheckForUnread() {
                         }
 
                         unreadInfo[feedID].unreadtotal = entries.length - readItemCount;
+
+                        if (options.showallfeeds == true) {
+                          readItemCount = 0;
+                          for (var key in unreadInfo[allFeedsID].readitems) {
+                              if (entryIDs[key] == null) {
+                                  // if the read item isn't in the current feed and it's past it's expiration date, nuke it
+                                  if (now > new Date(unreadInfo[allFeedsID].readitems[key])) {
+                                      delete unreadInfo[allFeedsID].readitems[key];
+                                  }
+                              } else {
+                                  readItemCount++;
+                              }
+                             unreadInfo[allFeedsID].unreadtotal = feedInfo[allFeedsID].items.length - readItemCount;
+                          }
+                        }
                     } else {
                         feedInfo[feedID].error = "The response didn't have a valid responseXML property.";
                     }
                 } else {
                     if (feedID != readLaterFeedID) {
-                        feedInfo[feedID].error = "Status wasn't 200.  It was " + req.status + " and frankly I don't know how to handle that.  If it helps, the status text was '" + req.statusText + "'.";
+                        if (feedID != allFeedsID) {
+                            feedInfo[feedID].error = "Status wasn't 200.  It was " + req.status + " and frankly I don't know how to handle that.  If it helps, the status text was '" + req.statusText + "'.";
+                        } else {
+                            //All Feeds
+                        }
                     } else {
                         // cheat the system, fill in read later info
                         feedInfo[feedID] = GetReadLaterItems();
@@ -508,7 +585,9 @@ function CheckForUnread() {
                 req = null;
                 doc = null;
 
-                feedInfo[feedID].loading = false;
+                if (feedID != allFeedsID) {
+                  feedInfo[feedID].loading = false;
+                }
 
                 if (checkForUnreadCounter >= feeds.length || refreshFeed) {
                     CheckForUnreadComplete();
@@ -523,7 +602,6 @@ function CheckForUnread() {
         // onreadystate should already be called, so don't do anything!
     }
 }
-
 
 // ran after checking for unread is done
 function CheckForUnreadComplete() {
