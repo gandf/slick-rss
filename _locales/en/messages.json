@@ -143,6 +143,9 @@
   "optionShowFeedContent": {
     "message": "Show feed content (if available)"
   },
+  "optionContent": {
+    "message": "Content"
+  },
   "optionDateFormat": {
     "message": "Date format"
   },
@@ -222,7 +225,7 @@
     "message": " minutes"
   },
   "optionSecondDisabled": {
-    "message": "seconds (0 = disabled)"
+    "message": " seconds (0 = disabled)"
   },
   "optionMarkAllRead": {
     "message": "Mark all read after"
@@ -277,6 +280,9 @@
   },
   "optionAlertMarkFeedReadInvalid": {
     "message": "'Mark feed read after' seems invalid.  It's the number of seconds after you've viewed a feed before it's marked read."
+  },
+  "optionUpdateInterval": {
+    "message": "Update interval"
   },
   "backReadLater": {
     "message": "Read Later"
@@ -350,6 +356,78 @@
   },
   "backViewerNoItemInFeed": {
     "message": "There are no items in this feed."
+  },
+  "monthJanuary": {
+    "message": "January"
+  },
+  "monthFebruary": {
+    "message": "February"
+  },
+  "monthMarch": {
+    "message": "March"
+  },
+  "monthApril": {
+    "message": "April"
+  },
+  "monthMay": {
+    "message": "May"
+  },
+  "monthJune": {
+    "message": "June"
+  },
+  "monthJuly": {
+    "message": "July"
+  },
+  "monthAugust": {
+    "message": "August"
+  },
+  "monthSeptember": {
+    "message": "September"
+  },
+  "monthOctober": {
+    "message": "October"
+  },
+  "monthNovember": {
+    "message": "November"
+  },
+  "monthDecember": {
+    "message": "December"
+  },
+  "daySunday": {
+    "message": "Sunday"
+  },
+  "dayMonday": {
+    "message": "Monday"
+  },
+  "dayTuesday": {
+    "message": "Tuesday"
+  },
+  "dayWednesday": {
+    "message": "Wednesday"
+  },
+  "dayThursday": {
+    "message": "Thursday"
+  },
+  "dayFriday": {
+    "message": "Friday"
+  },
+  "daySaturday": {
+    "message": "Saturday"
+  },
+  "daySuffix1": {
+    "message": "st"
+  },
+  "daySuffix2": {
+    "message": "nd"
+  },
+  "daySuffix3": {
+    "message": "rd"
+  },
+  "daySuffix4": {
+    "message": "th"
+  },
+  "daySuffix5": {
+    "message": "th"
   },
   "optionOff": {
     "message": "Off"

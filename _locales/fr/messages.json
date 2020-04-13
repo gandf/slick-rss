@@ -143,8 +143,11 @@
   "optionShowFeedContent": {
     "message": "Afficher le contenu du flux (si disponible)"
   },
+  "optionContent": {
+    "message": "Contenu"
+  },
   "optionDateFormat": {
-    "message": "Format date"
+    "message": "Format de date"
   },
   "optionDone": {
     "message": "Terminé"
@@ -153,61 +156,61 @@
     "message": "Utilise l'heure UTC. (Sinon local)"
   },
   "optionY4": {
-    "message": "Année 4 digits"
+    "message": "Année 4 chiffres"
   },
   "optionY2": {
-    "message": "Année 2 digits"
+    "message": "Année 2 chiffres"
   },
   "optionMfullText": {
     "message": "Mois texte complet"
   },
   "optionM3Letters": {
-    "message": "3 letter month"
+    "message": "Mois 3 lettres"
   },
   "optionM0": {
-    "message": "Zero padded month"
+    "message": "Mois avec 2 chiffres (0 devant)"
   },
   "optionM": {
     "message": "Mois"
   },
   "optionDWithSuffix": {
-    "message": "The day with suffix"
+    "message": "Le jour avec suffixe"
   },
   "optionD0": {
-    "message": "Zero padded day"
+    "message": "Jour sur 2 chiffres (0 devant)"
   },
   "optionD": {
     "message": "Jour"
   },
   "optionH0": {
-    "message": "Zero padded hours"
+    "message": "Heures sur 2 chiffres"
   },
   "optionH": {
     "message": "Heures"
   },
   "optionH012": {
-    "message": "Hours in zero padded 12 hour format"
+    "message": "Heures au format 12H sur 2 chiffres"
   },
   "optionH12": {
-    "message": "The hour in 12 hour format"
+    "message": "Heures au format 12H"
   },
   "optionMin0": {
-    "message": "Zero padded minutes"
+    "message": "Minutes sur 2 chiffres (0 devant)"
   },
   "optionM": {
     "message": "Minutes"
   },
   "optionS0": {
-    "message": "Zero padded seconds"
+    "message": "Secondes sur 2 chiffres (0 devant)"
   },
   "optionS": {
     "message": "Secondes"
   },
   "optionWFullText": {
-    "message": "Jour semaine text complet"
+    "message": "Jour de la semaine texte complet"
   },
   "optionW3": {
-    "message": "Jour semaine 3 lettres"
+    "message": "Jour de la semaine 3 lettres"
   },
   "optionAM": {
     "message": "AM/PM"
@@ -222,61 +225,64 @@
     "message": " minutes"
   },
   "optionSecondDisabled": {
-    "message": "seconds (0 = désactivé)"
+    "message": " seconds (0 = désactivé)"
   },
   "optionMarkAllRead": {
-    "message": "Mark all read after"
+    "message": "Marquer tout lu après"
   },
   "optionMarkAllReadTitleClick": {
-    "message": "Mark all read after title click"
+    "message": "Marquer tout lu après avoir cliqué sur le titre"
   },
   "optionReadItemDisplay": {
-    "message": "Read item display"
+    "message": "Affichage sujet lu"
   },
   "optionGray": {
-    "message": "Gray"
+    "message": "Grisé"
   },
   "optionCondensed": {
-    "message": "Condensed"
+    "message": "Condensée"
   },
   "optionShowTotalUnread": {
-    "message": "Show total unread"
+    "message": "Afficher total non lu"
   },
   "optionOnToolbar": {
-    "message": "On toolbar"
+    "message": "Dans la barre d'outils"
   },
   "optionOnTab": {
-    "message": "On tab"
+    "message": "Dans l'onglet"
   },
   "optionOnToolbarAndTab": {
-    "message": "On toolbar & tab"
+    "message": "Dans la barre d'outils et l'onglet"
   },
   "optionShowTotlaFeedList": {
-    "message": "Show totals in feed list"
+    "message": "Afficher totaux dans la liste de flux"
   },
   "optionReadLater": {
-    "message": "Read Later Options"
+    "message": "Options Lire plus tard"
   },
   "optionReadLaterSupport": {
-    "message": "Read later support"
+    "message": "Utiliser Lire plus tard"
   },
   "optionRemoveViewed": {
-    "message": "Remove when viewed"
+    "message": "Supprimer après lecture"
   },
   "optionIncludeItemsUnreadTotal": {
-    "message": "Include items in unread totals"
+    "message": "Inclure sujets dans les totaux non lu"
   },
   "optionAlertMaxItemsInvalid": {
-    "message": "'Max Items' seems invalid.  It's the max number of items in a feed preview and should be > 0"
+    "message": "'Nb sujets max' semble être invalide. C'est le nombre maximum de sujets dans un flux de prévisualisation et devrait être > 0"
   },
   "optionAlertUpdateIntervalInvalid": {
-    "message": "'Update Interval' seems invalid.  It's the number of minutes between fetching unread counts."
+    "message": "'Intervalle de mise à jour' semble invalide. C'est le nombre de minutes entre les récupérations des comptes non lus."
   },
   "optionAlertUpdateIntervalSup0": {
-    "message": "'Update Interval' must be > 0."
+    "message": "'Intervalle de mise à jour' doit être > 0."
   },
   "optionAlertMarkFeedReadInvalid": {
-    "message": "'Mark feed read after' seems invalid.  It's the number of seconds after you've viewed a feed before it's marked read."
+    "message": "'Marquer flux lu après' semble être invalide. C'est le nombre de secondes après avoir vu le flux avant qu'il soit marqué lu."
+  },
+  "optionUpdateInterval": {
+    "message": "Intervalle de mise à jour"
   },
   "backReadLater": {
     "message": "Lire plus tard"
@@ -350,6 +356,78 @@
   },
   "backViewerNoItemInFeed": {
     "message": "Il n'y a pas de sujet dans ce flux."
+  },
+  "monthJanuary": {
+    "message": "Janvier"
+  },
+  "monthFebruary": {
+    "message": "Février"
+  },
+  "monthMarch": {
+    "message": "Mars"
+  },
+  "monthApril": {
+    "message": "Avril"
+  },
+  "monthMay": {
+    "message": "Mai"
+  },
+  "monthJune": {
+    "message": "Juin"
+  },
+  "monthJuly": {
+    "message": "Juillet"
+  },
+  "monthAugust": {
+    "message": "Août"
+  },
+  "monthSeptember": {
+    "message": "Septembre"
+  },
+  "monthOctober": {
+    "message": "Octobre"
+  },
+  "monthNovember": {
+    "message": "Novembre"
+  },
+  "monthDecember": {
+    "message": "Décembre"
+  },
+  "daySunday": {
+    "message": "Dimanche"
+  },
+  "dayMonday": {
+    "message": "Lundi"
+  },
+  "dayTuesday": {
+    "message": "Mardi"
+  },
+  "dayWednesday": {
+    "message": "Mercredi"
+  },
+  "dayThursday": {
+    "message": "Jeudi"
+  },
+  "dayFriday": {
+    "message": "Vendredi"
+  },
+  "daySaturday": {
+    "message": "Samedi"
+  },
+  "daySuffix1": {
+    "message": "er"
+  },
+  "daySuffix2": {
+    "message": "ème"
+  },
+  "daySuffix3": {
+    "message": "ème"
+  },
+  "daySuffix4": {
+    "message": "ème"
+  },
+  "daySuffix5": {
+    "message": "ème"
   },
   "optionOff": {
     "message": "Désactivé"
