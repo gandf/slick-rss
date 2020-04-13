@@ -122,7 +122,7 @@ function ShowFeeds() {
             document.getElementById("noFeedsBookmarks").style.display = "";
         }
 
-        document.getElementById("headerMessage").innerText = "Feed Me";
+        document.getElementById("headerMessage").innerText = GetMessageText("backViewerFeedMe");
         document.getElementById("feedHeader").style.display = "none";
         document.getElementById("feedArea").style.display = "none";
         document.getElementById("refresh").style.display = "none";
@@ -159,6 +159,7 @@ function ShowFeed(key) {
 
     li.innerText = feeds[key].title;
     li.setAttribute("id", "feedTitle" + feeds[key].id);
+    li.setAttribute("feedType", "feed");
     span.setAttribute("id", "feedUnread" + feeds[key].id);
 
     $(li).click(function () {
@@ -316,7 +317,7 @@ function MarkItemRead_ReadItems(feedID, itemID, clearDoc, expireMs, className){
 }
 
 function MarkItemUnread(itemID) {
-    var feedID = feeds[selectedFeedKey].id; //******
+    var feedID = feeds[selectedFeedKey].id;
     var className = (options.readitemdisplay == 0) ? " feedPreviewContainerRead" : " feedPreviewContainerRead feedPreviewContainerCondensed";
 
     if (feedID == bgPage.allFeedsID) {
@@ -423,7 +424,7 @@ function SelectFeed(key) {
 
     // feed isn't ready yet
     if (bgPage.feedInfo[feeds[key].id] == null || bgPage.feedInfo[feeds[key].id].loading) {
-        document.getElementById("headerMessage").innerText = "Loading Feed ...";
+        document.getElementById("headerMessage").innerText = GetMessageText("backViewerLoadingFeed");
         document.getElementById("header").className = "loading";
         document.getElementById("refresh").style.display = "none";
 

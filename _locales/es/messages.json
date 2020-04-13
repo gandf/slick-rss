@@ -357,6 +357,12 @@
   "backViewerNoItemInFeed": {
     "message": "There are no items in this feed."
   },
+  "backViewerFeedMe": {
+    "message": "Feed Me"
+  },
+  "backViewerLoadingFeed": {
+    "message": "Loading Feed ..."
+  },
   "monthJanuary": {
     "message": "January"
   },
