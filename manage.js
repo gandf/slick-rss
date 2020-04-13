@@ -201,7 +201,7 @@ function Save()
     for(feedKey in feeds)
     {
         // skip read later feed
-        if(feedKey == 0)
+        if ((feedKey == 0) || (feeds[feedKey].id == bgPage.allFeedsID))
         {
             continue;
         }
@@ -210,7 +210,7 @@ function Save()
 
         title = row.childNodes[0].childNodes[0].value;
         url = row.childNodes[1].childNodes[0].value;
-				group = row.childNodes[2].childNodes[0].value;
+        group = row.childNodes[2].childNodes[0].value;
         maxItems = row.childNodes[3].childNodes[0].value;
         order = row.childNodes[4].childNodes[0].value;
 
@@ -231,6 +231,11 @@ function Save()
     // delete feeds that are marked, start from end so indexes don't get screwed up
     for(i = feeds.length - 1;i > 0;i--)
     {
+			if (feeds[i].id == bgPage.allFeedsID)
+			{
+				feeds.splice(i,1);
+				continue;
+			}
         row = document.getElementById(i);
 
         if(row.className == "markDelete")
