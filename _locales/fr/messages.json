@@ -4,5 +4,375 @@
   },
   "appDesc": {
     "message": "Un lecteur RSS complet entièrement contenu dans le navigateur."
+  },
+  "exportTitle": {
+    "message": "Slick RSS : Export Flux"
+  },
+  "exportMainForm": {
+    "message": "Ici un export OPML de vos flux de données."
+  },
+  "manageTitle": {
+    "message": "Slick RSS : Gestion des flux"
+  },
+  "manageManageFeeds": {
+    "message": "Gestion des flux"
+  },
+  "manageAlertTitle": {
+    "message": "Un titre est obligatoire. Le nom peut-être comme 'Mon super flux d'actualité de jeux'."
+  },
+  "manageAlertUrl": {
+    "message": "Une URL est obligatoire. C'est l'adresse HTTP complète de votre flux."
+  },
+  "manageAlertMaxItemsEmpty": {
+    "message": "Le nombre Max de sujets est obligatoire. C'est le nombre maximum de sujets que vous voulez afficher pour de flux."
+  },
+  "manageAlertMaxItemsZero": {
+    "message": "Ha ha très drôle. Vous devez mettre au moins 1 sujet comme nombre maximum à afficher dans le flux."
+  },
+  "manageAlertMaxItemsNotItem1": {
+    "message": "Très drôle, vous et moi savons tous les deux '"
+  },
+  "manageAlertMaxItemsNotItem2": {
+    "message": "' n'est pas une valeur de nombre maximal de sujet."
+  },
+  "manageAlertOrder": {
+    "message": "Ordre obligatoire. C'est l'ordre dans lequel vos flux seront affichés."
+  },
+  "manageAlertOrderNotItem1": {
+    "message": "Très drôle, vous et moi savons tous les deux '"
+  },
+  "manageAlertOrderNotItem2": {
+    "message": "' n'est pas une valeur d'ordre."
+  },
+  "manageName": {
+    "message": "Nom"
+  },
+  "manageUrl": {
+    "message": "URL"
+  },
+  "manageGroup": {
+    "message": "Groupe"
+  },
+  "manageMaxItems": {
+    "message": "Nb sujets Max"
+  },
+  "manageOrder": {
+    "message": "Ordre"
+  },
+  "importForm": {
+    "message": "Copie et colle le contenu de votre fichier OPML dans la zone de texte ci-dessous."
+  },
+  "importImportFeeds": {
+    "message": "Import flux"
+  },
+  "importTitle": {
+    "message": "Slick RSS : Import flux"
+  },
+  "importAlertNothing": {
+    "message": "Rien à importer"
+  },
+  "importAlertBookmarkNotFound": {
+    "message": "Ne peut importer parce que votre dossier de signet n'est pas trouvé."
+  },
+  "importAlertNoOutlineRss": {
+    "message": "Aucun nœud 'outline' de type «rss» n'a été trouvé à importer."
+  },
+  "importAlertImportedFeeds1": {
+    "message": ""
+  },
+  "importAlertImportedFeeds2": {
+    "message": " flux importés."
+  },
+  "exportLinkTitle": {
+    "message": "Slick RSS OPML Export"
+  },
+  "optionTitle": {
+    "message": "Slick RSS : Options"
+  },
+  "optionFeedBehavior": {
+    "message": "Options de comportement du flux"
+  },
+  "optionFeedManagement": {
+    "message": "Gestion flux"
+  },
+  "optionFeedManager": {
+    "message": "Slick RSS gestionnaire de flux"
+  },
+  "optionBoolmarkFolder": {
+    "message": "Dossier de signet"
+  },
+  "optionColumns": {
+    "message": "Colonnes"
+  },
+  "optionImportFeeds": {
+    "message": "Import flux"
+  },
+  "optionExportFeeds": {
+    "message": "Export flux"
+  },
+  "optionFolder": {
+    "message": "Dossier"
+  },
+  "optionDefMaxItems": {
+    "message": "Sujets max par défaut"
+  },
+  "optionFeedDisplay": {
+    "message": "Options d'affichage de flux"
+  },
+  "optionDescription": {
+    "message": "Description"
+  },
+  "optionImages": {
+    "message": "Images"
+  },
+  "optionObjects": {
+    "message": "Objets (comme les vidéos)"
+  },
+  "optionIFrames": {
+    "message": "IFrames"
+  },
+  "optionLoadInBack": {
+    "message": "Ouvrir les liens en arrière-plan"
+  },
+  "optionShowAllInOne": {
+    "message": "Afficher tous les flux en un"
+  },
+  "optionShowOnlySummary": {
+    "message": "Afficher uniquement le résumé"
+  },
+  "optionShowFeedContent": {
+    "message": "Afficher le contenu du flux (si disponible)"
+  },
+  "optionDateFormat": {
+    "message": "Format date"
+  },
+  "optionDone": {
+    "message": "Terminé"
+  },
+  "optionGMT": {
+    "message": "Utilise l'heure UTC. (Sinon local)"
+  },
+  "optionY4": {
+    "message": "Année 4 digits"
+  },
+  "optionY2": {
+    "message": "Année 2 digits"
+  },
+  "optionMfullText": {
+    "message": "Mois texte complet"
+  },
+  "optionM3Letters": {
+    "message": "3 letter month"
+  },
+  "optionM0": {
+    "message": "Zero padded month"
+  },
+  "optionM": {
+    "message": "Mois"
+  },
+  "optionDWithSuffix": {
+    "message": "The day with suffix"
+  },
+  "optionD0": {
+    "message": "Zero padded day"
+  },
+  "optionD": {
+    "message": "Jour"
+  },
+  "optionH0": {
+    "message": "Zero padded hours"
+  },
+  "optionH": {
+    "message": "Heures"
+  },
+  "optionH012": {
+    "message": "Hours in zero padded 12 hour format"
+  },
+  "optionH12": {
+    "message": "The hour in 12 hour format"
+  },
+  "optionMin0": {
+    "message": "Zero padded minutes"
+  },
+  "optionM": {
+    "message": "Minutes"
+  },
+  "optionS0": {
+    "message": "Zero padded seconds"
+  },
+  "optionS": {
+    "message": "Secondes"
+  },
+  "optionWFullText": {
+    "message": "Jour semaine text complet"
+  },
+  "optionW3": {
+    "message": "Jour semaine 3 lettres"
+  },
+  "optionAM": {
+    "message": "AM/PM"
+  },
+  "optionGithubUrl": {
+    "message": "Adresse GitHub : "
+  },
+  "optionFeedUnread": {
+    "message": "Options flux non lu"
+  },
+  "optionMinutes": {
+    "message": " minutes"
+  },
+  "optionSecondDisabled": {
+    "message": "seconds (0 = désactivé)"
+  },
+  "optionMarkAllRead": {
+    "message": "Mark all read after"
+  },
+  "optionMarkAllReadTitleClick": {
+    "message": "Mark all read after title click"
+  },
+  "optionReadItemDisplay": {
+    "message": "Read item display"
+  },
+  "optionGray": {
+    "message": "Gray"
+  },
+  "optionCondensed": {
+    "message": "Condensed"
+  },
+  "optionShowTotalUnread": {
+    "message": "Show total unread"
+  },
+  "optionOnToolbar": {
+    "message": "On toolbar"
+  },
+  "optionOnTab": {
+    "message": "On tab"
+  },
+  "optionOnToolbarAndTab": {
+    "message": "On toolbar & tab"
+  },
+  "optionShowTotlaFeedList": {
+    "message": "Show totals in feed list"
+  },
+  "optionReadLater": {
+    "message": "Read Later Options"
+  },
+  "optionReadLaterSupport": {
+    "message": "Read later support"
+  },
+  "optionRemoveViewed": {
+    "message": "Remove when viewed"
+  },
+  "optionIncludeItemsUnreadTotal": {
+    "message": "Include items in unread totals"
+  },
+  "optionAlertMaxItemsInvalid": {
+    "message": "'Max Items' seems invalid.  It's the max number of items in a feed preview and should be > 0"
+  },
+  "optionAlertUpdateIntervalInvalid": {
+    "message": "'Update Interval' seems invalid.  It's the number of minutes between fetching unread counts."
+  },
+  "optionAlertUpdateIntervalSup0": {
+    "message": "'Update Interval' must be > 0."
+  },
+  "optionAlertMarkFeedReadInvalid": {
+    "message": "'Mark feed read after' seems invalid.  It's the number of seconds after you've viewed a feed before it's marked read."
+  },
+  "backReadLater": {
+    "message": "Lire plus tard"
+  },
+  "backAllFeeds": {
+    "message": "Tous les flux"
+  },
+  "backItemsMarkedReadLater": {
+    "message": "Sujets que vous avez marqués pour lire plus tard"
+  },
+  "backAllFeedsShow": {
+    "message": "Tous les flux sont affichés ici."
+  },
+  "backNoTitle": {
+    "message": "Sans titre"
+  },
+  "backErrorXML": {
+    "message": "La réponse n'avait pas de propriété responseXML valide."
+  },
+  "backError200Part1": {
+    "message": "Le statut n'était pas 200. C'était "
+  },
+  "backError200Part2": {
+    "message": " et franchement, je ne sais pas comment gérer ça. Si cela peut aider, le texte d'état était '"
+  },
+  "backError200Part3": {
+    "message": "'."
+  },
+  "backViewerMarkRead": {
+    "message": "Marquer lu"
+  },
+  "backViewerMarkUnread": {
+    "message": "Marquer non lu"
+  },
+  "backViewerFeedIssue": {
+    "message": "Problèmes de flux"
+  },
+  "backViewerRefreshing": {
+    "message": "Rafraichissement"
+  },
+  "backViewerRefreshAll": {
+    "message": "Tout rafraichir"
+  },
+  "backViewerMarkAllRead": {
+    "message": "Tout marquer lu"
+  },
+  "backViewerManage": {
+    "message": "Gestion"
+  },
+  "backViewerRefresh": {
+    "message": "Rafraichir"
+  },
+  "backViewerOptions": {
+    "message": "Options"
+  },
+  "backViewerNoFeed": {
+    "message": "Vous n'avez pas de flux. Maintenant c'est un bon moment pour en ajouter."
+  },
+  "backViewerAddFeeds": {
+    "message": "Ajouter flux"
+  },
+  "backViewerBookmark": {
+    "message": "Euh oh, je ne vois aucun signet ici. Puisque vous utilisez un dossier de signets, je reviendrais dans
+    options et vérifirai cela. Ou vous pouvez y ajouter des signets :)"
+  },
+  "backViewerFeedSelectedInvalid": {
+    "message": "Le flux sélectionné semble être invalide. Veuillez vérifier l'URL."
+  },
+  "backViewerNerdy": {
+    "message": "Détails ringards"
+  },
+  "backViewerNoItemInFeed": {
+    "message": "Il n'y a pas de sujet dans ce flux."
+  },
+  "optionOff": {
+    "message": "Désactivé"
+  },
+  "optionOn": {
+    "message": "Actif"
+  },
+  "close": {
+    "message": "Fermer"
+  },
+  "cancel": {
+    "message": "Annuler"
+  },
+  "save": {
+    "message": "Sauvegarder"
+  },
+  "add": {
+    "message": "Ajouter"
+  },
+  "import": {
+    "message": "Importer"
+  },
+  "export": {
+    "message": "Exporter"
   }
 }

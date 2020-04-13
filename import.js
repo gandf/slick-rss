@@ -12,7 +12,7 @@ function Import()
 {
     if(document.getElementById("opml").value == "")
     {
-        alert("Nothing to import");
+        alert(GetMessageText("importAlertNothing"));
         return;
     }
 
@@ -35,7 +35,7 @@ function ImportBookmarks(startNode)
 
     if(!startNode || startNode.length == 0)
     {
-        alert("Could not import because your bookmark folder is not found.");
+        alert(GetMessageText("importAlertBookmarkNotFound"));
         return;
     }
 
@@ -52,11 +52,11 @@ function ImportBookmarks(startNode)
 
     if(nodes.length == 0)
     {
-        alert("No outline nodes of type 'rss' were found to import.");
+        alert(GetMessageText("importAlertNoOutlineRss"));
         return;
     }
 
-    alert("Imported " + importCount + " feeds.");
+    alert(GetMessageText("importAlertImportedFeeds1") + importCount + GetMessageText("importAlertImportedFeeds2"));
 
     window.close();
 }
@@ -101,13 +101,13 @@ function ImportFeeds()
 
     if(nodes.length == 0)
     {
-        alert("No outline nodes of type 'rss' were found to import.");
+        alert(GetMessageText("importAlertNoOutlineRss"));
         return;
     }
 
 		//remove ReadLater
 		localStorage["feeds"] = JSON.stringify(bgPage.feeds.filter(filterByID));
-    alert("Imported " + importCount + " feeds.");
+    alert(GetMessageText("importAlertImportedFeeds1") + importCount + GetMessageText("importAlertImportedFeeds2"));
 
     bgPage.ReloadViewer();
 

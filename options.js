@@ -49,25 +49,25 @@ function Save()
 
     if(!/^\d+$/.test(maxItems) || maxItems == "0")
     {
-        alert("'Max Items' seems invalid.  It's the max number of items in a feed preview and should be > 0");
+        alert(GetMessageText("optionAlertMaxItemsInvalid"));
         return;
     }
 
     if(!/^\d+$/.test(document.getElementById("checkInterval").value))
     {
-        alert("'Update Interval' seems invalid.  It's the number of minutes between fetching unread counts.");
+        alert(GetMessageText("optionAlertUpdateIntervalInvalid"));
         return;
     }
 
     if(document.getElementById("checkInterval").value == 0)
     {
-        alert("'Update Interval' must be > 0.");
+        alert(GetMessageText("optionAlertUpdateIntervalSup0"));
         return;
     }
 
     if(!/^\d+$/.test(document.getElementById("markReadAfter").value))
     {
-        alert("'Mark feed read after' seems invalid.  It's the number of seconds after you've viewed a feed before it's marked read.");
+        alert(GetMessageText("optionAlertMarkFeedReadInvalid"));
         return;
     }
 

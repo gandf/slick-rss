@@ -16,7 +16,7 @@ function ExportBookmarks(startNode)
 {
 	chrome.bookmarks.getChildren(startNode[0].id, function(nodes)
 	{
-	    var opml = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><opml version=\"2.0\">\n<head><title>Slick RSS OPML Export</title></head>\n<body>";
+	    var opml = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><opml version=\"2.0\">\n<head><title>" + GetMessageText("exportLinkTitle") + "</title></head>\n<body>";
 
 	    for(var i = 0; i < nodes.length;i++)
 	        opml += "<outline type=\"rss\" text=\"" + nodes[i].title.replace("&", "&amp;") + "\" xmlUrl=\"" + nodes[i].url.replace("&", "&amp;") + "\" group=\"" + nodes[i].group.replace("&", "&amp;") + "\"/>\n";
@@ -30,7 +30,7 @@ function ExportBookmarks(startNode)
 // imports opml -> feed list
 function ExportFeeds()
 {
-    var opml = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><opml version=\"2.0\">\n<head><title>Slick RSS OPML Export</title></head>\n<body>";
+    var opml = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><opml version=\"2.0\">\n<head><title>" + GetMessageText("exportLinkTitle") + "</title></head>\n<body>";
 
 	    for(var i = 0; i < bgPage.feeds.length;i++)
 	    {

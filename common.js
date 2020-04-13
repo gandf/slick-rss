@@ -180,3 +180,8 @@ function findWithAttr(array, attr, value) {
     }
     return -1;
 }
+
+function GetMessageText(value)
+{
+  return chrome.i18n.getMessage(value);
+}

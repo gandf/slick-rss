@@ -174,12 +174,12 @@ function GetFeeds(callBack) {
 }
 
 function GetReadLaterFeed() {
-    return CreateNewFeed("Read Later", chrome.extension.getURL("readlater.html"), "", 99999, -9, readLaterFeedID);
+    return CreateNewFeed(GetMessageText("backReadLater"), chrome.extension.getURL("readlater.html"), "", 99999, -9, readLaterFeedID);
 }
 
 function GetAllFeeds() {
     if (options.showallfeeds == true) {
-        return CreateNewFeed("All Feeds", chrome.extension.getURL("readlater.html"), "", 99999, -8, allFeedsID);
+        return CreateNewFeed(GetMessageText("backAllFeeds"), chrome.extension.getURL("readlater.html"), "", 99999, -8, allFeedsID);
     }
 }
 
@@ -203,8 +203,8 @@ function GetFeedFolderChildren(nodeChildren) {
 function GetReadLaterItems() {
     if (localStorage["readlater"] == null) {
         localStorage["readlater"] = JSON.stringify({
-            title: "Read Later",
-            description: "Items you marked to read later",
+            title: GetMessageText("backReadLater"),
+            description: GetMessageText("backItemsMarkedReadLater"),
             group: "",
             loading: false,
             items: [],
@@ -410,7 +410,7 @@ function CheckForUnread() {
     }
     if (options.showallfeeds == true) {
         if (feedInfo[allFeedsID] == null) {
-          feedInfo[allFeedsID] = {title: "All Feeds", description: "All Feeds are show here.", group: "", loading: true, items: [], error: ""};
+          feedInfo[allFeedsID] = {title: GetMessageText("backAllFeeds"), description: GetMessageText("backAllFeedsShow"), group: "", loading: true, items: [], error: ""};
         }
     }
 
@@ -465,7 +465,7 @@ function CheckForUnread() {
 
                         for (var e = 0; e < entries.length; e++) {
                             item = {};
-                            item.title = GetNodeTextValue(GetElementByTagName(entries[e], null, "title"), "No Title");
+                            item.title = GetNodeTextValue(GetElementByTagName(entries[e], null, "title"), GetMessageText("backNoTitle"));
                             item.date = GetNodeTextValue(GetElementByTagName(entries[e], null, "pubDate", "updated", "dc:date", "date", "published")); // not sure if date is even needed anymore
                             item.content = "";
                             item.idOrigin = feedID;
@@ -534,12 +534,12 @@ function CheckForUnread() {
                           }
                         }
                     } else {
-                        feedInfo[feedID].error = "The response didn't have a valid responseXML property.";
+                        feedInfo[feedID].error = GetMessageText("backErrorXML");
                     }
                 } else {
                     if (feedID != readLaterFeedID) {
                         if (feedID != allFeedsID) {
-                            feedInfo[feedID].error = "Status wasn't 200.  It was " + req.status + " and frankly I don't know how to handle that.  If it helps, the status text was '" + req.statusText + "'.";
+                            feedInfo[feedID].error = GetMessageText("backError200Part1") + req.status + GetMessageText("backError200Part2") + req.statusText + GetMessageText("backError200Part3");
                         } else {
                             //All Feeds
                         }

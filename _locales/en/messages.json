@@ -4,5 +4,375 @@
   },
   "appDesc": {
     "message": "A full featured RSS reader that's fully contained within the browser."
+  },
+  "exportTitle": {
+    "message": "Slick RSS : Export Feeds"
+  },
+  "exportMainForm": {
+    "message": "Here is an OPML export of your feed data."
+  },
+  "manageTitle": {
+    "message": "Slick RSS : Manage Feeds"
+  },
+  "manageManageFeeds": {
+    "message": "Manage Feeds"
+  },
+  "manageAlertTitle": {
+    "message": "A title is required.  Name it something useful like 'My Awesome Gaming News Feed'."
+  },
+  "manageAlertUrl": {
+    "message": "A URL is required.  It's the full HTTP path to your feed."
+  },
+  "manageAlertMaxItemsEmpty": {
+    "message": "Max items is required.  It's the max number of items you want me to show you for this feed."
+  },
+  "manageAlertMaxItemsZero": {
+    "message": "Ha ha funny person.  You need at least 1 max item in order to show you a feed."
+  },
+  "manageAlertMaxItemsNotItem1": {
+    "message": "Very funny, you and I both know '"
+  },
+  "manageAlertMaxItemsNotItem2": {
+    "message": "' isn't a value max item number."
+  },
+  "manageAlertOrder": {
+    "message": "Order is required.  It's the order I'll display your feeds in the viewer."
+  },
+  "manageAlertOrderNotItem1": {
+    "message": "Very funny, you and I both know '"
+  },
+  "manageAlertOrderNotItem2": {
+    "message": "' isn't a value order."
+  },
+  "manageName": {
+    "message": "Name"
+  },
+  "manageUrl": {
+    "message": "URL"
+  },
+  "manageGroup": {
+    "message": "Group"
+  },
+  "manageMaxItems": {
+    "message": "Max Items"
+  },
+  "manageOrder": {
+    "message": "Order"
+  },
+  "importForm": {
+    "message": "Copy and paste your OPML file contents into the textbox below."
+  },
+  "importImportFeeds": {
+    "message": "Import Feeds"
+  },
+  "importTitle": {
+    "message": "Slick RSS : Import Feeds"
+  },
+  "importAlertNothing": {
+    "message": "Nothing to import"
+  },
+  "importAlertBookmarkNotFound": {
+    "message": "Could not import because your bookmark folder is not found."
+  },
+  "importAlertNoOutlineRss": {
+    "message": "No outline nodes of type 'rss' were found to import."
+  },
+  "importAlertImportedFeeds1": {
+    "message": "Imported "
+  },
+  "importAlertImportedFeeds2": {
+    "message": " feeds."
+  },
+  "exportLinkTitle": {
+    "message": "Slick RSS OPML Export"
+  },
+  "optionTitle": {
+    "message": "Slick RSS : Options"
+  },
+  "optionFeedBehavior": {
+    "message": "Feed Behavior Options"
+  },
+  "optionFeedManagement": {
+    "message": "Feed management"
+  },
+  "optionFeedManager": {
+    "message": "Slick RSS Feed Manager"
+  },
+  "optionBoolmarkFolder": {
+    "message": "Bookmark Folder"
+  },
+  "optionColumns": {
+    "message": "Columns"
+  },
+  "optionImportFeeds": {
+    "message": "Import Feeds"
+  },
+  "optionExportFeeds": {
+    "message": "Export Feeds"
+  },
+  "optionFolder": {
+    "message": "Folder"
+  },
+  "optionDefMaxItems": {
+    "message": "Default max items"
+  },
+  "optionFeedDisplay": {
+    "message": "Feed Display Options"
+  },
+  "optionDescription": {
+    "message": "Description"
+  },
+  "optionImages": {
+    "message": "Images"
+  },
+  "optionObjects": {
+    "message": "Objects (like movies)"
+  },
+  "optionIFrames": {
+    "message": "IFrames"
+  },
+  "optionLoadInBack": {
+    "message": "Load links in background"
+  },
+  "optionShowAllInOne": {
+    "message": "Show all feeds in one"
+  },
+  "optionShowOnlySummary": {
+    "message": "Show only summary"
+  },
+  "optionShowFeedContent": {
+    "message": "Show feed content (if available)"
+  },
+  "optionDateFormat": {
+    "message": "Date format"
+  },
+  "optionDone": {
+    "message": "Done"
+  },
+  "optionGMT": {
+    "message": "Makes the output use GMT. (Otherwise local)"
+  },
+  "optionY4": {
+    "message": "4 digit year"
+  },
+  "optionY2": {
+    "message": "2 digit year"
+  },
+  "optionMfullText": {
+    "message": "Full text month"
+  },
+  "optionM3Letters": {
+    "message": "3 letter month"
+  },
+  "optionM0": {
+    "message": "Zero padded month"
+  },
+  "optionM": {
+    "message": "Month"
+  },
+  "optionDWithSuffix": {
+    "message": "The day with suffix"
+  },
+  "optionD0": {
+    "message": "Zero padded day"
+  },
+  "optionD": {
+    "message": "Day"
+  },
+  "optionH0": {
+    "message": "Zero padded hours"
+  },
+  "optionH": {
+    "message": "Hours"
+  },
+  "optionH012": {
+    "message": "Hours in zero padded 12 hour format"
+  },
+  "optionH12": {
+    "message": "The hour in 12 hour format"
+  },
+  "optionMin0": {
+    "message": "Zero padded minutes"
+  },
+  "optionM": {
+    "message": "Minutes"
+  },
+  "optionS0": {
+    "message": "Zero padded seconds"
+  },
+  "optionS": {
+    "message": "Seconds"
+  },
+  "optionWFullText": {
+    "message": "Full text weekday"
+  },
+  "optionW3": {
+    "message": "3 letter weekday"
+  },
+  "optionAM": {
+    "message": "AM/PM"
+  },
+  "optionGithubUrl": {
+    "message": "GitHub URL:"
+  },
+  "optionFeedUnread": {
+    "message": "Feed Unread Options"
+  },
+  "optionMinutes": {
+    "message": " minutes"
+  },
+  "optionSecondDisabled": {
+    "message": "seconds (0 = disabled)"
+  },
+  "optionMarkAllRead": {
+    "message": "Mark all read after"
+  },
+  "optionMarkAllReadTitleClick": {
+    "message": "Mark all read after title click"
+  },
+  "optionReadItemDisplay": {
+    "message": "Read item display"
+  },
+  "optionGray": {
+    "message": "Gray"
+  },
+  "optionCondensed": {
+    "message": "Condensed"
+  },
+  "optionShowTotalUnread": {
+    "message": "Show total unread"
+  },
+  "optionOnToolbar": {
+    "message": "On toolbar"
+  },
+  "optionOnTab": {
+    "message": "On tab"
+  },
+  "optionOnToolbarAndTab": {
+    "message": "On toolbar & tab"
+  },
+  "optionShowTotlaFeedList": {
+    "message": "Show totals in feed list"
+  },
+  "optionReadLater": {
+    "message": "Read Later Options"
+  },
+  "optionReadLaterSupport": {
+    "message": "Read later support"
+  },
+  "optionRemoveViewed": {
+    "message": "Remove when viewed"
+  },
+  "optionIncludeItemsUnreadTotal": {
+    "message": "Include items in unread totals"
+  },
+  "optionAlertMaxItemsInvalid": {
+    "message": "'Max Items' seems invalid.  It's the max number of items in a feed preview and should be > 0"
+  },
+  "optionAlertUpdateIntervalInvalid": {
+    "message": "'Update Interval' seems invalid.  It's the number of minutes between fetching unread counts."
+  },
+  "optionAlertUpdateIntervalSup0": {
+    "message": "'Update Interval' must be > 0."
+  },
+  "optionAlertMarkFeedReadInvalid": {
+    "message": "'Mark feed read after' seems invalid.  It's the number of seconds after you've viewed a feed before it's marked read."
+  },
+  "backReadLater": {
+    "message": "Read Later"
+  },
+  "backAllFeeds": {
+    "message": "All Feeds"
+  },
+  "backItemsMarkedReadLater": {
+    "message": "Items you marked to read later"
+  },
+  "backAllFeedsShow": {
+    "message": "All Feeds are show here."
+  },
+  "backNoTitle": {
+    "message": "No Title"
+  },
+  "backErrorXML": {
+    "message": "The response didn't have a valid responseXML property."
+  },
+  "backError200Part1": {
+    "message": "Status wasn't 200.  It was "
+  },
+  "backError200Part2": {
+    "message": " and frankly I don't know how to handle that.  If it helps, the status text was '"
+  },
+  "backError200Part3": {
+    "message": "'."
+  },
+  "backViewerMarkRead": {
+    "message": "Mark read"
+  },
+  "backViewerMarkUnread": {
+    "message": "Mark unread"
+  },
+  "backViewerFeedIssue": {
+    "message": "Feed Problems"
+  },
+  "backViewerRefreshing": {
+    "message": "Refreshing"
+  },
+  "backViewerRefreshAll": {
+    "message": "Refresh All"
+  },
+  "backViewerMarkAllRead": {
+    "message": "Mark All Read"
+  },
+  "backViewerManage": {
+    "message": "Manage"
+  },
+  "backViewerRefresh": {
+    "message": "Refresh"
+  },
+  "backViewerOptions": {
+    "message": "Options"
+  },
+  "backViewerNoFeed": {
+    "message": "You have no feeds. Now is a great time to add some."
+  },
+  "backViewerAddFeeds": {
+    "message": "Add Feeds"
+  },
+  "backViewerBookmark": {
+    "message": "Uh oh, I don't see any bookmarks here. Since you are using a bookmark folder, I'd go back into
+    options and check that. Or you could add bookmarks to it :)"
+  },
+  "backViewerFeedSelectedInvalid": {
+    "message": "The feed selected seems to be invalid. Please check the URL."
+  },
+  "backViewerNerdy": {
+    "message": "Nerdy Details"
+  },
+  "backViewerNoItemInFeed": {
+    "message": "There are no items in this feed."
+  },
+  "optionOff": {
+    "message": "Off"
+  },
+  "optionOn": {
+    "message": "On"
+  },
+  "close": {
+    "message": "Close"
+  },
+  "cancel": {
+    "message": "Cancel"
+  },
+  "save": {
+    "message": "Save"
+  },
+  "add": {
+    "message": "Add"
+  },
+  "import": {
+    "message": "Import"
+  },
+  "export": {
+    "message": "Export"
   }
 }

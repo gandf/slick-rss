@@ -1,10 +1,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" >
 <head>
-    <title>Slick RSS : Options</title>
+    <title data-locale="optionTitle">Slick RSS : Options</title>
     <link rel="stylesheet" href="common.css" type="text/css" />
     <link rel="stylesheet" href="options.css" type="text/css" />
     <script type="text/javascript" src="jquery-3.4.1.min.js"></script>
+    <script type="text/javascript" src="common.js"></script>
     <script type="text/javascript" src="options.js"></script>
 </head>
 <body>
@@ -13,7 +14,7 @@
 <tr>
 <td></td>
 <td>Options</td>
-<td><a id='save' href='#'>Save</a> | <a id='cancel' href='#'>Cancel</a></td>
+<td><a id='save' href='#' data-locale="save">Save</a> | <a id='cancel' href='#' data-locale="cancel">Cancel</a></td>
 </tr>
 </table>
 
@@ -21,78 +22,78 @@
 <form>
 
 <table id="optionTable" cellpadding="2" cellspacing="3">
-<tr><td colspan="2" class="optionHeader">Feed Behavior Options</td></tr>
+<tr><td colspan="2" class="optionHeader" data-locale="optionFeedBehavior">Feed Behavior Options</td></tr>
 <tr>
-<td>Feed management</td>
+<td data-locale="optionFeedManagement">Feed management</td>
 <td>
     <select name="feedSource" id="feedSource">
-    <option value="0">Slick RSS Feed Manager</option>
-    <option value="1">Bookmark Folder</option>
+    <option value="0" data-locale="optionFeedManager">Slick RSS Feed Manager</option>
+    <option value="1" data-locale="optionBoolmarkFolder">Bookmark Folder</option>
     </select>
 
-    <button type="button" id='importFeeds'>Import Feeds</button>
-    <button type="button" id='exportFeeds'>Export Feeds</button>
+    <button type="button" id='importFeeds' data-locale="optionImportFeeds">Import Feeds</button>
+    <button type="button" id='exportFeeds' data-locale="optionExportFeeds">Export Feeds</button>
 </td>
 </tr>
 <tr id="feedFolder" style="display:none;">
-<td>Folder</td>
+<td data-locale="optionFolder">Folder</td>
 <td>
 <select name="feedFolderID" id="feedFolderID">
 </select>
 </td>
 </tr>
 <tr>
-<td>Default max items</td>
+<td data-locale="optionDefMaxItems">Default max items</td>
 <td><input type="text" name="maxItems" maxlength="3" id="maxItems" /></td>
 </tr>
 <tr><td></td></tr>
-<tr><td colspan="2" class="optionHeader">Feed Display Options</td></tr>
+<tr><td colspan="2" class="optionHeader" data-locale="optionFeedDisplay">Feed Display Options</td></tr>
 <tr>
-<td>Description</td>
+<td data-locale="optionDescription">Description</td>
 <td>
 <select id="showDescriptions">
-<option value="0">Off</option>
-<option value="1">On</option>
+<option value="0" data-locale="optionOff">Off</option>
+<option value="1" data-locale="optionOn">On</option>
 </select>
 </td>
 </tr>
-<tr><td>Images</td>
+<tr><td data-locale="optionImages">Images</td>
 <td>
 <select id="showFeedImages">
-<option value="0">Off</option>
-<option value="1">On</option>
+<option value="0" data-locale="optionOff">Off</option>
+<option value="1" data-locale="optionOn">On</option>
 </select>
 </td></tr>
-<tr><td>Objects (like movies)</td>
+<tr><td data-locale="optionObjects">Objects (like movies)</td>
 <td>
 <select id="showFeedObjects">
-<option value="0">Off</option>
-<option value="1">On</option>
+<option value="0" data-locale="optionOff">Off</option>
+<option value="1" data-locale="optionOn">On</option>
 </select>
 </td></tr>
-<tr><td>IFrames</td>
+<tr><td data-locale="optionIFrames">IFrames</td>
 <td>
 <select id="showFeedIframes">
-<option value="0">Off</option>
-<option value="1">On</option>
+<option value="0" data-locale="optionOff">Off</option>
+<option value="1" data-locale="optionOn">On</option>
 </select>
 </td></tr>
-<tr><td>Load links in background</td>
+<tr><td data-locale="optionLoadInBack">Load links in background</td>
 <td>
 <select id="loadLinksInBackground">
-<option value="0">Off</option>
-<option value="1">On</option>
+<option value="0" data-locale="optionOff">Off</option>
+<option value="1" data-locale="optionOn">On</option>
 </select>
 </td></tr>
-<tr><td>Show all feeds in one</td>
+<tr><td data-locale="optionShowAllInOne">Show all feeds in one</td>
 <td>
 <select id="showAllFeeds">
-<option value="0">Off</option>
-<option value="1">On</option>
+<option value="0" data-locale="optionOff">Off</option>
+<option value="1" data-locale="optionOn">On</option>
 </select>
 </td></tr>
 <tr>
-<td>Columns</td>
+<td data-locale="optionColumns">Columns</td>
 <td>
 <select id="columns">
 <option value="1">1</option>
@@ -105,37 +106,37 @@
 <tr><td>Content</td>
 <td>
 <select id="showFeedContent">
-<option value="0">Show only summary</option>
-<option value="1">Show feed content (if available)</option>
+<option value="0" data-locale="optionShowOnlySummary">Show only summary</option>
+<option value="1" data-locale="optionShowFeedContent">Show feed content (if available)</option>
 </select>
 </td></tr>
 
-<tr><td>Date format</td>
-<td><input type="text" id="dateFormat" value=""/><button type="button" id="dateDone" style="display:none;">Done</button>
+<tr><td data-locale="optionDateFormat">Date format</td>
+<td><input type="text" id="dateFormat" value=""/><button type="button" id="dateDone" style="display:none;" data-locale="optionDone">Done</button>
 <div id="dateHelp" style="display:none;">
 <table cellpadding="2" cellspacing="0">
-<tr><th>Code</th><th>Description</th></tr>
-<tr><td>[u]</td><td>Makes the output use GMT. (Otherwise local)</td></tr>
-<tr><td>[yyyy]</td><td>4 digit year</td></tr>
-<tr><td>[yy]</td><td>2 digit year</td></tr>
-<tr><td>[mmmm]</td><td>Full text month</td></tr>
-<tr><td>[mmm]</td><td>3 letter month</td></tr>
-<tr><td>[mm]</td><td>Zero padded month</td></tr>
-<tr><td>[m]</td><td>Month</td></tr>
-<tr><td>[ddd]</td><td>The day with suffix</td></tr>
-<tr><td>[dd]</td><td>Zero padded day</td></tr>
-<tr><td>[d]</td><td>Day</td></tr>
-<tr><td>[hh]</td><td>Zero padded hours</td></tr>
-<tr><td>[h]</td><td>Hours</td></tr>
-<tr><td>[12hh]</td><td>Hours in zero padded 12 hour format</td></tr>
-<tr><td>[12h]</td><td>The hour in 12 hour format</td></tr>
-<tr><td>[nn]</td><td>Zero padded minutes</td></tr>
-<tr><td>[n]</td><td>Minutes</td></tr>
-<tr><td>[ss]</td><td>Zero padded seconds</td></tr>
-<tr><td>[s]</td><td>Seconds</td></tr>
-<tr><td>[ww]</td><td>Full text weekday</td></tr>
-<tr><td>[w]</td><td>3 letter weekday</td></tr>
-<tr><td>[a]</td><td>AM/PM</td></tr>
+<tr><th data-locale="optionTitle">Code</th><th data-locale="optionDescription">Description</th></tr>
+<tr><td>[u]</td><td data-locale="optionGMT">Makes the output use GMT. (Otherwise local)</td></tr>
+<tr><td>[yyyy]</td><td data-locale="optionY4">4 digit year</td></tr>
+<tr><td>[yy]</td><td data-locale="optionY2">2 digit year</td></tr>
+<tr><td>[mmmm]</td><td data-locale="optionMfullText">Full text month</td></tr>
+<tr><td>[mmm]</td><td data-locale="optionM3Letters">3 letter month</td></tr>
+<tr><td>[mm]</td><td data-locale="optionM0">Zero padded month</td></tr>
+<tr><td>[m]</td><td data-locale="optionM">Month</td></tr>
+<tr><td>[ddd]</td><td data-locale="optionDWithSuffix">The day with suffix</td></tr>
+<tr><td>[dd]</td><td data-locale="optionD0">Zero padded day</td></tr>
+<tr><td>[d]</td><td data-locale="optionD">Day</td></tr>
+<tr><td>[hh]</td><td data-locale="optionH0">Zero padded hours</td></tr>
+<tr><td>[h]</td><td data-locale="optionH">Hours</td></tr>
+<tr><td>[12hh]</td><td data-locale="optionH012">Hours in zero padded 12 hour format</td></tr>
+<tr><td>[12h]</td><td data-locale="optionH12">The hour in 12 hour format</td></tr>
+<tr><td>[nn]</td><td data-locale="optionMin0">Zero padded minutes</td></tr>
+<tr><td>[n]</td><td data-locale="optionM">Minutes</td></tr>
+<tr><td>[ss]</td><td data-locale="optionS0">Zero padded seconds</td></tr>
+<tr><td>[s]</td><td data-locale="optionS">Seconds</td></tr>
+<tr><td>[ww]</td><td data-locale="optionWFullText">Full text weekday</td></tr>
+<tr><td>[w]</td><td data-locale="optionW3">3 letter weekday</td></tr>
+<tr><td>[a]</td><td data-locale="optionAM">AM/PM</td></tr>
 </table>
 </div>
 </td></tr>
@@ -143,43 +144,43 @@
 
 <table cellpadding="2" cellspacing="4">
 <tr><td colspan="2" class="optionHeader">Information</td></tr>
-<tr><td class="bold">GitHub URL:</td><td><a href="https://github.com/gandf/slick-rss" target="_blank">https://github.com/gandf/slick-rss</a></td></tr>
+<tr><td class="bold" data-locale="optionGithubUrl">GitHub URL:</td><td><a href="https://github.com/gandf/slick-rss" target="_blank">https://github.com/gandf/slick-rss</a></td></tr>
 <tr><td></td></tr>
-<tr><td colspan="2" class="optionHeader">Feed Unread Options</td></tr>
-<tr><td>Update interval</td><td><input type="text" id="checkInterval" maxlength="4" /> minutes</td></tr>
-<tr><td>Mark all read after</td><td><input type="text" id="markReadAfter" maxlength="4" /> seconds (0 = disabled)</td></tr>
-<tr><td>Mark all read after title click</td><td><select id="markReadOnClick">
-<option value="0">Off</option>
-<option value="1">On</option></select></td></tr>
-<tr><td>Read item display</td><td><select id="readItemDisplay">
-<option value="0">Gray</option>
-<option value="1">Condensed</option></select></td></tr>
-<tr><td>Show total unread</td><td>
+<tr><td colspan="2" class="optionHeader" data-locale="optionFeedUnread">Feed Unread Options</td></tr>
+<tr><td>Update interval</td><td><input type="text" data-locale="optionMinutes" id="checkInterval" maxlength="4" /> minutes</td></tr>
+<tr><td data-locale="optionMarkAllRead">Mark all read after</td><td><input type="text" data-locale="optionSecondDisabled" id="markReadAfter" maxlength="4" /> seconds (0 = disabled)</td></tr>
+<tr><td data-locale="optionMarkAllReadTitleClick">Mark all read after title click</td><td><select id="markReadOnClick">
+<option value="0" data-locale="optionOff">Off</option>
+<option value="1" data-locale="optionOn">On</option></select></td></tr>
+<tr><td data-locale="optionReadItemDisplay">Read item display</td><td><select id="readItemDisplay">
+<option value="0" data-locale="optionGray">Gray</option>
+<option value="1" data-locale="optionCondensed">Condensed</option></select></td></tr>
+<tr><td data-locale="optionShowTotalUnread">Show total unread</td><td>
 <select id="unreadTotalDisplay">
-<option value="0">Off</option>
-<option value="1">On toolbar</option>
-<option value="2">On tab</option>
-<option value="3">On toolbar &amp; tab</option></select></td></tr>
+<option value="0" data-locale="optionOff">Off</option>
+<option value="1" data-locale="optionOnToolbar">On toolbar</option>
+<option value="2" data-locale="optionOnTab">On tab</option>
+<option value="3" data-locale="optionOnToolbarAndTab">On toolbar &amp; tab</option></select></td></tr>
 
-<tr><td>Show totals in feed list</td><td>
+<tr><td data-locale="optionShowTotlaFeedList">Show totals in feed list</td><td>
 <select id="unreadItemTotalDisplay">
-<option value="0">Off</option>
-<option value="1">On</option></select></td></tr>
+<option value="0" data-locale="optionOff">Off</option>
+<option value="1" data-locale="optionOn">On</option></select></td></tr>
 
-<tr><td colspan="2" class="optionHeader">Read Later Options</td></tr>
-<tr><td>Read later support</td><td><select id="readLaterEnabled">
-<option value="0">Off</option>
-<option value="1">On</option></select></td></tr>
-<tr><td>Remove when viewed</td><td><select id="readLaterRemoveWhenViewed">
-<option value="0">Off</option>
-<option value="1">On</option></select></td></tr>
-<tr><td>Include items in unread totals</td><td><select id="readLaterIncludeTotal">
-<option value="0">Off</option>
-<option value="1">On</option></select></td></tr>
+<tr><td colspan="2" class="optionReadLater">Read Later Options</td></tr>
+<tr><td data-locale="optionReadLaterSupport">Read later support</td><td><select id="readLaterEnabled">
+<option value="0" data-locale="optionOff">Off</option>
+<option value="1" data-locale="optionOn">On</option></select></td></tr>
+<tr><td data-locale="optionRemoveViewed">Remove when viewed</td><td><select id="readLaterRemoveWhenViewed">
+<option value="0" data-locale="optionOff">Off</option>
+<option value="1" data-locale="optionOn">On</option></select></td></tr>
+<tr><td data-locale="optionIncludeItemsUnreadTotal">Include items in unread totals</td><td><select id="readLaterIncludeTotal">
+<option value="0" data-locale="optionOff">Off</option>
+<option value="1" data-locale="optionOn">On</option></select></td></tr>
 </table>
 
 </form>
 </div>
-
+<script  type="text/javascript" src='localize.js' ></script>
 </body>
 </html>

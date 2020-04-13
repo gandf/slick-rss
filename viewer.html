@@ -10,7 +10,7 @@
         <td id="feedHeader">
             <table id="feedsLoading" cellpadding="0" cellspacing="0">
                 <tr>
-                    <td>Refreshing</td>
+                    <td data-locale="backViewerRefreshing">Refreshing</td>
                     <td>
                         <div id="feedsLoadingProgressBox">
                             <div id="feedsLoadingProgress"></div>
@@ -19,7 +19,7 @@
                 </tr>
             </table>
             <span id="feedsOptions">
-              <a href="" id="refreshAll">Refresh All</a> <span id="markAllRead"> | <a href="">Mark All Read</a></span>
+              <a href="" id="refreshAll" data-locale="backViewerRefreshAll">Refresh All</a> <span id="markAllRead"> | <a href="" data-locale="backViewerMarkAllRead">Mark All Read</a></span>
             </span>
         </td>
         <td>
@@ -28,10 +28,10 @@
                     <td></td>
                     <td id="headerMessage"></td>
                     <td>
-                        <span id="manage"><a href="manage.html">Manage</a> | </span>
-                        <span id="refresh"><a href="" id="refreshButton">Refresh</a> | </span>
-                        <span id="markFeedRead"><a href="" id="markFeedReadButton">Mark Read</a> | </span>
-                        <a href="options.html" target="_blank">Options</a>
+                        <span id="manage"><a href="manage.html" data-locale="backViewerManage">Manage</a> | </span>
+                        <span id="refresh"><a href="" id="refreshButton" data-locale="backViewerRefresh">Refresh</a> | </span>
+                        <span id="markFeedRead"><a href="" id="markFeedReadButton" data-locale="backViewerMarkRead">Mark Read</a> | </span>
+                        <a href="options.html" target="_blank" data-locale="backViewerOptions">Options</a>
                     </td>
                 </tr>
             </table>
@@ -47,22 +47,22 @@
         <td id="workArea">
 
             <div id="noFeedsManaged" style="display:none;">
-                <br/>You have no feeds. Now is a great time to add some.<br/><br/>
-                <a href="manage.html"><button type="button" id="addFeeds">Add Feeds</button></a>
+                <br/><div data-locale="backViewerNoFeed">You have no feeds. Now is a great time to add some.</div><br/><br/>
+                <a href="manage.html"><button type="button" id="addFeeds" data-locale="backViewerAddFeeds">Add Feeds</button></a>
             </div>
 
             <div id="noFeedsBookmarks" style="display:none;">
-                <br/>Uh oh, I don't see any bookmarks here. Since you are using a bookmark folder, I'd go back into
-                options and check that. Or you could add bookmarks to it :)<br/><br/>
+                <br/><div data-locale="backViewerBookmark">Uh oh, I don't see any bookmarks here. Since you are using a bookmark folder, I'd go back into
+                options and check that. Or you could add bookmarks to it :)</div><br/><br/>
             </div>
 
             <div id="feedError" style="display:none;">
-                <br/>The feed selected seems to be invalid. Please check the URL.<br/><br/>
-                <span id="feedErrorDetail">Nerdy Details<br/><span id="feedErrorMessage"></span></span>
+                <br/><div data-locale="backViewerFeedSelectedInvalid">The feed selected seems to be invalid. Please check the URL.</div><br/><br/>
+                <span id="feedErrorDetail"><div data-locale="backViewerNerdy">Nerdy Details</div><br/><span id="feedErrorMessage"></span></span>
             </div>
 
             <div id="noItems" style="display:none;">
-                <br/>There are no items in this feed.
+                <br/><div data-locale="backViewerNoItemInFeed">There are no items in this feed.</div>
             </div>
 
             <div id="feedPreviewScroller">
@@ -72,3 +72,4 @@
         </td>
     </tr>
 </table>
+<script  type="text/javascript" src='localize.js' ></script>

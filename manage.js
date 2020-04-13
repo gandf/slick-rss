@@ -52,43 +52,43 @@ function IsValid(title, url, group, maxItems, order)
 
     if(title == "")
     {
-        alert("A title is required.  Name it something useful like 'My Awesome Gaming News Feed'.");
+        alert(GetMessageText(manageAlertTitle));
         return false;
     }
 
     if(url == "")
     {
-        alert("A URL is required.  It's the full HTTP path to your feed.");
+        alert(GetMessageText(manageAlertUrl));
         return false;
     }
 
     if(maxItems == "")
     {
-        alert("Max items is required.  It's the max number of items you want me to show you for this feed.");
+        alert(GetMessageText(manageAlertMaxItemsEmpty));
         return false;
     }
 
     if(maxItems == "0")
     {
-        alert("Ha ha funny person.  You need at least 1 max item in order to show you a feed.");
+        alert(GetMessageText(manageAlertMaxItemsZero));
         return false;
     }
 
     if(!/^\d+$/.test(maxItems))
     {
-        alert("Very funny, you and I both know '" + maxItems + "' isn't a value max item number.");
+        alert(GetMessageText(manageAlertMaxItemsNotItem1) + maxItems + GetMessageText(manageAlertMaxItemsNotItem2));
         return false;
     }
 
     if(order == "")
     {
-        alert("Order is required.  It's the order I'll display your feeds in the viewer.");
+        alert(GetMessageText(manageAlertOrder));
         return false;
     }
 
     if(!/^\d+$/.test(order))
     {
-        alert("Very funny, you and I both know '" + order + "' isn't a value order.");
+        alert(GetMessageText(manageAlertOrderNotItem1) + order + GetMessageText(manageAlertOrderNotItem2));
         return false;
     }
 

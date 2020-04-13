@@ -525,7 +525,7 @@ function RenderFeed() {
             });
         }
 
-        feedMarkRead.title = "Mark read";
+        feedMarkRead.title = GetMessageText("backViewerMarkRead");
         feedMarkRead.setAttribute("class", "feedPreviewMarkRead");
 
         feedLink = document.createElement("a");
@@ -566,7 +566,7 @@ function RenderFeed() {
             feedReadLater.setAttribute("onmouseover", "hover(this);");
             feedReadLater.setAttribute("onmouseout", "unhover(this);");
             feedReadLater.setAttribute("class", "feedPreviewReadLater");
-            feedReadLater.setAttribute("title", "Read later");
+            feedReadLater.setAttribute("title", GetMessageText("backReadLater"));
             $(feedReadLater).click({feedID: feedID, i: i}, function (event) {
                 MarkItemReadLater(event.data.feedID, event.data.i);
                 return false;
@@ -578,7 +578,7 @@ function RenderFeed() {
             feedUnread.setAttribute("onmouseover", "hover(this);");
             feedUnread.setAttribute("onmouseout", "unhover(this);");
             feedUnread.setAttribute("class", "feedPreviewUnread");
-            feedUnread.setAttribute("title", "Mark unread");
+            feedUnread.setAttribute("title", GetMessageText("backViewerMarkUnread"));
             feedUnread.setAttribute("display", "none");
             $(feedUnread).click({itemID: itemID}, function (event) {
                 MarkItemUnread(event.data.itemID);
@@ -725,7 +725,7 @@ function RenderFeed() {
 function ShowFeedError(message) {
     document.getElementById("feedError").style.display = "";
     document.getElementById("feedErrorMessage").innerText = message;
-    document.getElementById("headerMessage").innerText = "Feed Problems";
+    document.getElementById("headerMessage").innerText = GetMessageText("backViewerFeedIssue");
 }
 
 // central function to control creation of tabs so we can put them in the background
