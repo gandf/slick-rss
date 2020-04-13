@@ -94,7 +94,12 @@ function ImportFeeds()
         if(nodes[i].getAttribute("type") == "rss")
         {
             maxOrder ++;
-            bgPage.feeds.push(bgPage.CreateNewFeed(nodes[i].getAttribute("text"), nodes[i].getAttribute("xmlUrl"), nodes[i].getAttribute("group"), bgPage.options.maxitems, maxOrder));
+						var group = nodes[i].getAttribute("group");
+						if (group == null)
+						{
+							group = "";
+						}
+            bgPage.feeds.push(bgPage.CreateNewFeed(nodes[i].getAttribute("text"), nodes[i].getAttribute("xmlUrl"), group, bgPage.options.maxitems, maxOrder));
             importCount ++;
         }
     }
