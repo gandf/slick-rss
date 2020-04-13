@@ -4,6 +4,8 @@ var unreadInfo = GetUnreadCounts();
 var unreadTotal = 0;
 var feedInfo = [];
 var feeds = [];
+var groups = [];
+var groupInfo = [];
 var viewerPort = null;
 var checkingForUnread = false;
 var checkForUnreadTimerID = null;
@@ -592,6 +594,7 @@ function CheckForUnreadComplete() {
         viewerPort.postMessage({type: "refreshallcomplete"});
     }
 
+    UpdateGroups();
     UpdateUnreadBadge();
 }
 
@@ -691,4 +694,95 @@ function GetElementsByTagName() {
     }
 
     return defaultValue;
+}
+
+function GetAllFeedsGroup() {
+  return CreateNewGroup(GetMessageText("backAllFeeds"), "", -8, allFeedsID);
+}
+
+// helper function for creating new feeds
+function CreateNewGroup(title, group, order, id) {
+    // managed feed doesn't have an id yet
+    if (id == null) {
+        id = GetRandomID();
+    }
+    if (order == null) {
+      if (groups.length == 0) {
+        order = 1;
+      } else {
+        order = Math.max.apply(Math, groups.map(function(o) { return o.order; })) + 1;
+      }
+      if (order < 1) {
+        order = 1;
+      }
+    }
+
+    return {title: title, group: group, order: order, id: id, items: []};
+}
+
+function UpdateGroups() {
+  groups = [];
+  if (options.showallfeeds == true) {
+    groups.push(GetAllFeedsGroup());
+  }
+  for (var i = 0; i < feeds.length; i++) {
+      if ((feeds[i].id != readLaterFeedID) && (feeds[i].id != allFeedsID) && (feeds[i].group != "")) {
+        var filteredGroup = groups.find(function (el) {
+          return el.group == feeds[i].group;
+        });
+        if (filteredGroup == null) {
+          groups.push(CreateNewGroup(feeds[i].group, feeds[i].group, null, null));
+        }
+      }
+  }
+  for (var i = 0; i < groups.length; i++) {
+    if (groups[i].id != allFeedsID) {
+      GetGroupItems(i);
+    }
+  }
+  GetGroupAllFeedsItems();
+}
+
+function GetGroupAllFeedsItems() {
+  if (options.showallfeeds == true) {
+    GetGroupItems(0);
+  }
+}
+
+function GetGroupItems(id) {
+  var filteredFeeds = feeds.filter(function (el) {
+    return (el.group == groups[id].group) && (el.id != readLaterFeedID) && (el.id != allFeedsID);
+  });
+  if (filteredFeeds != null) {
+    for (var i = 0; i < filteredFeeds.length; i++) {
+      var unreadFeedItems = GetFeedsItemsUnread(filteredFeeds[i].id);
+      for (var j = 0; j < unreadFeedItems.length; j++) {
+        groups[id].items.push(unreadFeedItems[j]);
+        if ((options.showallfeeds == true) && (id != 0)) {
+          groups[0].items.push(unreadFeedItems[j]);
+        }
+      }
+    }
+  }
+}
+
+function GetFeedsItemsUnread(id) {
+  var unreadFeedItems = [];
+  var info = feedInfo[id].items
+  for (var i = 0; i < info.length; i++) {
+    unreadFeedItems.push(GetNewItem(info[i].title, info[i].date, info[i].content, info[i].idOrigin, info[i].itemID, info[i].url, info[i].author));
+  }
+  return unreadFeedItems;
+}
+
+function GetNewItem(title, date, content, idOrigin, itemID, url, author) {
+  item = {};
+  item.title = title;
+  item.date = date;
+  item.content = content;
+  item.idOrigin = idOrigin;
+  item.itemID = itemID;
+  item.url = url;
+  item.author = author;
+  return item;
 }
