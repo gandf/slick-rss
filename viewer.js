@@ -10,14 +10,16 @@ $(document).ready(function () {
         bgPage.CheckForUnreadStart(selectedFeedKey);
     });
     $('#markFeedReadButton').click(function () {
-        MarkFeedRead(feeds[selectedFeedKey].id);
+        MarkFeedRead((selectedFeedKeyIsFeed ? feeds[selectedFeedKey].id : groups[selectedFeedKey].id));
     });
 });
 
 var bgPage = chrome.extension.getBackgroundPage();
 var options = bgPage.options;
 var feeds = bgPage.feeds;
+var groups = bgPage.groups;
 var selectedFeedKey = null;
+var selectedFeedKeyIsFeed = true;
 var feedReadToID = null;
 
 var port = chrome.extension.connect({name: "viewerPort"});
@@ -82,7 +84,7 @@ function UpdateRefreshAllProgress() {
 }
 
 function UpdateTitle() {
-    var title = "Slick RSS" + (feeds[selectedFeedKey] ? " [" + feeds[selectedFeedKey].title + "]" : "");
+    var title = "Slick RSS" + (selectedFeedKeyIsFeed ? (feeds[selectedFeedKey] ? " [" + feeds[selectedFeedKey].title + "]" : "") : (groups[selectedFeedKey] ? " [" + groups[selectedFeedKey].title + "]" : ""));
 
     if ((options.unreadtotaldisplay == 2 || options.unreadtotaldisplay == 3) && bgPage.unreadTotal > 0) {
         title += " (" + bgPage.unreadTotal + ")";
@@ -163,6 +165,7 @@ function ShowFeed(key) {
     span.setAttribute("id", "feedUnread" + feeds[key].id);
 
     $(li).click(function () {
+        selectedFeedKeyIsFeed = true;
         SelectFeed(key);
         focusFeed();
         UpdateTitle();
@@ -174,6 +177,30 @@ function ShowFeed(key) {
     document.getElementById("feedList").appendChild(li);
 
     UpdateFeedUnread(feeds[key].id);
+}
+
+function ShowGroup(key) {
+    var li = document.createElement("li");
+    var span = document.createElement("span");
+
+    li.innerText = groups[key].title;
+    li.setAttribute("id", "feedTitle" + groups[key].id);
+    li.setAttribute("feedType", "group");
+    span.setAttribute("id", "feedUnread" + groups[key].id);
+
+    $(li).click(function () {
+        selectedFeedKeyIsFeed = false;
+        SelectFeed(key);
+        focusFeed();
+        UpdateTitle();
+        return false;
+    });
+
+    li.appendChild(span);
+
+    document.getElementById("feedList").appendChild(li);
+
+    UpdateFeedUnread(groups[key].id);
 }
 
 function focusFeed() {
@@ -218,8 +245,6 @@ function UpdateReadAllIcon() {
     }
 
     document.getElementById("markFeedRead").style.display = (count > 0) ? "" : "none";
-
-
 }
 
 // marks everything but ReadLater read
