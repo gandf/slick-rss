@@ -98,11 +98,27 @@ function ShowFeeds() {
     var feedArea = null;
     var selectKey = null;
     var lastSelectedID = localStorage["lastSelectedFeedID"];
+    var lastSelectedType = localStorage["lastSelectedFeedType"];
 
     UpdateTitle();
 
+    if (options.readlaterenabled) {
+      ShowFeed(0);
+      if (selectKey == null) {
+          selectKey = 0;
+      }
+    }
+
+    for (key in groups) {
+      ShowGroup(key);
+
+      if ((groups[key].id == lastSelectedID) && (lastSelectedType == "Group")) {
+          selectKey = key;
+      }
+    }
+
     for (key in feeds) {
-        if (key == 0 && !options.readlaterenabled) {
+        if (key == 0) {
             continue;
         }
 
@@ -112,25 +128,36 @@ function ShowFeeds() {
             selectKey = key;
         }
 
-        if (feeds[key].id == lastSelectedID) {
+        if ((feeds[key].id == lastSelectedID) && (lastSelectedType == "Feed")) {
             selectKey = key;
         }
     }
 
-    if (feeds.length == 0 || (feeds.length == 1 && bgPage.feedInfo[bgPage.readLaterFeedID].items.length == 0)) {
-        if (options.feedsource == "0") {
-            document.getElementById("noFeedsManaged").style.display = "";
-        } else {
-            document.getElementById("noFeedsBookmarks").style.display = "";
+    if ((lastSelectedType == "Group") && (groups[selectKey]) == null) {
+        if (groups.length == 0) {
+            lastSelectedType = "Feed";
         }
+        selectKey = 0;
+    }
 
-        document.getElementById("headerMessage").innerText = GetMessageText("backViewerFeedMe");
-        document.getElementById("feedHeader").style.display = "none";
-        document.getElementById("feedArea").style.display = "none";
-        document.getElementById("refresh").style.display = "none";
-        document.getElementById("markFeedRead").style.display = "none";
+    if (lastSelectedType != "Group") {
+      if (feeds.length == 0 || (feeds.length == 1 && bgPage.feedInfo[bgPage.readLaterFeedID].items.length == 0)) {
+          if (options.feedsource == "0") {
+              document.getElementById("noFeedsManaged").style.display = "";
+          } else {
+              document.getElementById("noFeedsBookmarks").style.display = "";
+          }
+
+          document.getElementById("headerMessage").innerText = GetMessageText("backViewerFeedMe");
+          document.getElementById("feedHeader").style.display = "none";
+          document.getElementById("feedArea").style.display = "none";
+          document.getElementById("refresh").style.display = "none";
+          document.getElementById("markFeedRead").style.display = "none";
+      } else {
+          SelectFeed(selectKey);
+      }
     } else {
-        SelectFeed(selectKey);
+        SelectGroup(selectKey);
     }
 
     // in the middle of refresh all, show progress but wait a little so feed content pushes the feed list to the right size
@@ -190,7 +217,7 @@ function ShowGroup(key) {
 
     $(li).click(function () {
         selectedFeedKeyIsFeed = false;
-        SelectFeed(key);
+        SelectGroup(key);
         focusFeed();
         UpdateTitle();
         return false;
@@ -222,17 +249,6 @@ function UpdateFeedUnread(id) {
     } else {
         document.getElementById("feedTitle" + id).style.fontWeight = "normal";
         document.getElementById("feedUnread" + id).innerText = "";
-    }
-
-    if ((bgPage.options.showallfeeds == true) && (id < bgPage.allFeedsID)) {
-        count = bgPage.unreadInfo[bgPage.allFeedsID].unreadtotal;
-        if (count > 0) {
-            document.getElementById("feedTitle" + bgPage.allFeedsID).style.fontWeight = "bold";
-            document.getElementById("feedUnread" + bgPage.allFeedsID).innerText = " (" + count + ")";
-        } else {
-            document.getElementById("feedTitle" + bgPage.allFeedsID).style.fontWeight = "normal";
-            document.getElementById("feedUnread" + bgPage.allFeedsID).innerText = "";
-        }
     }
     FixFeedList();
 }
@@ -303,22 +319,22 @@ function MarkFeedRead(feedID) {
 function MarkItemRead(itemID) {
     var feedID = feeds[selectedFeedKey].id;
     var clearDoc = feedID
-    if (feedID == bgPage.allFeedsID) {
+    /*if (feedID == bgPage.allFeedsID) {
       var newItems = bgPage.feedInfo[feedID].items.find(function (el) {
         return el.itemID == itemID;
       });
       if (newItems.length >= 1) {
         feedID = newItems[0].idOrigin;
       }
-    }
+    }*/
 
     var className = (options.readitemdisplay == 0) ? " feedPreviewContainerRead" : " feedPreviewContainerRead feedPreviewContainerCondensed";
     var expireMs = new Date().getTime() + 5184000000; // 2 months;
 
     var isRead = MarkItemRead_ReadItems(feedID, itemID, clearDoc == feedID, expireMs, className); //******
-    if (bgPage.options.showallfeeds == true) {
+    /*if (bgPage.options.showallfeeds == true) {
       isRead = MarkItemRead_ReadItems(bgPage.allFeedsID, itemID, clearDoc == bgPage.allFeedsID, expireMs, className) || isRead;
-    }
+    }*/
     if (isRead == true) {
         localStorage["unreadinfo"] = JSON.stringify(bgPage.unreadInfo);
 
@@ -345,14 +361,14 @@ function MarkItemUnread(itemID) {
     var feedID = feeds[selectedFeedKey].id;
     var className = (options.readitemdisplay == 0) ? " feedPreviewContainerRead" : " feedPreviewContainerRead feedPreviewContainerCondensed";
 
-    if (feedID == bgPage.allFeedsID) {
+    /*if (feedID == bgPage.allFeedsID) {
       var newItems = bgPage.feedInfo[feedID].items.find(function (el) {
         return el.itemID == itemID;
       });
       if (newItems.length >= 1) {
         feedID = newItems[0].idOrigin;
       }
-    }
+    }*/
 
     if (bgPage.unreadInfo[feedID].readitems[itemID] != null) {
         delete bgPage.unreadInfo[feedID].readitems[itemID];
@@ -362,7 +378,7 @@ function MarkItemUnread(itemID) {
 
         bgPage.unreadInfo[feedID].unreadtotal++;
 
-        if (bgPage.options.showallfeeds == true) {
+        /*if (bgPage.options.showallfeeds == true) {
           if (bgPage.unreadInfo[bgPage.allFeedsID].readitems[itemID] != null) {
               delete bgPage.unreadInfo[bgPage.allFeedsID].readitems[itemID];
               if (bgPage.allFeedsID == selectedFeedKey) {
@@ -370,7 +386,7 @@ function MarkItemUnread(itemID) {
               }
               bgPage.unreadInfo[bgPage.allFeedsID].unreadtotal++;
           }
-        }
+        }*/
 
         UnMarkItemReadLaterWithoutSelectFeed(findWithAttr(bgPage.feedInfo[bgPage.readLaterFeedID].items, 'itemID', itemID));
 
@@ -378,9 +394,9 @@ function MarkItemUnread(itemID) {
 
         UpdateFeedUnread(bgPage.readLaterFeedID);
         UpdateFeedUnread(feedID);
-        if (bgPage.options.showallfeeds == true) {
+        /*if (bgPage.options.showallfeeds == true) {
             UpdateFeedUnread(bgPage.allFeedsID);
-        }
+        }*/
         UpdateReadAllIcon();
         bgPage.UpdateUnreadBadge();
     }
@@ -418,17 +434,35 @@ function UnMarkItemReadLaterWithoutSelectFeed(itemIndex) {
 }
 
 function SelectFeed(key) {
-    localStorage["lastSelectedFeedID"] = bgPage.feeds[key].id;
+    SelectFeedOrGroup(key, "Feed");
+}
+
+function SelectGroup(key) {
+    SelectFeedOrGroup(key, "Group");
+}
+
+function SelectFeedOrGroup(key, type) {
+    var feedsOrGroups, feedsOrGroupsInfo;
+    if (type = "Feed") {
+      localStorage["lastSelectedFeedID"] = bgPage.feeds[key].id;
+      feedsOrGroups = feeds;
+      feedsOrGroupsInfo = bgPage.feedInfo;
+    } else {
+      localStorage["lastSelectedFeedID"] = bgPage.groups[key].id;
+      feedsOrGroups = groups;
+      feedsOrGroupsInfo = bgPage.groupInfo;
+    }
+    localStorage["lastSelectedFeedType"] = type;
 
     document.getElementById("feedPreviewScroller").scrollTop = 0;
 
     clearTimeout(feedReadToID);
 
     if (selectedFeedKey != null) {
-        document.getElementById("feedTitle" + feeds[selectedFeedKey].id).setAttribute("class", "");
+        document.getElementById("feedTitle" + feedsOrGroups[selectedFeedKey].id).setAttribute("class", "");
     }
 
-    document.getElementById("feedTitle" + feeds[key].id).setAttribute("class", "selectedFeed");
+    document.getElementById("feedTitle" + feedsOrGroups[key].id).setAttribute("class", "selectedFeed");
 
     selectedFeedKey = key;
     UpdateTitle();
@@ -444,30 +478,29 @@ function SelectFeed(key) {
     document.getElementById("markFeedRead").style.display = "none";
     document.getElementById("header").className = "";
     document.getElementById("feedError").style.display = "none";
-    document.getElementById("refresh").style.display = (feeds[selectedFeedKey].id != bgPage.readLaterFeedID) ? "" : "none";
+    document.getElementById("refresh").style.display = (feedsOrGroups[selectedFeedKey].id != bgPage.readLaterFeedID) ? "" : "none";
     document.getElementById("noItems").style.display = "none";
 
     // feed isn't ready yet
-    if (bgPage.feedInfo[feeds[key].id] == null || bgPage.feedInfo[feeds[key].id].loading) {
+    if (feedsOrGroupsInfo[feedsOrGroups[key].id] == null || feedsOrGroupsInfo[feedsOrGroups[key].id].loading) {
         document.getElementById("headerMessage").innerText = GetMessageText("backViewerLoadingFeed");
         document.getElementById("header").className = "loading";
         document.getElementById("refresh").style.display = "none";
 
         // must be a new feed with no content yet
-        if (bgPage.feedInfo[feeds[key].id] == null && !bgPage.checkingForUnread) {
+        if (feedsOrGroupsInfo[feedsOrGroups[key].id] == null && !bgPage.checkingForUnread) {
             bgPage.CheckForUnreadStart(key);
         }
-
         return;
     }
 
     // feed loaded, but had an error
-    if (bgPage.feedInfo[feeds[key].id].error != "") {
-        ShowFeedError(bgPage.feedInfo[feeds[key].id].error);
+    if (feedsOrGroupsInfo[feeds[key].id].error != "") {
+        ShowFeedError(feedsOrGroupsInfo[feedsOrGroups[key].id].error);
         return;
     }
 
-    document.getElementById("noItems").style.display = (bgPage.feedInfo[feeds[key].id].items.length == 0) ? "" : "none";
+    document.getElementById("noItems").style.display = (feedsOrGroupsInfo[feedsOrGroups[key].id].items.length == 0) ? "" : "none";
 
     RenderFeed();
     UpdateReadAllIcon();
@@ -475,10 +508,9 @@ function SelectFeed(key) {
 
     if (options.markreadafter > 0 && key != 0) {
         feedReadToID = setTimeout(function () {
-            MarkFeedRead(feeds[key].id)
+            MarkFeedRead(feedsOrGroups[key].id)
         }, options.markreadafter * 1000);
     }
-
 }
 
 function RenderFeed() {

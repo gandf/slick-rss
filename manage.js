@@ -201,7 +201,7 @@ function Save()
     for(feedKey in feeds)
     {
         // skip read later feed
-        if ((feedKey == 0) || (feeds[feedKey].id == bgPage.allFeedsID))
+        if (feedKey == 0)
         {
             continue;
         }
@@ -231,11 +231,6 @@ function Save()
     // delete feeds that are marked, start from end so indexes don't get screwed up
     for(i = feeds.length - 1;i > 0;i--)
     {
-			if (feeds[i].id == bgPage.allFeedsID)
-			{
-				feeds.splice(i,1);
-				continue;
-			}
         row = document.getElementById(i);
 
         if(row.className == "markDelete")
@@ -267,7 +262,7 @@ function ShowFeeds()
     for(feedKey in feeds)
     {
         // skip read later feed
-				if (feeds[feedKey].id < bgPage.allFeedsID)
+				if (feeds[feedKey].id == bgPage.readLaterFeedID)
 				{
 					AddRow(feedKey);
 	        itemOrder = parseInt(feeds[feedKey].order);

@@ -63,7 +63,7 @@ function ImportBookmarks(startNode)
 
 //remove ReadLater
 function filterByID(obj) {
-  if ((obj.id != bgPage.readLaterFeedID) && (obj.id != bgPage.allFeedsID)) {
+  if (obj.id != bgPage.readLaterFeedID) {
     return true;
   } else {
     return false;

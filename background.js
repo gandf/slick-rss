@@ -165,9 +165,6 @@ function GetFeeds(callBack) {
             });
         }
 
-        if (options.showallfeeds == true) {
-            feeds.unshift(GetAllFeeds());
-        }
         feeds.unshift(GetReadLaterFeed());
         getFeedsCallBack();
     } else {
@@ -179,19 +176,10 @@ function GetReadLaterFeed() {
     return CreateNewFeed(GetMessageText("backReadLater"), chrome.extension.getURL("readlater.html"), "", 99999, -9, readLaterFeedID);
 }
 
-function GetAllFeeds() {
-    if (options.showallfeeds == true) {
-        return CreateNewFeed(GetMessageText("backAllFeeds"), chrome.extension.getURL("readlater.html"), "", 99999, -8, allFeedsID);
-    }
-}
-
 // fills feeds with bookmark items, for now it's not recursive
 function GetFeedFolderChildren(nodeChildren) {
     feeds = [];
     feeds.push(GetReadLaterFeed());
-    if (options.showallfeeds == true) {
-        feeds.push(GetAllFeeds());
-    }
 
     for (var i = 0; i < nodeChildren.length; i++) {
         if (nodeChildren[i].url != "") {
@@ -312,9 +300,7 @@ function UpdateUnreadBadge() {
     var str = "";
 
     for (var key in unreadInfo) {
-        if (key != allFeedsID) {
-            total = total + unreadInfo[key].unreadtotal;
-        }
+        total = total + unreadInfo[key].unreadtotal;
     }
 
     if (!options.readlaterincludetotal && unreadInfo[readLaterFeedID] != null) {
@@ -375,15 +361,12 @@ function CheckForUnreadStart(key) {
     }
 
     CheckForUnread();
-    if ((options.showallfeeds == true) && (feedInfo[allFeedsID] != null)) {
-        feedInfo[allFeedsID].loading = false;
-    }
 }
 
 // goes through each feed and gets how many you haven't read since last time you were there
 function CheckForUnread() {
     var feedID = feeds[checkForUnreadCounter].id;
-    if (options.showallfeeds == true && allFeedsUnreadCounter < 0) {
+    /*if (options.showallfeeds == true && allFeedsUnreadCounter < 0) {
         for (var i = 0; i < feeds.length; i++) {
             if (feeds[i].id == allFeedsID) {
                 if (allFeedsUnreadCounter == -2) {
@@ -393,7 +376,7 @@ function CheckForUnread() {
                 break;
             }
         }
-    }
+    }*/
 
     /*if (feedID == allFeedsID){
         checkForUnreadCounter++;
@@ -407,14 +390,7 @@ function CheckForUnread() {
     var toID = setTimeout(req.abort, 60000);
     var now = new Date();
 
-    if (feedID != allFeedsID) {
-      feedInfo[feedID] = {title: "", description: "", group: "", loading: true, items: [], error: ""};
-    }
-    if (options.showallfeeds == true) {
-        if (feedInfo[allFeedsID] == null) {
-          feedInfo[allFeedsID] = {title: GetMessageText("backAllFeeds"), description: GetMessageText("backAllFeedsShow"), group: "", loading: true, items: [], error: ""};
-        }
-    }
+    feedInfo[feedID] = {title: "", description: "", group: "", loading: true, items: [], error: ""};
 
     if (viewerPort != null) {
         viewerPort.postMessage({type: "feedupdatestarted", id: feedID});
@@ -431,11 +407,6 @@ function CheckForUnread() {
                 // initialize unread object if not setup yet
                 if (unreadInfo[feedID] == null) {
                     unreadInfo[feedID] = {unreadtotal: 0, readitems: {}};
-                }
-                if (options.showallfeeds == true) {
-                    if (unreadInfo[allFeedsID] == null) {
-                        unreadInfo[allFeedsID] = {unreadtotal: 0, readitems: {}};
-                    }
                 }
 
                 unreadInfo[feedID].unreadtotal = 0;
@@ -501,9 +472,6 @@ function CheckForUnread() {
                             }
 
                             feedInfo[feedID].items.push(item);
-                            if ((options.showallfeeds == true) && (e <= feeds[allFeedsUnreadCounter].maxitems)) {
-                                feedInfo[allFeedsID].items.push(item);
-                            }
                             entryIDs[sha256(item.title + item.date)] = 1;
                         }
 
@@ -520,31 +488,12 @@ function CheckForUnread() {
                         }
 
                         unreadInfo[feedID].unreadtotal = entries.length - readItemCount;
-
-                        if (options.showallfeeds == true) {
-                          readItemCount = 0;
-                          for (var key in unreadInfo[allFeedsID].readitems) {
-                              if (entryIDs[key] == null) {
-                                  // if the read item isn't in the current feed and it's past it's expiration date, nuke it
-                                  if (now > new Date(unreadInfo[allFeedsID].readitems[key])) {
-                                      delete unreadInfo[allFeedsID].readitems[key];
-                                  }
-                              } else {
-                                  readItemCount++;
-                              }
-                             unreadInfo[allFeedsID].unreadtotal = feedInfo[allFeedsID].items.length - readItemCount;
-                          }
-                        }
                     } else {
                         feedInfo[feedID].error = GetMessageText("backErrorXML");
                     }
                 } else {
                     if (feedID != readLaterFeedID) {
-                        if (feedID != allFeedsID) {
-                            feedInfo[feedID].error = GetMessageText("backError200Part1") + req.status + GetMessageText("backError200Part2") + req.statusText + GetMessageText("backError200Part3");
-                        } else {
-                            //All Feeds
-                        }
+                        feedInfo[feedID].error = GetMessageText("backError200Part1") + req.status + GetMessageText("backError200Part2") + req.statusText + GetMessageText("backError200Part3");
                     } else {
                         // cheat the system, fill in read later info
                         feedInfo[feedID] = GetReadLaterItems();
@@ -568,9 +517,7 @@ function CheckForUnread() {
                 req = null;
                 doc = null;
 
-                if (feedID != allFeedsID) {
-                  feedInfo[feedID].loading = false;
-                }
+                feedInfo[feedID].loading = false;
 
                 if (checkForUnreadCounter >= feeds.length || refreshFeed) {
                     CheckForUnreadComplete();
@@ -726,7 +673,7 @@ function UpdateGroups() {
     groups.push(GetAllFeedsGroup());
   }
   for (var i = 0; i < feeds.length; i++) {
-      if ((feeds[i].id != readLaterFeedID) && (feeds[i].id != allFeedsID) && (feeds[i].group != "")) {
+      if ((feeds[i].id != readLaterFeedID) && (feeds[i].group != "")) {
         var filteredGroup = groups.find(function (el) {
           return el.group == feeds[i].group;
         });
@@ -751,7 +698,7 @@ function GetGroupAllFeedsItems() {
 
 function GetGroupItems(id) {
   var filteredFeeds = feeds.filter(function (el) {
-    return (el.group == groups[id].group) && (el.id != readLaterFeedID) && (el.id != allFeedsID);
+    return (el.group == groups[id].group) && (el.id != readLaterFeedID);
   });
   if (filteredFeeds != null) {
     for (var i = 0; i < filteredFeeds.length; i++) {
