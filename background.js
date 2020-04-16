@@ -4,8 +4,8 @@ var unreadInfo = GetUnreadCounts();
 var unreadTotal = 0;
 var feedInfo = [];
 var feeds = [];
-var groups = [];
 var groupInfo = [];
+var groups = [];
 var viewerPort = null;
 var checkingForUnread = false;
 var checkForUnreadTimerID = null;
@@ -663,12 +663,15 @@ function CreateNewGroup(title, group, order, id) {
         order = 1;
       }
     }
+    url = chrome.extension.getURL("group.html");
+    maxitems = 99999;
 
-    return {title: title, group: group, order: order, id: id, items: []};
+    return {title: title, url: url, group: group, maxitems: maxitems, order: order, id: id, items: []};
 }
 
 function UpdateGroups() {
   groups = [];
+  groupInfo = [];
   if (options.showallfeeds == true) {
     groups.push(GetAllFeedsGroup());
   }
@@ -684,7 +687,7 @@ function UpdateGroups() {
   }
   for (var i = 0; i < groups.length; i++) {
     if (groups[i].id != allFeedsID) {
-      GetGroupItems(i);
+      GetGroupItems(i, groups[i].id);
     }
   }
   GetGroupAllFeedsItems();
@@ -692,34 +695,37 @@ function UpdateGroups() {
 
 function GetGroupAllFeedsItems() {
   if (options.showallfeeds == true) {
-    GetGroupItems(0);
+    GetGroupItems(0, allFeedsID);
   }
 }
 
-function GetGroupItems(id) {
+function GetGroupItems(groupIndex, id) {
+  var info, item;
   var filteredFeeds = feeds.filter(function (el) {
-    return (el.group == groups[id].group) && (el.id != readLaterFeedID);
+    return (el.group == groups[groupIndex].group) && (el.id != readLaterFeedID);
   });
   if (filteredFeeds != null) {
+    if (groupInfo[id] == null) {
+      groupInfo[id] = {title: "", description: "", group: "", loading: true, items: [], error: ""};
+    }
+    if ((options.showallfeeds == true) && (id != allFeedsID)) {
+      if (groupInfo[allFeedsID] == null) {
+        groupInfo[allFeedsID] = {title: "", description: "", group: "", loading: true, items: [], error: ""};
+      }
+    }
     for (var i = 0; i < filteredFeeds.length; i++) {
-      var unreadFeedItems = GetFeedsItemsUnread(filteredFeeds[i].id);
-      for (var j = 0; j < unreadFeedItems.length; j++) {
-        groups[id].items.push(unreadFeedItems[j]);
-        if ((options.showallfeeds == true) && (id != 0)) {
-          groups[0].items.push(unreadFeedItems[j]);
-        }
+      info = feedInfo[filteredFeeds[i].id].items;
+      for (var j = 0; j < info.length; j++) {
+        //if (unreadInfo[filteredFeeds[i].id].readitems[info[j].itemID] == null) {
+          item = GetNewItem(info[j].title, info[j].date, info[j].content, info[j].idOrigin, info[j].itemID, info[j].url, info[j].author);
+          groupInfo[id].items.push(item);
+          if ((options.showallfeeds == true) && (id != allFeedsID)) {
+            groupInfo[allFeedsID].items.push(item);
+          }
+        //}
       }
     }
   }
-}
-
-function GetFeedsItemsUnread(id) {
-  var unreadFeedItems = [];
-  var info = feedInfo[id].items
-  for (var i = 0; i < info.length; i++) {
-    unreadFeedItems.push(GetNewItem(info[i].title, info[i].date, info[i].content, info[i].idOrigin, info[i].itemID, info[i].url, info[i].author));
-  }
-  return unreadFeedItems;
 }
 
 function GetNewItem(title, date, content, idOrigin, itemID, url, author) {
@@ -732,4 +738,37 @@ function GetNewItem(title, date, content, idOrigin, itemID, url, author) {
   item.url = url;
   item.author = author;
   return item;
+}
+
+function GetGroupKeyByID(id) {
+    if (groups == null) {
+      return null;
+    }
+    for (var i = 0; i < groups.length; i++) {
+      if (groups[i].id = id) {
+        return i;
+      }
+    }
+}
+
+function CalcGroupCountUnread(key) {
+    var filteredFeeds = GetFeedsFilterByGroup(key);
+    var count = 0;
+    for (var i = 0; i < filteredFeeds.length; i++) {
+      count += unreadInfo[filteredFeeds[i].id].unreadtotal;
+    }
+    return count;
+}
+
+function GetFeedsFilterByGroup(key) {
+    var filteredFeeds = [];
+    if (groups[key].id == allFeedsID) {
+      filteredFeeds = feeds;
+    } else {
+      filteredFeeds = feeds.filter(function (el) {
+        return (el.group == groups[key].group) && (el.id != readLaterFeedID);
+      });
+    }
+
+    return filteredFeeds;
 }

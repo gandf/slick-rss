@@ -262,7 +262,7 @@ function ShowFeeds()
     for(feedKey in feeds)
     {
         // skip read later feed
-				if (feeds[feedKey].id == bgPage.readLaterFeedID)
+				if (feeds[feedKey].id != bgPage.readLaterFeedID)
 				{
 					AddRow(feedKey);
 	        itemOrder = parseInt(feeds[feedKey].order);
