@@ -772,3 +772,24 @@ function GetFeedsFilterByGroup(key) {
 
     return filteredFeeds;
 }
+
+function ItemIsRead(feedID, itemID) {
+  var currentFeed = feeds.find(function (el) {
+    return (el.id == feedID);
+  });
+  if (currentFeed != null) {
+      return (unreadInfo[currentFeed.id].readitems[itemID] != null);
+  }
+  return false;
+}
+
+function GetFeedInfoItem(feedID, itemIndex) {
+    var feedGroupInfo = feedInfo[feedID];
+    if (feedGroupInfo == null) {
+      feedGroupInfo = feedInfo[groupInfo[feedID].items[itemIndex].idOrigin].items.find(function (el) {
+        return (el.itemID == groupInfo[feedID].items[itemIndex].itemID);
+      });
+      return feedGroupInfo;
+    }
+    return feedGroupInfo.items[itemIndex];
+}
