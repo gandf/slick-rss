@@ -229,7 +229,7 @@ function SortByDate(items) {
     if (items == null) {
       return items;
     }
-    if (items.length > 0) {
+    if (items.length == 0) {
       return items;
     }
     return items.sort(function(a, b) {

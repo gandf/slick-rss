@@ -82,6 +82,7 @@ function ExternalRequest(request, sender, sendResponse) {
 
             feeds.push(CreateNewFeed(request.title, request.url, request.group, options.maxitems, maxOrder));
             localStorage["feeds"] = JSON.stringify(feeds);
+            UpdateGroups();
             ReloadViewer();
         }
 
@@ -96,6 +97,7 @@ function ExternalRequest(request, sender, sendResponse) {
                 } else {
                     feeds.splice(i, 1);
                     localStorage["feeds"] = JSON.stringify(feeds);
+                    UpdateGroups();
                     ReloadViewer();
                 }
             }
@@ -167,6 +169,7 @@ function GetFeeds(callBack) {
         }
 
         feeds.unshift(GetReadLaterFeed());
+        UpdateGroups();
         getFeedsCallBack();
     } else {
         chrome.bookmarks.getChildren(options.feedfolderid, GetFeedFolderChildren);
@@ -185,6 +188,7 @@ function GetFeedFolderChildren(nodeChildren) {
     for (var i = 0; i < nodeChildren.length; i++) {
         if (nodeChildren[i].url != "") {
             feeds.push(CreateNewFeed(nodeChildren[i].title, nodeChildren[i].url, nodeChildren[i].group, options.maxitems, i, nodeChildren[i].id));
+            UpdateGroups();
         }
     }
 
@@ -704,15 +708,15 @@ function GetGroupItems(groupIndex, id) {
       }
     }
     for (var i = 0; i < filteredFeeds.length; i++) {
-      info = feedInfo[filteredFeeds[i].id].items;
-      for (var j = 0; j < info.length; j++) {
-        //if (unreadInfo[filteredFeeds[i].id].readitems[info[j].itemID] == null) {
+      if (feedInfo[filteredFeeds[i].id] != null) {
+        info = feedInfo[filteredFeeds[i].id].items;
+        for (var j = 0; j < info.length; j++) {
           item = GetNewItem(info[j].title, info[j].date, info[j].order, info[j].content, info[j].idOrigin, info[j].itemID, info[j].url, info[j].author);
           groupInfo[id].items.push(item);
           if ((options.showallfeeds == true) && (id != allFeedsID)) {
             groupInfo[allFeedsID].items.push(item);
           }
-        //}
+        }
       }
     }
   }

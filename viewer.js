@@ -444,7 +444,7 @@ function MarkItemUnread(itemID) {
         delete bgPage.unreadInfo[feedID].readitems[itemID];
         if (selectedFeedKeyIsFeed) {
           element = document.getElementById("item_" + feedID + "_" + itemID);
-          if (element != null) { //*****
+          if (element != null) {
               element.className = element.className.replace(className, "");
           }
         } else {
@@ -589,12 +589,13 @@ function SelectFeedOrGroup(key, type) {
     }
 
     // feed loaded, but had an error
-    if (feedsOrGroupsInfo[feedsOrGroups[key].id].error != "") {
-        ShowFeedError(feedsOrGroupsInfo[feedsOrGroups[key].id].error);
-        return;
+    if (feedsOrGroupsInfo[feedsOrGroups[key].id] != null) {
+      if (feedsOrGroupsInfo[feedsOrGroups[key].id].error != "") {
+          ShowFeedError(feedsOrGroupsInfo[feedsOrGroups[key].id].error);
+          return;
+      }
+      document.getElementById("noItems").style.display = (feedsOrGroupsInfo[feedsOrGroups[key].id].items.length == 0) ? "" : "none";
     }
-
-    document.getElementById("noItems").style.display = (feedsOrGroupsInfo[feedsOrGroups[key].id].items.length == 0) ? "" : "none";
 
     RenderFeed(type);
     UpdateReadAllIcon(type);
@@ -633,6 +634,10 @@ function RenderFeed(type) {
     var colWidth = null;
     var feedTd = null;
     var href = "";
+
+    if (feedsOrGroupsInfo[feedID] == null) {
+      return;
+    }
 
     document.getElementById("headerMessage").innerText = feedsOrGroupsInfo[feedID].title;
 
