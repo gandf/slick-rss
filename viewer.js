@@ -644,7 +644,7 @@ function RenderFeed(type) {
         document.getElementById("headerMessage").innerHTML += "<span> - " + feedsOrGroupsInfo[feedID].description + "</span>";
     }
 
-    switch (bgPage.options.columns) {
+    switch (parseInt(bgPage.options.columns)) {
         case 1:
             colWidth = "100%";
             break;
@@ -657,6 +657,8 @@ function RenderFeed(type) {
         case 4:
             colWidth = "25%";
             break;
+        default :
+        colWidth = "100%";
     }
     var feedBaseUrl = (new URL(feedsOrGroups[selectedFeedKey].url)).origin;
 
@@ -762,7 +764,7 @@ function RenderFeed(type) {
         feedContainer = document.createElement("div");
         feedContainer.setAttribute("id", "item_" + feedID + "_" + itemID);
 
-        if (bgPage.ItemIsRead(feedsOrGroupsInfo[feedID].items[i].idOrigin, itemID)) {
+        if (bgPage.ItemIsRead((feedID != bgPage.readLaterFeedID) ? feedsOrGroupsInfo[feedID].items[i].idOrigin : bgPage.readLaterFeedID, itemID)) {
             if (bgPage.options.readitemdisplay == 0) {
                 feedContainer.setAttribute("class", "feedPreviewContainer feedPreviewContainerRead");
             } else {
