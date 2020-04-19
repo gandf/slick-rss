@@ -249,10 +249,10 @@
     "message": "Dans la barre d'outils"
   },
   "optionOnTab": {
-    "message": "Dans l'onglet"
+    "message": "Dans la liste des flux"
   },
   "optionOnToolbarAndTab": {
-    "message": "Dans la barre d'outils et l'onglet"
+    "message": "Dans la barre d'outils et la liste des flux"
   },
   "optionShowTotlaFeedList": {
     "message": "Afficher totaux dans la liste de flux"
