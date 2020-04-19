@@ -275,5 +275,5 @@ function ShowFeeds()
     }
 
     document.getElementById("newOrder").value = maxOrder + 1;
-    document.getElementById("newMaxItems").value = options.maxitems;
+    document.getElementById("newMaxItems").value = bgPage.options.maxitems;
 }

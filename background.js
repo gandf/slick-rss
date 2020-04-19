@@ -660,6 +660,8 @@ function CreateNewGroup(title, group, order, id) {
 }
 
 function UpdateGroups() {
+  var oldgroups = groups;
+  var oldgroupindex;
   groups = [];
   groupInfo = [];
   if (options.showallfeeds == true) {
@@ -671,7 +673,12 @@ function UpdateGroups() {
           return el.group == feeds[i].group;
         });
         if (filteredGroup == null) {
-          groups.push(CreateNewGroup(feeds[i].group, feeds[i].group, null, null));
+          oldgroupindex = findWithAttr(oldgroups, 'group', feeds[i].group);
+          if (oldgroupindex == -1) {
+            groups.push(CreateNewGroup(feeds[i].group, feeds[i].group, null, null));
+          } else {
+            groups.push(oldgroups[oldgroupindex]);
+          }
         }
       }
   }
