@@ -271,7 +271,7 @@ function UpdateFeedUnread(id) {
 function UpdateGroupUnread(key) {
     var id = groups[key].id;
 
-    if (bgPage.unreadInfo[id] == null || !options.unreaditemtotaldisplay) {
+    if (!options.unreaditemtotaldisplay) {
         return;
     }
 
