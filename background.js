@@ -738,7 +738,7 @@ function GetGroupKeyByID(id) {
       return null;
     }
     for (var i = 0; i < groups.length; i++) {
-      if (groups[i].id = id) {
+      if (groups[i].id == id) {
         return i;
       }
     }
@@ -748,7 +748,9 @@ function CalcGroupCountUnread(key) {
     var filteredFeeds = GetFeedsFilterByGroup(key);
     var count = 0;
     for (var i = 0; i < filteredFeeds.length; i++) {
-      count += unreadInfo[filteredFeeds[i].id].unreadtotal;
+      if (unreadInfo[filteredFeeds[i].id] != null) {
+        count += unreadInfo[filteredFeeds[i].id].unreadtotal;
+      }
     }
     return count;
 }

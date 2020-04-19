@@ -344,46 +344,89 @@ function MarkFeedRead(feedID) {
     var itemID = null;
     var className = (bgPage.options.readitemdisplay == 0) ? " feedPreviewContainerRead" : " feedPreviewContainerRead feedPreviewContainerCondensed";
     var expireMs = new Date().getTime() + 5184000000; // 2 months;
+    var groupKey = null;
 
-    if (bgPage.unreadInfo[feedID].unreadtotal == 0) {
-        return;
-    }
+    if (selectedFeedKeyIsFeed) {
+      if (bgPage.unreadInfo[feedID].unreadtotal == 0) {
+          return;
+      }
 
-    bgPage.unreadInfo[feedID].unreadtotal = 0;
+      bgPage.unreadInfo[feedID].unreadtotal = 0;
 
-    // for read later feeds, nuke the items instead of mark read
-    if (feedID == bgPage.readLaterFeedID) {
-        bgPage.feedInfo[bgPage.readLaterFeedID].items = [];
-        localStorage["readlater"] = JSON.stringify(bgPage.feedInfo[bgPage.readLaterFeedID]);
-        SelectFeed(0);
+      // for read later feeds, nuke the items instead of mark read
+      if (feedID == bgPage.readLaterFeedID) {
+          bgPage.feedInfo[bgPage.readLaterFeedID].items = [];
+          localStorage["readlater"] = JSON.stringify(bgPage.feedInfo[bgPage.readLaterFeedID]);
+          SelectFeed(0);
+      } else {
+          for (var i = 0; i < bgPage.feedInfo[feedID].items.length; i++) {
+              itemID = sha256(bgPage.feedInfo[feedID].items[i].title + bgPage.feedInfo[feedID].items[i].date);
+              bgPage.unreadInfo[feedID].readitems[itemID] = expireMs;
+              container = document.getElementById("item_" + feedID + "_" + itemID);
+
+              if (container != null) {
+                  container.className = container.className + className;
+              }
+          }
+      }
+
+      localStorage["unreadinfo"] = JSON.stringify(bgPage.unreadInfo);
+
+      UpdateFeedUnread(feedID);
+      UpdateReadAllIcon("Feed");
+      bgPage.UpdateUnreadBadge();
     } else {
-        for (var i = 0; i < bgPage.feedInfo[feedID].items.length; i++) {
-            itemID = sha256(bgPage.feedInfo[feedID].items[i].title + bgPage.feedInfo[feedID].items[i].date);
-            bgPage.unreadInfo[feedID].readitems[itemID] = expireMs;
-            container = document.getElementById("item_" + feedID + "_" + itemID);
+      groupKey = bgPage.GetGroupKeyByID(feedID);
+      if (groupKey != null) {
+        if (groups[groupKey] != null) {
+          var feedFilteredList = [];
+          if (groups[groupKey].id != bgPage.allFeedsID) {
+            feedFilteredList = bgPage.GetFeedsFilterByGroup(groupKey);
+          } else {
+            feedFilteredList = feeds.filter(function (el) {
+              return (el.id != bgPage.readLaterFeedID);
+            });
+          }
+          if (feedFilteredList.length > 0) {
+            feedFilteredList.forEach((item) => {
+              MarkFeedReadFromGroup(item.id);
+            });
 
-            if (container != null) {
-                container.className = container.className + className;
-            }
+            UpdateReadAllIcon("Group");
+            bgPage.UpdateUnreadBadge();
+          }
         }
-    }
-
-    localStorage["unreadinfo"] = JSON.stringify(bgPage.unreadInfo);
-
-    UpdateFeedUnread(feedID);
-    UpdateReadAllIcon("Feed");
-    bgPage.UpdateUnreadBadge();
-}
-
-function MarkGroupRead(groupID) {
-    var key = bgPage.GetGroupKeyByID(groupID);
-
-    if (key != null) {
-      var filteredFeeds = bgPage.GetFeedsFilterByGroup(key);
-      for (var i = 0; i < filteredFeeds.length; i++) {
-        MarkFeedRead(filteredFeeds[i].id);
       }
     }
+}
+
+// marks a feed read from group.
+function MarkFeedReadFromGroup(feedID) {
+    var container = null;
+    var itemID = null;
+    var className = (bgPage.options.readitemdisplay == 0) ? " feedPreviewContainerRead" : " feedPreviewContainerRead feedPreviewContainerCondensed";
+    var expireMs = new Date().getTime() + 5184000000; // 2 months;
+    var groupKey = null;
+
+      if (bgPage.unreadInfo[feedID].unreadtotal == 0) {
+          return;
+      }
+
+      bgPage.unreadInfo[feedID].unreadtotal = 0;
+
+      for (var i = 0; i < bgPage.feedInfo[feedID].items.length; i++) {
+          itemID = sha256(bgPage.feedInfo[feedID].items[i].title + bgPage.feedInfo[feedID].items[i].date);
+          bgPage.unreadInfo[feedID].readitems[itemID] = expireMs;
+          container = document.getElementById("item_" + feedID + "_" + itemID);
+
+          if (container != null) {
+              container.className = container.className + className;
+          }
+      }
+
+      localStorage["unreadinfo"] = JSON.stringify(bgPage.unreadInfo);
+
+      UpdateFeedUnread(feedID);
 }
 
 function MarkItemRead(itemID) {
