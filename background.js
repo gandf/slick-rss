@@ -756,7 +756,9 @@ function CalcGroupCountUnread(key) {
 function GetFeedsFilterByGroup(key) {
     var filteredFeeds = [];
     if (groups[key].id == allFeedsID) {
-      filteredFeeds = feeds;
+      filteredFeeds = feeds.filter(function (el) {
+        return (el.id != readLaterFeedID);
+      });
     } else {
       filteredFeeds = feeds.filter(function (el) {
         return (el.group == groups[key].group) && (el.id != readLaterFeedID);

@@ -241,6 +241,7 @@ function ShowGroup(key) {
     document.getElementById("feedList").appendChild(li);
 
     UpdateGroupUnread(key);
+    FixFeedList();
 }
 
 function focusFeed() {
@@ -263,11 +264,30 @@ function UpdateFeedUnread(id) {
         document.getElementById("feedTitle" + id).style.fontWeight = "normal";
         document.getElementById("feedUnread" + id).innerText = "";
     }
+    if (bgPage.options.showallfeeds) {
+      UpdateGroupUnread(0);
+    }
+    var currentFeed = bgPage.feeds.find(function (el) {
+      return (el.id == id);
+    });
+    if (currentFeed != null) {
+        if (currentFeed.group != "") {
+          for (var i = 1; i < bgPage.groups.length; i++) {
+            if (bgPage.groups[i].group == currentFeed.group) {
+              UpdateGroupUnread(i);
+              break;
+            }
+          }
+        }
+    }
     FixFeedList();
 }
 
 // updates a group item's unread count
 function UpdateGroupUnread(key) {
+    if (groups[key] == null) {
+      return;
+    }
     var id = groups[key].id;
 
     if (!bgPage.options.unreaditemtotaldisplay) {
@@ -276,14 +296,15 @@ function UpdateGroupUnread(key) {
 
     var count = bgPage.CalcGroupCountUnread(key);
 
-    if (count > 0) {
-        document.getElementById("feedTitle" + id).style.fontWeight = "bold";
-        document.getElementById("feedUnread" + id).innerText = " (" + count + ")";
-    } else {
-        document.getElementById("feedTitle" + id).style.fontWeight = "normal";
-        document.getElementById("feedUnread" + id).innerText = "";
+    if (document.getElementById("feedTitle" + id) != null) {
+      if (count > 0) {
+            document.getElementById("feedTitle" + id).style.fontWeight = "bold";
+            document.getElementById("feedUnread" + id).innerText = " (" + count + ")";
+      } else {
+          document.getElementById("feedTitle" + id).style.fontWeight = "normal";
+          document.getElementById("feedUnread" + id).innerText = "";
+      }
     }
-    FixFeedList();
 }
 
 function UpdateReadAllIcon(type) {
