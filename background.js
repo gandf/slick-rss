@@ -16,6 +16,7 @@ var refreshFeed = false;
 var readLaterFeedID = 9999999999;
 var allFeedsID = 9999999998;
 var viewPortTabID = null;
+var referenceDate = GetDate("Thu, 31 Dec 2019 23:59:59 +0000").getTime();
 
 chrome.browserAction.onClicked.addListener(ButtonClicked);
 chrome.runtime.onMessageExternal.addListener(ExternalRequest);
@@ -366,26 +367,6 @@ function CheckForUnreadStart(key) {
 // goes through each feed and gets how many you haven't read since last time you were there
 function CheckForUnread() {
     var feedID = feeds[checkForUnreadCounter].id;
-    /*if (options.showallfeeds == true && allFeedsUnreadCounter < 0) {
-        for (var i = 0; i < feeds.length; i++) {
-            if (feeds[i].id == allFeedsID) {
-                if (allFeedsUnreadCounter == -2) {
-                    //Empty
-                }
-                allFeedsUnreadCounter = i;
-                break;
-            }
-        }
-    }*/
-
-    /*if (feedID == allFeedsID){
-        checkForUnreadCounter++;
-        if (checkForUnreadCounter >= feeds.length || refreshFeed) {
-            CheckForUnreadComplete();
-            return;
-        }
-        feedID = feeds[checkForUnreadCounter].id;
-    }*/
     var req = new XMLHttpRequest();
     var toID = setTimeout(req.abort, 60000);
     var now = new Date();
@@ -470,6 +451,7 @@ function CheckForUnread() {
                                     item.author = '\u00a0';
                                 }
                             }
+                            item.order = GetDate(item.date).getTime() - referenceDate;
 
                             feedInfo[feedID].items.push(item);
                             entryIDs[sha256(item.title + item.date)] = 1;
@@ -539,6 +521,10 @@ function CheckForUnreadComplete() {
   refreshFeed = false;
     if (viewerPort != null && !refreshFeed) {
         viewerPort.postMessage({type: "refreshallcomplete"});
+    }
+
+    for (var i = 0; i < feeds.length; i++) {
+      SortByDate(feedInfo[feeds[i].id].items);
     }
 
     UpdateGroups();
@@ -691,6 +677,10 @@ function UpdateGroups() {
     }
   }
   GetGroupAllFeedsItems();
+
+  for (var i = 0; i < groups.length; i++) {
+    SortByDate(groupInfo[groups[i].id].items);
+  }
 }
 
 function GetGroupAllFeedsItems() {
@@ -717,7 +707,7 @@ function GetGroupItems(groupIndex, id) {
       info = feedInfo[filteredFeeds[i].id].items;
       for (var j = 0; j < info.length; j++) {
         //if (unreadInfo[filteredFeeds[i].id].readitems[info[j].itemID] == null) {
-          item = GetNewItem(info[j].title, info[j].date, info[j].content, info[j].idOrigin, info[j].itemID, info[j].url, info[j].author);
+          item = GetNewItem(info[j].title, info[j].date, info[j].order, info[j].content, info[j].idOrigin, info[j].itemID, info[j].url, info[j].author);
           groupInfo[id].items.push(item);
           if ((options.showallfeeds == true) && (id != allFeedsID)) {
             groupInfo[allFeedsID].items.push(item);
@@ -728,16 +718,8 @@ function GetGroupItems(groupIndex, id) {
   }
 }
 
-function GetNewItem(title, date, content, idOrigin, itemID, url, author) {
-  item = {};
-  item.title = title;
-  item.date = date;
-  item.content = content;
-  item.idOrigin = idOrigin;
-  item.itemID = itemID;
-  item.url = url;
-  item.author = author;
-  return item;
+function GetNewItem(title, date, order, content, idOrigin, itemID, url, author) {
+  return {title: title, date: date, order: order, content: content, idOrigin: idOrigin, itemID: itemID, url: url, author: author};
 }
 
 function GetGroupKeyByID(id) {

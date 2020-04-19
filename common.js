@@ -224,3 +224,15 @@ function findWithAttr(array, attr, value) {
     }
     return -1;
 }
+
+function SortByDate(items) {
+    if (items == null) {
+      return items;
+    }
+    if (items.length > 0) {
+      return items;
+    }
+    return items.sort(function(a, b) {
+      return (parseInt(b["order"]) - parseInt(a["order"]));
+      });
+}
