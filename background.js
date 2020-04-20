@@ -152,7 +152,8 @@ function GetDefaultOptions() {
         "readlaterremovewhenviewed": true,
         "readlaterincludetotal": true,
         "loadlinksinbackground": true,
-        "showallfeeds": false
+        "showallfeeds": false,
+        "usethumbnail": false
     };
 }
 
@@ -406,6 +407,13 @@ function CheckForUnread() {
                         var rootNode = GetElementByTagName(doc, null, "feed", "rss", "rdf:RDF");
                         var author = null;
                         var name = null;
+                        var thumbnail = null;
+                        var thumbnailurl = null;
+                        var thumbnaillength = null;
+                        var thumbnailwidth = null;
+                        var thumbnailheight = null;
+                        var thumbnailtype = null;
+                        var thumbnailNode = null;
 
                         if (rootNode != null) {
                             if (rootNode.nodeName == "feed") {
@@ -440,8 +448,65 @@ function CheckForUnread() {
                                 if (item.content == "") {
                                     item.content = GetNodeTextValue(GetElementByTagName(entries[e], null, "description", "summary"));
                                 }
+                                item.thumbnail = null;
 
-                                author = GetElementByTagName(entries[e], null, "author", "dc:creator");
+                                author = GetElementByTagName(entries[e], null, "author", "dc:creator", "creator");
+                                thumbnail = GetElementByTagName(entries[e], null, "enclosure", "media:group");
+                                if (thumbnail != null) {
+                                  thumbnailNode = thumbnail;
+                                  if (thumbnailNode.nodeName == "media:group") {/*
+                                    for (var i = 0; i < thumbnailNode.childNodes.length; i++) {
+                                      thumbnailNode = GetElementByTagName(thumbnailNode.childNodes[i], null, "media:description");
+                                      if (thumbnailNode != null) {
+                                        if (thumbnailNode.innerText == "thumbnail") {
+                                          thumbnailurl = thumbnailNode.childNodes[i].getAttribute("url");
+                                          thumbnailwidth = thumbnail.getAttribute("width");
+                                          thumbnailheight = thumbnail.getAttribute("height");
+                                          thumbnailtype = thumbnail.getAttribute("medium");
+                                          if (thumbnailtype == "image") {
+                                            item.thumbnail = "<img src=\"" + thumbnailurl + "\" " + "width=\"" + thumbnailwidth + "\" height=\"" + thumbnailheight + "\"" + ">";
+                                            break;
+                                          }
+                                        }
+                                      }
+                                    }
+                                    if (item.thumbnail == null) {
+                                      for (var i = 0; i < thumbnailNode.childNodes.length; i++) {
+                                        thumbnailNode = GetElementByTagName(thumbnailNode.childNodes[i], null, "media:description");
+                                        if (thumbnailNode != null) {
+                                          thumbnailurl = thumbnailNode.childNodes[i].getAttribute("url");
+                                          thumbnailwidth = thumbnail.getAttribute("width");
+                                          thumbnailheight = thumbnail.getAttribute("height");
+                                          thumbnailtype = thumbnail.getAttribute("medium");
+                                          if (thumbnailtype == "image") {
+                                            item.thumbnail = "<img src=\"" + thumbnailurl + "\" " + "width=\"" + thumbnailwidth + "\" height=\"" + thumbnailheight + "\"" + ">";
+                                            break;
+                                          }
+                                        }
+                                      }
+                                    }*/
+                                  } else {
+                                    if (thumbnail != null) {
+                                      thumbnailurl = thumbnail.getAttribute("url");
+                                      thumbnaillength = thumbnail.getAttribute("length");
+                                      thumbnailtype = thumbnail.getAttribute("type");
+                                      if (thumbnailurl != null) {
+                                        if (thumbnaillength == null) {
+                                          thumbnaillength = "";
+                                        } else {
+                                          thumbnaillength = "width=\"" + thumbnaillength + "\" height=\"" + thumbnaillength + "\"";
+                                        }
+                                        if (thumbnailtype != null) {
+                                          if (thumbnailtype.includes("image")) {
+                                            item.thumbnail = "<img src=\"" + thumbnailurl + "\" " + thumbnaillength + ">";
+                                          }
+                                        } else {
+                                          item.thumbnail = "<img src=\"" + thumbnailurl + "\" " + thumbnaillength + ">";
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
 
                                 if (author != null) {
                                     name = GetElementByTagName(author, null, "name");
@@ -719,7 +784,7 @@ function GetGroupItems(groupIndex, id, title, description) {
       if (feedInfo[filteredFeeds[i].id] != null) {
         info = feedInfo[filteredFeeds[i].id].items;
         for (var j = 0; j < info.length; j++) {
-          item = GetNewItem(info[j].title, info[j].date, info[j].order, info[j].content, info[j].idOrigin, info[j].itemID, info[j].url, info[j].author);
+          item = GetNewItem(info[j].title, info[j].date, info[j].order, info[j].content, info[j].idOrigin, info[j].itemID, info[j].url, info[j].author, info[j].thumbnail);
           groupInfo[id].items.push(item);
           if ((options.showallfeeds == true) && (id != allFeedsID)) {
             groupInfo[allFeedsID].items.push(item);
@@ -730,8 +795,8 @@ function GetGroupItems(groupIndex, id, title, description) {
   }
 }
 
-function GetNewItem(title, date, order, content, idOrigin, itemID, url, author) {
-  return {title: title, date: date, order: order, content: content, idOrigin: idOrigin, itemID: itemID, url: url, author: author};
+function GetNewItem(title, date, order, content, idOrigin, itemID, url, author, thumbnail) {
+  return {title: title, date: date, order: order, content: content, idOrigin: idOrigin, itemID: itemID, url: url, author: author, thumbnail: thumbnail};
 }
 
 function GetGroupKeyByID(id) {

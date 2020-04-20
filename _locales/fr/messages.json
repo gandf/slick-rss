@@ -284,7 +284,10 @@
   "optionUpdateInterval": {
     "message": "Intervalle de mise à jour"
   },
-  "backReadLater": {
+  "optionUseThumbnail": {
+    "message": "Afficher vignette dans les flux"
+  },
+"backReadLater": {
     "message": "Lire plus tard"
   },
   "backAllFeeds": {

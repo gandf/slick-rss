@@ -38,6 +38,7 @@ function SetupScreen()
     document.getElementById("readLaterIncludeTotal").selectedIndex = bgPage.options.readlaterincludetotal;
     document.getElementById("loadLinksInBackground").selectedIndex = bgPage.options.loadlinksinbackground;
 		document.getElementById("showAllFeeds").selectedIndex = bgPage.options.showallfeeds;
+		document.getElementById("useThumbnail").selectedIndex = bgPage.options.usethumbnail;
 
     chrome.bookmarks.getTree(FillFolderList);
     ShowDateSample(false);
@@ -91,6 +92,7 @@ function Save()
     bgPage.options.readlaterincludetotal = (document.getElementById("readLaterIncludeTotal").selectedIndex == 1);
     bgPage.options.loadlinksinbackground = (document.getElementById("loadLinksInBackground").selectedIndex == 1);
 		bgPage.options.showallfeeds = (document.getElementById("showAllFeeds").selectedIndex == 1);
+		bgPage.options.usethumbnail = (document.getElementById("useThumbnail").selectedIndex == 1);
 
     localStorage["options"] = JSON.stringify(bgPage.options);
 

@@ -284,6 +284,9 @@
   "optionUpdateInterval": {
     "message": "Update interval"
   },
+  "optionUseThumbnail": {
+    "message": "Show thumbnail in feeds"
+  },
   "backReadLater": {
     "message": "Read Later"
   },
