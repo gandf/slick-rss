@@ -153,6 +153,7 @@ function ShowFeeds() {
         selectKey = 0;
     }
 
+    document.getElementById("headerMessage").innerText = GetMessageText("backViewerFeedMe");
     if (lastSelectedType != "Group") {
       if (feeds.length == 0 || (feeds.length == 1 && bgPage.feedInfo[bgPage.readLaterFeedID].items.length == 0)) {
           if (bgPage.options.feedsource == "0") {
@@ -161,7 +162,6 @@ function ShowFeeds() {
               document.getElementById("noFeedsBookmarks").style.display = "";
           }
 
-          document.getElementById("headerMessage").innerText = GetMessageText("backViewerFeedMe");
           document.getElementById("feedHeader").style.display = "none";
           document.getElementById("feedArea").style.display = "none";
           document.getElementById("refresh").style.display = "none";
@@ -637,19 +637,19 @@ function SelectFeedOrGroup(key, type) {
     document.getElementById("noItems").style.display = "none";
 
     // feed isn't ready yet
-    if (type == "Feed") {
-      if (feedsOrGroupsInfo[feedsOrGroups[key].id] == null || feedsOrGroupsInfo[feedsOrGroups[key].id].loading) {
-          document.getElementById("headerMessage").innerText = GetMessageText("backViewerLoadingFeed");
-          document.getElementById("header").className = "loading";
-          document.getElementById("refresh").style.display = "none";
+    if (feedsOrGroupsInfo[feedsOrGroups[key].id] == null || feedsOrGroupsInfo[feedsOrGroups[key].id].loading) {
+        document.getElementById("headerMessage").innerText = GetMessageText("backViewerLoadingFeed");
+        document.getElementById("header").className = "loading";
+        document.getElementById("refresh").style.display = "none";
 
-          // must be a new feed with no content yet
-          if (feedsOrGroupsInfo[feedsOrGroups[key].id] == null && !bgPage.checkingForUnread) {
-              bgPage.CheckForUnreadStart(key);
-          }
-          return;
-      }
+        if (type == "Feed") {
+        // must be a new feed with no content yet
+        if (feedsOrGroupsInfo[feedsOrGroups[key].id] == null && !bgPage.checkingForUnread) {
+            bgPage.CheckForUnreadStart(key);
+        }
+        return;
     }
+  }
 
     // feed loaded, but had an error
     if (feedsOrGroupsInfo[feedsOrGroups[key].id] != null) {

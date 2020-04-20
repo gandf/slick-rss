@@ -684,34 +684,35 @@ function UpdateGroups() {
   }
   for (var i = 0; i < groups.length; i++) {
     if (groups[i].id != allFeedsID) {
-      GetGroupItems(i, groups[i].id);
+      GetGroupItems(i, groups[i].id, groups[i].title, groups[i].title);
     }
   }
   GetGroupAllFeedsItems();
 
   for (var i = 0; i < groups.length; i++) {
+    groupInfo[groups[i].id].loading = false;
     SortByDate(groupInfo[groups[i].id].items);
   }
 }
 
 function GetGroupAllFeedsItems() {
   if (options.showallfeeds == true) {
-    GetGroupItems(0, allFeedsID);
+    GetGroupItems(0, allFeedsID, GetMessageText("backAllFeeds"), GetMessageText("backAllFeeds"));
   }
 }
 
-function GetGroupItems(groupIndex, id) {
+function GetGroupItems(groupIndex, id, title, description) {
   var info, item;
   var filteredFeeds = feeds.filter(function (el) {
     return (el.group == groups[groupIndex].group) && (el.id != readLaterFeedID);
   });
   if (filteredFeeds != null) {
     if (groupInfo[id] == null) {
-      groupInfo[id] = {title: "", description: "", group: "", loading: true, items: [], error: ""};
+      groupInfo[id] = {title: title, description: description, group: "", loading: true, items: [], error: ""};
     }
     if ((options.showallfeeds == true) && (id != allFeedsID)) {
       if (groupInfo[allFeedsID] == null) {
-        groupInfo[allFeedsID] = {title: "", description: "", group: "", loading: true, items: [], error: ""};
+        groupInfo[allFeedsID] = {title: GetMessageText("backAllFeeds"), description: GetMessageText("backAllFeeds"), group: "", loading: true, items: [], error: ""};
       }
     }
     for (var i = 0; i < filteredFeeds.length; i++) {
