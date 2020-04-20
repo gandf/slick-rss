@@ -170,7 +170,7 @@ function ShowFeeds() {
           SelectFeed(selectKey);
       }
     } else {
-        SelectGroup(selectKey);
+      SelectGroup(selectKey);
     }
 
     // in the middle of refresh all, show progress but wait a little so feed content pushes the feed list to the right size
@@ -633,7 +633,7 @@ function SelectFeedOrGroup(key, type) {
     document.getElementById("markFeedRead").style.display = "none";
     document.getElementById("header").className = "";
     document.getElementById("feedError").style.display = "none";
-    document.getElementById("refresh").style.display = (lastSelectedFeedID != bgPage.readLaterFeedID) ? "" : "none";
+    document.getElementById("refresh").style.display = (feedsOrGroups[key].id != bgPage.readLaterFeedID) ? "" : "none";
     document.getElementById("noItems").style.display = "none";
 
     // feed isn't ready yet
