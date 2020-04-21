@@ -39,6 +39,7 @@ function SetupScreen()
     document.getElementById("loadLinksInBackground").selectedIndex = bgPage.options.loadlinksinbackground;
 		document.getElementById("showAllFeeds").selectedIndex = bgPage.options.showallfeeds;
 		document.getElementById("useThumbnail").selectedIndex = bgPage.options.usethumbnail;
+		document.getElementById("feedsMaxHeight").value = bgPage.options.feedsmaxheight;
 
     chrome.bookmarks.getTree(FillFolderList);
     ShowDateSample(false);
@@ -47,6 +48,7 @@ function SetupScreen()
 function Save()
 {
     var maxItems = document.getElementById("maxItems").value;
+		var feedsMaxHeight = document.getElementById("feedsMaxHeight").value;
 
     if(!/^\d+$/.test(maxItems) || maxItems == "0")
     {
@@ -93,6 +95,7 @@ function Save()
     bgPage.options.loadlinksinbackground = (document.getElementById("loadLinksInBackground").selectedIndex == 1);
 		bgPage.options.showallfeeds = (document.getElementById("showAllFeeds").selectedIndex == 1);
 		bgPage.options.usethumbnail = (document.getElementById("useThumbnail").selectedIndex == 1);
+		bgPage.options.feedsmaxheight = parseInt(feedsMaxHeight);
 
     localStorage["options"] = JSON.stringify(bgPage.options);
 

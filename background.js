@@ -153,7 +153,8 @@ function GetDefaultOptions() {
         "readlaterincludetotal": true,
         "loadlinksinbackground": true,
         "showallfeeds": false,
-        "usethumbnail": false
+        "usethumbnail": false,
+        "feedsmaxheight": 200
     };
 }
 

@@ -25,6 +25,7 @@ body {
 	background-color: #666d7c;
 	color: #aaa;
 	padding-left: 10px;
+	padding-right: 10px;
 }
 
 #feedHeader a {
@@ -95,6 +96,7 @@ body {
 	font-size: 12px;
 	outline: none;
 	width: 100%;
+	table-layout: fixed;
 }
 
 #feedPreview td {

@@ -823,6 +823,11 @@ function RenderFeed(type) {
 
         feedSummary = document.createElement("div");
         feedSummary.setAttribute("class", "feedPreviewSummary");
+        if ((bgPage.options.feedsmaxheight != null) && (bgPage.options.feedsmaxheight != 0)) {
+          feedSummary.style.maxHeight = bgPage.options.feedsmaxheight + "px";
+        } else {
+          feedSummary.style.maxHeight = "none";
+        }
         if (bgPage.options.usethumbnail && (item.thumbnail != null)) {
           feedSummary.innerHTML = item.thumbnail + item.content.replace(/style/g, 'sty&#108;e').replace(/width/g, 'w&#105;dth');
         } else {

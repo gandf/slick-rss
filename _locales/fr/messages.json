@@ -287,7 +287,13 @@
   "optionUseThumbnail": {
     "message": "Afficher vignette dans les flux"
   },
-"backReadLater": {
+  "optionFeedsMaxHeight": {
+    "message": "Hauteur max des flux"
+  },
+  "optionFeedsMaxHeightUnits": {
+    "message": " px (0 = illimité)"
+  },
+  "backReadLater": {
     "message": "Lire plus tard"
   },
   "backAllFeeds": {

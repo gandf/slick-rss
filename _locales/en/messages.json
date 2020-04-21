@@ -287,6 +287,12 @@
   "optionUseThumbnail": {
     "message": "Show thumbnail in feeds"
   },
+  "optionFeedsMaxHeight": {
+    "message": "Max height of feeds"
+  },
+  "optionFeedsMaxHeightUnits": {
+    "message": " px (0 = unlimited)"
+  },
   "backReadLater": {
     "message": "Read Later"
   },
