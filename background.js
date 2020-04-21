@@ -409,9 +409,6 @@ function CheckForUnread() {
                         var name = null;
                         var thumbnail = null;
                         var thumbnailurl = null;
-                        var thumbnaillength = null;
-                        var thumbnailwidth = null;
-                        var thumbnailheight = null;
                         var thumbnailtype = null;
                         var thumbnailNode = null;
 
@@ -453,55 +450,44 @@ function CheckForUnread() {
                                 author = GetElementByTagName(entries[e], null, "author", "dc:creator", "creator");
                                 thumbnail = GetElementByTagName(entries[e], null, "enclosure", "media:group");
                                 if (thumbnail != null) {
-                                  thumbnailNode = thumbnail;
-                                  if (thumbnailNode.nodeName == "media:group") {/*
-                                    for (var i = 0; i < thumbnailNode.childNodes.length; i++) {
-                                      thumbnailNode = GetElementByTagName(thumbnailNode.childNodes[i], null, "media:description");
+                                  if (thumbnail.nodeName == "media:group") {
+                                    for (var i = 0; i < thumbnail.childNodes.length; i++) {
+                                      thumbnailNode = GetElementByTagName(thumbnail.childNodes[i], null, "media:description");
                                       if (thumbnailNode != null) {
-                                        if (thumbnailNode.innerText == "thumbnail") {
-                                          thumbnailurl = thumbnailNode.childNodes[i].getAttribute("url");
-                                          thumbnailwidth = thumbnail.getAttribute("width");
-                                          thumbnailheight = thumbnail.getAttribute("height");
-                                          thumbnailtype = thumbnail.getAttribute("medium");
+                                        if (thumbnailNode.textContent.includes("thumbnail")) {
+                                          thumbnailurl = thumbnail.childNodes[i].getAttribute("url");
+                                          thumbnailtype = thumbnail.childNodes[i].getAttribute("medium");
                                           if (thumbnailtype == "image") {
-                                            item.thumbnail = "<img src=\"" + thumbnailurl + "\" " + "width=\"" + thumbnailwidth + "\" height=\"" + thumbnailheight + "\"" + ">";
+                                            item.thumbnail = "<img src=\"" + thumbnailurl + "\" class=\"thumbnail\">";
                                             break;
                                           }
                                         }
                                       }
                                     }
                                     if (item.thumbnail == null) {
-                                      for (var i = 0; i < thumbnailNode.childNodes.length; i++) {
-                                        thumbnailNode = GetElementByTagName(thumbnailNode.childNodes[i], null, "media:description");
+                                      for (var i = 0; i < thumbnail.childNodes.length; i++) {
+                                        thumbnailNode = GetElementByTagName(thumbnail.childNodes[i], null, "media:description");
                                         if (thumbnailNode != null) {
-                                          thumbnailurl = thumbnailNode.childNodes[i].getAttribute("url");
-                                          thumbnailwidth = thumbnail.getAttribute("width");
-                                          thumbnailheight = thumbnail.getAttribute("height");
-                                          thumbnailtype = thumbnail.getAttribute("medium");
+                                          thumbnailurl = thumbnail.childNodes[i].getAttribute("url");
+                                          thumbnailtype = thumbnail.childNodes[i].getAttribute("medium");
                                           if (thumbnailtype == "image") {
-                                            item.thumbnail = "<img src=\"" + thumbnailurl + "\" " + "width=\"" + thumbnailwidth + "\" height=\"" + thumbnailheight + "\"" + ">";
+                                            item.thumbnail = "<img src=\"" + thumbnailurl + "\" class=\"thumbnail\">";
                                             break;
                                           }
                                         }
                                       }
-                                    }*/
+                                    }
                                   } else {
                                     if (thumbnail != null) {
                                       thumbnailurl = thumbnail.getAttribute("url");
-                                      thumbnaillength = thumbnail.getAttribute("length");
                                       thumbnailtype = thumbnail.getAttribute("type");
                                       if (thumbnailurl != null) {
-                                        if (thumbnaillength == null) {
-                                          thumbnaillength = "";
-                                        } else {
-                                          thumbnaillength = "width=\"" + thumbnaillength + "\" height=\"" + thumbnaillength + "\"";
-                                        }
                                         if (thumbnailtype != null) {
                                           if (thumbnailtype.includes("image")) {
-                                            item.thumbnail = "<img src=\"" + thumbnailurl + "\" " + thumbnaillength + ">";
+                                            item.thumbnail = "<img src=\"" + thumbnailurl + "\" class=\"thumbnail\">";
                                           }
                                         } else {
-                                          item.thumbnail = "<img src=\"" + thumbnailurl + "\" " + thumbnaillength + ">";
+                                          item.thumbnail = "<img src=\"" + thumbnailurl + "\" class=\"thumbnail\">";
                                         }
                                       }
                                     }

@@ -207,6 +207,11 @@ blockquote > blockquote > blockquote > blockquote {
 	color: #285491;
 }
 
+.thumbnail {
+  float: left;
+	width: 50px;
+}
+
 #noFeedsManaged, #noFeedsBookmarks {
 	font-size: 12px;
 	padding: 5px;
