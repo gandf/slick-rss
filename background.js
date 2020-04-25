@@ -21,10 +21,6 @@ var referenceDate = GetDate("Thu, 31 Dec 2019 23:59:59 +0000").getTime();
 chrome.browserAction.onClicked.addListener(ButtonClicked);
 chrome.runtime.onMessageExternal.addListener(ExternalRequest);
 chrome.extension.onConnect.addListener(InternalConnection);
-chrome.bookmarks.onChanged.addListener(BookmarkChanged);
-chrome.bookmarks.onCreated.addListener(CheckFeedChange);
-chrome.bookmarks.onMoved.addListener(CheckFeedChange);
-chrome.bookmarks.onRemoved.addListener(CheckFeedChange);
 
 DoUpgrades();
 GetFeeds(function () {
@@ -64,42 +60,34 @@ function ButtonClicked(tab) {
 
 function ExternalRequest(request, sender, sendResponse) {
     if (request.type == "addfeed") {
-        if (options.feedsource == 1) {
-            chrome.bookmarks.create({parentId: options.feedfolderid, title: request.title, url: request.url, group: request.group}, null);
-        } else {
-            var maxOrder = 0;
-            var order = 0;
+      var maxOrder = 0;
+      var order = 0;
 
-            for (var i = 0; i < feeds.length; i++) {
-                order = parseInt(feeds[i].order);
+      for (var i = 0; i < feeds.length; i++) {
+          order = parseInt(feeds[i].order);
 
-                if (order > maxOrder) {
-                    maxOrder = order;
-                }
-            }
+          if (order > maxOrder) {
+              maxOrder = order;
+          }
+      }
 
-            maxOrder++;
+      maxOrder++;
 
-            feeds.push(CreateNewFeed(request.title, request.url, request.group, options.maxitems, maxOrder));
-            localStorage["feeds"] = JSON.stringify(feeds);
-            UpdateGroups();
-            ReloadViewer();
-        }
+      feeds.push(CreateNewFeed(request.title, request.url, request.group, options.maxitems, maxOrder));
+      localStorage["feeds"] = JSON.stringify(feeds);
+      UpdateGroups();
+      ReloadViewer();
 
-        sendResponse({});
+      sendResponse({});
     }
 
     if (request.type == "deletefeed") {
         for (var i = 0; i < feeds.length; i++) {
             if (feeds[i].url == request.url) {
-                if (options.feedsource == 1) {
-                    chrome.bookmarks.remove(feeds[i].id);
-                } else {
-                    feeds.splice(i, 1);
-                    localStorage["feeds"] = JSON.stringify(feeds);
-                    UpdateGroups();
-                    ReloadViewer();
-                }
+              feeds.splice(i, 1);
+              localStorage["feeds"] = JSON.stringify(feeds);
+              UpdateGroups();
+              ReloadViewer();
             }
         }
 
@@ -132,8 +120,6 @@ function GetOptions() {
 function GetDefaultOptions() {
     return {
         "lastversion": manifest.version,
-        "feedsource": 0,
-        "feedfolderid": "",
         "maxitems": 50,
         "showdescriptions": true,
         "dateformat": "[ww] [dd]/[mm]/[yy] [hh]:[nn]",
@@ -163,38 +149,19 @@ function GetFeeds(callBack) {
     feeds = [];
     getFeedsCallBack = callBack;
 
-    if (options.feedsource == "0") {
-        if (localStorage["feeds"] != null) {
-            feeds = JSON.parse(localStorage["feeds"]).sort(function (a, b) {
-                return a.order - b.order;
-            });
-        }
-
-        feeds.unshift(GetReadLaterFeed());
-        UpdateGroups();
-        getFeedsCallBack();
-    } else {
-        chrome.bookmarks.getChildren(options.feedfolderid, GetFeedFolderChildren);
+    if (localStorage["feeds"] != null) {
+        feeds = JSON.parse(localStorage["feeds"]).sort(function (a, b) {
+            return a.order - b.order;
+        });
     }
+
+    feeds.unshift(GetReadLaterFeed());
+    UpdateGroups();
+    getFeedsCallBack();
 }
 
 function GetReadLaterFeed() {
     return CreateNewFeed(GetMessageText("backReadLater"), chrome.extension.getURL("readlater.html"), "", 99999, -9, readLaterFeedID);
-}
-
-// fills feeds with bookmark items, for now it's not recursive
-function GetFeedFolderChildren(nodeChildren) {
-    feeds = [];
-    feeds.push(GetReadLaterFeed());
-
-    for (var i = 0; i < nodeChildren.length; i++) {
-        if (nodeChildren[i].url != "") {
-            feeds.push(CreateNewFeed(nodeChildren[i].title, nodeChildren[i].url, nodeChildren[i].group, options.maxitems, i, nodeChildren[i].id));
-            UpdateGroups();
-        }
-    }
-
-    getFeedsCallBack();
 }
 
 function GetReadLaterItems() {
@@ -210,32 +177,6 @@ function GetReadLaterItems() {
     }
 
     return JSON.parse(localStorage["readlater"]);
-}
-
-// if a bookmark changes and it's one of our feeds then refresh
-function BookmarkChanged(id, changeInfo) {
-    if (options.feedsource == 1) {
-        chrome.bookmarks.get(id, function (node) {
-            for (var i = 0; i < feeds.length; i++) {
-                if (node[0].url == feeds[i].url) {
-                    GetFeeds(ReloadViewer);
-                    return;
-                }
-            }
-        });
-    }
-}
-
-// checks for a bookmark change and reloads viewer if needed
-function CheckFeedChange(id, notUsed) {
-    if (options.feedsource == 1) {
-        var oldCount = feeds.length;
-        GetFeeds(function () {
-            if (oldCount != feeds.length) {
-                ReloadViewer();
-            }
-        });
-    }
 }
 
 // helper function for creating new feeds
@@ -334,7 +275,7 @@ function UpdateUnreadBadge() {
     }
 }
 
-// returns a dictionary of unread counts {bookmarkid} = unreadtotal, readitems{}
+// returns a dictionary of unread counts {feedsid} = unreadtotal, readitems{}
 // may need a way to clean this if they delete feeds
 function GetUnreadCounts() {
     if (localStorage["unreadinfo"] == null) {

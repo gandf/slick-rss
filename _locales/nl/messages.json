@@ -71,9 +71,6 @@
   "importAlertNothing": {
     "message": "Nothing to import"
   },
-  "importAlertBookmarkNotFound": {
-    "message": "Could not import because your bookmark folder is not found."
-  },
   "importAlertNoOutlineRss": {
     "message": "No outline nodes of type 'rss' were found to import."
   },
@@ -95,12 +92,6 @@
   "optionFeedManagement": {
     "message": "Feed management"
   },
-  "optionFeedManager": {
-    "message": "Slick RSS Feed Manager"
-  },
-  "optionBoolmarkFolder": {
-    "message": "Bookmark Folder"
-  },
   "optionColumns": {
     "message": "Columns"
   },
@@ -109,9 +100,6 @@
   },
   "optionExportFeeds": {
     "message": "Export Feeds"
-  },
-  "optionFolder": {
-    "message": "Folder"
   },
   "optionDefMaxItems": {
     "message": "Default max items"
@@ -352,9 +340,6 @@
   },
   "backViewerAddFeeds": {
     "message": "Add Feeds"
-  },
-  "backViewerBookmark": {
-    "message": "Uh oh, I don't see any bookmarks here. Since you are using a bookmark folder, I'd go back into options and check that. Or you could add bookmarks to it :)"
   },
   "backViewerFeedSelectedInvalid": {
     "message": "The feed selected seems to be invalid. Please check the URL."

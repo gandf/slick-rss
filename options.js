@@ -4,7 +4,6 @@ $(document).ready(function()
 {
 	$('#save').click(function(){Save();});
 	$('#cancel').click(function(){window.close();});
-	$('#feedSource').change(function(){FeedSourceChanged();});
 	$('#importFeeds').click(function(){window.open(chrome.extension.getURL("import.html"), 'height=250,width=550');});
 	$('#exportFeeds').click(function(){window.open(chrome.extension.getURL("export.html"), 'height=250,width=550');});
 	$('#dateDone').click(function(){ShowDateSample(true);});
@@ -18,8 +17,6 @@ window.onload = SetupScreen;
 
 function SetupScreen()
 {
-    document.getElementById("feedSource").selectedIndex = parseInt(bgPage.options.feedsource);
-    FeedSourceChanged(); // changing index doesn't fire onchange :(
     document.getElementById("maxItems").value = bgPage.options.maxitems;
     document.getElementById("showDescriptions").selectedIndex = bgPage.options.showdescriptions;
     document.getElementById("showFeedImages").selectedIndex = bgPage.options.showfeedimages;
@@ -41,7 +38,6 @@ function SetupScreen()
 		document.getElementById("useThumbnail").selectedIndex = bgPage.options.usethumbnail;
 		document.getElementById("feedsMaxHeight").value = bgPage.options.feedsmaxheight;
 
-    chrome.bookmarks.getTree(FillFolderList);
     ShowDateSample(false);
 }
 
@@ -74,8 +70,6 @@ function Save()
         return;
     }
 
-    bgPage.options.feedsource = document.getElementById("feedSource")[document.getElementById("feedSource").selectedIndex].value;
-    bgPage.options.feedfolderid = document.getElementById("feedFolderID")[document.getElementById("feedFolderID").selectedIndex].value;
     bgPage.options.maxitems = parseInt(maxItems);
     bgPage.options.showdescriptions = (document.getElementById("showDescriptions").selectedIndex == 1);
     bgPage.options.showfeedimages = (document.getElementById("showFeedImages").selectedIndex == 1);
@@ -112,52 +106,6 @@ function Save()
     });
 
     window.close();
-}
-
-// fills the folder dropdown
-function FillFolderList(nodes)
-{
-    var folderList = document.getElementById("feedFolderID");
-    var arr = [];
-    var option = null;
-
-    GetBookmarkNodes(nodes[0], arr, "");
-
-    for(var i = 0;i < arr.length; i++)
-    {
-        option = document.createElement("option");
-        option.setAttribute("value", arr[i][0]);
-        option.innerHTML = arr[i][1];
-
-        if(arr[i][0] == bgPage.options.feedfolderid)
-        {
-            option.setAttribute("selected", "selected");
-        }
-
-        folderList.appendChild(option);
-    }
-}
-
-// recursively fills array with ids and titles of folders in the bookmark tree
-function GetBookmarkNodes(node, arr, depth)
-{
-    for(var i = 0; i < node.children.length; i++)
-    {
-        if(node.children[i].url == null)
-        {
-            var detail = new Array(2);
-            detail[0] = node.children[i].id;
-            detail[1] = depth + node.children[i].title;
-            arr.push(detail);
-
-            GetBookmarkNodes(node.children[i], arr, depth + "\u00a0\u00a0\u00a0");
-        }
-    }
-}
-
-function FeedSourceChanged()
-{
-    document.getElementById("feedFolder").style.display = (document.getElementById("feedSource").selectedIndex == 0) ? "none" : "";
 }
 
 function EditDateFormat()

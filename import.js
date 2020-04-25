@@ -16,49 +16,7 @@ function Import()
         return;
     }
 
-    if(bgPage.options.feedsource == 1)
-    {
-        chrome.bookmarks.get(bgPage.options.feedfolderid, ImportBookmarks);
-    }
-    else
-    {
-        ImportFeeds();
-    }
-}
-
-// imports opml -> bookmarks
-function ImportBookmarks(startNode)
-{
-    var nodes = null;
-    var importCount = 0;
-    var opml = new DOMParser().parseFromString(document.getElementById("opml").value, 'text/xml');
-
-    if(!startNode || startNode.length == 0)
-    {
-        alert(GetMessageText("importAlertBookmarkNotFound"));
-        return;
-    }
-
-    nodes = opml.getElementsByTagName("outline");
-
-    for(var i = 0;i < nodes.length;i++)
-    {
-        if(nodes[i].getAttribute("type") == "rss")
-        {
-            chrome.bookmarks.create({parentId: startNode[0].id, "title" : nodes[i].getAttribute("text"), "url" : nodes[i].getAttribute("xmlUrl"), "group" : nodes[i].getAttribute("group")}, null);
-            importCount ++;
-        }
-    }
-
-    if(nodes.length == 0)
-    {
-        alert(GetMessageText("importAlertNoOutlineRss"));
-        return;
-    }
-
-    alert(GetMessageText("importAlertImportedFeeds1") + importCount + GetMessageText("importAlertImportedFeeds2"));
-
-    window.close();
+    ImportFeeds();
 }
 
 //remove ReadLater

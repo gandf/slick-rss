@@ -71,9 +71,6 @@
   "importAlertNothing": {
     "message": "Rien à importer"
   },
-  "importAlertBookmarkNotFound": {
-    "message": "Ne peut importer parce que votre dossier de signet n'est pas trouvé."
-  },
   "importAlertNoOutlineRss": {
     "message": "Aucun nœud 'outline' de type «rss» n'a été trouvé à importer."
   },
@@ -95,9 +92,6 @@
   "optionFeedManagement": {
     "message": "Gestion flux"
   },
-  "optionFeedManager": {
-    "message": "Slick RSS gestionnaire de flux"
-  },
   "optionBoolmarkFolder": {
     "message": "Dossier de signet"
   },
@@ -109,9 +103,6 @@
   },
   "optionExportFeeds": {
     "message": "Export flux"
-  },
-  "optionFolder": {
-    "message": "Dossier"
   },
   "optionDefMaxItems": {
     "message": "Sujets max par défaut"
@@ -352,9 +343,6 @@
   },
   "backViewerAddFeeds": {
     "message": "Ajouter flux"
-  },
-  "backViewerBookmark": {
-    "message": "Euh oh, je ne vois aucun signet ici. Puisque vous utilisez un dossier de signets, je reviendrais dans options et vérifirai cela. Ou vous pouvez y ajouter des signets :)"
   },
   "backViewerFeedSelectedInvalid": {
     "message": "Le flux sélectionné semble être invalide. Veuillez vérifier l'URL."

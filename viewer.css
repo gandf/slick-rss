@@ -214,7 +214,7 @@ blockquote > blockquote > blockquote > blockquote {
 	width: 50px;
 }
 
-#noFeedsManaged, #noFeedsBookmarks {
+#noFeedsManaged {
 	font-size: 12px;
 	padding: 5px;
 }

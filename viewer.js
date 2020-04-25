@@ -123,7 +123,7 @@ function ShowFeeds() {
     var lastSelectedType = localStorage["lastSelectedFeedType"];
 
     UpdateTitle();
-    document.getElementById("manage").style.display = (bgPage.options.feedsource != 0) ? "none" : "";
+    document.getElementById("manage").style.display = "";
 
     if (bgPage.options.readlaterenabled) {
       ShowFeed(0);
@@ -170,11 +170,7 @@ function ShowFeeds() {
           document.getElementById("feedArea").style.display = "none";
           document.getElementById("refresh").style.display = "none";
           document.getElementById("markFeedRead").style.display = "none";
-          if (bgPage.options.feedsource == "0") {
-              document.getElementById("noFeedsManaged").style.display = "";
-          } else {
-              document.getElementById("noFeedsBookmarks").style.display = "";
-          }
+          document.getElementById("noFeedsManaged").style.display = "";
       } else {
           SelectFeed(selectKey);
       }
