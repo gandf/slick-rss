@@ -354,8 +354,7 @@
     "message": "Ajouter flux"
   },
   "backViewerBookmark": {
-    "message": "Euh oh, je ne vois aucun signet ici. Puisque vous utilisez un dossier de signets, je reviendrais dans
-    options et vérifirai cela. Ou vous pouvez y ajouter des signets :)"
+    "message": "Euh oh, je ne vois aucun signet ici. Puisque vous utilisez un dossier de signets, je reviendrais dans options et vérifirai cela. Ou vous pouvez y ajouter des signets :)"
   },
   "backViewerFeedSelectedInvalid": {
     "message": "Le flux sélectionné semble être invalide. Veuillez vérifier l'URL."

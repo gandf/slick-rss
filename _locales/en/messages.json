@@ -354,8 +354,7 @@
     "message": "Add Feeds"
   },
   "backViewerBookmark": {
-    "message": "Uh oh, I don't see any bookmarks here. Since you are using a bookmark folder, I'd go back into
-    options and check that. Or you could add bookmarks to it :)"
+    "message": "Uh oh, I don't see any bookmarks here. Since you are using a bookmark folder, I'd go back into options and check that. Or you could add bookmarks to it :)"
   },
   "backViewerFeedSelectedInvalid": {
     "message": "The feed selected seems to be invalid. Please check the URL."
