@@ -20,6 +20,9 @@ var groups = bgPage.groups;
 var selectedFeedKey = null;
 var selectedFeedKeyIsFeed = true;
 var feedReadToID = null;
+var sizeFeedHeader = null;
+var sizeFeedsLoadingTxt = null;
+var sizeProgressboxLoading = '50px';
 
 var port = chrome.extension.connect({name: "viewerPort"});
 
@@ -29,12 +32,15 @@ port.onMessage.addListener(function (msg) {
     }
 
     if (msg.type == "refreshallstarted") {
+        UpdateSizeProgress(false);
         document.getElementById("feedsLoadingProgress").style.width = "0%";
     }
 
     if (msg.type == "refreshallcomplete") {
-        document.getElementById("feedsOptions").style.display = "";
-        document.getElementById("feedsLoading").style.display = "none";
+        var element1 = document.getElementById("feedsLoading").style.display;
+        var element2 = document.getElementById("feedsOptions").style.display;
+        element1 = "none";
+        element2 = "";
     }
 
     if (msg.type == "feedupdatestarted") {
@@ -85,8 +91,11 @@ window.onresize = FixFeedList;
 
 function UpdateRefreshAllProgress() {
     if (bgPage.checkingForUnread) {
-      document.getElementById("feedsOptions").style.display = "none";
-      document.getElementById("feedsLoading").style.display = "block";
+      var element1 = document.getElementById("feedsOptions").style.display;
+      var element2 = document.getElementById("feedsLoading").style.display;
+      element1 = "none";
+      element2 = "block";
+      UpdateSizeProgress(false);
       var ProgressWidth;
       ProgressWidth = (bgPage.refreshFeed) ? 100 : Math.round(((bgPage.checkForUnreadCounter + 1) / feeds.length) * 100);
       if (ProgressWidth > 100) {
@@ -114,6 +123,7 @@ function ShowFeeds() {
     var lastSelectedType = localStorage["lastSelectedFeedType"];
 
     UpdateTitle();
+    document.getElementById("manage").style.display = (bgPage.options.feedsource != 0) ? "none" : "";
 
     if (bgPage.options.readlaterenabled) {
       ShowFeed(0);
@@ -156,16 +166,15 @@ function ShowFeeds() {
     document.getElementById("headerMessage").innerText = GetMessageText("backViewerFeedMe");
     if (lastSelectedType != "Group") {
       if (feeds.length == 0 || (feeds.length == 1 && bgPage.feedInfo[bgPage.readLaterFeedID].items.length == 0)) {
+          document.getElementById("feedHeader").style.display = "none";
+          document.getElementById("feedArea").style.display = "none";
+          document.getElementById("refresh").style.display = "none";
+          document.getElementById("markFeedRead").style.display = "none";
           if (bgPage.options.feedsource == "0") {
               document.getElementById("noFeedsManaged").style.display = "";
           } else {
               document.getElementById("noFeedsBookmarks").style.display = "";
           }
-
-          document.getElementById("feedHeader").style.display = "none";
-          document.getElementById("feedArea").style.display = "none";
-          document.getElementById("refresh").style.display = "none";
-          document.getElementById("markFeedRead").style.display = "none";
       } else {
           SelectFeed(selectKey);
       }
@@ -179,8 +188,8 @@ function ShowFeeds() {
         setTimeout(UpdateRefreshAllProgress, 500);
     }
 
-    document.getElementById("manage").style.display = (bgPage.options.feedsource != 0) ? "none" : "";
     focusFeed();
+    UpdateSizeProgress(true);
 }
 
 function FixFeedList() {
@@ -193,6 +202,7 @@ function FixFeedList() {
 
     feedScroller.style.height = document.body.offsetHeight - document.getElementById("feedHeader").offsetHeight + "px";
     feedScroller.style.overflowY = (feedScroller.offsetHeight < feedScroller.scrollHeight) ? "scroll" : "hidden";
+    UpdateSizeProgress(true);
 }
 
 function ShowFeed(key) {
@@ -633,14 +643,14 @@ function SelectFeedOrGroup(key, type) {
     document.getElementById("markFeedRead").style.display = "none";
     document.getElementById("header").className = "";
     document.getElementById("feedError").style.display = "none";
-    document.getElementById("refresh").style.display = (feedsOrGroups[key].id != bgPage.readLaterFeedID) ? "" : "none";
     document.getElementById("noItems").style.display = "none";
+    document.getElementById("refresh").style.display = (feedsOrGroups[key].id != bgPage.readLaterFeedID) ? "" : "none";
 
     // feed isn't ready yet
     if (feedsOrGroupsInfo[feedsOrGroups[key].id] == null || feedsOrGroupsInfo[feedsOrGroups[key].id].loading) {
+      document.getElementById("refresh").style.display = "none";
         document.getElementById("headerMessage").innerText = GetMessageText("backViewerLoadingFeed");
         document.getElementById("header").className = "loading";
-        document.getElementById("refresh").style.display = "none";
 
         if (type == "Feed") {
         // must be a new feed with no content yet
@@ -705,7 +715,7 @@ function RenderFeed(type) {
     document.getElementById("headerMessage").innerText = feedsOrGroupsInfo[feedID].title;
 
     if (feedsOrGroupsInfo[feedID].description != "" && bgPage.options.showdescriptions) {
-        document.getElementById("headerMessage").innerHTML += "<span> - " + feedsOrGroupsInfo[feedID].description + "</span>";
+        document.getElementById("headerMessage").innerHTML += "<span> : " + feedsOrGroupsInfo[feedID].description + "</span>";
     }
 
     switch (parseInt(bgPage.options.columns)) {
@@ -965,9 +975,45 @@ function LinkProxy(uRL) {
 }
 
 function hover(element) {
-  element.setAttribute('src', element.getAttribute('src').replace(".", "_hover."));
+  if (!element.getAttribute('src').includes("_hover.")) {
+    element.setAttribute('src', element.getAttribute('src').replace(".", "_hover."));
+  }
 }
 
 function unhover(element) {
-  element.setAttribute('src', element.getAttribute('src').replace("_hover.", "."));
+  if (element.getAttribute('src').includes("_hover.")) {
+    element.setAttribute('src', element.getAttribute('src').replace("_hover.", "."));
+  }
+}
+
+function UpdateSizeProgress(updateAll) {
+    if ((sizeFeedHeader == null) || updateAll) {
+      var localSizeFeedHeader = document.getElementById("feedHeader").offsetWidth;
+      if ((localSizeFeedHeader != 0) && !isNaN(localSizeFeedHeader)) {
+        sizeFeedHeader = localSizeFeedHeader;
+      }
+    }
+    if ((sizeFeedsLoadingTxt == null) || updateAll) {
+      var elFeedsLoadingTxt = document.getElementById("feedsLoadingTxt");
+      var localSizeFeedsLoadingTxt = null;
+      if (elFeedsLoadingTxt != null) {
+        if (elFeedsLoadingTxt.offsetWidth > 0) {
+          localSizeFeedsLoadingTxt = elFeedsLoadingTxt.offsetWidth + 42;
+        }
+      }
+      if ((localSizeFeedsLoadingTxt != null) && (localSizeFeedsLoadingTxt >= 30) && !isNaN(localSizeFeedsLoadingTxt)) {
+        sizeFeedsLoadingTxt = localSizeFeedsLoadingTxt;
+      }
+    }
+    if ((sizeFeedHeader != null) && (sizeFeedsLoadingTxt != null)) {
+      var computedSize = sizeFeedHeader - sizeFeedsLoadingTxt;
+      if (computedSize < 30) {
+        sizeProgressboxLoading = '100%';
+      } else {
+        sizeProgressboxLoading = computedSize + 'px';
+      }
+      if (document.getElementById("feedsLoadingProgressBox").style.width != sizeProgressboxLoading) {
+        document.getElementById("feedsLoadingProgressBox").style.width = sizeProgressboxLoading;
+      }
+    }
 }
