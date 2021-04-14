@@ -26,5 +26,5 @@
     "https://*/",
     "activeTab"
   ],
-  "content_security_policy": "script-src 'self'; object-src 'self'"
+  "content_security_policy": "script-src 'self' 'sha256-5dbff77120a55c7813a549c4dcea4b14e55e2cf29344d69138dd24eaae238f02' 'sha256-e51fda122aed992db5508c15f0e5d6f8297a6abdf88317f78cea7e3cffa29cb2' 'sha256-c2297cedde2c3d4c889f49fe069715d7f0b9497de42724c222959f6b40c4594a' 'sha256-6db368b33e4994675ecdc1fcbf175b27e6ff8552904d3471adbfa4335de9c5cd' 'sha256-ff1523fb7389539c84c65aba19260648793bb4f5e29329d2ee8804bc37a3fe6e'; object-src 'self'"
 }
