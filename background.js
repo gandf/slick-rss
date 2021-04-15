@@ -353,6 +353,7 @@ function CheckForUnread() {
                         var thumbnailurl = null;
                         var thumbnailtype = null;
                         var thumbnailNode = null;
+                        var dummyDate = null;
 
                         if (rootNode != null) {
                             if (rootNode.nodeName == "feed") {
@@ -448,7 +449,14 @@ function CheckForUnread() {
                                     item.author = '\u00a0';
                                 }
                             }
-                            item.order = GetDate(item.date).getTime() - referenceDate;
+                            dummyDate = GetDate(item.date);
+                            if(dummyDate != null)
+                            {
+                              item.order = dummyDate.getTime() - referenceDate;
+                            }
+                            else {
+                              item.order = referenceDate;
+                            }
 
                             feedInfo[feedID].items.push(item);
                             entryIDs[sha256(item.title + item.date)] = 1;
