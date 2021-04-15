@@ -16,7 +16,7 @@ function ExportFeeds()
 	    for(var i = 0; i < bgPage.feeds.length;i++)
 	    {
 	        if (bgPage.feeds[i].id != bgPage.readLaterFeedID)
-	            opml += "<outline type=\"rss\" text=\"" + bgPage.feeds[i].title.replace("&", "&amp;") + "\" xmlUrl=\"" + bgPage.feeds[i].url.replace("&", "&amp;") + "\" group=\"" + bgPage.feeds[i].group.replace("&", "&amp;") + "\"/>\n";
+	            opml += "<outline type=\"rss\" text=\"" + bgPage.feeds[i].title.replaceAll("&", "&amp;") + "\" xmlUrl=\"" + bgPage.feeds[i].url.replaceAll("&", "&amp;") + "\" group=\"" + bgPage.feeds[i].group.replaceAll("&", "&amp;") + "\"/>\n";
 	    }
 
 	    opml += "</body>\n</opml>";
