@@ -34,7 +34,8 @@ function ImportFeeds()
     var nodes = null;
     var importCount = 0;
     var maxOrder = 0;
-    var opml = new DOMParser().parseFromString(document.getElementById("opml").value, 'text/xml');
+    var xmldata = document.getElementById("opml").value;
+    var opml = JXON.stringToXml(xmldata);
 
     nodes = opml.getElementsByTagName("outline");
 
