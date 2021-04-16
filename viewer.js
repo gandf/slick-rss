@@ -119,8 +119,8 @@ function UpdateTitle() {
 function ShowFeeds() {
     var feedArea = null;
     var selectKey = null;
-    var lastSelectedID = localStorage["lastSelectedFeedID"];
-    var lastSelectedType = localStorage["lastSelectedFeedType"];
+    var lastSelectedID = localStorage.lastSelectedFeedID;
+    var lastSelectedType = localStorage.lastSelectedFeedType;
 
     UpdateTitle();
     document.getElementById("manage").style.display = "";
@@ -362,7 +362,7 @@ function MarkFeedRead(feedID) {
       // for read later feeds, nuke the items instead of mark read
       if (feedID == bgPage.readLaterFeedID) {
           bgPage.feedInfo[bgPage.readLaterFeedID].items = [];
-          localStorage["readlater"] = JSON.stringify(bgPage.feedInfo[bgPage.readLaterFeedID]);
+          localStorage.readlater = JSON.stringify(bgPage.feedInfo[bgPage.readLaterFeedID]);
           SelectFeed(0);
       } else {
           for (var i = 0; i < bgPage.feedInfo[feedID].items.length; i++) {
@@ -376,7 +376,7 @@ function MarkFeedRead(feedID) {
           }
       }
 
-      localStorage["unreadinfo"] = JSON.stringify(bgPage.unreadInfo);
+      localStorage.unreadinfo = JSON.stringify(bgPage.unreadInfo);
 
       UpdateFeedUnread(feedID);
       UpdateReadAllIcon("Feed");
@@ -430,7 +430,7 @@ function MarkFeedReadFromGroup(feedID) {
           }
       }
 
-      localStorage["unreadinfo"] = JSON.stringify(bgPage.unreadInfo);
+      localStorage.unreadinfo = JSON.stringify(bgPage.unreadInfo);
 
       UpdateFeedUnread(feedID);
 }
@@ -449,7 +449,7 @@ function MarkItemRead(itemID) {
     var expireMs = new Date().getTime() + 5184000000; // 2 months;
 
     if (MarkItemRead_ReadItems(feedID, itemID, expireMs, className) == true) {
-        localStorage["unreadinfo"] = JSON.stringify(bgPage.unreadInfo);
+        localStorage.unreadinfo = JSON.stringify(bgPage.unreadInfo);
 
         UpdateFeedUnread(feedID);
         UpdateReadAllIcon((selectedFeedKeyIsFeed) ? "Feed" : "Group");
@@ -546,7 +546,7 @@ function MarkItemUnread(itemID) {
 
         UnMarkItemReadLaterWithoutSelectFeed(findWithAttr(bgPage.feedInfo[bgPage.readLaterFeedID].items, 'itemID', itemID));
 
-        localStorage["unreadinfo"] = JSON.stringify(bgPage.unreadInfo);
+        localStorage.unreadinfo = JSON.stringify(bgPage.unreadInfo);
 
         UpdateFeedUnread(bgPage.readLaterFeedID);
         UpdateFeedUnread(feedID);
@@ -565,7 +565,7 @@ function MarkItemReadLater(feedID, itemIndex) {
     MarkItemRead(itemID);
     UpdateFeedUnread(bgPage.readLaterFeedID);
 
-    localStorage["readlater"] = JSON.stringify(bgPage.feedInfo[bgPage.readLaterFeedID]);
+    localStorage.readlater = JSON.stringify(bgPage.feedInfo[bgPage.readLaterFeedID]);
 }
 
 function UnMarkItemReadLater(itemIndex) {
@@ -581,7 +581,7 @@ function UnMarkItemReadLaterWithoutSelectFeed(itemIndex) {
         bgPage.feedInfo[bgPage.readLaterFeedID].items.splice(itemIndex, 1);
         bgPage.UpdateUnreadBadge();
 
-        localStorage["readlater"] = JSON.stringify(bgPage.feedInfo[bgPage.readLaterFeedID]);
+        localStorage.readlater = JSON.stringify(bgPage.feedInfo[bgPage.readLaterFeedID]);
 
         UpdateFeedUnread(bgPage.readLaterFeedID);
     }
@@ -597,8 +597,8 @@ function SelectGroup(key) {
 
 function SelectFeedOrGroup(key, type) {
     var feedsOrGroups, feedsOrGroupsInfo, selectedFeedsOrGroups;
-    var lastSelectedFeedID = localStorage["lastSelectedFeedID"];
-    if (localStorage["lastSelectedFeedType"] == "Feed") {
+    var lastSelectedFeedID = localStorage.lastSelectedFeedID;
+    if (localStorage.lastSelectedFeedType == "Feed") {
       selectedFeedsOrGroups = feeds;
     } else {
       selectedFeedsOrGroups = groups;
@@ -611,8 +611,8 @@ function SelectFeedOrGroup(key, type) {
       feedsOrGroups = groups;
       feedsOrGroupsInfo = bgPage.groupInfo;
     }
-    localStorage["lastSelectedFeedID"] = feedsOrGroups[key].id;
-    localStorage["lastSelectedFeedType"] = type;
+    localStorage.lastSelectedFeedID = feedsOrGroups[key].id;
+    localStorage.lastSelectedFeedType = type;
 
     document.getElementById("feedPreviewScroller").scrollTop = 0;
 

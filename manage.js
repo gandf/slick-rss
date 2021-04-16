@@ -242,7 +242,7 @@ function Save()
     // remove read later feed
     feeds.splice(0,1);
 
-    localStorage["feeds"] = JSON.stringify(feeds);
+    localStorage.feeds = JSON.stringify(feeds);
 
     bgPage.CleanUpUnreadOrphans();
 

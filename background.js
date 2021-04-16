@@ -74,7 +74,7 @@ function ExternalRequest(request, sender, sendResponse) {
       maxOrder++;
 
       feeds.push(CreateNewFeed(request.title, request.url, request.group, options.maxitems, maxOrder));
-      localStorage["feeds"] = JSON.stringify(feeds);
+      localStorage.feeds = JSON.stringify(feeds);
       UpdateGroups();
       ReloadViewer();
 
@@ -85,7 +85,7 @@ function ExternalRequest(request, sender, sendResponse) {
         for (var i = 0; i < feeds.length; i++) {
             if (feeds[i].url == request.url) {
               feeds.splice(i, 1);
-              localStorage["feeds"] = JSON.stringify(feeds);
+              localStorage.feeds = JSON.stringify(feeds);
               UpdateGroups();
               ReloadViewer();
             }
@@ -100,10 +100,10 @@ function GetOptions() {
     var options;
     var defaultOptions = GetDefaultOptions();
 
-    if (localStorage["options"] == null) {
+    if (localStorage.options == null) {
         options = GetDefaultOptions();
     } else {
-        options = JSON.parse(localStorage["options"]);
+        options = JSON.parse(localStorage.options);
 
         // fill in defaults for new options
         for (key in defaultOptions) {
@@ -149,8 +149,8 @@ function GetFeeds(callBack) {
     feeds = [];
     getFeedsCallBack = callBack;
 
-    if (localStorage["feeds"] != null) {
-        feeds = JSON.parse(localStorage["feeds"]).sort(function (a, b) {
+    if (localStorage.feeds != null) {
+        feeds = JSON.parse(localStorage.feeds).sort(function (a, b) {
             return a.order - b.order;
         });
     }
@@ -165,8 +165,8 @@ function GetReadLaterFeed() {
 }
 
 function GetReadLaterItems() {
-    if (localStorage["readlater"] == null) {
-        localStorage["readlater"] = JSON.stringify({
+    if (localStorage.readlater == null) {
+        localStorage.readlater = JSON.stringify({
             title: GetMessageText("backReadLater"),
             description: GetMessageText("backItemsMarkedReadLater"),
             group: "",
@@ -176,7 +176,7 @@ function GetReadLaterItems() {
         });
     }
 
-    return JSON.parse(localStorage["readlater"]);
+    return JSON.parse(localStorage.readlater);
 }
 
 // helper function for creating new feeds
@@ -219,8 +219,8 @@ function DoUpgrades() {
     var lastVersion = parseFloat(options.lastversion);
 
     // since 3.001 requires group for feeds, lets make sure they have them
-    if (localStorage["feeds"] != null && lastVersion < 3.001) {
-        var feeds = JSON.parse(localStorage["feeds"]).sort(function (a, b) {
+    if (localStorage.feeds != null && lastVersion < 3.001) {
+        var feeds = JSON.parse(localStorage.feeds).sort(function (a, b) {
             return a.order - b.order;
         });
 
@@ -230,12 +230,12 @@ function DoUpgrades() {
             }
         }
 
-        localStorage["feeds"] = JSON.stringify(feeds);
+        localStorage.feeds = JSON.stringify(feeds);
     }
 
     // update the last version to now
     options.lastversion = manifest.version;
-    localStorage["options"] = JSON.stringify(options);
+    localStorage.options = JSON.stringify(options);
 }
 
 // updates, shows and hides the badge
@@ -278,11 +278,11 @@ function UpdateUnreadBadge() {
 // returns a dictionary of unread counts {feedsid} = unreadtotal, readitems{}
 // may need a way to clean this if they delete feeds
 function GetUnreadCounts() {
-    if (localStorage["unreadinfo"] == null) {
-        localStorage["unreadinfo"] = JSON.stringify({});
+    if (localStorage.unreadinfo == null) {
+        localStorage.unreadinfo = JSON.stringify({});
     }
 
-    return JSON.parse(localStorage["unreadinfo"]);
+    return JSON.parse(localStorage.unreadinfo);
 }
 
 // starts the checking for unread (and now loading of data)
@@ -493,7 +493,7 @@ function CheckForUnread() {
                   unreadInfo[feedID].unreadtotal = feedInfo[feedID].items.length;
                 }
 
-                localStorage["unreadinfo"] = JSON.stringify(unreadInfo);
+                localStorage.unreadinfo = JSON.stringify(unreadInfo);
 
                 if (viewerPort != null) {
                     viewerPort.postMessage({type: "feedupdatecomplete", id: feedID});
@@ -550,7 +550,7 @@ function CleanUpUnreadOrphans() {
         }
     }
 
-    localStorage["unreadinfo"] = JSON.stringify(unreadInfo);
+    localStorage.unreadinfo = JSON.stringify(unreadInfo);
     UpdateUnreadBadge();
 }
 

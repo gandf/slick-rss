@@ -91,11 +91,11 @@ function Save()
 		bgPage.options.usethumbnail = (document.getElementById("useThumbnail").selectedIndex == 1);
 		bgPage.options.feedsmaxheight = parseInt(feedsMaxHeight);
 
-    localStorage["options"] = JSON.stringify(bgPage.options);
+    localStorage.options = JSON.stringify(bgPage.options);
 
     if(!bgPage.options.readlaterenabled)
     {
-       delete localStorage["readlater"];
+       delete localStorage.readlater;
     }
 
     bgPage.GetFeeds(function()

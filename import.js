@@ -70,7 +70,7 @@ function ImportFeeds()
     }
 
 		//remove ReadLater
-		localStorage["feeds"] = JSON.stringify(bgPage.feeds.filter(filterByID));
+		localStorage.feeds = JSON.stringify(bgPage.feeds.filter(filterByID));
     alert(GetMessageText("importAlertImportedFeeds1") + importCount + GetMessageText("importAlertImportedFeeds2"));
 
     bgPage.ReloadViewer();
