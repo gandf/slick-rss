@@ -119,73 +119,83 @@ function UpdateTitle() {
 function ShowFeeds() {
     var feedArea = null;
     var selectKey = null;
-    var lastSelectedID = localStorage.lastSelectedFeedID;
-    var lastSelectedType = localStorage.lastSelectedFeedType;
+    var lastSelectedID = null;
+    var lastSelectedType = null;
+    var listPromise = [];
 
-    UpdateTitle();
-    document.getElementById("manage").style.display = "";
+    var promiselastSelectedFeed = store.getItem('lastSelectedFeed').then(function(data) {
+        if (data != null) {
+            lastSelectedID = data.lastSelectedFeedID;
+            lastSelectedType = data.lastSelectedFeedType;
+    }});
+    listPromise.push(promiselastSelectedFeed);
 
-    if (bgPage.options.readlaterenabled) {
-      ShowFeed(0);
-      if (selectKey == null) {
+    Promise.allSettled(listPromise).then(function(){
+      UpdateTitle();
+      document.getElementById("manage").style.display = "";
+
+      if (bgPage.options.readlaterenabled) {
+        ShowFeed(0);
+        if (selectKey == null) {
+            selectKey = 0;
+        }
+      }
+
+      for (key in groups) {
+        ShowGroup(key);
+
+        if ((groups[key].id == lastSelectedID) && (lastSelectedType == "Group")) {
+            selectKey = key;
+        }
+      }
+
+      for (key in feeds) {
+          if (key == 0) {
+              continue;
+          }
+
+          ShowFeed(key);
+
+          if (selectKey == null) {
+              selectKey = key;
+          }
+
+          if ((feeds[key].id == lastSelectedID) && (lastSelectedType == "Feed")) {
+              selectKey = key;
+          }
+      }
+
+      if ((lastSelectedType == "Group") && (groups[selectKey]) == null) {
+          if (groups.length == 0) {
+              lastSelectedType = "Feed";
+          }
           selectKey = 0;
       }
-    }
 
-    for (key in groups) {
-      ShowGroup(key);
-
-      if ((groups[key].id == lastSelectedID) && (lastSelectedType == "Group")) {
-          selectKey = key;
-      }
-    }
-
-    for (key in feeds) {
-        if (key == 0) {
-            continue;
+      document.getElementById("headerMessage").innerText = GetMessageText("backViewerFeedMe");
+      if (lastSelectedType != "Group") {
+        if (feeds.length == 0 || (feeds.length == 1 && bgPage.feedInfo[bgPage.readLaterFeedID].items.length == 0)) {
+            document.getElementById("feedHeader").style.display = "none";
+            document.getElementById("feedArea").style.display = "none";
+            document.getElementById("refresh").style.display = "none";
+            document.getElementById("markFeedRead").style.display = "none";
+            document.getElementById("noFeedsManaged").style.display = "";
+        } else {
+            SelectFeed(selectKey);
         }
-
-        ShowFeed(key);
-
-        if (selectKey == null) {
-            selectKey = key;
-        }
-
-        if ((feeds[key].id == lastSelectedID) && (lastSelectedType == "Feed")) {
-            selectKey = key;
-        }
-    }
-
-    if ((lastSelectedType == "Group") && (groups[selectKey]) == null) {
-        if (groups.length == 0) {
-            lastSelectedType = "Feed";
-        }
-        selectKey = 0;
-    }
-
-    document.getElementById("headerMessage").innerText = GetMessageText("backViewerFeedMe");
-    if (lastSelectedType != "Group") {
-      if (feeds.length == 0 || (feeds.length == 1 && bgPage.feedInfo[bgPage.readLaterFeedID].items.length == 0)) {
-          document.getElementById("feedHeader").style.display = "none";
-          document.getElementById("feedArea").style.display = "none";
-          document.getElementById("refresh").style.display = "none";
-          document.getElementById("markFeedRead").style.display = "none";
-          document.getElementById("noFeedsManaged").style.display = "";
       } else {
-          SelectFeed(selectKey);
+        SelectGroup(selectKey);
       }
-    } else {
-      SelectGroup(selectKey);
-    }
 
-    // in the middle of refresh all, show progress but wait a little so feed content pushes the feed list to the right size
-    // this is only here to show progress on load when current loading feed is slow, otherwise the next feed will update the progress
-    if (bgPage.checkingForUnread && !bgPage.refreshFeed) {
-        setTimeout(UpdateRefreshAllProgress, 500);
-    }
+      // in the middle of refresh all, show progress but wait a little so feed content pushes the feed list to the right size
+      // this is only here to show progress on load when current loading feed is slow, otherwise the next feed will update the progress
+      if (bgPage.checkingForUnread && !bgPage.refreshFeed) {
+          setTimeout(UpdateRefreshAllProgress, 500);
+      }
 
-    focusFeed();
-    UpdateSizeProgress(true);
+      focusFeed();
+      UpdateSizeProgress(true);
+    });
 }
 
 function FixFeedList() {
@@ -205,24 +215,26 @@ function ShowFeed(key) {
     var li = document.createElement("li");
     var span = document.createElement("span");
 
-    li.innerText = feeds[key].title;
-    li.setAttribute("id", "feedTitle" + feeds[key].id);
-    li.setAttribute("feedType", "feed");
-    span.setAttribute("id", "feedUnread" + feeds[key].id);
+    if (feeds[key] != undefined) {
+      li.innerText = feeds[key].title;
+      li.setAttribute("id", "feedTitle" + feeds[key].id);
+      li.setAttribute("feedType", "feed");
+      span.setAttribute("id", "feedUnread" + feeds[key].id);
 
-    $(li).click(function () {
-        selectedFeedKeyIsFeed = true;
-        SelectFeed(key);
-        focusFeed();
-        UpdateTitle();
-        return false;
-    });
+      $(li).click(function () {
+          selectedFeedKeyIsFeed = true;
+          SelectFeed(key);
+          focusFeed();
+          UpdateTitle();
+          return false;
+      });
 
-    li.appendChild(span);
+      li.appendChild(span);
 
-    document.getElementById("feedList").appendChild(li);
+      document.getElementById("feedList").appendChild(li);
 
-    UpdateFeedUnread(feeds[key].id);
+      UpdateFeedUnread(feeds[key].id);
+    }
 }
 
 function ShowGroup(key) {
@@ -362,7 +374,7 @@ function MarkFeedRead(feedID) {
       // for read later feeds, nuke the items instead of mark read
       if (feedID == bgPage.readLaterFeedID) {
           bgPage.feedInfo[bgPage.readLaterFeedID].items = [];
-          localStorage.readlater = JSON.stringify(bgPage.feedInfo[bgPage.readLaterFeedID]);
+          store.setItem('readlater', bgPage.feedInfo[bgPage.readLaterFeedID]);
           SelectFeed(0);
       } else {
           for (var i = 0; i < bgPage.feedInfo[feedID].items.length; i++) {
@@ -376,7 +388,7 @@ function MarkFeedRead(feedID) {
           }
       }
 
-      localStorage.unreadinfo = JSON.stringify(bgPage.unreadInfo);
+      store.setItem('unreadinfo', bgPage.unreadInfo);
 
       UpdateFeedUnread(feedID);
       UpdateReadAllIcon("Feed");
@@ -430,7 +442,7 @@ function MarkFeedReadFromGroup(feedID) {
           }
       }
 
-      localStorage.unreadinfo = JSON.stringify(bgPage.unreadInfo);
+      store.setItem('unreadinfo', bgPage.unreadInfo);
 
       UpdateFeedUnread(feedID);
 }
@@ -449,7 +461,7 @@ function MarkItemRead(itemID) {
     var expireMs = new Date().getTime() + 5184000000; // 2 months;
 
     if (MarkItemRead_ReadItems(feedID, itemID, expireMs, className) == true) {
-        localStorage.unreadinfo = JSON.stringify(bgPage.unreadInfo);
+        store.setItem('unreadinfo', bgPage.unreadInfo);
 
         UpdateFeedUnread(feedID);
         UpdateReadAllIcon((selectedFeedKeyIsFeed) ? "Feed" : "Group");
@@ -546,7 +558,7 @@ function MarkItemUnread(itemID) {
 
         UnMarkItemReadLaterWithoutSelectFeed(findWithAttr(bgPage.feedInfo[bgPage.readLaterFeedID].items, 'itemID', itemID));
 
-        localStorage.unreadinfo = JSON.stringify(bgPage.unreadInfo);
+        store.setItem('unreadinfo', bgPage.unreadInfo);
 
         UpdateFeedUnread(bgPage.readLaterFeedID);
         UpdateFeedUnread(feedID);
@@ -565,7 +577,7 @@ function MarkItemReadLater(feedID, itemIndex) {
     MarkItemRead(itemID);
     UpdateFeedUnread(bgPage.readLaterFeedID);
 
-    localStorage.readlater = JSON.stringify(bgPage.feedInfo[bgPage.readLaterFeedID]);
+    store.setItem('unreadinfo', bgPage.feedInfo[bgPage.readLaterFeedID]);
 }
 
 function UnMarkItemReadLater(itemIndex) {
@@ -581,7 +593,7 @@ function UnMarkItemReadLaterWithoutSelectFeed(itemIndex) {
         bgPage.feedInfo[bgPage.readLaterFeedID].items.splice(itemIndex, 1);
         bgPage.UpdateUnreadBadge();
 
-        localStorage.readlater = JSON.stringify(bgPage.feedInfo[bgPage.readLaterFeedID]);
+        store.setItem('readlater', bgPage.feedInfo[bgPage.readLaterFeedID]);
 
         UpdateFeedUnread(bgPage.readLaterFeedID);
     }
@@ -597,84 +609,99 @@ function SelectGroup(key) {
 
 function SelectFeedOrGroup(key, type) {
     var feedsOrGroups, feedsOrGroupsInfo, selectedFeedsOrGroups;
-    var lastSelectedFeedID = localStorage.lastSelectedFeedID;
-    if (localStorage.lastSelectedFeedType == "Feed") {
-      selectedFeedsOrGroups = feeds;
-    } else {
-      selectedFeedsOrGroups = groups;
-    }
+    var lastSelectedFeedID = null;
+    var lastSelectedFeedType = null;
+    var listPromise = [];
 
-    if (type == "Feed") {
-      feedsOrGroups = feeds;
-      feedsOrGroupsInfo = bgPage.feedInfo;
-    } else {
-      feedsOrGroups = groups;
-      feedsOrGroupsInfo = bgPage.groupInfo;
-    }
-    localStorage.lastSelectedFeedID = feedsOrGroups[key].id;
-    localStorage.lastSelectedFeedType = type;
+    var promiselastSelectedFeed = store.getItem('lastSelectedFeed').then(function(data) {
+        if (data != null) {
+            lastSelectedFeedID = data.lastSelectedFeedID;
+            lastSelectedFeedType = data.lastSelectedFeedType;
+    }});
+    listPromise.push(promiselastSelectedFeed);
 
-    document.getElementById("feedPreviewScroller").scrollTop = 0;
+    Promise.allSettled(listPromise).then(function(){
+      if (lastSelectedFeedType == "Feed") {
+        selectedFeedsOrGroups = feeds;
+      } else {
+        selectedFeedsOrGroups = groups;
+      }
 
-    clearTimeout(feedReadToID);
+      if (type == "Feed") {
+        feedsOrGroups = feeds;
+        feedsOrGroupsInfo = bgPage.feedInfo;
+      } else {
+        feedsOrGroups = groups;
+        feedsOrGroupsInfo = bgPage.groupInfo;
+      }
 
-    if (selectedFeedKey != null) {
-        document.getElementById("feedTitle" + selectedFeedsOrGroups[selectedFeedKey].id).setAttribute("class", "");
-    }
+      var lastSelectedFeed = {};
+      lastSelectedFeed.lastSelectedFeedID = feedsOrGroups[key].id;
+      lastSelectedFeed.lastSelectedFeedType = type;
+      store.setItem('lastSelectedFeed', lastSelectedFeed);
 
-    document.getElementById("feedTitle" + feedsOrGroups[key].id).setAttribute("class", "selectedFeed");
+      document.getElementById("feedPreviewScroller").scrollTop = 0;
 
-    selectedFeedKey = key;
-    selectedFeedKeyIsFeed = (type == "Feed");
-    UpdateTitle();
+      clearTimeout(feedReadToID);
 
-    // clear the slate
-    var el = document.getElementById("feedPreview");
+      if (selectedFeedKey != null) {
+          document.getElementById("feedTitle" + selectedFeedsOrGroups[selectedFeedKey].id).setAttribute("class", "");
+      }
 
-    while (el.childNodes.length >= 1) {
-        el.removeChild(el.firstChild);
-    }
+      document.getElementById("feedTitle" + feedsOrGroups[key].id).setAttribute("class", "selectedFeed");
 
-    // clear the slate
-    document.getElementById("markFeedRead").style.display = "none";
-    document.getElementById("header").className = "";
-    document.getElementById("feedError").style.display = "none";
-    document.getElementById("noItems").style.display = "none";
-    document.getElementById("refresh").style.display = (feedsOrGroups[key].id != bgPage.readLaterFeedID) ? "" : "none";
+      selectedFeedKey = key;
+      selectedFeedKeyIsFeed = (type == "Feed");
+      UpdateTitle();
 
-    // feed isn't ready yet
-    if (feedsOrGroupsInfo[feedsOrGroups[key].id] == null || feedsOrGroupsInfo[feedsOrGroups[key].id].loading) {
-      document.getElementById("refresh").style.display = "none";
-        document.getElementById("headerMessage").innerText = GetMessageText("backViewerLoadingFeed");
-        document.getElementById("header").className = "loading";
+      // clear the slate
+      var el = document.getElementById("feedPreview");
 
-        if (type == "Feed") {
-        // must be a new feed with no content yet
-        if (feedsOrGroupsInfo[feedsOrGroups[key].id] == null && !bgPage.checkingForUnread) {
-            bgPage.CheckForUnreadStart(key);
-        }
-        return;
-    }
-  }
+      while (el.childNodes.length >= 1) {
+          el.removeChild(el.firstChild);
+      }
 
-    // feed loaded, but had an error
-    if (feedsOrGroupsInfo[feedsOrGroups[key].id] != null) {
-      if (feedsOrGroupsInfo[feedsOrGroups[key].id].error != "") {
-          ShowFeedError(feedsOrGroupsInfo[feedsOrGroups[key].id].error);
+      // clear the slate
+      document.getElementById("markFeedRead").style.display = "none";
+      document.getElementById("header").className = "";
+      document.getElementById("feedError").style.display = "none";
+      document.getElementById("noItems").style.display = "none";
+      document.getElementById("refresh").style.display = (feedsOrGroups[key].id != bgPage.readLaterFeedID) ? "" : "none";
+
+      // feed isn't ready yet
+      if (feedsOrGroupsInfo[feedsOrGroups[key].id] == null || feedsOrGroupsInfo[feedsOrGroups[key].id].loading) {
+        document.getElementById("refresh").style.display = "none";
+          document.getElementById("headerMessage").innerText = GetMessageText("backViewerLoadingFeed");
+          document.getElementById("header").className = "loading";
+
+          if (type == "Feed") {
+          // must be a new feed with no content yet
+          if (feedsOrGroupsInfo[feedsOrGroups[key].id] == null && !bgPage.checkingForUnread) {
+              bgPage.CheckForUnreadStart(key);
+          }
           return;
       }
-      document.getElementById("noItems").style.display = (feedsOrGroupsInfo[feedsOrGroups[key].id].items.length == 0) ? "" : "none";
     }
 
-    RenderFeed(type);
-    UpdateReadAllIcon(type);
-    FixFeedList(); // in case header wraps
+      // feed loaded, but had an error
+      if (feedsOrGroupsInfo[feedsOrGroups[key].id] != null) {
+        if (feedsOrGroupsInfo[feedsOrGroups[key].id].error != "") {
+            ShowFeedError(feedsOrGroupsInfo[feedsOrGroups[key].id].error);
+            return;
+        }
+        document.getElementById("noItems").style.display = (feedsOrGroupsInfo[feedsOrGroups[key].id].items.length == 0) ? "" : "none";
+      }
 
-    if (bgPage.options.markreadafter > 0 && key != 0) {
-        feedReadToID = setTimeout(function () {
-            MarkFeedRead(feedsOrGroups[key].id)
-        }, bgPage.options.markreadafter * 1000);
-    }
+      RenderFeed(type);
+      UpdateReadAllIcon(type);
+      FixFeedList(); // in case header wraps
+
+      if (bgPage.options.markreadafter > 0 && key != 0) {
+          feedReadToID = setTimeout(function () {
+              MarkFeedRead(feedsOrGroups[key].id)
+          }, bgPage.options.markreadafter * 1000);
+      }
+    });
 }
 
 function RenderFeed(type) {

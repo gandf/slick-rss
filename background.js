@@ -1,6 +1,12 @@
 var manifest = chrome.runtime.getManifest();
-var options = GetOptions();
-var unreadInfo = GetUnreadCounts();
+var defaultOptions = GetDefaultOptions();
+var options = defaultOptions;
+var promiseBegin = GetOptions();
+var promiseUpgrade = null;
+var promiseGetUnreadCounts = null;
+var promiseGetReadLaterItems = null;
+var promiseExternalRequest = null;
+var unreadInfo = { };
 var unreadTotal = 0;
 var feedInfo = [];
 var feeds = [];
@@ -17,16 +23,61 @@ var readLaterFeedID = 9999999999;
 var allFeedsID = 9999999998;
 var viewPortTabID = null;
 var referenceDate = GetDate("Thu, 31 Dec 2019 23:59:59 +0000").getTime();
+var readlater = {
+    title: GetMessageText("backReadLater"),
+    description: GetMessageText("backItemsMarkedReadLater"),
+    group: "",
+    loading: false,
+    items: [],
+    error: ""
+};
 
 chrome.browserAction.onClicked.addListener(ButtonClicked);
 chrome.runtime.onMessageExternal.addListener(ExternalRequest);
-chrome.extension.onConnect.addListener(InternalConnection);
+chrome.runtime.onConnect.addListener(InternalConnection);
 
-DoUpgrades();
-GetFeeds(function () {
-    CleanUpUnreadOrphans();
-    CheckForUnreadStart();
-});
+waitOptionReady().then(function () {
+    promiseUpgrade = DoUpgrades();
+    waitUpgrade().then(function () {
+      promiseGetUnreadCounts = GetUnreadCounts();
+      waitGetUnreadCounts().then(function () {
+        promiseGetReadLaterItems = GetReadLaterItems();
+        waitGetReadLaterItems().then(function () {
+          GetFeeds(function () {
+              var promiseCleanUpUnreadOrphans = CleanUpUnreadOrphans();
+              promiseCleanUpUnreadOrphans.then(function(){
+                CheckForUnreadStart();
+              });
+          });
+        });
+      });
+    });
+  }
+);
+
+async function waitOptionReady() {
+  return start = await Promise.allSettled([promiseBegin]);
+}
+
+async function waitUpgrade() {
+  return start = await Promise.allSettled([promiseUpgrade]);
+}
+
+async function waitGetUnreadCounts() {
+  return start = await Promise.allSettled([promiseGetUnreadCounts]);
+}
+
+async function waitGetReadLaterItems() {
+  return start = await Promise.allSettled([promiseGetReadLaterItems]);
+}
+
+async function waitPromise(listPromiseToWait) {
+  return start = await Promise.allSettled([listPromiseToWait]);
+}
+
+async function waitExternalRequest() {
+  return start = await Promise.allSettled([promiseExternalRequest]);
+}
 
 // communicate with other pages
 function InternalConnection(port) {
@@ -40,17 +91,18 @@ function InternalConnection(port) {
 
 // tells viewer to reload, a feed changed
 function ReloadViewer() {
-    CleanUpUnreadOrphans();
-
-    if (viewerPort != null) {
-        viewerPort.postMessage({type: "feedschanged"});
-    }
+    var promiseCleanUpUnreadOrphans = CleanUpUnreadOrphans();
+    promiseCleanUpUnreadOrphans.then(function() {
+      if (viewerPort != null) {
+          viewerPort.postMessage({type: "feedschanged"});
+      }
+    });
 }
 
 // manage viewer spawning or focus
 function ButtonClicked(tab) {
     if (viewerPort == null) {
-        chrome.tabs.create({url: chrome.extension.getURL("viewer.html")}, function (tab) {
+        chrome.tabs.create({url: chrome.runtime.getURL("viewer.html")}, function (tab) {
             viewerPortTabID = tab.id;
         });
     } else {
@@ -62,6 +114,7 @@ function ExternalRequest(request, sender, sendResponse) {
     if (request.type == "addfeed") {
       var maxOrder = 0;
       var order = 0;
+      var resultPromise = null;
 
       for (var i = 0; i < feeds.length; i++) {
           order = parseInt(feeds[i].order);
@@ -74,46 +127,45 @@ function ExternalRequest(request, sender, sendResponse) {
       maxOrder++;
 
       feeds.push(CreateNewFeed(request.title, request.url, request.group, options.maxitems, maxOrder));
-      localStorage.feeds = JSON.stringify(feeds);
-      UpdateGroups();
-      ReloadViewer();
+      resultPromise = store.setItem('feeds', feeds);
+      resultPromise.then(function(){
+        UpdateGroups();
+        ReloadViewer();
 
-      sendResponse({});
+        sendResponse({});
+      });
     }
 
     if (request.type == "deletefeed") {
         for (var i = 0; i < feeds.length; i++) {
             if (feeds[i].url == request.url) {
               feeds.splice(i, 1);
-              localStorage.feeds = JSON.stringify(feeds);
-              UpdateGroups();
-              ReloadViewer();
             }
         }
-
-        sendResponse({});
+        resultPromise = store.setItem('feeds', feeds);
+        resultPromise.then(function(){
+          UpdateGroups();
+          ReloadViewer();
+          sendResponse({});
+      });
     }
 }
 
 // gets all or some options, filling in defaults when needed
 function GetOptions() {
-    var options;
-    var defaultOptions = GetDefaultOptions();
+  var promiseGetOption = store.getItem('options').then(function(data) {
+      if (data != null) {
+          options = data;
 
-    if (localStorage.options == null) {
-        options = GetDefaultOptions();
-    } else {
-        options = JSON.parse(localStorage.options);
-
-        // fill in defaults for new options
-        for (key in defaultOptions) {
-            if (options[key] == undefined) {
-                options[key] = defaultOptions[key];
-            }
-        }
-    }
-
-    return options;
+          // fill in defaults for new options
+          for (key in GetDefaultOptions()) {
+              if (options[key] == undefined) {
+                  options[key] = defaultOptions[key];
+              }
+          }
+      }
+    });
+    return promiseGetOption;
 }
 
 // used to get defaults to help fill in missing pieces as I add more options
@@ -146,11 +198,12 @@ function GetDefaultOptions() {
 
 // gets the feed array for everyone to use
 function GetFeeds(callBack) {
-    feeds = [];
-    getFeedsCallBack = callBack;
+  feeds = [];
+  getFeedsCallBack = callBack;
 
-    if (localStorage.feeds != null) {
-        feeds = JSON.parse(localStorage.feeds).sort(function (a, b) {
+  store.getItem('feeds').then(function(datafeeds) {
+    if (datafeeds != null) {
+        feeds = datafeeds.sort(function (a, b) {
             return a.order - b.order;
         });
     }
@@ -158,6 +211,7 @@ function GetFeeds(callBack) {
     feeds.unshift(GetReadLaterFeed());
     UpdateGroups();
     getFeedsCallBack();
+  });
 }
 
 function GetReadLaterFeed() {
@@ -165,18 +219,22 @@ function GetReadLaterFeed() {
 }
 
 function GetReadLaterItems() {
-    if (localStorage.readlater == null) {
-        localStorage.readlater = JSON.stringify({
-            title: GetMessageText("backReadLater"),
-            description: GetMessageText("backItemsMarkedReadLater"),
-            group: "",
-            loading: false,
-            items: [],
-            error: ""
-        });
-    }
+  var resultPromise = store.getItem('readlater').then(function(data) {
+    if (data != null) {
+      readlater = JSON.parse(data);
+    } else {
+      store.setItem('readlater', {
+          title: GetMessageText("backReadLater"),
+          description: GetMessageText("backItemsMarkedReadLater"),
+          group: "",
+          loading: false,
+          items: [],
+          error: ""
+      });
+      }
+  });
 
-    return JSON.parse(localStorage.readlater);
+  return resultPromise;
 }
 
 // helper function for creating new feeds
@@ -217,25 +275,91 @@ function GetRandomID() {
 // as this project gets larger there will be upgrades to storage items this will help
 function DoUpgrades() {
     var lastVersion = parseFloat(options.lastversion);
+    var listPromise = [];
+    var listPromiseFinal = [];
+    var resultPromise = null;
 
-    // since 3.001 requires group for feeds, lets make sure they have them
-    if (localStorage.feeds != null && lastVersion < 3.001) {
-        var feeds = JSON.parse(localStorage.feeds).sort(function (a, b) {
-            return a.order - b.order;
-        });
-
-        for (var key in feeds) {
-            if (feeds[key].group == null) {
-                feeds[key] = CreateNewFeed(feeds[key].title, feeds[key].url, "", feeds[key].maxitems, feeds[key].order, feeds[key].id)
-            }
-        }
-
-        localStorage.feeds = JSON.stringify(feeds);
+    //Migrate localStorage to indexedDB
+    if ((localStorage.lastSelectedFeedID != null) || (localStorage.lastSelectedFeedType != null)) {
+      var lastSelectedFeed = {};
+      lastSelectedFeed.lastSelectedFeedID = JSON.parse(localStorage.lastSelectedFeedID);
+      lastSelectedFeed.lastSelectedFeedType = localStorage.lastSelectedFeedType;
+      listPromise.push(store.setItem('lastSelectedFeed', lastSelectedFeed));
     }
 
+    if (localStorage.unreadinfo != null) {
+      unreadInfo = JSON.parse(localStorage.unreadinfo);
+      listPromise.push(store.setItem('unreadinfo', unreadInfo));
+    }
+
+    if (localStorage.feeds != null) {
+      feeds = JSON.parse(localStorage.feeds);
+      listPromise.push(store.setItem('feeds', feeds));
+    }
+
+    if (localStorage.readlater != null) {
+      readlater = JSON.parse(localStorage.readlater);
+      listPromise.push(store.setItem('readlater', readlater));
+    }
+
+    if (localStorage.options != null) {
+      options = JSON.parse(localStorage.options);
+      listPromise.push(store.setItem('options', options));
+    }
+
+    if (listPromise.length > 0) {
+      listPromiseFinal.push(Promise.allSettled(listPromise).then(
+        function(data) {
+            localStorage.clear();
+          }
+      ));
+    }
+
+    if (listPromise.length > 0) {
+      // since 3.001 requires group for feeds, lets make sure they have them
+      listPromiseFinal.push(store.getItem('feeds').then(function(data) {
+          if (data!= null && lastVersion < 3.001) {
+              feeds = data.sort(function (a, b) {
+                  return a.order - b.order;
+              });
+
+              for (var key in feeds) {
+                  if (feeds[key].group == null) {
+                      feeds[key] = CreateNewFeed(feeds[key].title, feeds[key].url, "", feeds[key].maxitems, feeds[key].order, feeds[key].id)
+                  }
+              }
+              store.setItem('feeds', feeds);
+          }
+        }));
+      }
+
     // update the last version to now
-    options.lastversion = manifest.version;
-    localStorage.options = JSON.stringify(options);
+    if (options.lastversion != manifest.version) {
+      options.lastversion = manifest.version;
+      listPromiseFinal.push(store.setItem('options', options));
+    }
+
+    if (listPromiseFinal.length > 0) {
+      resultPromise = Promise.allSettled(listPromiseFinal);
+    } else {
+      listPromise.push(store.getItem('feeds').then(function(data){
+          if (data != null) {
+              feeds = data;
+          }
+        }));
+      listPromise.push(store.getItem('unreadinfo').then(function(data){
+          if (data != null) {
+              unreadInfo = data;
+          }
+        }));
+      listPromise.push(store.getItem('readlater').then(function(data){
+          if (data != null) {
+              readlater = data;
+          }
+        }));
+      resultPromise = Promise.allSettled(listPromise);
+    }
+    return resultPromise;
 }
 
 // updates, shows and hides the badge
@@ -268,6 +392,7 @@ function UpdateUnreadBadge() {
 
     // update badge
     chrome.browserAction.setBadgeText({text: str});
+    //chrome.action.setBadgeText({text: str});
 
     // update title
     if (viewerPort != null) {
@@ -278,11 +403,19 @@ function UpdateUnreadBadge() {
 // returns a dictionary of unread counts {feedsid} = unreadtotal, readitems{}
 // may need a way to clean this if they delete feeds
 function GetUnreadCounts() {
-    if (localStorage.unreadinfo == null) {
-        localStorage.unreadinfo = JSON.stringify({});
-    }
+  var resultPromise = store.getItem('unreadinfo').then(function(data) {
+      if (data != null) {
+          unreadinfo = data;
+      } else {
+        unreadinfo = { };
+        store.setItem('unreadinfo', { });
+      }
+    },function(dataError) {
+        unreadinfo = { };
+        store.setItem('unreadinfo', { });
+    });
 
-    return JSON.parse(localStorage.unreadinfo);
+    return resultPromise;
 }
 
 // starts the checking for unread (and now loading of data)
@@ -317,6 +450,7 @@ function CheckForUnread() {
     var req = new XMLHttpRequest();
     var toID = setTimeout(req.abort, 60000);
     var now = new Date();
+    var promiseCheckForUnread = [];
 
     feedInfo[feedID] = {title: "", description: "", group: "", loading: true, items: [], error: ""};
 
@@ -333,6 +467,9 @@ function CheckForUnread() {
                 var doc = req.responseXML;
 
                 // initialize unread object if not setup yet
+                if (unreadInfo == null) {
+                  unreadInfo = { };
+                }
                 if (unreadInfo[feedID] == null) {
                     unreadInfo[feedID] = {unreadtotal: 0, readitems: {}};
                 }
@@ -483,21 +620,22 @@ function CheckForUnread() {
                         feedInfo[feedID].error = GetMessageText("backError200Part1") + req.status + GetMessageText("backError200Part2") + req.statusText + GetMessageText("backError200Part3");
                     } else {
                         // cheat the system, fill in read later info
-                        feedInfo[feedID] = GetReadLaterItems();
+                        feedInfo[feedID] = readlater;
                         unreadInfo[feedID].unreadtotal = feedInfo[feedID].items.length;
                     }
                 }
                 if (feedID == readLaterFeedID) {
                   // cheat the system, fill in read later info
-                  feedInfo[feedID] = GetReadLaterItems();
+                  feedInfo[feedID] = readlater;
+
+                if ((feedInfo[feedID] == null) || (feedInfo[feedID].items == null)) {
+                  unreadInfo[feedID].unreadtotal = 0;
+                } else {
                   unreadInfo[feedID].unreadtotal = feedInfo[feedID].items.length;
                 }
 
-                localStorage.unreadinfo = JSON.stringify(unreadInfo);
-
-                if (viewerPort != null) {
-                    viewerPort.postMessage({type: "feedupdatecomplete", id: feedID});
                 }
+                promiseCheckForUnread.push(store.setItem('unreadinfo', unreadInfo));
 
                 checkForUnreadCounter++;
 
@@ -506,11 +644,17 @@ function CheckForUnread() {
 
                 feedInfo[feedID].loading = false;
 
-                if (checkForUnreadCounter >= feeds.length || refreshFeed) {
-                    CheckForUnreadComplete();
-                } else {
-                    CheckForUnread();
-                }
+                waitPromise(promiseCheckForUnread).then(function () {
+                  if (viewerPort != null) {
+                      viewerPort.postMessage({type: "feedupdatecomplete", id: feedID});
+                  }
+
+                  if (checkForUnreadCounter >= feeds.length || refreshFeed) {
+                      CheckForUnreadComplete();
+                  } else {
+                      CheckForUnread();
+                  }
+                });
             }
         }
 
@@ -529,7 +673,10 @@ function CheckForUnreadComplete() {
     }
 
     for (var i = 0; i < feeds.length; i++) {
-      SortByDate(feedInfo[feeds[i].id].items);
+      if (feedInfo[feeds[i].id] != undefined)
+      {
+        SortByDate(feedInfo[feeds[i].id].items);
+      }
     }
 
     UpdateGroups();
@@ -549,9 +696,11 @@ function CleanUpUnreadOrphans() {
             delete unreadInfo[key];
         }
     }
+    var promiseCleanUpUnreadOrphans = store.setItem('unreadinfo', unreadInfo);
 
-    localStorage.unreadinfo = JSON.stringify(unreadInfo);
     UpdateUnreadBadge();
+
+    return promiseCleanUpUnreadOrphans;
 }
 
 // to help with master title & description getting

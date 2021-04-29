@@ -284,6 +284,45 @@
   "optionFeedsMaxHeightUnits": {
     "message": " px (0 = illimité)"
   },
+  "optionStorageUsage": {
+    "message": "Utilisation stockage :"
+  },
+  "optionStorageUsageValue1": {
+    "message": ""
+  },
+  "optionStorageUsageValue2": {
+    "message": " utilisés sur "
+  },
+  "optionStorageUsageValue3": {
+    "message": " disponibles"
+  },
+  "Bytes": {
+    "message": "Octets"
+  },
+  "KB": {
+    "message": "Ko"
+  },
+  "MB": {
+    "message": "Mo"
+  },
+  "GB": {
+    "message": "Go"
+  },
+  "TB": {
+    "message": "To"
+  },
+  "PB": {
+    "message": "Po"
+  },
+  "EB": {
+    "message": "Eo"
+  },
+  "ZB": {
+    "message": "Zo"
+  },
+  "YB": {
+    "message": "Yo"
+  },
   "backReadLater": {
     "message": "Lire plus tard"
   },

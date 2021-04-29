@@ -1,30 +1,22 @@
 {
-  "manifest_version": 2,
-  "name": "__MSG_appName__",
-  "version": "3.002",
-  "description": "__MSG_appDesc__",
-  "options_page": "options.html",
-  "default_locale": "en",
-  "icons": {
-    "128": "icon_128.png",
-    "16": "transmit.png"
-  },
-  "browser_action": {
-    "default_icon": "transmit.png",
-    "default_title": "Slick RSS"
-  },
-  "background": {
-    "scripts": [
-      "sha256.js",
-      "common.js",
-      "background.js"
-    ],
-    "persistent": false
-  },
-  "permissions": [
-    "http://*/",
-    "https://*/",
-    "activeTab"
-  ],
-  "content_security_policy": "script-src 'self' 'sha256-5dbff77120a55c7813a549c4dcea4b14e55e2cf29344d69138dd24eaae238f02' 'sha256-e51fda122aed992db5508c15f0e5d6f8297a6abdf88317f78cea7e3cffa29cb2' 'sha256-c2297cedde2c3d4c889f49fe069715d7f0b9497de42724c222959f6b40c4594a' 'sha256-6db368b33e4994675ecdc1fcbf175b27e6ff8552904d3471adbfa4335de9c5cd' 'sha256-ff1523fb7389539c84c65aba19260648793bb4f5e29329d2ee8804bc37a3fe6e'; object-src 'self'"
+    "manifest_version": 2,
+    "name": "__MSG_appName__",
+    "version": "3.002",
+    "description": "__MSG_appDesc__",
+    "options_page": "options.html",
+    "default_locale": "en",
+    "icons": {
+        "16": "transmit.png",
+        "128": "icon_128.png"
+    },
+    "browser_action": {
+        "default_icon": "transmit.png",
+        "default_title": "Slick RSS"
+    },
+    "background": {
+        "scripts": ["sha256.js","common.js","localforage.min.js","datamanager.js","background.js"],
+        "persistent": false
+    },
+    "permissions": ["http://*/","https://*/","activeTab","alarms"],
+    "content_security_policy": "script-src 'self' 'sha256-bf1e9520668ba924c63f655d66e5772d47248d46f668af6a7c7d1b3ea380667c' 'sha256-02de16cced0ce66265b8f482c3df4894a828749d7623dfe682e5c104357ec663' 'sha256-170cbb1c6e36d3e67ead5997dabb0a09b3b56a68551064f2f971aed010ca7f3d' 'sha256-3944a9a3652c7a1d687c664dfbb6e21cfeb219d2277caf2247c17161c0ca6a0b' 'sha256-84e44d1ce1aa6e27f24600c54584b3d0c99eadcc97a4815307502b79aa9404e8' 'sha256-4fab8bbe73e25ee6363749d0aa44a5f553abf50acca08ee176286f1ed1725503' 'sha256-907c5a52e6d0d3fff487f49ec9890ad99fcc6cdb96694d140887e75d584d0c46' 'sha256-528a9e76a1fcac7417c48925b6357f81e263d452164efbcdec53a315c080044c' 'sha256-ff1523fb7389539c84c65aba19260648793bb4f5e29329d2ee8804bc37a3fe6e' 'sha256-a7097fc43cb7007dd8a9594e7c4d09c76ae2dd8dc587392a1699e86b4141f95b' 'sha256-b41a630a675d3019d9bab6de44247161c4233c9a88ab0b5fc2d64d95152ffbed' 'sha256-5dbff77120a55c7813a549c4dcea4b14e55e2cf29344d69138dd24eaae238f02' 'sha256-f3942028ff03a772e410f7934a714720e28d9ed8e2224949b78bdae6ce62b3c5' 'sha256-2309699515b226f07d5d8373a20d26bf4598844cae0c4d73b71601e2681bc9d4' 'sha256-2bd8eb5fe4fdbd267f58607566f60245c5dc2eee3933d8b4c3dfb51fb7378408' 'sha256-c7722702bd4184c3113fa526efe7f4d1da538cf1411f7f8b4d9fb7868c3dace5' 'sha256-e2d4daaa82c746f250908246fbb36c4421999f99bc160c9a8c900e788d711ce2' 'sha256-6db368b33e4994675ecdc1fcbf175b27e6ff8552904d3471adbfa4335de9c5cd' 'sha256-3becb1026cf41631d87af422f930bcbe33bd7fc3b17e349e2058cca3a8c09916' 'sha256-216d47b2d6ff679bd823e2ee53f3a7e3e390f425d4c0a6f6467a580e2da58d27'; object-src 'self'"
 }

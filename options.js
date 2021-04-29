@@ -38,6 +38,10 @@ function SetupScreen()
 		document.getElementById("useThumbnail").selectedIndex = bgPage.options.usethumbnail;
 		document.getElementById("feedsMaxHeight").value = bgPage.options.feedsmaxheight;
 
+		navigator.storage.estimate().then(({usage, quota}) => {
+			document.getElementById("StorageUsageValue").innerHTML = chrome.i18n.getMessage("optionStorageUsageValue1") + formatBytes(usage) + chrome.i18n.getMessage("optionStorageUsageValue2") + formatBytes(quota) + chrome.i18n.getMessage("optionStorageUsageValue3");
+	  });
+
     ShowDateSample(false);
 }
 
@@ -91,11 +95,11 @@ function Save()
 		bgPage.options.usethumbnail = (document.getElementById("useThumbnail").selectedIndex == 1);
 		bgPage.options.feedsmaxheight = parseInt(feedsMaxHeight);
 
-    localStorage.options = JSON.stringify(bgPage.options);
+		store.setItem('options', bgPage.options);
 
     if(!bgPage.options.readlaterenabled)
     {
-       delete localStorage.readlater;
+			store.setItem('readlater', {}); //delete readlater
     }
 
     bgPage.GetFeeds(function()

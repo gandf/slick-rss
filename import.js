@@ -70,10 +70,12 @@ function ImportFeeds()
     }
 
 		//remove ReadLater
-		localStorage.feeds = JSON.stringify(bgPage.feeds.filter(filterByID));
-    alert(GetMessageText("importAlertImportedFeeds1") + importCount + GetMessageText("importAlertImportedFeeds2"));
+		var resultPromise = store.setItem('feeds', bgPage.feeds.filter(filterByID)).then(function(data){
+			alert(GetMessageText("importAlertImportedFeeds1") + importCount + GetMessageText("importAlertImportedFeeds2"));
+		});
+		resultPromise.then(function(){
+			bgPage.ReloadViewer();
+		});
 
-    bgPage.ReloadViewer();
-
-    window.close();
+		window.close();
 }

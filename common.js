@@ -236,3 +236,5 @@ function SortByDate(items) {
     return (parseInt(b["order"]) - parseInt(a["order"]));
     });
 }
+
+function formatBytes(a,b=2){var textBytes=chrome.i18n.getMessage("Bytes");var textKB=chrome.i18n.getMessage("KB");var textMB=chrome.i18n.getMessage("MB");var textGB=chrome.i18n.getMessage("GB");var textTB=chrome.i18n.getMessage("TB");var textPB=chrome.i18n.getMessage("PB");var textEB=chrome.i18n.getMessage("EB");var textZB=chrome.i18n.getMessage("ZB");var textYB=chrome.i18n.getMessage("YB");if(0===a)return`0 ${textBytes}`;const c=0>b?0:b,d=Math.floor(Math.log(a)/Math.log(1024));return parseFloat((a/Math.pow(1024,d)).toFixed(c))+" "+[`${textBytes}`,`${textKB}`,`${textMB}`,`${textGB}`,`${textTB}`,`${textPB}`,`${textEB}`,`${textZB}`,`${textYB}`][d]}

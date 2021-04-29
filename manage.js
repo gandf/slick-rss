@@ -242,16 +242,18 @@ function Save()
     // remove read later feed
     feeds.splice(0,1);
 
-    localStorage.feeds = JSON.stringify(feeds);
+		var resultPromise = store.setItem('feeds', feeds).then(function(data){
+			bgPage.CleanUpUnreadOrphans();
+		});
 
-    bgPage.CleanUpUnreadOrphans();
-
-    // get feeds to re-order the feeds
-    bgPage.GetFeeds(function()
-    {
-        bgPage.CheckForUnreadStart();
-        window.location = chrome.extension.getURL("viewer.html");
-    });
+		resultPromise.then(function(){
+			// get feeds to re-order the feeds
+	    bgPage.GetFeeds(function()
+	    {
+	        bgPage.CheckForUnreadStart();
+	        window.location = chrome.extension.getURL("viewer.html");
+	    });
+		});
 }
 
 function ShowFeeds()
