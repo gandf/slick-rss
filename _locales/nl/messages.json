@@ -245,6 +245,9 @@
   "optionShowTotlaFeedList": {
     "message": "Show totals in feed list"
   },
+  "optionPlaySound": {
+    "message": "Play notification sound"
+  },
   "optionReadLater": {
     "message": "Read Later Options"
   },

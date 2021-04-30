@@ -248,6 +248,9 @@
   "optionShowTotlaFeedList": {
     "message": "Afficher totaux dans la liste de flux"
   },
+  "optionPlaySound": {
+    "message": "Jouer son de notification"
+  },
   "optionReadLater": {
     "message": "Options Lire plus tard"
   },

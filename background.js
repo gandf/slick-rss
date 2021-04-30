@@ -19,6 +19,7 @@ var checkForUnreadCounter = 0;
 var allFeedsUnreadCounter = -1;
 var getFeedsCallBack = null;
 var refreshFeed = false;
+var newNotif = false;
 var readLaterFeedID = 9999999999;
 var allFeedsID = 9999999998;
 var viewPortTabID = null;
@@ -192,7 +193,8 @@ function GetDefaultOptions() {
         "loadlinksinbackground": true,
         "showallfeeds": false,
         "usethumbnail": false,
-        "feedsmaxheight": 200
+        "feedsmaxheight": 200,
+        "playSoundNotif": false
     };
 }
 
@@ -388,6 +390,11 @@ function UpdateUnreadBadge() {
         str = "";
     }
 
+    if (newNotif) {
+      PlayNotificationSound();
+      newNotif = false;
+    }
+
     unreadTotal = total;
 
     // update badge
@@ -465,6 +472,13 @@ function CheckForUnread() {
             if (req.readyState == 4) {
                 clearTimeout(toID);
                 var doc = req.responseXML;
+                var previousUnreadtotal;
+                
+                if (unreadInfo[feedID] == null) {
+                  previousUnreadtotal = 0;
+                } else {
+                  previousUnreadtotal = unreadInfo[feedID].unreadtotal;
+                }
 
                 // initialize unread object if not setup yet
                 if (unreadInfo == null) {
@@ -636,6 +650,10 @@ function CheckForUnread() {
 
                 }
                 promiseCheckForUnread.push(store.setItem('unreadinfo', unreadInfo));
+
+                if (unreadInfo[feedID].unreadtotal > previousUnreadtotal) {
+                  newNotif = true;
+                }
 
                 checkForUnreadCounter++;
 
@@ -940,4 +958,11 @@ function GetFeedInfoItem(feedID, itemIndex) {
       return feedGroupInfo;
     }
     return feedGroupInfo.items[itemIndex];
+}
+
+function PlayNotificationSound() {
+  if (options.playSoundNotif) {
+    var audio = new Audio('Glisten.ogg');
+    audio.play();
+  }
 }

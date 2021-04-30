@@ -144,11 +144,11 @@
 <table cellpadding="2" cellspacing="4">
 <tr><td colspan="2" class="optionHeader">Information</td></tr>
 <tr><td class="bold" data-locale="optionGithubUrl">GitHub URL:</td><td><a href="https://github.com/gandf/slick-rss" target="_blank">https://github.com/gandf/slick-rss</a></td></tr>
-<tr><td class="bold" data-locale="optionStorageUsage">Storage usage:</td><td><p type="text" id="StorageUsageValue"></p></td></tr>
+<tr><td data-locale="optionStorageUsage">Storage usage:</td><td><label type="text" id="StorageUsageValue"></label></td></tr>
 <tr><td></td></tr>
 <tr><td colspan="2" class="optionHeader" data-locale="optionFeedUnread">Feed Unread Options</td></tr>
-<tr><td data-locale="optionUpdateInterval">Update interval</td><td><input type="text" data-locale="optionMinutes" id="checkInterval" maxlength="4" /> minutes</td></tr>
-<tr><td data-locale="optionMarkAllRead">Mark all read after</td><td><input type="text" id="markReadAfter" maxlength="4" /><div data-locale="optionSecondDisabled"> seconds (0 = disabled)</div></td></tr>
+<tr><td data-locale="optionUpdateInterval">Update interval</td><td><input type="text" id="checkInterval" maxlength="4" /><label data-locale="optionMinutes"> minutes</label></td></tr>
+<tr><td data-locale="optionMarkAllRead">Mark all read after</td><td><input type="text" id="markReadAfter" maxlength="4" /><label data-locale="optionSecondDisabled"> seconds (0 = disabled)</label></td></tr>
 <tr><td data-locale="optionMarkAllReadTitleClick">Mark all read after title click</td><td><select id="markReadOnClick">
 <option value="0" data-locale="optionOff">Off</option>
 <option value="1" data-locale="optionOn">On</option></select></td></tr>
@@ -161,12 +161,16 @@
 <option value="1" data-locale="optionOnToolbar">On toolbar</option>
 <option value="2" data-locale="optionOnTab">On tab</option>
 <option value="3" data-locale="optionOnToolbarAndTab">On toolbar &amp; tab</option></select></td></tr>
-
 <tr><td data-locale="optionShowTotlaFeedList">Show totals in feed list</td><td>
 <select id="unreadItemTotalDisplay">
 <option value="0" data-locale="optionOff">Off</option>
 <option value="1" data-locale="optionOn">On</option></select></td></tr>
+<tr><td data-locale="optionPlaySound">Play notification sound</td><td>
+<select id="enablePlaySound">
+<option value="0" data-locale="optionOff">Off</option>
+<option value="1" data-locale="optionOn">On</option></select></td></tr>
 <tr><td></td></tr>
+
 <tr><td colspan="2" class="optionHeader" data-locale="optionReadLater">Read Later Options</td></tr>
 <tr><td data-locale="optionReadLaterSupport">Read later support</td><td><select id="readLaterEnabled">
 <option value="0" data-locale="optionOff">Off</option>

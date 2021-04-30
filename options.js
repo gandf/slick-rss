@@ -29,6 +29,7 @@ function SetupScreen()
     document.getElementById("readItemDisplay").selectedIndex = bgPage.options.readitemdisplay;
     document.getElementById("unreadTotalDisplay").selectedIndex = bgPage.options.unreadtotaldisplay;
     document.getElementById("unreadItemTotalDisplay").selectedIndex = bgPage.options.unreaditemtotaldisplay;
+		document.getElementById("enablePlaySound").selectedIndex = bgPage.options.playSoundNotif;
     document.getElementById("columns").selectedIndex = bgPage.options.columns - 1;
     document.getElementById("readLaterEnabled").selectedIndex = bgPage.options.readlaterenabled;
     document.getElementById("readLaterRemoveWhenViewed").selectedIndex = bgPage.options.readlaterremovewhenviewed;
@@ -86,6 +87,7 @@ function Save()
     bgPage.options.readitemdisplay = document.getElementById("readItemDisplay")[document.getElementById("readItemDisplay").selectedIndex].value;
     bgPage.options.unreadtotaldisplay = document.getElementById("unreadTotalDisplay")[document.getElementById("unreadTotalDisplay").selectedIndex].value;
     bgPage.options.unreaditemtotaldisplay = (document.getElementById("unreadItemTotalDisplay").selectedIndex == 1);
+		bgPage.options.playSoundNotif = (document.getElementById("enablePlaySound").selectedIndex == 1);
     bgPage.options.columns = document.getElementById("columns")[document.getElementById("columns").selectedIndex].value;
     bgPage.options.readlaterenabled = (document.getElementById("readLaterEnabled").selectedIndex == 1);
     bgPage.options.readlaterremovewhenviewed = (document.getElementById("readLaterRemoveWhenViewed").selectedIndex == 1);
