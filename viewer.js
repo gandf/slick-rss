@@ -276,11 +276,19 @@ function UpdateFeedUnread(id) {
     var count = bgPage.unreadInfo[id].unreadtotal;
 
     if (count > 0) {
-        document.getElementById("feedTitle" + id).style.fontWeight = "bold";
-        document.getElementById("feedUnread" + id).innerText = " (" + count + ")";
+        if (document.getElementById("feedTitle" + id) != null) {
+          document.getElementById("feedTitle" + id).style.fontWeight = "bold";
+        }
+        if (document.getElementById("feedUnread" + id) != null) {
+          document.getElementById("feedUnread" + id).innerText = " (" + count + ")";
+      }
     } else {
+      if (document.getElementById("feedTitle" + id) != null) {
         document.getElementById("feedTitle" + id).style.fontWeight = "normal";
+      }
+      if (document.getElementById("feedUnread" + id) != null) {
         document.getElementById("feedUnread" + id).innerText = "";
+      }
     }
     if (bgPage.options.showallfeeds) {
       UpdateGroupUnread(0);
