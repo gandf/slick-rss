@@ -438,8 +438,17 @@ function CheckForUnreadStart(key) {
 
     // keep timer going on "refresh"
     if (key == null) {
+        if ((options.checkinterval == 0) || (options.checkinterval == null)) {
+          options.checkinterval = 60;
+        }
         clearTimeout(checkForUnreadTimerID);
-        checkForUnreadTimerID = setTimeout(CheckForUnreadStart, options.checkinterval * 1000 * 60);
+        checkForUnreadTimerID = setTimeout(function() {
+            try {
+                CheckForUnreadStart();
+            } catch(e){
+                console.log(e);
+            }
+          }, options.checkinterval * 1000 * 60);
 
         if (viewerPort != null) {
             viewerPort.postMessage({type: "refreshallstarted"});
@@ -455,7 +464,13 @@ function CheckForUnreadStart(key) {
 function CheckForUnread() {
     var feedID = feeds[checkForUnreadCounter].id;
     var req = new XMLHttpRequest();
-    var toID = setTimeout(req.abort, 60000);
+    var toID = setTimeout(function() {
+        try {
+            req.abort();
+        } catch(e){
+            console.log(e);
+        }
+      }, 60000);
     var now = new Date();
     var promiseCheckForUnread = [];
 
@@ -473,7 +488,7 @@ function CheckForUnread() {
                 clearTimeout(toID);
                 var doc = req.responseXML;
                 var previousUnreadtotal;
-                
+
                 if (unreadInfo[feedID] == null) {
                   previousUnreadtotal = 0;
                 } else {

@@ -190,7 +190,13 @@ function ShowFeeds() {
       // in the middle of refresh all, show progress but wait a little so feed content pushes the feed list to the right size
       // this is only here to show progress on load when current loading feed is slow, otherwise the next feed will update the progress
       if (bgPage.checkingForUnread && !bgPage.refreshFeed) {
-          setTimeout(UpdateRefreshAllProgress, 500);
+          setTimeout(function() {
+              try {
+                  UpdateRefreshAllProgress();
+              } catch(e){
+                  console.log(e);
+              }
+            }, 500);
       }
 
       focusFeed();
@@ -706,7 +712,11 @@ function SelectFeedOrGroup(key, type) {
 
       if (bgPage.options.markreadafter > 0 && key != 0) {
           feedReadToID = setTimeout(function () {
+            try {
               MarkFeedRead(feedsOrGroups[key].id)
+            } catch(e){
+                console.log(e);
+            }
           }, bgPage.options.markreadafter * 1000);
       }
     });
@@ -774,8 +784,8 @@ function RenderFeed(type) {
         feedMarkRead = null;
         feedMarkRead = document.createElement("img");
         feedMarkRead.setAttribute("src", "x.gif");
-        feedMarkRead.setAttribute("onmouseover", "hover(this);");
-        feedMarkRead.setAttribute("onmouseout", "unhover(this);");
+        feedMarkRead.addEventListener("onmouseover", onmouseover);
+        feedMarkRead.addEventListener("onmouseout", onmouseout);
 
         if (feedID == bgPage.readLaterFeedID) {
             $(feedMarkRead).click({i: i}, function (event) {
@@ -827,8 +837,8 @@ function RenderFeed(type) {
         if (bgPage.options.readlaterenabled && feedID != bgPage.readLaterFeedID) {
             feedReadLater = document.createElement("img");
             feedReadLater.setAttribute("src", "star.gif");
-            feedReadLater.setAttribute("onmouseover", "hover(this);");
-            feedReadLater.setAttribute("onmouseout", "unhover(this);");
+            feedReadLater.addEventListener("onmouseover", onmouseover);
+            feedReadLater.addEventListener("onmouseout", onmouseout);
             feedReadLater.setAttribute("class", "feedPreviewReadLater");
             feedReadLater.setAttribute("title", GetMessageText("backReadLater"));
             $(feedReadLater).click({feedID: feedID, i: i}, function (event) {
@@ -839,8 +849,8 @@ function RenderFeed(type) {
 
             feedUnread = document.createElement("img");
             feedUnread.setAttribute("src", "revert.png");
-            feedUnread.setAttribute("onmouseover", "hover(this);");
-            feedUnread.setAttribute("onmouseout", "unhover(this);");
+            feedUnread.addEventListener("onmouseover", onmouseover);
+            feedUnread.addEventListener("onmouseout", onmouseout);
             feedUnread.setAttribute("class", "feedPreviewUnread");
             feedUnread.setAttribute("title", GetMessageText("backViewerMarkUnread"));
             feedUnread.setAttribute("display", "none");
@@ -1047,4 +1057,12 @@ function UpdateSizeProgress(updateAll) {
         document.getElementById("feedsLoadingProgressBox").style.width = sizeProgressboxLoading;
       }
     }
+}
+
+function onmouseover(){
+  hover(this);
+}
+
+function onmouseout(){
+  unhover(this);
 }
