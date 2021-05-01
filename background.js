@@ -36,6 +36,7 @@ var readlater = {
 chrome.browserAction.onClicked.addListener(ButtonClicked);
 chrome.runtime.onMessageExternal.addListener(ExternalRequest);
 chrome.runtime.onConnect.addListener(InternalConnection);
+chrome.alarms.onAlarm.addListener(AlarmRing);
 
 waitOptionReady().then(function () {
     promiseUpgrade = DoUpgrades();
@@ -78,6 +79,16 @@ async function waitPromise(listPromiseToWait) {
 
 async function waitExternalRequest() {
   return start = await Promise.allSettled([promiseExternalRequest]);
+}
+
+function AlarmRing(alarm){
+  if (alarm.name == 'CheckForUnread') {
+      try {
+          CheckForUnreadStart();
+      } catch(e){
+          console.log(e);
+      }
+  }
 }
 
 // communicate with other pages
@@ -438,17 +449,17 @@ function CheckForUnreadStart(key) {
 
     // keep timer going on "refresh"
     if (key == null) {
-        if ((options.checkinterval == 0) || (options.checkinterval == null)) {
-          options.checkinterval = 60;
+      chrome.alarms.get('CheckForUnread', function(alarm) {
+        if (typeof alarm === 'undefined' || alarm.name !== 'CheckForUnread') {
+          if ((options.checkinterval == 0) || (options.checkinterval == null)) {
+            options.checkinterval = 60;
+          }
+          if (options.checkinterval < 3) {
+            options.checkinterval = 3;
+          }
+          chrome.alarms.create('CheckForUnread', {periodInMinutes: options.checkinterval});
         }
-        clearTimeout(checkForUnreadTimerID);
-        checkForUnreadTimerID = setTimeout(function() {
-            try {
-                CheckForUnreadStart();
-            } catch(e){
-                console.log(e);
-            }
-          }, options.checkinterval * 1000 * 60);
+      });
 
         if (viewerPort != null) {
             viewerPort.postMessage({type: "refreshallstarted"});
