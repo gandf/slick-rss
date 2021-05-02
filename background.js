@@ -457,7 +457,7 @@ function CheckForUnreadStart(key) {
           if (options.checkinterval < 3) {
             options.checkinterval = 3;
           }
-          chrome.alarms.create('CheckForUnread', {periodInMinutes: options.checkinterval});
+          chrome.alarms.create('CheckForUnread', {periodInMinutes: Number(options.checkinterval)});
         }
       });
 
