@@ -356,6 +356,9 @@
   "backViewerMarkUnread": {
     "message": "Mark unread"
   },
+  "openAllFeed": {
+    "message": "Open all unread"
+  },
   "backViewerFeedIssue": {
     "message": "Feed Problems"
   },

@@ -353,6 +353,9 @@
   "backViewerMarkRead": {
     "message": "Mark read"
   },
+  "openAllFeed": {
+    "message": "Open all unread"
+  },
   "backViewerMarkUnread": {
     "message": "Mark unread"
   },

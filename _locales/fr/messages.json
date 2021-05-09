@@ -359,6 +359,9 @@
   "backViewerMarkUnread": {
     "message": "Marquer non lu"
   },
+  "openAllFeed": {
+    "message": "Ouvrir tous les non lus"
+  },
   "backViewerFeedIssue": {
     "message": "Problèmes de flux"
   },

@@ -12,6 +12,9 @@ $(document).ready(function () {
     $('#markFeedReadButton').click(function () {
         MarkFeedRead((selectedFeedKeyIsFeed ? feeds[selectedFeedKey].id : groups[selectedFeedKey].id));
     });
+    $('#openAllFeedButton').click(function () {
+        OpenAllFeedButton((selectedFeedKeyIsFeed ? feeds[selectedFeedKey].id : groups[selectedFeedKey].id));
+    });
 });
 
 var bgPage = chrome.extension.getBackgroundPage();
@@ -179,6 +182,7 @@ function ShowFeeds() {
             document.getElementById("feedArea").style.display = "none";
             document.getElementById("refresh").style.display = "none";
             document.getElementById("markFeedRead").style.display = "none";
+            document.getElementById("openAllFeed").style.display = "none";
             document.getElementById("noFeedsManaged").style.display = "";
         } else {
             SelectFeed(selectKey);
@@ -352,6 +356,7 @@ function UpdateReadAllIcon(type) {
     }
 
     document.getElementById("markFeedRead").style.display = (count > 0) ? "" : "none";
+    document.getElementById("openAllFeed").style.display = (count > 0) ? "" : "none";
 }
 
 // marks everything but ReadLater read
@@ -393,11 +398,13 @@ function MarkFeedRead(feedID) {
       } else {
           for (var i = 0; i < bgPage.feedInfo[feedID].items.length; i++) {
               itemID = sha256(bgPage.feedInfo[feedID].items[i].title + bgPage.feedInfo[feedID].items[i].date);
-              bgPage.unreadInfo[feedID].readitems[itemID] = expireMs;
-              container = document.getElementById("item_" + feedID + "_" + itemID);
+              if (bgPage.unreadInfo[feedID].readitems[itemID] == undefined) {
+                bgPage.unreadInfo[feedID].readitems[itemID] = expireMs;
+                container = document.getElementById("item_" + feedID + "_" + itemID);
 
-              if (container != null) {
-                  container.className = container.className + className;
+                if (container != null) {
+                    container.className = container.className + className;
+                }
               }
           }
       }
@@ -448,11 +455,13 @@ function MarkFeedReadFromGroup(feedID) {
 
       for (var i = 0; i < bgPage.feedInfo[feedID].items.length; i++) {
           itemID = sha256(bgPage.feedInfo[feedID].items[i].title + bgPage.feedInfo[feedID].items[i].date);
-          bgPage.unreadInfo[feedID].readitems[itemID] = expireMs;
-          container = document.getElementById("item_" + feedID + "_" + itemID);
+          if (bgPage.unreadInfo[feedID].readitems[itemID] == undefined) {
+            bgPage.unreadInfo[feedID].readitems[itemID] = expireMs;
+            container = document.getElementById("item_" + feedID + "_" + itemID);
 
-          if (container != null) {
-              container.className = container.className + className;
+            if (container != null) {
+                container.className = container.className + className;
+            }
           }
       }
 
@@ -1065,4 +1074,108 @@ function onmouseover(){
 
 function onmouseout(){
   unhover(this);
+}
+
+// marks a feed read.
+function OpenAllFeedButton(feedID) {
+    var container = null;
+    var itemID = null;
+    var className = (bgPage.options.readitemdisplay == 0) ? " feedPreviewContainerRead" : " feedPreviewContainerRead feedPreviewContainerCondensed";
+    var expireMs = new Date().getTime() + 5184000000; // 2 months;
+    var groupKey = null;
+
+    if (selectedFeedKeyIsFeed) {
+      if (bgPage.unreadInfo[feedID].unreadtotal == 0) {
+          return;
+      }
+
+      bgPage.unreadInfo[feedID].unreadtotal = 0;
+
+      // for read later feeds, nuke the items instead of mark read
+      if (feedID == bgPage.readLaterFeedID) {
+        for (var i = 0; i < bgPage.feedInfo[bgPage.readLaterFeedID].items.length; i++) {
+            LinkProxy(bgPage.feedInfo[bgPage.readLaterFeedID].items[i].url);
+        }
+
+          bgPage.feedInfo[bgPage.readLaterFeedID].items = [];
+          store.setItem('readlater', bgPage.feedInfo[bgPage.readLaterFeedID]);
+          SelectFeed(0);
+      } else {
+          for (var i = 0; i < bgPage.feedInfo[feedID].items.length; i++) {
+              itemID = sha256(bgPage.feedInfo[feedID].items[i].title + bgPage.feedInfo[feedID].items[i].date);
+
+              if (bgPage.unreadInfo[feedID].readitems[itemID] == undefined) {
+                LinkProxy(bgPage.feedInfo[feedID].items[i].url);
+
+                bgPage.unreadInfo[feedID].readitems[itemID] = expireMs;
+                container = document.getElementById("item_" + feedID + "_" + itemID);
+
+                if (container != null) {
+                    container.className = container.className + className;
+                }
+            }
+          }
+      }
+
+      store.setItem('unreadinfo', bgPage.unreadInfo);
+
+      UpdateFeedUnread(feedID);
+      UpdateReadAllIcon("Feed");
+      bgPage.UpdateUnreadBadge();
+    } else {
+      groupKey = bgPage.GetGroupKeyByID(feedID);
+      if (groupKey != null) {
+        if (groups[groupKey] != null) {
+          var feedFilteredList = [];
+          if (groups[groupKey].id != bgPage.allFeedsID) {
+            feedFilteredList = bgPage.GetFeedsFilterByGroup(groupKey);
+          } else {
+            feedFilteredList = feeds.filter(function (el) {
+              return (el.id != bgPage.readLaterFeedID);
+            });
+          }
+          if (feedFilteredList.length > 0) {
+            feedFilteredList.forEach((item) => {
+              OpenAllFeedButtonFromGroup(item.id);
+            });
+
+            UpdateReadAllIcon("Group");
+            bgPage.UpdateUnreadBadge();
+          }
+        }
+      }
+    }
+}
+
+function OpenAllFeedButtonFromGroup(feedID) {
+    var container = null;
+    var itemID = null;
+    var className = (bgPage.options.readitemdisplay == 0) ? " feedPreviewContainerRead" : " feedPreviewContainerRead feedPreviewContainerCondensed";
+    var expireMs = new Date().getTime() + 5184000000; // 2 months;
+    var groupKey = null;
+
+      if (bgPage.unreadInfo[feedID].unreadtotal == 0) {
+          return;
+      }
+
+      bgPage.unreadInfo[feedID].unreadtotal = 0;
+
+      for (var i = 0; i < bgPage.feedInfo[feedID].items.length; i++) {
+          itemID = sha256(bgPage.feedInfo[feedID].items[i].title + bgPage.feedInfo[feedID].items[i].date);
+
+          if (bgPage.unreadInfo[feedID].readitems[itemID] == undefined) {
+            LinkProxy(bgPage.feedInfo[feedID].items[i].url);
+
+            bgPage.unreadInfo[feedID].readitems[itemID] = expireMs;
+            container = document.getElementById("item_" + feedID + "_" + itemID);
+
+            if (container != null) {
+                container.className = container.className + className;
+            }
+          }
+      }
+
+      store.setItem('unreadinfo', bgPage.unreadInfo);
+
+      UpdateFeedUnread(feedID);
 }
