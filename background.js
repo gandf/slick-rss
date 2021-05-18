@@ -289,89 +289,30 @@ function GetRandomID() {
 function DoUpgrades() {
     var lastVersion = parseFloat(options.lastversion);
     var listPromise = [];
-    var listPromiseFinal = [];
     var resultPromise = null;
-
-    //Migrate localStorage to indexedDB
-    if ((localStorage.lastSelectedFeedID != null) || (localStorage.lastSelectedFeedType != null)) {
-      var lastSelectedFeed = {};
-      lastSelectedFeed.lastSelectedFeedID = JSON.parse(localStorage.lastSelectedFeedID);
-      lastSelectedFeed.lastSelectedFeedType = localStorage.lastSelectedFeedType;
-      listPromise.push(store.setItem('lastSelectedFeed', lastSelectedFeed));
-    }
-
-    if (localStorage.unreadinfo != null) {
-      unreadInfo = JSON.parse(localStorage.unreadinfo);
-      listPromise.push(store.setItem('unreadinfo', unreadInfo));
-    }
-
-    if (localStorage.feeds != null) {
-      feeds = JSON.parse(localStorage.feeds);
-      listPromise.push(store.setItem('feeds', feeds));
-    }
-
-    if (localStorage.readlater != null) {
-      readlater = JSON.parse(localStorage.readlater);
-      listPromise.push(store.setItem('readlater', readlater));
-    }
-
-    if (localStorage.options != null) {
-      options = JSON.parse(localStorage.options);
-      listPromise.push(store.setItem('options', options));
-    }
-
-    if (listPromise.length > 0) {
-      listPromiseFinal.push(Promise.allSettled(listPromise).then(
-        function(data) {
-            localStorage.clear();
-          }
-      ));
-    }
-
-    if (listPromise.length > 0) {
-      // since 3.001 requires group for feeds, lets make sure they have them
-      listPromiseFinal.push(store.getItem('feeds').then(function(data) {
-          if (data!= null && lastVersion < 3.001) {
-              feeds = data.sort(function (a, b) {
-                  return a.order - b.order;
-              });
-
-              for (var key in feeds) {
-                  if (feeds[key].group == null) {
-                      feeds[key] = CreateNewFeed(feeds[key].title, feeds[key].url, "", feeds[key].maxitems, feeds[key].order, feeds[key].id)
-                  }
-              }
-              store.setItem('feeds', feeds);
-          }
-        }));
-      }
 
     // update the last version to now
     if (options.lastversion != manifest.version) {
       options.lastversion = manifest.version;
-      listPromiseFinal.push(store.setItem('options', options));
+      listPromise.push(store.setItem('options', options));
     }
 
-    if (listPromiseFinal.length > 0) {
-      resultPromise = Promise.allSettled(listPromiseFinal);
-    } else {
-      listPromise.push(store.getItem('feeds').then(function(data){
-          if (data != null) {
-              feeds = data;
-          }
-        }));
-      listPromise.push(store.getItem('unreadinfo').then(function(data){
-          if (data != null) {
-              unreadInfo = data;
-          }
-        }));
-      listPromise.push(store.getItem('readlater').then(function(data){
-          if (data != null) {
-              readlater = data;
-          }
-        }));
-      resultPromise = Promise.allSettled(listPromise);
-    }
+    listPromise.push(store.getItem('feeds').then(function(data){
+        if (data != null) {
+            feeds = data;
+        }
+      }));
+    listPromise.push(store.getItem('unreadinfo').then(function(data){
+        if (data != null) {
+            unreadInfo = data;
+        }
+      }));
+    listPromise.push(store.getItem('readlater').then(function(data){
+        if (data != null) {
+            readlater = data;
+        }
+      }));
+    resultPromise = Promise.allSettled(listPromise);
     return resultPromise;
 }
 
