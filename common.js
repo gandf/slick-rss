@@ -1,6 +1,451 @@
 //Manage i18n to translation
-function GetMessageText(value)
+var LocalLang = "en"; //chrome.i18n.getUILanguage();
+
+function SetLocalLang(value)
 {
+  LocalLang = value;
+}
+
+function GetMessageTextFromServiceWorker(value)
+{
+  switch(value)
+  {
+    case 'backReadLater':
+      switch(LocalLang)
+      {
+          case 'de': return "Read Later";
+          case 'en': return "Read Later";
+          case 'en_GB': return "Read Later";
+          case 'en_US': return "Read Later";
+          case 'es': return "Read Later";
+          case 'fr': return "Lire plus tard";
+          case 'it': return "Read Later";
+          case 'nl': return "Read Later";
+          default: return "Read Later";
+      };
+    case 'backItemsMarkedReadLater':
+      switch(LocalLang)
+      {
+          case 'de': return "Items you marked to read later";
+          case 'en': return "Items you marked to read later";
+          case 'en_GB': return "Items you marked to read later";
+          case 'en_US': return "Items you marked to read later";
+          case 'es': return "Items you marked to read later";
+          case 'fr': return "Sujets que vous avez marqués pour lire plus tard";
+          case 'it': return "Items you marked to read later";
+          case 'nl': return "Items you marked to read later";
+          default: return "Items you marked to read later";
+      };
+    case 'backItemsMarkedReadLater':
+      switch(LocalLang)
+      {
+          case 'de': return "Items you marked to read later";
+          case 'en': return "Items you marked to read later";
+          case 'en_GB': return "Items you marked to read later";
+          case 'en_US': return "Items you marked to read later";
+          case 'es': return "Items you marked to read later";
+          case 'fr': return "Sujets que vous avez marqués pour lire plus tard";
+          case 'it': return "Items you marked to read later";
+          case 'nl': return "Items you marked to read later";
+          default: return "Items you marked to read later";
+      };
+    case 'backNoTitle':
+      switch(LocalLang)
+      {
+          case 'de': return "No Title";
+          case 'en': return "No Title";
+          case 'en_GB': return "No Title";
+          case 'en_US': return "No Title";
+          case 'es': return "No Title";
+          case 'fr': return "Sans titre";
+          case 'it': return "No Title";
+          case 'nl': return "No Title";
+          default: return "No Title";
+      };
+    case 'backErrorXML':
+      switch(LocalLang)
+      {
+          case 'de': return "The response didn't have a valid responseXML property.";
+          case 'en': return "The response didn't have a valid responseXML property.";
+          case 'en_GB': return "The response didn't have a valid responseXML property.";
+          case 'en_US': return "The response didn't have a valid responseXML property.";
+          case 'es': return "The response didn't have a valid responseXML property.";
+          case 'fr': return "La réponse n'avait pas de propriété responseXML valide.";
+          case 'it': return "The response didn't have a valid responseXML property.";
+          case 'nl': return "The response didn't have a valid responseXML property.";
+          default: return "The response didn't have a valid responseXML property.";
+      };
+    case 'backError200Part1':
+      switch(LocalLang)
+      {
+          case 'de': return "Status wasn't 200.  It was ";
+          case 'en': return "Status wasn't 200.  It was ";
+          case 'en_GB': return "Status wasn't 200.  It was ";
+          case 'en_US': return "Status wasn't 200.  It was ";
+          case 'es': return "Status wasn't 200.  It was ";
+          case 'fr': return "Le statut n'était pas 200. C'était ";
+          case 'it': return "Status wasn't 200.  It was ";
+          case 'nl': return "Status wasn't 200.  It was ";
+          default: return "Status wasn't 200.  It was ";
+      };
+    case 'backError200Part2':
+      switch(LocalLang)
+      {
+          case 'de': return " and frankly I don't know how to handle that.  If it helps, the status text was '";
+          case 'en': return " and frankly I don't know how to handle that.  If it helps, the status text was '";
+          case 'en_GB': return " and frankly I don't know how to handle that.  If it helps, the status text was '";
+          case 'en_US': return " and frankly I don't know how to handle that.  If it helps, the status text was '";
+          case 'es': return " and frankly I don't know how to handle that.  If it helps, the status text was '";
+          case 'fr': return " et franchement, je ne sais pas comment gérer ça. Si cela peut aider, le texte d'état était ";
+          case 'it': return " and frankly I don't know how to handle that.  If it helps, the status text was '";
+          case 'nl': return " and frankly I don't know how to handle that.  If it helps, the status text was '";
+          default: return " and frankly I don't know how to handle that.  If it helps, the status text was '";
+      };
+    case 'backError200Part3':
+      switch(LocalLang)
+      {
+          case 'de': return "'.";
+          case 'en': return "'.";
+          case 'en_GB': return "'.";
+          case 'en_US': return "'.";
+          case 'es': return "'.";
+          case 'fr': return "'.";
+          case 'it': return "'.";
+          case 'nl': return "'.";
+          default: return "'.";
+      };
+    case 'backAllFeeds':
+      switch(LocalLang)
+      {
+          case 'de': return "All Feeds";
+          case 'en': return "All Feeds";
+          case 'en_GB': return "All Feeds";
+          case 'en_US': return "All Feeds";
+          case 'es': return "All Feeds";
+          case 'fr': return "Tous les flux";
+          case 'it': return "All Feeds";
+          case 'nl': return "All Feeds";
+          default: return "All Feeds";
+      };
+    case 'monthJanuary':
+      switch(LocalLang)
+      {
+          case 'de': return "January";
+          case 'en': return "January";
+          case 'en_GB': return "January";
+          case 'en_US': return "January";
+          case 'es': return "January";
+          case 'fr': return "Janvier";
+          case 'it': return "January";
+          case 'nl': return "January";
+          default: return "January";
+      };
+    case 'monthFebruary':
+      switch(LocalLang)
+      {
+          case 'de': return "February";
+          case 'en': return "February";
+          case 'en_GB': return "February";
+          case 'en_US': return "February";
+          case 'es': return "February";
+          case 'fr': return "Février";
+          case 'it': return "February";
+          case 'nl': return "February";
+          default: return "February";
+      };
+    case 'monthMarch':
+      switch(LocalLang)
+      {
+          case 'de': return "March";
+          case 'en': return "March";
+          case 'en_GB': return "March";
+          case 'en_US': return "March";
+          case 'es': return "March";
+          case 'fr': return "Mars";
+          case 'it': return "March";
+          case 'nl': return "March";
+          default: return "March";
+      };
+    case 'monthApril':
+      switch(LocalLang)
+      {
+          case 'de': return "April";
+          case 'en': return "April";
+          case 'en_GB': return "April";
+          case 'en_US': return "April";
+          case 'es': return "April";
+          case 'fr': return "Avril";
+          case 'it': return "April";
+          case 'nl': return "April";
+          default: return "April";
+      };
+    case 'monthMay':
+      switch(LocalLang)
+      {
+          case 'de': return "May";
+          case 'en': return "May";
+          case 'en_GB': return "May";
+          case 'en_US': return "May";
+          case 'es': return "May";
+          case 'fr': return "Mai";
+          case 'it': return "May";
+          case 'nl': return "May";
+          default: return "May";
+      };
+    case 'monthJune':
+      switch(LocalLang)
+      {
+          case 'de': return "June";
+          case 'en': return "June";
+          case 'en_GB': return "June";
+          case 'en_US': return "June";
+          case 'es': return "June";
+          case 'fr': return "Juin";
+          case 'it': return "June";
+          case 'nl': return "June";
+          default: return "June";
+      };
+    case 'monthJuly':
+      switch(LocalLang)
+      {
+          case 'de': return "July";
+          case 'en': return "July";
+          case 'en_GB': return "July";
+          case 'en_US': return "July";
+          case 'es': return "July";
+          case 'fr': return "Juillet";
+          case 'it': return "July";
+          case 'nl': return "July";
+          default: return "July";
+      };
+    case 'monthAugust':
+      switch(LocalLang)
+      {
+          case 'de': return "August";
+          case 'en': return "August";
+          case 'en_GB': return "August";
+          case 'en_US': return "August";
+          case 'es': return "August";
+          case 'fr': return "Août";
+          case 'it': return "August";
+          case 'nl': return "August";
+          default: return "August";
+      };
+    case 'monthSeptember':
+      switch(LocalLang)
+      {
+          case 'de': return "September";
+          case 'en': return "September";
+          case 'en_GB': return "September";
+          case 'en_US': return "September";
+          case 'es': return "September";
+          case 'fr': return "Septembre";
+          case 'it': return "September";
+          case 'nl': return "September";
+          default: return "September";
+      };
+    case 'monthOctober':
+      switch(LocalLang)
+      {
+          case 'de': return "October";
+          case 'en': return "October";
+          case 'en_GB': return "October";
+          case 'en_US': return "October";
+          case 'es': return "October";
+          case 'fr': return "Octobre";
+          case 'it': return "October";
+          case 'nl': return "October";
+          default: return "October";
+      };
+    case 'monthNovember':
+      switch(LocalLang)
+      {
+          case 'de': return "November";
+          case 'en': return "November";
+          case 'en_GB': return "November";
+          case 'en_US': return "November";
+          case 'es': return "November";
+          case 'fr': return "Novembre";
+          case 'it': return "November";
+          case 'nl': return "November";
+          default: return "November";
+      };
+    case 'monthDecember':
+      switch(LocalLang)
+      {
+          case 'de': return "December";
+          case 'en': return "December";
+          case 'en_GB': return "December";
+          case 'en_US': return "December";
+          case 'es': return "December";
+          case 'fr': return "Décembre";
+          case 'it': return "December";
+          case 'nl': return "December";
+          default: return "December";
+      };
+    case 'daySunday':
+      switch(LocalLang)
+      {
+          case 'de': return "Sunday";
+          case 'en': return "Sunday";
+          case 'en_GB': return "Sunday";
+          case 'en_US': return "Sunday";
+          case 'es': return "Sunday";
+          case 'fr': return "Dimanche";
+          case 'it': return "Sunday";
+          case 'nl': return "Sunday";
+          default: return "Sunday";
+      };
+    case 'dayMonday':
+      switch(LocalLang)
+      {
+          case 'de': return "Monday";
+          case 'en': return "Monday";
+          case 'en_GB': return "Monday";
+          case 'en_US': return "Monday";
+          case 'es': return "Monday";
+          case 'fr': return "Lundi";
+          case 'it': return "Monday";
+          case 'nl': return "Monday";
+          default: return "Monday";
+      };
+    case 'dayTuesday':
+      switch(LocalLang)
+      {
+          case 'de': return "Tuesday";
+          case 'en': return "Tuesday";
+          case 'en_GB': return "Tuesday";
+          case 'en_US': return "Tuesday";
+          case 'es': return "Tuesday";
+          case 'fr': return "Mardi";
+          case 'it': return "Tuesday";
+          case 'nl': return "Tuesday";
+          default: return "Tuesday";
+      };
+    case 'dayWednesday':
+      switch(LocalLang)
+      {
+          case 'de': return "Wednesday";
+          case 'en': return "Wednesday";
+          case 'en_GB': return "Wednesday";
+          case 'en_US': return "Wednesday";
+          case 'es': return "Wednesday";
+          case 'fr': return "Mercredi";
+          case 'it': return "Wednesday";
+          case 'nl': return "Wednesday";
+          default: return "Wednesday";
+      };
+    case 'dayThursday':
+      switch(LocalLang)
+      {
+          case 'de': return "Thursday";
+          case 'en': return "Thursday";
+          case 'en_GB': return "Thursday";
+          case 'en_US': return "Thursday";
+          case 'es': return "Thursday";
+          case 'fr': return "Jeudi";
+          case 'it': return "Thursday";
+          case 'nl': return "Thursday";
+          default: return "Thursday";
+      };
+    case 'dayFriday':
+      switch(LocalLang)
+      {
+          case 'de': return "Friday";
+          case 'en': return "Friday";
+          case 'en_GB': return "Friday";
+          case 'en_US': return "Friday";
+          case 'es': return "Friday";
+          case 'fr': return "Vendredi";
+          case 'it': return "Friday";
+          case 'nl': return "Friday";
+          default: return "Friday";
+      };
+    case 'daySaturday':
+      switch(LocalLang)
+      {
+          case 'de': return "Saturday";
+          case 'en': return "Saturday";
+          case 'en_GB': return "Saturday";
+          case 'en_US': return "Saturday";
+          case 'es': return "Saturday";
+          case 'fr': return "Samedi";
+          case 'it': return "Saturday";
+          case 'nl': return "Saturday";
+          default: return "Saturday";
+      };
+    case 'daySuffix1':
+      switch(LocalLang)
+      {
+          case 'de': return "st";
+          case 'en': return "st";
+          case 'en_GB': return "st";
+          case 'en_US': return "st";
+          case 'es': return "st";
+          case 'fr': return "er";
+          case 'it': return "st";
+          case 'nl': return "st";
+          default: return "st";
+      };
+    case 'daySuffix2':
+      switch(LocalLang)
+      {
+          case 'de': return "nd";
+          case 'en': return "nd";
+          case 'en_GB': return "nd";
+          case 'en_US': return "nd";
+          case 'es': return "nd";
+          case 'fr': return "ème";
+          case 'it': return "nd";
+          case 'nl': return "nd";
+          default: return "nd";
+      };
+    case 'daySuffix3':
+      switch(LocalLang)
+      {
+          case 'de': return "rd";
+          case 'en': return "rd";
+          case 'en_GB': return "rd";
+          case 'en_US': return "rd";
+          case 'es': return "rd";
+          case 'fr': return "ème";
+          case 'it': return "rd";
+          case 'nl': return "rd";
+          default: return "rd";
+      };
+    case 'daySuffix4':
+      switch(LocalLang)
+      {
+          case 'de': return "th";
+          case 'en': return "th";
+          case 'en_GB': return "th";
+          case 'en_US': return "th";
+          case 'es': return "th";
+          case 'fr': return "ème";
+          case 'it': return "th";
+          case 'nl': return "th";
+          default: return "th";
+      };
+      case 'daySuffix5':
+        switch(LocalLang)
+        {
+            case 'de': return "th";
+            case 'en': return "th";
+            case 'en_GB': return "th";
+            case 'en_US': return "th";
+            case 'es': return "th";
+            case 'fr': return "ème";
+            case 'it': return "th";
+            case 'nl': return "th";
+            default: return "th";
+        };  }
+  return "";
+}
+
+function GetMessageText(value, fromServiceWorker = false)
+{
+  if (fromServiceWorker)
+    return GetMessageTextFromServiceWorker(value);
   return chrome.i18n.getMessage(value);
 }
 
@@ -138,18 +583,18 @@ function GetMonthName(month)
 {
   switch(month)
   {
-      case 0: return GetMessageText("monthJanuary");
-      case 1: return GetMessageText("monthFebruary");
-      case 2: return GetMessageText("monthMarch");
-      case 3: return GetMessageText("monthApril");
-      case 4: return GetMessageText("monthMay");
-      case 5: return GetMessageText("monthJune");
-      case 6: return GetMessageText("monthJuly");
-      case 7: return GetMessageText("monthAugust");
-      case 8: return GetMessageText("monthSeptember");
-      case 9: return GetMessageText("monthOctober");
-      case 10: return GetMessageText("monthNovember");
-      case 11: return GetMessageText("monthDecember");
+      case 0: return GetMessageText("monthJanuary", true);
+      case 1: return GetMessageText("monthFebruary", true);
+      case 2: return GetMessageText("monthMarch", true);
+      case 3: return GetMessageText("monthApril", true);
+      case 4: return GetMessageText("monthMay", true);
+      case 5: return GetMessageText("monthJune", true);
+      case 6: return GetMessageText("monthJuly", true);
+      case 7: return GetMessageText("monthAugust", true);
+      case 8: return GetMessageText("monthSeptember", true);
+      case 9: return GetMessageText("monthOctober", true);
+      case 10: return GetMessageText("monthNovember", true);
+      case 11: return GetMessageText("monthDecember", true);
       default: return "";
   }
 }
@@ -159,13 +604,13 @@ function GetWeekdayName(dayOfWeek)
 {
   switch(dayOfWeek)
   {
-      case 0: return GetMessageText("daySunday");
-      case 1: return GetMessageText("dayMonday");
-      case 2: return GetMessageText("dayTuesday");
-      case 3: return GetMessageText("dayWednesday");
-      case 4: return GetMessageText("dayThursday");
-      case 5: return GetMessageText("dayFriday");
-      case 6: return GetMessageText("daySaturday");
+      case 0: return GetMessageText("daySunday", true);
+      case 1: return GetMessageText("dayMonday", true);
+      case 2: return GetMessageText("dayTuesday", true);
+      case 3: return GetMessageText("dayWednesday", true);
+      case 4: return GetMessageText("dayThursday", true);
+      case 5: return GetMessageText("dayFriday", true);
+      case 6: return GetMessageText("daySaturday", true);
       default: return "";
   }
 }
@@ -202,17 +647,17 @@ function GetDaySuffix(number)
 {
   if((number > 3 && number < 21) || (number > 24 && number < 31))
   {
-      return number + GetMessageText("daySuffix5");
+      return number + GetMessageText("daySuffix5", true);
   }
 
   number = number + "";
 
   switch(number.substr(number.length - 1, 1))
   {
-      case "1" : return number + GetMessageText("daySuffix1");
-      case "2" : return number + GetMessageText("daySuffix2");
-      case "3" : return number + GetMessageText("daySuffix3");
-      case "4" : return number + GetMessageText("daySuffix4");
+      case "1" : return number + GetMessageText("daySuffix1", true);
+      case "2" : return number + GetMessageText("daySuffix2", true);
+      case "3" : return number + GetMessageText("daySuffix3", true);
+      case "4" : return number + GetMessageText("daySuffix4", true);
   }
 }
 
@@ -237,4 +682,4 @@ function SortByDate(items) {
     });
 }
 
-function formatBytes(a,b=2){var textBytes=chrome.i18n.getMessage("Bytes");var textKB=chrome.i18n.getMessage("KB");var textMB=chrome.i18n.getMessage("MB");var textGB=chrome.i18n.getMessage("GB");var textTB=chrome.i18n.getMessage("TB");var textPB=chrome.i18n.getMessage("PB");var textEB=chrome.i18n.getMessage("EB");var textZB=chrome.i18n.getMessage("ZB");var textYB=chrome.i18n.getMessage("YB");if(0===a)return`0 ${textBytes}`;const c=0>b?0:b,d=Math.floor(Math.log(a)/Math.log(1024));return parseFloat((a/Math.pow(1024,d)).toFixed(c))+" "+[`${textBytes}`,`${textKB}`,`${textMB}`,`${textGB}`,`${textTB}`,`${textPB}`,`${textEB}`,`${textZB}`,`${textYB}`][d]}
+function formatBytes(a,b=2){var textBytes=GetMessageText("Bytes");var textKB=GetMessageText("KB");var textMB=GetMessageText("MB");var textGB=GetMessageText("GB");var textTB=GetMessageText("TB");var textPB=GetMessageText("PB");var textEB=GetMessageText("EB");var textZB=GetMessageText("ZB");var textYB=GetMessageText("YB");if(0===a)return`0 ${textBytes}`;const c=0>b?0:b,d=Math.floor(Math.log(a)/Math.log(1024));return parseFloat((a/Math.pow(1024,d)).toFixed(c))+" "+[`${textBytes}`,`${textKB}`,`${textMB}`,`${textGB}`,`${textTB}`,`${textPB}`,`${textEB}`,`${textZB}`,`${textYB}`][d]}
