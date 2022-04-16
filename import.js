@@ -1,6 +1,4 @@
 
-var bgPage = chrome.extension.getBackgroundPage();
-
 $(document).ready(function()
 {
 	$('#import').click(function(){Import();});
@@ -21,11 +19,7 @@ function Import()
 
 //remove ReadLater
 function filterByID(obj) {
-  if (obj.id != bgPage.readLaterFeedID) {
-    return true;
-  } else {
-    return false;
-  }
+  return (obj.id != readLaterFeedID);
 }
 
 // imports opml -> feed list
@@ -39,43 +33,46 @@ function ImportFeeds()
 
     nodes = opml.getElementsByTagName("outline");
 
-    // get max order
-    for(var i = 0;i < bgPage.feeds.length; i++)
-    {
-        if(bgPage.feeds[i].order > maxOrder)
-        {
-            maxOrder = bgPage.feeds[i].order;
-        }
-    }
+		GetFeedsSimple(function(feeds)
+		{
+	    // get max order
+	    for(var i = 0;i < feeds.length; i++)
+	    {
+	        if(feeds[i].order > maxOrder)
+	        {
+	            maxOrder = feeds[i].order;
+	        }
+	    }
 
-    for(var i = 0;i < nodes.length; i++)
-    {
-        if(nodes[i].getAttribute("type") == "rss")
-        {
-            maxOrder ++;
-						var group = nodes[i].getAttribute("group");
-						if (group == null)
-						{
-							group = "";
-						}
-            bgPage.feeds.push(bgPage.CreateNewFeed(nodes[i].getAttribute("text"), nodes[i].getAttribute("xmlUrl"), group, bgPage.options.maxitems, maxOrder));
-            importCount ++;
-        }
-    }
+	    for(var i = 0;i < nodes.length; i++)
+	    {
+	        if(nodes[i].getAttribute("type") == "rss")
+	        {
+	            maxOrder ++;
+							var group = nodes[i].getAttribute("group");
+							if (group == null)
+							{
+								group = "";
+							}
+	            feeds.push(CreateNewFeed(nodes[i].getAttribute("text"), nodes[i].getAttribute("xmlUrl"), group, options.maxitems, maxOrder));
+	            importCount ++;
+	        }
+	    }
 
-    if(nodes.length == 0)
-    {
-        alert(GetMessageText("importAlertNoOutlineRss"));
-        return;
-    }
+	    if(nodes.length == 0)
+	    {
+	        alert(GetMessageText("importAlertNoOutlineRss"));
+	        return;
+	    }
 
-		//remove ReadLater
-		var resultPromise = store.setItem('feeds', bgPage.feeds.filter(filterByID)).then(function(data){
-			alert(GetMessageText("importAlertImportedFeeds1") + importCount + GetMessageText("importAlertImportedFeeds2"));
-		});
-		resultPromise.then(function(){
-			bgPage.ReloadViewer();
-		});
+			//remove ReadLater
+			var resultPromise = store.setItem('feeds', feeds.filter(filterByID)).then(function(data){
+				alert(GetMessageText("importAlertImportedFeeds1") + importCount + GetMessageText("importAlertImportedFeeds2"));
+			});
+			resultPromise.then(function(){
+				chrome.runtime.sendMessage({"type": "checkForUnread"}).then(function(){ });
+			});
 
-		window.close();
+			window.close();
+	});
 }

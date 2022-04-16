@@ -1,9 +1,212 @@
+var localLang = "en"; //chrome.i18n.getUILanguage();
+var manifest = chrome.runtime.getManifest();
+var defaultOptions = GetDefaultOptions();
+var options = defaultOptions;
+var readLaterFeedID = 9999999999;
+var allFeedsID = 9999999998;
+var unreadInfo = { };
+var newNotif = false;
+var viewerPort = null;
+var feedInfo = [];
+var feeds = [];
+var groupInfo = [];
+var groups = [];
+var unreadTotal = 0;
+
+var promiseOptionBegin = GetOptions();
+async function waitOptionReady() {
+  return start = await Promise.allSettled([promiseOptionBegin]);
+}
+
+function GetStrFromObject(obj){
+  var dataArray = Object.keys(obj).map((key) => [Number(key), obj[key]]);
+  return JSON.stringify(dataArray);
+}
+
+function GetObjectFromStr(dataStr){
+  var result = JSON.parse(dataStr);
+
+  var keys = Object.keys(result);
+  var removed;
+  for (var i = 0 ; i < keys.length ; i++)
+  {
+    removed = false;
+    if ((result[i][0] != undefined) && (result[i][1] != undefined)) {
+      if (result[i][0] != i) {
+        result[result[i][0]] = result[i][1];
+        delete result[i];
+        removed = true;
+      }
+    }
+    if (!removed) {
+      if (result[i][1] != undefined) {
+        result[i] = result[i][1];
+      }
+    }
+  }
+  return result
+}
+
+function GetElementByTagNameJS() {
+    var node = arguments[0];
+    var defaultValue = arguments[1];
+    var tag = Array.from(arguments);
+    tag.shift();
+    tag.shift();
+
+    for (var i = 0; i < tag.length; i++) {
+      if (tag[i] != undefined)
+        tag[i] = tag[i].toUpperCase();
+    }
+
+    const parser = new fxparser.XMLParser();
+    var datajson = parser.parse(node);
+    return SearchTag(datajson, defaultValue, tag, 0);
+}
+
+function GetElementsByTagNameJS() {
+    var node = arguments[0];
+    var defaultValue = arguments[1];
+    var tag = Array.from(arguments);
+    tag.shift();
+    tag.shift();
+
+    for (var i = 0; i < tag.length; i++) {
+      if (tag[i] != undefined)
+        tag[i] = tag[i].toUpperCase();
+    }
+
+    const optionsParser = {
+      ignoreAttributes : false,
+      attributeNamePrefix : "",
+      allowBooleanAttributes: true,
+      preserveOrder: true
+      //attributesGroupName : "@_",
+      //preserveOrder: true,
+      //trimValues: false
+    };
+    const parser = new fxparser.XMLParser(optionsParser);
+    var datajson = parser.parse(node);
+    return SearchTags(datajson, defaultValue, tag, 0);
+}
+
+function SearchTag(data, defaultValue, tag, level)
+{
+  if (level == 30)
+  {
+    return defaultValue;
+  }
+  var keys = Object.keys(data);
+  var val = Object.values(data);
+  for (var i = 0 ; i < keys.length ; i++)
+  {
+    for (var e = 0; e < tag.length; e++) {
+      if (keys[i].toUpperCase() == tag[e]) {
+        var attrib = [];
+        var attribFound = false;
+        for (var j = 0 ; j < keys.length ; j++)
+        {
+          if (keys[j] == ":@")
+          {
+            attrib = val[j];
+            attribFound = true;
+          }
+        }
+        var result = [val[i]];
+        if (attribFound)
+        {
+          result.push(attrib);
+        }
+        return result;
+      }
+    }
+  }
+  for (var i = 0 ; i < keys.length ; i++)
+  {
+    if (val[i] != "")
+    {
+      var ret = SearchTag(val[i], defaultValue, tag, level + 1);
+      if (ret != defaultValue)
+      {
+        return ret;
+      }
+    }
+  }
+  return defaultValue;
+}
+
+function SearchTags(data, defaultValue, tag, level)
+{
+  if (level == 30)
+  {
+    return defaultValue;
+  }
+  if ((typeof data != "object") && (typeof data != "array"))
+  {
+    return defaultValue;
+  }
+  var result = [];
+  var keys = Object.keys(data);
+  var val = Object.values(data);
+  var resultExist = false;
+  for (var i = 0 ; i < keys.length ; i++)
+  {
+    for (var e = 0; e < tag.length; e++) {
+      if (keys[i].toUpperCase() == tag[e]) {
+          var attrib = [];
+          var attribFound = false;
+          for (var j = 0 ; j < keys.length ; j++)
+          {
+            if (keys[j] == ":@")
+            {
+              attrib = val[j];
+              attribFound = true;
+            }
+          }
+          var intermediateResult = [val[i]];
+          if (attribFound)
+          {
+            intermediateResult.push(attrib);
+          }
+          result.push(intermediateResult);
+          resultExist = true;
+      }
+    }
+  }
+  if (resultExist)
+  {
+    return result;
+  }
+  for (var i = 0 ; i < keys.length ; i++)
+  {
+    if ((val[i] != "") && ((typeof val[i] == "object") || (typeof val[i] == "array")))
+    {
+      var ret = SearchTags(val[i], defaultValue, tag, level + 1);
+      if (ret != defaultValue)
+      {
+        result.push(ret);
+        resultExist = true;
+      }
+    }
+  }
+  if (resultExist)
+  {
+    if (result.length == 1)
+    {
+      return result[0];
+    }
+    else {
+      return result;
+    }
+  }
+  return defaultValue;
+}
+
 //Manage i18n to translation
-var LocalLang = "en"; //chrome.i18n.getUILanguage();
 
 function SetLocalLang(value)
 {
-  LocalLang = value;
+  localLang = value;
 }
 
 function GetMessageTextFromServiceWorker(value)
@@ -11,7 +214,7 @@ function GetMessageTextFromServiceWorker(value)
   switch(value)
   {
     case 'backReadLater':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "Read Later";
           case 'en': return "Read Later";
@@ -24,7 +227,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "Read Later";
       };
     case 'backItemsMarkedReadLater':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "Items you marked to read later";
           case 'en': return "Items you marked to read later";
@@ -37,7 +240,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "Items you marked to read later";
       };
     case 'backItemsMarkedReadLater':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "Items you marked to read later";
           case 'en': return "Items you marked to read later";
@@ -50,7 +253,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "Items you marked to read later";
       };
     case 'backNoTitle':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "No Title";
           case 'en': return "No Title";
@@ -63,7 +266,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "No Title";
       };
     case 'backErrorXML':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "The response didn't have a valid responseXML property.";
           case 'en': return "The response didn't have a valid responseXML property.";
@@ -76,7 +279,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "The response didn't have a valid responseXML property.";
       };
     case 'backError200Part1':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "Status wasn't 200.  It was ";
           case 'en': return "Status wasn't 200.  It was ";
@@ -89,7 +292,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "Status wasn't 200.  It was ";
       };
     case 'backError200Part2':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return " and frankly I don't know how to handle that.  If it helps, the status text was '";
           case 'en': return " and frankly I don't know how to handle that.  If it helps, the status text was '";
@@ -102,7 +305,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return " and frankly I don't know how to handle that.  If it helps, the status text was '";
       };
     case 'backError200Part3':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "'.";
           case 'en': return "'.";
@@ -115,7 +318,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "'.";
       };
     case 'backAllFeeds':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "All Feeds";
           case 'en': return "All Feeds";
@@ -128,7 +331,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "All Feeds";
       };
     case 'monthJanuary':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "January";
           case 'en': return "January";
@@ -141,7 +344,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "January";
       };
     case 'monthFebruary':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "February";
           case 'en': return "February";
@@ -154,7 +357,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "February";
       };
     case 'monthMarch':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "March";
           case 'en': return "March";
@@ -167,7 +370,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "March";
       };
     case 'monthApril':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "April";
           case 'en': return "April";
@@ -180,7 +383,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "April";
       };
     case 'monthMay':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "May";
           case 'en': return "May";
@@ -193,7 +396,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "May";
       };
     case 'monthJune':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "June";
           case 'en': return "June";
@@ -206,7 +409,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "June";
       };
     case 'monthJuly':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "July";
           case 'en': return "July";
@@ -219,7 +422,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "July";
       };
     case 'monthAugust':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "August";
           case 'en': return "August";
@@ -232,7 +435,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "August";
       };
     case 'monthSeptember':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "September";
           case 'en': return "September";
@@ -245,7 +448,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "September";
       };
     case 'monthOctober':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "October";
           case 'en': return "October";
@@ -258,7 +461,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "October";
       };
     case 'monthNovember':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "November";
           case 'en': return "November";
@@ -271,7 +474,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "November";
       };
     case 'monthDecember':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "December";
           case 'en': return "December";
@@ -284,7 +487,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "December";
       };
     case 'daySunday':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "Sunday";
           case 'en': return "Sunday";
@@ -297,7 +500,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "Sunday";
       };
     case 'dayMonday':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "Monday";
           case 'en': return "Monday";
@@ -310,7 +513,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "Monday";
       };
     case 'dayTuesday':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "Tuesday";
           case 'en': return "Tuesday";
@@ -323,7 +526,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "Tuesday";
       };
     case 'dayWednesday':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "Wednesday";
           case 'en': return "Wednesday";
@@ -336,7 +539,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "Wednesday";
       };
     case 'dayThursday':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "Thursday";
           case 'en': return "Thursday";
@@ -349,7 +552,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "Thursday";
       };
     case 'dayFriday':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "Friday";
           case 'en': return "Friday";
@@ -362,7 +565,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "Friday";
       };
     case 'daySaturday':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "Saturday";
           case 'en': return "Saturday";
@@ -375,7 +578,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "Saturday";
       };
     case 'daySuffix1':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "st";
           case 'en': return "st";
@@ -388,7 +591,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "st";
       };
     case 'daySuffix2':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "nd";
           case 'en': return "nd";
@@ -401,7 +604,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "nd";
       };
     case 'daySuffix3':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "rd";
           case 'en': return "rd";
@@ -414,7 +617,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "rd";
       };
     case 'daySuffix4':
-      switch(LocalLang)
+      switch(localLang)
       {
           case 'de': return "th";
           case 'en': return "th";
@@ -427,7 +630,7 @@ function GetMessageTextFromServiceWorker(value)
           default: return "th";
       };
       case 'daySuffix5':
-        switch(LocalLang)
+        switch(localLang)
         {
             case 'de': return "th";
             case 'en': return "th";
@@ -447,6 +650,17 @@ function GetMessageText(value, fromServiceWorker = false)
   if (fromServiceWorker)
     return GetMessageTextFromServiceWorker(value);
   return chrome.i18n.getMessage(value);
+}
+
+// converts the text date into a formatted one if possible
+function GetFormattedDate(txtDate) {
+    var myDate = GetDate(txtDate);
+
+    if (myDate == null) {
+        return txtDate;
+    }
+
+    return FormatDate(myDate, options.dateformat);
 }
 
 // takes a text date and tries to convert it to a date object
@@ -615,6 +829,62 @@ function GetWeekdayName(dayOfWeek)
   }
 }
 
+// used to get defaults to help fill in missing pieces as I add more options
+function GetDefaultOptions() {
+    return {
+        "lastversion": manifest.version,
+        "maxitems": 50,
+        "showdescriptions": true,
+        "dateformat": "[ww] [dd]/[mm]/[yy] [hh]:[nn]",
+        "showfeedimages": true,
+        "showfeedobjects": true,
+        "showfeediframes": false,
+        "showfeedcontent": true,
+        "checkinterval": 60,
+        "markreadonclick": false,
+        "markreadafter": 0,
+        "readitemdisplay": 1,
+        "unreaditemtotaldisplay": true,
+        "unreadtotaldisplay": 3,
+        "columns": 2,
+        "readlaterenabled": true,
+        "readlaterremovewhenviewed": true,
+        "readlaterincludetotal": true,
+        "loadlinksinbackground": true,
+        "showallfeeds": false,
+        "usethumbnail": false,
+        "feedsmaxheight": 200,
+        "playSoundNotif": false,
+        "lang": "en"
+    };
+}
+
+// gets all or some options, filling in defaults when needed
+function GetOptions() {
+  var promiseGetOption = store.getItem('options').then(function(data) {
+      if (data != null) {
+          options = data;
+
+          // fill in defaults for new options
+          for (key in GetDefaultOptions()) {
+              if (options[key] == undefined) {
+                  options[key] = defaultOptions[key];
+              }
+          }
+          if (options.lang != localLang)
+          {
+            SetLocalLang(options.lang);
+          }
+      }
+    });
+    if (options.lang == null)
+    {
+      options.lang = "en";
+    }
+    SetLocalLang(options.lang);
+    return promiseGetOption;
+}
+
 //convert an Atom-formatted date string to a javascript-compatible date string
 function ConvertAtomDateString(str)
 {
@@ -683,3 +953,222 @@ function SortByDate(items) {
 }
 
 function formatBytes(a,b=2){var textBytes=GetMessageText("Bytes");var textKB=GetMessageText("KB");var textMB=GetMessageText("MB");var textGB=GetMessageText("GB");var textTB=GetMessageText("TB");var textPB=GetMessageText("PB");var textEB=GetMessageText("EB");var textZB=GetMessageText("ZB");var textYB=GetMessageText("YB");if(0===a)return`0 ${textBytes}`;const c=0>b?0:b,d=Math.floor(Math.log(a)/Math.log(1024));return parseFloat((a/Math.pow(1024,d)).toFixed(c))+" "+[`${textBytes}`,`${textKB}`,`${textMB}`,`${textGB}`,`${textTB}`,`${textPB}`,`${textEB}`,`${textZB}`,`${textYB}`][d]}
+
+// gets random numbers for managed feed ids
+function GetRandomID() {
+    var chars = "0123456789";
+    var str = "";
+    var rnum;
+
+    for (var i = 0; i < 10; i++) {
+        rnum = Math.floor(Math.random() * chars.length);
+        str += chars.charAt(rnum);
+    }
+
+    return str;
+}
+
+// helper function for creating new feeds
+function CreateNewFeed(title, url, group, maxitems, order, id) {
+    // managed feed doesn't have an id yet
+    if (id == null) {
+        id = GetRandomID();
+    }
+
+    return {title: title, url: url, group: group, maxitems: maxitems, order: order, id: id};
+}
+
+function GetReadLaterFeed() {
+    return CreateNewFeed(GetMessageText("backReadLater", true), chrome.runtime.getURL("readlater.html"), "", 99999, -9, readLaterFeedID);
+}
+
+// gets the feed array for everyone to use
+function GetFeedsSimple(callBack) {
+  feeds = [];
+  getFeedsCallBack = callBack;
+
+  store.getItem('feeds').then(function(datafeeds) {
+    if (datafeeds != null) {
+        feeds = datafeeds.sort(function (a, b) {
+            return a.order - b.order;
+        });
+    }
+
+    //feeds.unshift(GetReadLaterFeed());
+    getFeedsCallBack(feeds);
+  });
+}
+
+// updates, shows and hides the badge
+function UpdateUnreadBadge() {
+    if (unreadInfo == null) {
+        return;
+    }
+
+    var total = 0;
+    var str = "";
+
+    for (var key in unreadInfo) {
+        total = total + unreadInfo[key].unreadtotal;
+    }
+
+    if (!options.readlaterincludetotal && unreadInfo[readLaterFeedID] != null) {
+        total = total - unreadInfo[readLaterFeedID].unreadtotal;
+    }
+
+    if (total > 0) {
+        str = total + "";
+    }
+
+    // they don't want toolbar unread updates
+    if (options.unreadtotaldisplay == 0 || options.unreadtotaldisplay == 2) {
+        str = "";
+    }
+
+    if (newNotif) {
+      PlayNotificationSound();
+      newNotif = false;
+    }
+
+    unreadTotal = total;
+
+    // update badge
+    chrome.action.setBadgeText({text: str});
+    //chrome.action.setBadgeText({text: str});
+
+    // update title
+    if (viewerPort != null) {
+        viewerPort.postMessage({type: "unreadtotalchanged"});
+    }
+}
+
+function PlayNotificationSound() {
+  if (options.playSoundNotif) {
+    var audio = new Audio('Glisten.ogg');
+    audio.play();
+  }
+}
+
+// since the key for unread is the feed id, it's possible that you removed some, as such we should update and clean house
+function CleanUpUnreadOrphans() {
+    var feedIDs = {};
+
+    for (var key in feeds) {
+        feedIDs[feeds[key].id] = 1;
+    }
+
+    for (var key in unreadInfo) {
+        if (feedIDs[key] == null) {
+            delete unreadInfo[key];
+        }
+    }
+    var promiseCleanUpUnreadOrphans = store.setItem('unreadinfo', unreadInfo);
+
+    UpdateUnreadBadge();
+
+    return promiseCleanUpUnreadOrphans;
+}
+
+// returns a dictionary of unread counts {feedsid} = unreadtotal, readitems{}
+// may need a way to clean this if they delete feeds
+function GetUnreadCounts() {
+  var resultPromise = store.getItem('unreadinfo').then(function(data) {
+      if (data != null) {
+          unreadinfo = data;
+      } else {
+        unreadinfo = { };
+        store.setItem('unreadinfo', { });
+      }
+    },function(dataError) {
+        unreadinfo = { };
+        store.setItem('unreadinfo', { });
+    });
+
+    return resultPromise;
+}
+
+function GetFeedInfoItem(feedID, itemIndex) {
+    var feedGroupInfo = feedInfo[feedID];
+    if (feedGroupInfo == null) {
+      feedGroupInfo = feedInfo[groupInfo[feedID].items[itemIndex].idOrigin].items.find(function (el) {
+        return (el.itemID == groupInfo[feedID].items[itemIndex].itemID);
+      });
+      return feedGroupInfo;
+    }
+    return feedGroupInfo.items[itemIndex];
+}
+
+function GetFeedsFilterByGroup(key) {
+    var filteredFeeds = [];
+    if (groups[key].id == allFeedsID) {
+      filteredFeeds = feeds.filter(function (el) {
+        return (el.id != readLaterFeedID);
+      });
+    } else {
+      filteredFeeds = feeds.filter(function (el) {
+        return (el.group == groups[key].group) && (el.id != readLaterFeedID);
+      });
+    }
+
+    return filteredFeeds;
+}
+
+function GetGroupKeyByID(id) {
+    if (groups == null) {
+      return null;
+    }
+    for (var i = 0; i < groups.length; i++) {
+      if (groups[i].id == id) {
+        return i;
+      }
+    }
+}
+
+function ItemIsRead(feedID, itemID) {
+  var currentFeed = feeds.find(function (el) {
+    return (el.id == feedID);
+  });
+  if (currentFeed != null) {
+      return (unreadInfo[currentFeed.id].readitems[itemID] != null);
+  }
+  return false;
+}
+
+function CleanText(text)
+{
+  if ((text == undefined) || (text == null))
+  {
+    return text;
+  }
+  else {
+    if (text[0] != undefined)
+    {
+      if (text[0]["#text"] != undefined)
+      {
+        return text[0]["#text"];
+      }
+    }
+  }
+  return text;
+}
+
+function CleanText2(text)
+{
+  if ((text == undefined) || (text == null))
+  {
+    return text;
+  }
+  else {
+    if (text[0] != undefined)
+    {
+      if (text[0][0] != undefined)
+      {
+        if (text[0][0]["#text"] != undefined)
+        {
+          return text[0][0]["#text"];
+        }
+      }
+    }
+  }
+  return text;
+}

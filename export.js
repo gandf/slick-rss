@@ -1,6 +1,4 @@
 
-var bgPage = chrome.extension.getBackgroundPage();
-
 $(document).ready(function()
 {
 	$('#close').click(function(){window.close();});
@@ -13,13 +11,16 @@ function ExportFeeds()
 {
     var opml = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><opml version=\"2.0\">\n<head><title>" + GetMessageText("exportLinkTitle") + "</title></head>\n<body>";
 
-	    for(var i = 0; i < bgPage.feeds.length;i++)
+		GetFeedsSimple(function(feeds)
+		{
+			for(var i = 0; i < feeds.length;i++)
 	    {
-	        if (bgPage.feeds[i].id != bgPage.readLaterFeedID)
-	            opml += "<outline type=\"rss\" text=\"" + bgPage.feeds[i].title.replaceAll("&", "&amp;") + "\" xmlUrl=\"" + bgPage.feeds[i].url.replaceAll("&", "&amp;") + "\" group=\"" + bgPage.feeds[i].group.replaceAll("&", "&amp;") + "\"/>\n";
+	        if (feeds[i].id != readLaterFeedID)
+	            opml += "<outline type=\"rss\" text=\"" + feeds[i].title.replaceAll("&", "&amp;") + "\" xmlUrl=\"" + feeds[i].url.replaceAll("&", "&amp;") + "\" group=\"" + feeds[i].group.replaceAll("&", "&amp;") + "\"/>\n";
 	    }
 
 	    opml += "</body>\n</opml>";
 
 	    document.getElementById("opml").innerText = opml;
+		});
 }

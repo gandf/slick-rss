@@ -1,40 +1,30 @@
-var manifest = chrome.runtime.getManifest();
-var defaultOptions = GetDefaultOptions();
-var options = defaultOptions;
-var promiseBegin = GetOptions();
+//var manifest = chrome.runtime.getManifest();
+//var defaultOptions = GetDefaultOptions();
+//var options = defaultOptions;
+//var promiseBegin = GetOptions();
 var promiseUpgrade = null;
 var promiseGetUnreadCounts = null;
 var promiseGetReadLaterItems = null;
 var promiseExternalRequest = null;
-var unreadInfo = { };
-var unreadTotal = 0;
-var feedInfo = [];
-var feeds = [];
-var groupInfo = [];
-var groups = [];
-var viewerPort = null;
 var checkingForUnread = false;
 var checkForUnreadTimerID = null;
 var checkForUnreadCounter = 0;
 var allFeedsUnreadCounter = -1;
 var getFeedsCallBack = null;
 var refreshFeed = false;
-var newNotif = false;
-var readLaterFeedID = 9999999999;
-var allFeedsID = 9999999998;
 var viewPortTabID = null;
 var referenceDate = GetDate("Thu, 31 Dec 2019 23:59:59 +0000").getTime();
 var readlater = {
-    title: GetMessageText("backReadLater"),
-    description: GetMessageText("backItemsMarkedReadLater"),
+    title: GetMessageText("backReadLater", true),
+    description: GetMessageText("backItemsMarkedReadLater", true),
     group: "",
     loading: false,
     items: [],
     error: ""
 };
 
-chrome.browserAction.onClicked.addListener(ButtonClicked);
-chrome.runtime.onMessageExternal.addListener(ExternalRequest);
+chrome.action.onClicked.addListener(ButtonClicked);
+chrome.runtime.onMessage.addListener(ExternalRequest);
 chrome.runtime.onConnect.addListener(InternalConnection);
 chrome.alarms.onAlarm.addListener(AlarmRing);
 
@@ -56,10 +46,6 @@ waitOptionReady().then(function () {
     });
   }
 );
-
-async function waitOptionReady() {
-  return start = await Promise.allSettled([promiseBegin]);
-}
 
 async function waitUpgrade() {
   return start = await Promise.allSettled([promiseUpgrade]);
@@ -161,52 +147,65 @@ function ExternalRequest(request, sender, sendResponse) {
           sendResponse({});
       });
     }
-}
+    if (request.type == "checkForUnread") {
+      CheckForUnreadStart();
+      sendResponse({});
+    }
+    if (request.type == "checkForUnreadOnSelectedFeed") {
+      CheckForUnreadStart(request.selectedFeedKey);
+      sendResponse({});
+    }
 
-// gets all or some options, filling in defaults when needed
-function GetOptions() {
-  var promiseGetOption = store.getItem('options').then(function(data) {
-      if (data != null) {
-          options = data;
-
-          // fill in defaults for new options
-          for (key in GetDefaultOptions()) {
-              if (options[key] == undefined) {
-                  options[key] = defaultOptions[key];
+    if (request.type == "checkForUnreadOnSelectedFeedCompleted") {
+      if ((feeds[request.selectedFeedKey].id != readLaterFeedID) && (feeds[request.selectedFeedKey].id != allFeedsID)) {
+        if (feedInfo[feeds[request.selectedFeedKey].id] != undefined) {
+          if (!feedInfo[feeds[request.selectedFeedKey].id].loading) {
+              if (viewerPort != null) {
+                  viewerPort.postMessage({type: "feedupdatecomplete", id: feeds[request.selectedFeedKey].id});
               }
           }
+        }
       }
-    });
-    return promiseGetOption;
-}
+      else {
+        if (viewerPort != null) {
+            viewerPort.postMessage({type: "feedupdatecomplete", id: feeds[request.selectedFeedKey].id});
+        }
+      }
+      sendResponse({});
+    }
 
-// used to get defaults to help fill in missing pieces as I add more options
-function GetDefaultOptions() {
-    return {
-        "lastversion": manifest.version,
-        "maxitems": 50,
-        "showdescriptions": true,
-        "dateformat": "[ww] [dd]/[mm]/[yy] [hh]:[nn]",
-        "showfeedimages": true,
-        "showfeedobjects": true,
-        "showfeediframes": false,
-        "showfeedcontent": true,
-        "checkinterval": 60,
-        "markreadonclick": false,
-        "markreadafter": 0,
-        "readitemdisplay": 1,
-        "unreaditemtotaldisplay": true,
-        "unreadtotaldisplay": 3,
-        "columns": 2,
-        "readlaterenabled": true,
-        "readlaterremovewhenviewed": true,
-        "readlaterincludetotal": true,
-        "loadlinksinbackground": true,
-        "showallfeeds": false,
-        "usethumbnail": false,
-        "feedsmaxheight": 200,
-        "playSoundNotif": false
-    };
+    if (request.type == "setUnreadInfo") {
+      store.setItem('unreadinfo', request.data);
+      sendResponse({});
+    }
+
+    if (request.type == "getFeeds") {
+      sendResponse(GetStrFromObject(feeds));
+    }
+
+    if (request.type == "getFeedInfo") {
+      sendResponse(GetStrFromObject(feedInfo));
+    }
+
+    if (request.type == "getGroups") {
+      sendResponse(GetStrFromObject(groups));
+    }
+
+    if (request.type == "getGroupInfo") {
+      sendResponse(GetStrFromObject(groupInfo));
+    }
+
+    if (request.type == "calcGroupCountUnread") {
+      sendResponse(CalcGroupCountUnread(request.data));
+    }
+
+    if (request.type == "getUnreadTotal") {
+      sendResponse(unreadTotal);
+    }
+
+    if (request.type == "getRefreshFeed") {
+      sendResponse(GetStrFromObject({"refreshFeed": refreshFeed, "checkForUnreadCounter": checkForUnreadCounter, checkingForUnread: checkingForUnread}));
+    }
 }
 
 // gets the feed array for everyone to use
@@ -227,18 +226,14 @@ function GetFeeds(callBack) {
   });
 }
 
-function GetReadLaterFeed() {
-    return CreateNewFeed(GetMessageText("backReadLater"), chrome.extension.getURL("readlater.html"), "", 99999, -9, readLaterFeedID);
-}
-
 function GetReadLaterItems() {
   var resultPromise = store.getItem('readlater').then(function(data) {
     if (data != null) {
       readlater = JSON.parse(data);
     } else {
       store.setItem('readlater', {
-          title: GetMessageText("backReadLater"),
-          description: GetMessageText("backItemsMarkedReadLater"),
+          title: GetMessageText("backReadLater", true),
+          description: GetMessageText("backItemsMarkedReadLater", true),
           group: "",
           loading: false,
           items: [],
@@ -248,41 +243,6 @@ function GetReadLaterItems() {
   });
 
   return resultPromise;
-}
-
-// helper function for creating new feeds
-function CreateNewFeed(title, url, group, maxitems, order, id) {
-    // managed feed doesn't have an id yet
-    if (id == null) {
-        id = GetRandomID();
-    }
-
-    return {title: title, url: url, group: group, maxitems: maxitems, order: order, id: id};
-}
-
-// converts the text date into a formatted one if possible
-function GetFormattedDate(txtDate) {
-    var myDate = GetDate(txtDate);
-
-    if (myDate == null) {
-        return txtDate;
-    }
-
-    return FormatDate(myDate, options.dateformat);
-}
-
-// gets random numbers for managed feed ids
-function GetRandomID() {
-    var chars = "0123456789";
-    var str = "";
-    var rnum;
-
-    for (var i = 0; i < 10; i++) {
-        rnum = Math.floor(Math.random() * chars.length);
-        str += chars.charAt(rnum);
-    }
-
-    return str;
 }
 
 // as this project gets larger there will be upgrades to storage items this will help
@@ -316,67 +276,6 @@ function DoUpgrades() {
     return resultPromise;
 }
 
-// updates, shows and hides the badge
-function UpdateUnreadBadge() {
-    if (unreadInfo == null) {
-        return;
-    }
-
-    var total = 0;
-    var str = "";
-
-    for (var key in unreadInfo) {
-        total = total + unreadInfo[key].unreadtotal;
-    }
-
-    if (!options.readlaterincludetotal && unreadInfo[readLaterFeedID] != null) {
-        total = total - unreadInfo[readLaterFeedID].unreadtotal;
-    }
-
-    if (total > 0) {
-        str = total + "";
-    }
-
-    // they don't want toolbar unread updates
-    if (options.unreadtotaldisplay == 0 || options.unreadtotaldisplay == 2) {
-        str = "";
-    }
-
-    if (newNotif) {
-      PlayNotificationSound();
-      newNotif = false;
-    }
-
-    unreadTotal = total;
-
-    // update badge
-    chrome.browserAction.setBadgeText({text: str});
-    //chrome.action.setBadgeText({text: str});
-
-    // update title
-    if (viewerPort != null) {
-        viewerPort.postMessage({type: "unreadtotalchanged"});
-    }
-}
-
-// returns a dictionary of unread counts {feedsid} = unreadtotal, readitems{}
-// may need a way to clean this if they delete feeds
-function GetUnreadCounts() {
-  var resultPromise = store.getItem('unreadinfo').then(function(data) {
-      if (data != null) {
-          unreadinfo = data;
-      } else {
-        unreadinfo = { };
-        store.setItem('unreadinfo', { });
-      }
-    },function(dataError) {
-        unreadinfo = { };
-        store.setItem('unreadinfo', { });
-    });
-
-    return resultPromise;
-}
-
 // starts the checking for unread (and now loading of data)
 // if key is filled in, then only that feed will be refreshed
 function CheckForUnreadStart(key) {
@@ -387,6 +286,15 @@ function CheckForUnreadStart(key) {
     checkForUnreadCounter = (key == null) ? 0 : key;
     allFeedsUnreadCounter = (key == null) ? -2 : -1; //-2 empty before
     checkingForUnread = true;
+
+    if (key == null) {
+      if (checkForUnreadCounter < feeds.length) {
+        //while ((checkForUnreadCounter < feeds.length) && (feeds[checkForUnreadCounter].id == readLaterFeedID) || (feeds[checkForUnreadCounter].id == allFeedsID)) {
+        while ((checkForUnreadCounter < feeds.length) && (feeds[checkForUnreadCounter].id == allFeedsID)) {
+          checkForUnreadCounter++;
+        }
+      }
+    }
 
     // keep timer going on "refresh"
     if (key == null) {
@@ -415,56 +323,81 @@ function CheckForUnreadStart(key) {
 // goes through each feed and gets how many you haven't read since last time you were there
 function CheckForUnread() {
     var feedID = feeds[checkForUnreadCounter].id;
-    var req = new XMLHttpRequest();
-    var toID = setTimeout(function() {
-        try {
-            req.abort();
-        } catch(e){
-            console.log(e);
-        }
-      }, 60000);
     var now = new Date();
     var promiseCheckForUnread = [];
+    var status;
 
-    feedInfo[feedID] = {title: "", description: "", group: "", loading: true, items: [], error: ""};
-
-    if (viewerPort != null) {
-        viewerPort.postMessage({type: "feedupdatestarted", id: feedID});
+    // initialize unread object if not setup yet
+    if (unreadInfo == null) {
+      unreadInfo = { };
     }
-    try {
-        // get data and be nice to mac rss feeds
-        req.open("get", feeds[checkForUnreadCounter].url.replace(/feed:\/\//i, "http://"), true);
-        req.overrideMimeType('text/xml');
-        req.onreadystatechange = function () {
-            if (req.readyState == 4) {
-                clearTimeout(toID);
-                var doc = req.responseXML;
-                var previousUnreadtotal;
+    if (unreadInfo[feedID] == null) {
+        unreadInfo[feedID] = {unreadtotal: 0, readitems: {}};
+    }
 
-                if (unreadInfo[feedID] == null) {
-                  previousUnreadtotal = 0;
-                } else {
-                  previousUnreadtotal = unreadInfo[feedID].unreadtotal;
+    unreadInfo[feedID].unreadtotal = 0;
+
+    if (feedID == readLaterFeedID) {
+        feedInfo[feedID] = readlater;
+        unreadInfo[feedID].unreadtotal = feedInfo[feedID].items.length;
+
+        checkForUnreadCounter++;
+        if (checkForUnreadCounter < feeds.length) {
+          if (feeds[checkForUnreadCounter].id === allFeedsID) {
+            checkForUnreadCounter++;
+          }
+        }
+
+        if (checkForUnreadCounter >= feeds.length || refreshFeed) {
+            CheckForUnreadComplete();
+        } else {
+            CheckForUnread();
+        }
+    }
+    else {
+      feedInfo[feedID] = {title: "", description: "", group: "", loading: true, items: [], error: ""};
+
+      if (viewerPort != null) {
+          viewerPort.postMessage({type: "feedupdatestarted", id: feedID, refreshFeed: refreshFeed, checkForUnreadCounter: checkForUnreadCounter, checkingForUnread: checkingForUnread});
+      }
+
+      try {
+        fetch(feeds[checkForUnreadCounter].url.replace(/feed:\/\//i, "http://"), {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'text/xml',
+            'Accept-Charset': 'utf-8'
+          },
+        })
+          .then(
+            function(response) {
+              if (!response.ok) {
+                console.log('Looks like there was a problem. Status Code: ' + response.status);
+                return;
+              }
+              status = response.status;
+              response.arrayBuffer().then(function(data) {
+                var decoder = new TextDecoder("UTF-8");
+                var doc = decoder.decode(data);
+                var encodeName = doc.substring(0, 100);
+                encodeName = encodeName.substring(encodeName.indexOf("encoding=") + ("encoding=").length, encodeName.indexOf("?>"));
+                encodeName = encodeName.replaceAll('\"', '');
+                encodeName = encodeName.replaceAll('"', '');
+                if (encodeName.replaceAll('-', '').toUpperCase() != "UTF8"){
+                  decoder = new TextDecoder(encodeName);
+                  doc = decoder.decode(data);
                 }
 
-                // initialize unread object if not setup yet
-                if (unreadInfo == null) {
-                  unreadInfo = { };
-                }
-                if (unreadInfo[feedID] == null) {
-                    unreadInfo[feedID] = {unreadtotal: 0, readitems: {}};
-                }
+                var previousUnreadtotal = unreadInfo[feedID].unreadtotal;
 
-                unreadInfo[feedID].unreadtotal = 0;
-
-                if (req.status == 200) {
+                if (status == 200) {
                     if (doc) {
                         var readItemCount = 0;
                         var item = null;
                         var entryID = null;
                         var entryIDs = {};
-                        var entries = GetElementsByTagName(doc, [], "entry", "item");
-                        var rootNode = GetElementByTagName(doc, null, "feed", "rss", "rdf:RDF");
+                        var entries = GetElementsByTagNameJS(doc, [], "entry", "item");
+                        var rootNode = GetElementByTagNameJS(doc, null, "feed", "rss", "rdf:RDF");
                         var author = null;
                         var name = null;
                         var thumbnail = null;
@@ -472,97 +405,122 @@ function CheckForUnread() {
                         var thumbnailtype = null;
                         var thumbnailNode = null;
                         var dummyDate = null;
+                        var keys = null
 
                         if (rootNode != null) {
-                            if (rootNode.nodeName == "feed") {
-                                feedInfo[feedID].title = GetNodeTextValue(GetElementByTagName(rootNode, null, "title"));
-                                feedInfo[feedID].description = GetNodeTextValue(GetElementByTagName(rootNode, null, "subTitle", "description"));
+                            keys = Object.keys(rootNode);
+                            if (keys[0].toUpperCase() == "FEED") {
+                                feedInfo[feedID].title = SearchTag(rootNode, null, ["TITLE"], 0);
+                                feedInfo[feedID].description = SearchTag(rootNode, null, ["SUBTITLE", "DESCRIPTION"], 0);
                             } else {
-                                var channel = GetElementByTagName(rootNode, null, "channel");
+                                var channel = SearchTag(rootNode, null, ["CHANNEL"], 0);
 
                                 if (channel != null) {
-                                    feedInfo[feedID].title = GetNodeTextValue(GetElementByTagName(channel, null, "title"));
-                                    feedInfo[feedID].description = GetNodeTextValue(GetElementByTagName(channel, null, "description", "subTitle"));
+                                    feedInfo[feedID].title = SearchTag(channel, null, ["TITLE"], 0);
+                                    feedInfo[feedID].description = SearchTag(channel, null, ["DESCRIPTION", "SUBTITLE"], 0);
                                 }
                             }
                         }
 
                         for (var e = 0; e < entries.length; e++) {
                             item = {};
-                            item.title = GetNodeTextValue(GetElementByTagName(entries[e], null, "title"), GetMessageText("backNoTitle"));
-                            item.date = GetNodeTextValue(GetElementByTagName(entries[e], null, "pubDate", "updated", "dc:date", "date", "published")); // not sure if date is even needed anymore
+                            item.title = CleanText2(SearchTag(entries[e], GetMessageText("backNoTitle", true), ["TITLE"], 0));
+                            item.title = item.title.replaceAll("U+20AC", '€');
+                            item.date = CleanText2(SearchTag(entries[e], null, ["PUBDATE", "UPDATED", "DC:DATE", "DATE", "PUBLISHED"], 0)); // not sure if date is even needed anymore
                             item.content = "";
                             item.idOrigin = feedID;
                             item.itemID = sha256(item.title + item.date);
+                            thumbnailurl = null;
+                            thumbnailtype = null;
 
                             // don't bother storing extra stuff past max.. only title for Mark All Read
                             if (e <= feeds[checkForUnreadCounter].maxitems) {
                                 item.url = GetFeedLink(entries[e]);
 
                                 if (options.showfeedcontent) {
-                                    item.content = GetNodeTextValue(GetElementByTagName(entries[e], null, "content:encoded", "content")); // only guessing on just "content"
+                                    item.content = CleanText2(SearchTag(entries[e], null, ["CONTENT:ENCODED", "CONTENT"], 0)); // only guessing on just "content"
                                 }
 
-                                if (item.content == "") {
-                                    item.content = GetNodeTextValue(GetElementByTagName(entries[e], null, "description", "summary"));
+                                if ((item.content == "") || (item.content == null)) {
+                                    item.content = CleanText2(SearchTag(entries[e], null, ["DESCRIPTION", "SUMMARY"], 0));
                                 }
+                                item.content = item.content.replaceAll("U+20AC", '€');
                                 item.thumbnail = null;
 
-                                author = GetElementByTagName(entries[e], null, "author", "dc:creator", "creator");
-                                thumbnail = GetElementByTagName(entries[e], null, "enclosure", "media:group");
+                                author = CleanText2(SearchTag(entries[e], null, ["AUTHOR", "DC:CREATOR", "CREATOR"], 0));
+                                thumbnail = SearchTag(entries[e], null, ["ENCLOSURE", "MEDIA:GROUP"], 0);
                                 if (thumbnail != null) {
-                                  if (thumbnail.nodeName == "media:group") {
-                                    for (var i = 0; i < thumbnail.childNodes.length; i++) {
-                                      thumbnailNode = GetElementByTagName(thumbnail.childNodes[i], null, "media:description");
-                                      if (thumbnailNode != null) {
-                                        if (thumbnailNode.textContent.includes("thumbnail")) {
-                                          thumbnailurl = thumbnail.childNodes[i].getAttribute("url");
-                                          thumbnailtype = thumbnail.childNodes[i].getAttribute("medium");
-                                          if (thumbnailtype == "image") {
-                                            item.thumbnail = "<img src=\"" + thumbnailurl + "\" class=\"thumbnail\">";
-                                            break;
-                                          }
-                                        }
+                                  keys = Object.keys(thumbnail);
+                                  for (var k = 0; k < thumbnail.length; k++) {
+                                    if (thumbnail[k].length > 0) {
+                                      if (thumbnail[k].constructor === Array) {
+                                        thumbnail = thumbnail[k];
+                                        break;
                                       }
-                                    }
-                                    if (item.thumbnail == null) {
-                                      for (var i = 0; i < thumbnail.childNodes.length; i++) {
-                                        thumbnailNode = GetElementByTagName(thumbnail.childNodes[i], null, "media:description");
-                                        if (thumbnailNode != null) {
-                                          thumbnailurl = thumbnail.childNodes[i].getAttribute("url");
-                                          thumbnailtype = thumbnail.childNodes[i].getAttribute("medium");
-                                          if (thumbnailtype == "image") {
-                                            item.thumbnail = "<img src=\"" + thumbnailurl + "\" class=\"thumbnail\">";
-                                            break;
-                                          }
-                                        }
-                                      }
-                                    }
-                                  } else {
-                                    if (thumbnail != null) {
-                                      thumbnailurl = thumbnail.getAttribute("url");
-                                      thumbnailtype = thumbnail.getAttribute("type");
-                                      if (thumbnailurl != null) {
-                                        if (thumbnailtype != null) {
-                                          if (thumbnailtype.includes("image")) {
-                                            item.thumbnail = "<img src=\"" + thumbnailurl + "\" class=\"thumbnail\">";
-                                          }
-                                        } else {
-                                          item.thumbnail = "<img src=\"" + thumbnailurl + "\" class=\"thumbnail\">";
-                                        }
-                                      }
+                                    } else {
+                                      delete thumbnail[k];
                                     }
                                   }
+
+                                  keys = Object.keys(thumbnail);
+                                  var thumbtemp = [];
+                                  for (var k = 0; k < keys.length; k++)
+                                  {
+                                    thumbtemp[k] = thumbnail[keys[k]];
+                                  }
+                                  thumbnail = thumbtemp;
+
+                                  for (var k = 0; k < thumbnail.length; k++)
+                                  {
+                                    keys = Object.keys(thumbnail[k]);
+                                    var val = Object.values(thumbnail[k]);
+                                    for (var j = 0; j < keys.length; j++)
+                                    {
+                                      if (keys[j].toUpperCase() == "MEDIA:CONTENT") {
+                                        for (var n1 = 0; n1 < val[j].length; n1++)
+                                        {
+                                          var keys2 = Object.keys(val[j][n1]);
+                                          var val2 = Object.values(val[j][n1]);
+                                          for (var n2 = 0; n2 < keys2.length; n2++)
+                                          {
+                                            if (keys2[n2].toUpperCase() == "MEDIA:DESCRIPTION") {
+                                              if (CleanText(val2[n2]).includes("thumbnail"))
+                                              {
+                                                if (thumbnail[k][":@"] != undefined) {
+                                                  thumbnailurl = thumbnail[k][":@"]["url"];
+                                                  thumbnailtype = thumbnail[k][":@"]["medium"];
+                                                  if (thumbnailtype == "image") {
+                                                    item.thumbnail = "<img src=\"" + thumbnailurl + "\" class=\"thumbnail\">";
+                                                    break;
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                          if (thumbnailurl != null) {
+                                            break;
+                                          }
+                                        }
+                                    }
+                                    if (thumbnailurl != null) {
+                                      break;
+                                    }
+                                  }
+                                  if (thumbnailurl != null) {
+                                    break;
+                                  }
+                                }
                                 }
 
                                 if (author != null) {
-                                    name = GetElementByTagName(author, null, "name");
+                                    item.author = author;
+                                    /*name = GetElementByTagNameJS(author, null, "name");
 
                                     if (name != null) {
                                         item.author = GetNodeTextValue(name);
                                     } else {
                                         item.author = GetNodeTextValue(author);
-                                    }
+                                    }*/
                                 } else {   // for some reason the author gets funky with floats if it's empty..  so whatever
                                     item.author = '\u00a0';
                                 }
@@ -594,27 +552,10 @@ function CheckForUnread() {
 
                         unreadInfo[feedID].unreadtotal = entries.length - readItemCount;
                     } else {
-                        feedInfo[feedID].error = GetMessageText("backErrorXML");
+                        feedInfo[feedID].error = GetMessageText("backErrorXML", true);
                     }
                 } else {
-                    if (feedID != readLaterFeedID) {
-                        feedInfo[feedID].error = GetMessageText("backError200Part1") + req.status + GetMessageText("backError200Part2") + req.statusText + GetMessageText("backError200Part3");
-                    } else {
-                        // cheat the system, fill in read later info
-                        feedInfo[feedID] = readlater;
-                        unreadInfo[feedID].unreadtotal = feedInfo[feedID].items.length;
-                    }
-                }
-                if (feedID == readLaterFeedID) {
-                  // cheat the system, fill in read later info
-                  feedInfo[feedID] = readlater;
-
-                if ((feedInfo[feedID] == null) || (feedInfo[feedID].items == null)) {
-                  unreadInfo[feedID].unreadtotal = 0;
-                } else {
-                  unreadInfo[feedID].unreadtotal = feedInfo[feedID].items.length;
-                }
-
+                    feedInfo[feedID].error = GetMessageText("backError200Part1", true) + status + GetMessageText("backError200Part2", true) + response.statusText + GetMessageText("backError200Part3", true);
                 }
                 promiseCheckForUnread.push(store.setItem('unreadinfo', unreadInfo));
 
@@ -623,8 +564,12 @@ function CheckForUnread() {
                 }
 
                 checkForUnreadCounter++;
+                if (checkForUnreadCounter < feeds.length) {
+                  if (feeds[checkForUnreadCounter].id === allFeedsID) {
+                    checkForUnreadCounter++;
+                  }
+                }
 
-                req = null;
                 doc = null;
 
                 feedInfo[feedID].loading = false;
@@ -640,13 +585,16 @@ function CheckForUnread() {
                       CheckForUnread();
                   }
                 });
+              });
             }
-        }
-
-        req.send(null);
-    } catch (err) {
-        // onreadystate should already be called, so don't do anything!
-    }
+          )
+          .catch(function(err) {
+            console.log('Fetch Error :-S', err);
+          });
+      } catch (err) {
+          console.log('Error :-S', err);
+      }
+  }
 }
 
 // ran after checking for unread is done
@@ -668,26 +616,6 @@ function CheckForUnreadComplete() {
     UpdateUnreadBadge();
 }
 
-// since the key for unread is the feed id, it's possible that you removed some, as such we should update and clean house
-function CleanUpUnreadOrphans() {
-    var feedIDs = {};
-
-    for (var key in feeds) {
-        feedIDs[feeds[key].id] = 1;
-    }
-
-    for (var key in unreadInfo) {
-        if (feedIDs[key] == null) {
-            delete unreadInfo[key];
-        }
-    }
-    var promiseCleanUpUnreadOrphans = store.setItem('unreadinfo', unreadInfo);
-
-    UpdateUnreadBadge();
-
-    return promiseCleanUpUnreadOrphans;
-}
-
 // to help with master title & description getting
 function GetNodeTextValue(node, defaultValue) {
     if (node == null || node.childNodes.length == 0) {
@@ -706,70 +634,51 @@ function GetNodeTextValue(node, defaultValue) {
 }
 
 function GetFeedLink(node) {
-    var links = node.getElementsByTagName("link");
+    var links = SearchTags(node, "", ["LINK"], 0);
+    var lien;
+
+    for (var i = 0 ; i < links.length ; i++)
+    {
+      links[i][0] = CleanText(links[i][0]);
+    }
 
     if (links.length == 0) {
         //<guid ispermalink="true(default)"></guid> is yet another way of saying link
-        var guids = node.getElementsByTagName("guid");
+        var guids = SearchTag(node, "", ["GUID"], 0);
 
-        if (guids.length == 0 || guids[0].getAttribute("ispermalink") == "false") {
+        if (guids.length == 0) {
             return "";
         }
-
-        return GetNodeTextValue(guids[0], "");
-
+        guids[0] = CleanText(guids[0]);
+        lien = guids[0];
+        if ((guids.length > 1) && (lien.length > 0))
+        {
+          if ((guids[1]["isPermaLink"] == "false") && (lien.substring(0, 8) != "https://") && (lien.substring(0, 7) != "http://")) {
+              return "";
+          }
+        }
+        return lien;
     }
 
     for (var i = 0; i < links.length; i++) {
         // in atom feeds alternate is the default so if something else is there then skip
-        if (links[i].getAttribute("href") != null && (links[i].getAttribute("rel") == "alternate" || links[i].getAttribute("rel") == null)) {
-            return links[i].getAttribute("href");
-        }
-
-        // text node or CDATA node
-        if (links[i].childNodes.length == 1 && (links[i].childNodes[0].nodeType == 3 || links[i].childNodes[0].nodeType == 4)) {
-            return links[i].childNodes[0].nodeValue;
+        lien = links[i];
+        if (lien[0] != null) {
+          if (lien[1] == undefined) {
+            return lien[0];
+          }
+          else {
+              if ((lien[1]["rel"] == "alternate") || (lien[1]["rel"] == undefined)) {
+                return lien[0];
+              }
+          }
         }
     }
-
     return ""; // has links, but I can't read them?!
 }
 
-// since node.getElementsByTag name is recursive and sometimes we don't want that
-// GetElementByTagName(node, defaultValue, target1, target2)
-function GetElementByTagName() {
-    var node = arguments[0];
-
-    for (var i = 0; i < node.childNodes.length; i++) {
-        for (e = 2; e < arguments.length; e++) {
-            if (node.childNodes[i].nodeName.toUpperCase() == arguments[e].toUpperCase()) {
-                return node.childNodes[i];
-            }
-        }
-    }
-
-    return arguments[1];
-}
-
-// node, defaultValue, list of tags
-function GetElementsByTagName() {
-    var node = arguments[0];
-    var defaultValue = arguments[1];
-    var item;
-
-    for (var i = 2; i < arguments.length; i++) {
-        item = node.getElementsByTagName(arguments[i]);
-
-        if (item.length > 0) {
-            return item;
-        }
-    }
-
-    return defaultValue;
-}
-
 function GetAllFeedsGroup() {
-  return CreateNewGroup(GetMessageText("backAllFeeds"), "", -8, allFeedsID);
+  return CreateNewGroup(GetMessageText("backAllFeeds", true), "", -8, allFeedsID);
 }
 
 // helper function for creating new feeds
@@ -788,7 +697,7 @@ function CreateNewGroup(title, group, order, id) {
         order = 1;
       }
     }
-    url = chrome.extension.getURL("group.html");
+    url = chrome.runtime.getURL("group.html");
     maxitems = 99999;
 
     return {title: title, url: url, group: group, maxitems: maxitems, order: order, id: id, items: []};
@@ -832,7 +741,7 @@ function UpdateGroups() {
 
 function GetGroupAllFeedsItems() {
   if (options.showallfeeds == true) {
-    GetGroupItems(0, allFeedsID, GetMessageText("backAllFeeds"), GetMessageText("backAllFeeds"));
+    GetGroupItems(0, allFeedsID, GetMessageText("backAllFeeds", true), GetMessageText("backAllFeeds", true));
   }
 }
 
@@ -847,7 +756,7 @@ function GetGroupItems(groupIndex, id, title, description) {
     }
     if ((options.showallfeeds == true) && (id != allFeedsID)) {
       if (groupInfo[allFeedsID] == null) {
-        groupInfo[allFeedsID] = {title: GetMessageText("backAllFeeds"), description: GetMessageText("backAllFeeds"), group: "", loading: true, items: [], error: ""};
+        groupInfo[allFeedsID] = {title: GetMessageText("backAllFeeds", true), description: GetMessageText("backAllFeeds"), group: "", loading: true, items: [], error: ""};
       }
     }
     for (var i = 0; i < filteredFeeds.length; i++) {
@@ -869,17 +778,6 @@ function GetNewItem(title, date, order, content, idOrigin, itemID, url, author, 
   return {title: title, date: date, order: order, content: content, idOrigin: idOrigin, itemID: itemID, url: url, author: author, thumbnail: thumbnail};
 }
 
-function GetGroupKeyByID(id) {
-    if (groups == null) {
-      return null;
-    }
-    for (var i = 0; i < groups.length; i++) {
-      if (groups[i].id == id) {
-        return i;
-      }
-    }
-}
-
 function CalcGroupCountUnread(key) {
     var filteredFeeds = GetFeedsFilterByGroup(key);
     var count = 0;
@@ -889,47 +787,4 @@ function CalcGroupCountUnread(key) {
       }
     }
     return count;
-}
-
-function GetFeedsFilterByGroup(key) {
-    var filteredFeeds = [];
-    if (groups[key].id == allFeedsID) {
-      filteredFeeds = feeds.filter(function (el) {
-        return (el.id != readLaterFeedID);
-      });
-    } else {
-      filteredFeeds = feeds.filter(function (el) {
-        return (el.group == groups[key].group) && (el.id != readLaterFeedID);
-      });
-    }
-
-    return filteredFeeds;
-}
-
-function ItemIsRead(feedID, itemID) {
-  var currentFeed = feeds.find(function (el) {
-    return (el.id == feedID);
-  });
-  if (currentFeed != null) {
-      return (unreadInfo[currentFeed.id].readitems[itemID] != null);
-  }
-  return false;
-}
-
-function GetFeedInfoItem(feedID, itemIndex) {
-    var feedGroupInfo = feedInfo[feedID];
-    if (feedGroupInfo == null) {
-      feedGroupInfo = feedInfo[groupInfo[feedID].items[itemIndex].idOrigin].items.find(function (el) {
-        return (el.itemID == groupInfo[feedID].items[itemIndex].itemID);
-      });
-      return feedGroupInfo;
-    }
-    return feedGroupInfo.items[itemIndex];
-}
-
-function PlayNotificationSound() {
-  if (options.playSoundNotif) {
-    var audio = new Audio('Glisten.ogg');
-    audio.play();
-  }
 }

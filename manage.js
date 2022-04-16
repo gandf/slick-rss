@@ -1,7 +1,4 @@
 
-var bgPage = chrome.extension.getBackgroundPage();
-var options = bgPage.options;
-var feeds = bgPage.feeds;
 var lastBadRow = null;
 
 $(document).ready(function()
@@ -28,7 +25,7 @@ function Add()
         return;
     }
 
-    AddRow(feeds.push(bgPage.CreateNewFeed(title, url, group, maxItems, order)) - 1);
+    AddRow(feeds.push(CreateNewFeed(title, url, group, maxItems, order)) - 1);
 
     for(feedKey in feeds)
     {
@@ -243,16 +240,14 @@ function Save()
     feeds.splice(0,1);
 
 		var resultPromise = store.setItem('feeds', feeds).then(function(data){
-			bgPage.CleanUpUnreadOrphans();
+			GetUnreadCounts();
+			CleanUpUnreadOrphans();
 		});
 
 		resultPromise.then(function(){
-			// get feeds to re-order the feeds
-	    bgPage.GetFeeds(function()
-	    {
-	        bgPage.CheckForUnreadStart();
-	        window.location = chrome.extension.getURL("viewer.html");
-	    });
+				chrome.runtime.sendMessage({"type": "checkForUnread" }).then(function(){
+	        window.location = chrome.runtime.getURL("viewer.html");
+	      });
 		});
 }
 
@@ -261,21 +256,26 @@ function ShowFeeds()
     var maxOrder = 0;
     var itemOrder = 0;
 
-    for(feedKey in feeds)
-    {
-        // skip read later feed
-				if (feeds[feedKey].id != bgPage.readLaterFeedID)
-				{
-					AddRow(feedKey);
-	        itemOrder = parseInt(feeds[feedKey].order);
+		GetFeedsSimple(function(feeds)
+		{
+	    for(feedKey in feeds)
+	    {
+	        // skip read later feed
+					if (feeds[feedKey].id != readLaterFeedID)
+					{
+						AddRow(feedKey);
+		        itemOrder = parseInt(feeds[feedKey].order);
 
-	        if(itemOrder > maxOrder)
-	        {
-	            maxOrder = itemOrder;
-	        }
-				}
-    }
+		        if(itemOrder > maxOrder)
+		        {
+		            maxOrder = itemOrder;
+		        }
+					}
+	    }
 
-    document.getElementById("newOrder").value = maxOrder + 1;
-    document.getElementById("newMaxItems").value = bgPage.options.maxitems;
+	    document.getElementById("newOrder").value = maxOrder + 1;
+			waitOptionReady().then(function () {
+	    	document.getElementById("newMaxItems").value = options.maxitems;
+			});
+		});
 }
