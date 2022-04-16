@@ -1,0 +1,257 @@
+
+body {
+	overflow: hidden;
+}
+
+#containerArea {
+	width: 100%;
+	height: 100%;
+}
+
+#feedScroller {
+	overflow-y: auto;
+	overflow-x: hidden;
+	background-color: #1C1E23;
+	border-right: 1px solid #4D5361;
+}
+
+#feedPreviewScroller {
+	overflow: auto;
+	width: 100% !important;
+}
+
+#feedHeader {
+	font-size: 15px;
+	background-color: #3D4149;
+	color: #aaa;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+#feedHeader a {
+	font-size: 12px;
+	color: #999FAA;
+	text-decoration: none;
+}
+
+#feedHeader a:hover {
+	text-decoration: underline;
+}
+
+#feedList {
+	list-style-type: none;
+	margin: 0px;
+	padding: 10px;
+}
+
+#feedList li {
+	padding: 3px;
+	white-space: nowrap;
+	cursor: pointer;
+	border: 1px solid #40444F;
+	margin-bottom: 1px;
+}
+
+#feedList li:hover {
+	border: 1px solid #d8d8d8;
+}
+
+#feedArea, #workArea {
+	vertical-align: top;
+	height: 99%; /* keeps headers on top when there isn't enough content since master table is 100% height */
+}
+
+#feedsLoading {
+	display: none;
+	width: 99%;
+	color: White;
+	font-size: small;
+}
+
+#feedsLoading td + td {
+	width: 99%;
+	padding: 10px;
+}
+
+#feedsLoadingProgressBox {
+	border: 1px solid #aaa;
+	width: 100%;
+}
+
+#feedsLoadingProgress {
+	width: 0%;
+	height: 5px;
+	background-color: #eee;
+}
+
+#feedsOptions {
+	white-space: nowrap;
+}
+
+.loading tr > td:first-child {
+	background-image: url("loading.gif") !important;
+}
+
+#feedPreview {
+	font-size: 12px;
+	outline: none;
+	width: 100%;
+	table-layout: fixed;
+}
+
+#feedPreview td {
+	vertical-align: top;
+	word-break: break-word;
+}
+
+.feedPreviewContainerCondensed .feedPreviewSummary, .feedPreviewContainerCondensed .feedPreviewDate, .feedPreviewContainerCondensed .feedPreviewAuthor {
+	display: none;
+}
+
+.feedPreviewContainerRead {
+	border: 1px solid #B2B2B2 !important;
+}
+
+.feedPreviewContainerRead .feedPreviewTitle {
+	background-color: #1C1E23;
+}
+
+.feedPreviewContainerRead .feedPreviewMarkRead, .feedPreviewContainerRead .feedPreviewReadLater {
+	display: none;
+}
+
+.feedPreviewContainerRead .feedPreviewUnread {
+	display: block;
+}
+
+.feedPreviewContainer {
+	border: 1px solid #659DD8;
+}
+
+/* And the king decreed, let there be wrapping for all */
+.feedPreviewContainer * {
+	white-space: normal;
+}
+
+.feedPreviewTitle {
+	background-color: #659DD8;
+	margin: 0px;
+	padding: 5px;
+}
+
+.feedPreviewContainerRead .feedPreviewTitle a {
+	text-decoration: none;
+	color: #999FAA;
+	font-size: 12px;
+}
+
+.feedPreviewTitle a {
+	text-decoration: none;
+	color: #4D5460;
+	font-size: 12px;
+}
+
+.feedPreviewTitle a:hover {
+	text-decoration: underline;
+}
+
+.feedPreviewSummary {
+	padding: 5px;
+	max-height: 200px;
+	overflow: auto;
+}
+
+.feedPreviewSummary table {
+	width: auto;
+}
+
+.feedPreviewSummary img {
+  filter: brightness(.8) contrast(1.2);
+}
+
+blockquote > blockquote > blockquote > blockquote {
+	display: none;
+}
+
+.feedPreviewDate {
+	padding: 5px;
+	font-size: smaller;
+	float: left;
+	white-space: nowrap;
+	width: 1%;
+}
+
+.feedPreviewAuthor {
+	padding: 5px;
+	font-size: smaller;
+	text-align: right;
+}
+
+.feedPreviewMarkRead {
+	float: right;
+	border: 1px solid transparent;
+	cursor: pointer;
+	width: 12px;
+	height: 12px;
+}
+
+.feedPreviewReadLater {
+	float: right;
+	margin-top: -1px;
+	margin-right: 7px;
+	cursor: pointer;
+	width: 16px;
+	height: 16px;
+}
+
+.feedPreviewUnread {
+	float: right;
+	border: 1px solid transparent;
+	cursor: pointer;
+	width: 16px;
+	height: 16px;
+	display: none;
+}
+
+.selectedFeed {
+	background-color: #66A6F9;
+	border: 1px solid #9EC6F7 !important;
+	color: #1357A5;
+}
+
+.thumbnail {
+  float: left;
+	width: 50px;
+}
+
+#noFeedsManaged {
+	font-size: 12px;
+	padding: 5px;
+}
+
+#feedError {
+	font-size: 12px;
+	padding: 5px;
+}
+
+#feedErrorDetail {
+	font-weight: bold;
+}
+
+#feedErrorMessage {
+	color: Red;
+	font-weight: normal;
+}
+
+#feedTitle9999999999 {
+	border-bottom: 1px solid #909090 !important;
+}
+
+#feedTitle9999999999[class=selectedFeed] {
+	border-bottom: 1px solid #a9caf8 !important;
+}
+
+#noItems {
+	padding: 5px;
+	font-size: 12px;
+}

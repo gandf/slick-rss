@@ -107,6 +107,9 @@
   "optionFeedDisplay": {
     "message": "Feed Display Options"
   },
+  "optionDarkMode": {
+    "message": "Dark mode"
+  },
   "optionDescription": {
     "message": "Description"
   },
@@ -277,6 +280,9 @@
   },
   "optionUseThumbnail": {
     "message": "Show thumbnail in feeds"
+  },
+  "optionUnlimited": {
+    "message": "unlimited"
   },
   "optionFeedsMaxHeight": {
     "message": "Max height of feeds"

@@ -1,0 +1,53 @@
+﻿
+#workArea
+{
+	padding: 5px;
+}
+
+#maxItems
+{
+	width: 25px;
+}
+
+#dateFormat
+{
+	width: 300px;
+}
+
+#dateHelp
+{
+	background-color: #22252B;
+	position: absolute;
+	font-size: 11px;
+}
+
+#dateHelp th
+{
+	text-align: left;
+	background-color: #12151B;
+}
+
+.optionHeader
+{
+	background-color: #22252B;
+	font-weight: bold;
+}
+#optionTable
+{
+	float: left;
+}
+
+.bold
+{
+	font-weight: bold;
+}
+
+#checkInterval, #markReadAfter
+{
+	width: 30px;
+}
+
+#feedsMaxHeight
+{
+	width: 50px;
+}

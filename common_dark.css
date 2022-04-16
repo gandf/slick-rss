@@ -7,8 +7,8 @@ body {
 	padding: 0px;
 	font-family: sans-serif;
 	font-size: 11px;
-	color: Black;
-	background-color: whitesmoke;
+	color: #999FAA;
+	background-color: #292C33;
 	width: 100%;
 	height: 100%;
 }
@@ -17,7 +17,7 @@ body {
 	font-size: 20px;
 	/*border-bottom: 1px solid #DEDEDE;*/
 	background-color: #454d5e;
-	color: White;
+	color: #999FAA;
 }
 
 #headerMessage span {
@@ -51,7 +51,7 @@ body {
 
 #header a {
 	font-size: 12px;
-	color: white;
+	color: #999FAA;
 	text-decoration: none;
 }
 
@@ -61,4 +61,28 @@ body {
 
 .center {
 	text-align: center;
+}
+
+button {
+	background-color: #596070;
+	color: #A4A8B5;
+}
+
+input {
+	background-color: #3B3F4A;
+	color: #A4A8B5;
+}
+
+select {
+	background-color: #3B3F4A;
+	color: #A4A8B5;
+}
+
+a{
+	color: #6D9BCF;
+}
+
+textarea {
+	background-color: #3B3F4A;
+	color: #A4A8B5;
 }

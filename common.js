@@ -855,7 +855,8 @@ function GetDefaultOptions() {
         "usethumbnail": false,
         "feedsmaxheight": 200,
         "playSoundNotif": false,
-        "lang": "en"
+        "lang": "en",
+        "darkmode": false
     };
 }
 
@@ -1171,4 +1172,20 @@ function CleanText2(text)
     }
   }
   return text;
+}
+
+function activeDarkMode() {
+  var keys = Object.keys(document.getElementsByTagName("link"));
+  for (var i = 0; i < keys.length; i++) {
+    var oldlink = document.getElementsByTagName("link").item(keys[i]);
+    oldlink.setAttribute("href", oldlink.getAttribute("href").replace(".", "_dark."));
+  }
+}
+
+function disableDarkMode() {
+  var keys = Object.keys(document.getElementsByTagName("link"));
+  for (var i = 0; i < keys.length; i++) {
+    var oldlink = document.getElementsByTagName("link").item(keys[i]);
+    oldlink.setAttribute("href", oldlink.getAttribute("href").replace("_dark.", "."));
+  }
 }

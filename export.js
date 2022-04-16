@@ -6,6 +6,14 @@ $(document).ready(function()
 	ExportFeeds();
 });
 
+waitOptionReady().then(function () {
+	if (options.darkmode) {
+		activeDarkMode();
+	} else {
+		disableDarkMode();
+	}
+});
+
 // imports opml -> feed list
 function ExportFeeds()
 {

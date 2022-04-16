@@ -5,6 +5,14 @@ $(document).ready(function()
 	$('#cancel').click(function(){window.close();});
 });
 
+waitOptionReady().then(function () {
+	if (options.darkmode) {
+		activeDarkMode();
+	} else {
+		disableDarkMode();
+	}
+});
+
 // starts import
 function Import()
 {

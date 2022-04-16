@@ -39,6 +39,15 @@
 <tr><td></td></tr>
 <tr><td colspan="2" class="optionHeader" data-locale="optionFeedDisplay">Feed Display Options</td></tr>
 <tr>
+<td data-locale="optionDarkMode">Dark mode</td>
+<td>
+<select id="darkMode">
+<option value="0" data-locale="optionOff">Off</option>
+<option value="1" data-locale="optionOn">On</option>
+</select>
+</td>
+</tr>
+<tr>
 <td data-locale="optionDescription">Description</td>
 <td>
 <select id="showDescriptions">
@@ -90,7 +99,7 @@
 </select>
 </td></tr>
 <tr><td data-locale="optionFeedsMaxHeight">Max height of feeds</td>
-<td><input type="text" name="optionFeedsMaxHeightUnits" maxlength="6" id="feedsMaxHeight" /> px (0 = unlimited)</td></tr>
+<td><input type="text" name="optionFeedsMaxHeightUnits" maxlength="6" id="feedsMaxHeight" /> px (0 = <span data-locale="optionUnlimited">unlimited</span>)</td></tr>
 <tr>
 <td data-locale="optionColumns">Columns</td>
 <td>

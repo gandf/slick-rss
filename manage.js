@@ -139,7 +139,7 @@ function AddRow(feedKey)
     row.insertCell(4).appendChild(input);
 
     button = document.createElement("img");
-    button.setAttribute("src", "x_gray.gif");
+    button.setAttribute("src", "x_gray.png");
     button.setAttribute("class", "delete");
 
     //var tmp = this.parentNode.parentNode;
@@ -275,6 +275,11 @@ function ShowFeeds()
 
 	    document.getElementById("newOrder").value = maxOrder + 1;
 			waitOptionReady().then(function () {
+				if (options.darkmode) {
+					activeDarkMode();
+				} else {
+					disableDarkMode();
+				}
 	    	document.getElementById("newMaxItems").value = options.maxitems;
 			});
 		});

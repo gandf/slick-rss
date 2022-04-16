@@ -16,7 +16,14 @@ window.onload = SetupScreen;
 function SetupScreen()
 {
 	waitOptionReady().then(function () {
+			if (options.darkmode) {
+				activeDarkMode();
+			} else {
+				disableDarkMode();
+			}
+
 	    document.getElementById("maxItems").value = options.maxitems;
+	    document.getElementById("darkMode").selectedIndex = options.darkmode;
 	    document.getElementById("showDescriptions").selectedIndex = options.showdescriptions;
 	    document.getElementById("showFeedImages").selectedIndex = options.showfeedimages;
 	    document.getElementById("showFeedObjects").selectedIndex = options.showfeedobjects;
@@ -76,6 +83,7 @@ function Save()
     }
 
     options.maxitems = parseInt(maxItems);
+		options.darkmode = (document.getElementById("darkMode").selectedIndex == 1);
     options.showdescriptions = (document.getElementById("showDescriptions").selectedIndex == 1);
     options.showfeedimages = (document.getElementById("showFeedImages").selectedIndex == 1);
     options.showfeedobjects = (document.getElementById("showFeedObjects").selectedIndex == 1);

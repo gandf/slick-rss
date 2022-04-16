@@ -26,6 +26,12 @@ waitOptionReady().then(function () {
     options.lang = chrome.i18n.getUILanguage();
     store.setItem('options', options);
   }
+
+  if (options.darkmode) {
+    activeDarkMode();
+  } else {
+    disableDarkMode();
+  }
 });
 
 store.getItem('unreadinfo').then(function(data){
@@ -774,10 +780,10 @@ function SelectFeedOrGroup(key, type) {
 
       // feed isn't ready yet
       var feednotready = feedsOrGroupsInfo[feedsOrGroups[key].id] == null;
-      if (!feedonready) {
-        feedonready = feedsOrGroupsInfo[feedsOrGroups[key].id].loading;
+      if (!feednotready) {
+        feednotready = feedsOrGroupsInfo[feedsOrGroups[key].id].loading;
       }
-      if (feedonready) {
+      if (feednotready) {
           document.getElementById("refresh").style.display = "none";
           document.getElementById("headerMessage").innerText = GetMessageText("backViewerLoadingFeed");
           document.getElementById("header").className = "loading";
@@ -895,7 +901,7 @@ function RenderFeed(type) {
 
         feedMarkRead = null;
         feedMarkRead = document.createElement("img");
-        feedMarkRead.setAttribute("src", "x.gif");
+        feedMarkRead.setAttribute("src", "x.png");
         feedMarkRead.addEventListener("mouseover", onmouseover);
         feedMarkRead.addEventListener("mouseout", onmouseout);
 
@@ -948,7 +954,7 @@ function RenderFeed(type) {
 
         if (options.readlaterenabled && feedID != readLaterFeedID) {
             feedReadLater = document.createElement("img");
-            feedReadLater.setAttribute("src", "star.gif");
+            feedReadLater.setAttribute("src", "star.png");
             feedReadLater.setAttribute("class", "feedPreviewReadLater");
             feedReadLater.setAttribute("title", GetMessageText("backReadLater"));
             feedReadLater.addEventListener("mouseover", onmouseover);

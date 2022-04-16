@@ -110,6 +110,9 @@
   "optionFeedDisplay": {
     "message": "Options d'affichage de flux"
   },
+  "optionDarkMode": {
+    "message": "Mode sombre"
+  },
   "optionDescription": {
     "message": "Description"
   },
@@ -280,6 +283,9 @@
   },
   "optionUseThumbnail": {
     "message": "Afficher vignette dans les flux"
+  },
+  "optionUnlimited": {
+    "message": "illimité"
   },
   "optionFeedsMaxHeight": {
     "message": "Hauteur max des flux"
