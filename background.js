@@ -421,7 +421,7 @@ function CheckForUnread() {
                         for (var e = 0; e < entries.length; e++) {
                             item = {};
                             item.title = CleanText2(SearchTag(entries[e], GetMessageText("backNoTitle", true), ["TITLE"], 0));
-                            item.title = item.title.replaceAll("U+20AC", '€');
+                            item.title = item.title.replaceAll("U+20AC", '€').replaceAll("&apos;", "'");
                             item.date = CleanText2(SearchTag(entries[e], null, ["PUBDATE", "UPDATED", "DC:DATE", "DATE", "PUBLISHED"], 0)); // not sure if date is even needed anymore
                             item.content = "";
                             item.idOrigin = feedID;
@@ -440,7 +440,7 @@ function CheckForUnread() {
                                 if ((item.content == "") || (item.content == null)) {
                                     item.content = CleanText2(SearchTag(entries[e], null, ["DESCRIPTION", "SUMMARY"], 0));
                                 }
-                                item.content = item.content.replaceAll("U+20AC", '€');
+                                item.content = item.content.replaceAll("U+20AC", '€').replaceAll("&apos;", "'");
                                 item.thumbnail = null;
 
                                 author = CleanText2(SearchTag(entries[e], null, ["AUTHOR", "DC:CREATOR", "CREATOR"], 0));
