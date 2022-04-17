@@ -11,7 +11,7 @@ body {
 #feedScroller {
 	overflow-y: auto;
 	overflow-x: hidden;
-	background-color: #fcfcfc;
+	background-color: whitesmoke;
 	border-right: 1px solid #dedede;
 }
 
@@ -48,7 +48,7 @@ body {
 	padding: 3px;
 	white-space: nowrap;
 	cursor: pointer;
-	border: 1px solid #fcfcfc;
+	border: 1px solid whitesmoke;
 	margin-bottom: 1px;
 }
 

@@ -113,9 +113,12 @@ function Save()
 			store.setItem('readlater', {}); //delete readlater
     }
 
-		chrome.runtime.sendMessage({"type": "checkForUnread"}).then(function(){ });
-
-    window.close();
+		chrome.runtime.sendMessage({"type": "checkForUnread" }).then(function(){
+			chrome.tabs.query({url: chrome.runtime.getURL("viewer.html")}, function (tab) {
+				chrome.tabs.reload(tab[0].id, { });
+				window.close();
+			});
+		});
 }
 
 function EditDateFormat()

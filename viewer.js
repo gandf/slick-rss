@@ -21,6 +21,8 @@ $(document).ready(function () {
     });
 });
 
+var showFeedsWork = false;
+
 waitOptionReady().then(function () {
   if (options.lang != chrome.i18n.getUILanguage()) {
     options.lang = chrome.i18n.getUILanguage();
@@ -100,6 +102,9 @@ port.onMessage.addListener(function (msg) {
             }
           }
         }
+      if (!showFeedsWork) {
+        ShowFeeds();
+      }
     }
 
     if (msg.type == "unreadtotalchanged") {
@@ -222,14 +227,18 @@ function ShowFeeds() {
       }
 
       document.getElementById("headerMessage").innerText = GetMessageText("backViewerFeedMe");
+      var showNoFeeds = false;
+      showFeedsWork = true;
       if (lastSelectedType != "Group") {
         if (feeds.length == 0 || (feeds.length == 1 && feedInfo[readLaterFeedID].items.length == 0)) {
-            document.getElementById("feedHeader").style.display = "none";
-            document.getElementById("feedArea").style.display = "none";
-            document.getElementById("refresh").style.display = "none";
-            document.getElementById("markFeedRead").style.display = "none";
-            document.getElementById("openAllFeed").style.display = "none";
-            document.getElementById("noFeedsManaged").style.display = "";
+          document.getElementById("feedHeader").style.display = "none";
+          document.getElementById("feedArea").style.display = "none";
+          document.getElementById("refresh").style.display = "none";
+          document.getElementById("markFeedRead").style.display = "none";
+          document.getElementById("openAllFeed").style.display = "none";
+          document.getElementById("noFeedsManaged").style.display = "";
+          showNoFeeds = true;
+          showFeedsWork = false;
         } else {
             SelectFeed(selectKey);
         }
@@ -237,22 +246,35 @@ function ShowFeeds() {
         SelectGroup(selectKey);
       }
 
+      if (!showNoFeeds) {
+        if (document.getElementById("noFeedsManaged").style.display == "")
+        {
+          document.getElementById("feedHeader").style.display = "";
+          document.getElementById("feedArea").style.display = "";
+          document.getElementById("refresh").style.display = "";
+          document.getElementById("markFeedRead").style.display = "";
+          document.getElementById("openAllFeed").style.display = "";
+          document.getElementById("noFeedsManaged").style.display = "none";
+        }
+      }
+
       // in the middle of refresh all, show progress but wait a little so feed content pushes the feed list to the right size
       // this is only here to show progress on load when current loading feed is slow, otherwise the next feed will update the progress
-      /*if (checkingForUnread && !refreshFeed) {
-          setTimeout(function() {
-              try {
+      chrome.runtime.sendMessage({"type": "getRefreshFeed"}).then(function(bgdata){
+        if (bgdata != undefined){
+          var info = GetObjectFromStr(bgdata);
+          if (info.checkingForUnread && !info.refreshFeed) {
+              setTimeout(function() {
                 chrome.runtime.sendMessage({"type": "getRefreshFeed"}).then(function(data){
                   if (data != undefined){
-                    var info = GetObjectFromStr(data);
+                    info = GetObjectFromStr(data);
                     UpdateRefreshAllProgress(info.refreshFeed, info.checkForUnreadCounter, info.checkingForUnread);
                   }
                  });
-              } catch(e){
-                  console.log(e);
-              }
-            }, 500);
-      }*/
+                }, 500);
+          }
+        }
+      });
 
       focusFeed();
       UpdateSizeProgress(true);
