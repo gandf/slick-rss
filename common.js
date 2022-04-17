@@ -12,6 +12,15 @@ var feeds = [];
 var groupInfo = [];
 var groups = [];
 var unreadTotal = 0;
+var readlaterInfo = [];
+readlaterInfo[readLaterFeedID] = {
+    title: GetMessageText("backReadLater", true),
+    description: GetMessageText("backItemsMarkedReadLater", true),
+    group: "",
+    loading: false,
+    items: [],
+    error: ""
+};
 
 var promiseOptionBegin = GetOptions();
 async function waitOptionReady() {
@@ -225,19 +234,6 @@ function GetMessageTextFromServiceWorker(value)
           case 'it': return "Read Later";
           case 'nl': return "Read Later";
           default: return "Read Later";
-      };
-    case 'backItemsMarkedReadLater':
-      switch(localLang)
-      {
-          case 'de': return "Items you marked to read later";
-          case 'en': return "Items you marked to read later";
-          case 'en_GB': return "Items you marked to read later";
-          case 'en_US': return "Items you marked to read later";
-          case 'es': return "Items you marked to read later";
-          case 'fr': return "Sujets que vous avez marqués pour lire plus tard";
-          case 'it': return "Items you marked to read later";
-          case 'nl': return "Items you marked to read later";
-          default: return "Items you marked to read later";
       };
     case 'backItemsMarkedReadLater':
       switch(localLang)
@@ -1188,4 +1184,36 @@ function disableDarkMode() {
     var oldlink = document.getElementsByTagName("link").item(keys[i]);
     oldlink.setAttribute("href", oldlink.getAttribute("href").replace("_dark.", "."));
   }
+}
+
+function loadReadlaterInfo() {
+  return store.getItem('readlaterinfo').then(function(data) {
+      if (data != null) {
+        if (data[readLaterFeedID].items.length > 0) {
+          readlaterInfo = data;
+        }
+      }
+  });
+}
+
+function addReadlaterInfo(itemInfo) {
+  store.getItem('readlaterinfo').then(function(data) {
+      if (data != null) {
+        if (data[readLaterFeedID].items.length > 0) {
+          readlaterInfo = data;
+        }
+      }
+      readlaterInfo[readLaterFeedID].items.push(itemInfo);
+      store.setItem('readlaterinfo', readlaterInfo).then(function(data) {
+      });
+  });
+}
+
+function removeReadlaterInfo(itemID) {
+    for(var i = 0; i < readlaterInfo[readLaterFeedID].items.length; i++) {
+        if(readlaterInfo[readLaterFeedID].items[i].itemID === itemID) {
+            delete readlaterInfo[readLaterFeedID].items[i];
+            break;
+        }
+    }
 }

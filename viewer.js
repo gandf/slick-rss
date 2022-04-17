@@ -34,6 +34,10 @@ waitOptionReady().then(function () {
   } else {
     disableDarkMode();
   }
+
+  if (options.readlaterenabled) {
+    loadReadlaterInfo();
+  }
 });
 
 store.getItem('unreadinfo').then(function(data){
@@ -701,13 +705,7 @@ function MarkItemReadLater(feedID, itemIndex) {
     MarkItemRead(itemID);
     UpdateFeedUnread(readLaterFeedID);
 
-    /*
-    store.setItem('unreadinfo', bgPage.feedInfo[readLaterFeedID]);
-    var request = {
-        "type": "setUnreadInfo",
-        "data": unreadInfo
-    };
-    chrome.runtime.sendMessage(request).then(function(){ });*/
+    addReadlaterInfo(currentItem);
 }
 
 function UnMarkItemReadLater(itemIndex) {
@@ -726,6 +724,7 @@ function UnMarkItemReadLaterWithoutSelectFeed(itemIndex) {
         store.setItem('readlater', feedInfo[readLaterFeedID]);
 
         UpdateFeedUnread(readLaterFeedID);
+        removeReadlaterInfo(itemIndex);
     }
 }
 
@@ -752,6 +751,12 @@ function SelectFeedOrGroup(key, type) {
       listPromise.push(promiselastSelectedFeed);
     }
 
+    if (type == "Feed") {
+      if (feeds[key].id == readLaterFeedID) {
+        listPromise.push(loadReadlaterInfo());
+      }
+    }
+
     Promise.allSettled(listPromise).then(function(){
       if (lastSelectedFeedType == "Feed") {
         selectedFeedsOrGroups = feeds;
@@ -761,7 +766,11 @@ function SelectFeedOrGroup(key, type) {
 
       if (type == "Feed") {
         feedsOrGroups = feeds;
-        feedsOrGroupsInfo = feedInfo;
+        if (feeds[key].id == readLaterFeedID) {
+          feedsOrGroupsInfo = readlaterInfo;
+        } else {
+          feedsOrGroupsInfo = feedInfo;
+        }
       } else {
         feedsOrGroups = groups;
         feedsOrGroupsInfo = groupInfo;
@@ -881,7 +890,7 @@ function RenderFeed(type) {
     var summaryObjects = null;
     var item = null;
     var feedsOrGroups = (type == "Feed") ? feeds : groups;
-    var feedsOrGroupsInfo = (type == "Feed") ? feedInfo : groupInfo;
+    var feedsOrGroupsInfo = (type == "Feed") ? ((feedsOrGroups[selectedFeedKey].id == readLaterFeedID) ? readlaterInfo : feedInfo) : groupInfo;
     var feedID = parseInt(feedsOrGroups[selectedFeedKey].id, 10);
     var currentTr = null;
     var columnCount = 0;

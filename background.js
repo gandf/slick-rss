@@ -1,7 +1,3 @@
-//var manifest = chrome.runtime.getManifest();
-//var defaultOptions = GetDefaultOptions();
-//var options = defaultOptions;
-//var promiseBegin = GetOptions();
 var promiseUpgrade = null;
 var promiseGetUnreadCounts = null;
 var promiseGetReadLaterItems = null;
