@@ -585,41 +585,43 @@ function MarkItemRead(itemID) {
 }
 
 function MarkItemRead_ReadItems(feedID, itemID, expireMs, className){
+  var result = false;
   if (unreadInfo[feedID].readitems[itemID] == null) {
-      var element = document.getElementById("item_" + parseInt(feedID, 10) + "_" + itemID);
-      if (element != null) {
-        element.className += className;
-      }
-      //group
-      //Get feed to find group name
-      var currentFeed = feeds.find(function (el) {
-        return (el.id == feedID);
-      });
-      if (currentFeed != null) {
-        //search group by name
-        var currentGroup = groups.find(function (el) {
-          return (el.title == currentFeed.group);
-        });
-        if (currentGroup != null) {
-            element = document.getElementById("item_" + currentGroup.id + "_" + itemID);
-            if (element != null) {
-              element.className += className;
-            }
-        }
-      }
+      unreadInfo[feedID].unreadtotal--;
+      unreadInfo[feedID].readitems[itemID] = expireMs;
+      result = true;
+    }
 
-      if (options.showallfeeds == true) {
-          element = document.getElementById("item_" + allFeedsID + "_" + itemID);
+    var element = document.getElementById("item_" + parseInt(feedID, 10) + "_" + itemID);
+    if (element != null) {
+      element.className += className;
+    }
+    //group
+    //Get feed to find group name
+    var currentFeed = feeds.find(function (el) {
+      return (el.id == feedID);
+    });
+    if (currentFeed != null) {
+      //search group by name
+      var currentGroup = groups.find(function (el) {
+        return (el.title == currentFeed.group);
+      });
+      if (currentGroup != null) {
+          element = document.getElementById("item_" + currentGroup.id + "_" + itemID);
           if (element != null) {
             element.className += className;
           }
       }
+    }
 
-      unreadInfo[feedID].unreadtotal--;
-      unreadInfo[feedID].readitems[itemID] = expireMs;
-      return true;
-  }
-  return false;
+    if (options.showallfeeds == true) {
+        element = document.getElementById("item_" + allFeedsID + "_" + itemID);
+        if (element != null) {
+          element.className += className;
+        }
+    }
+
+  return result;
 }
 
 function MarkItemUnread(itemID) {

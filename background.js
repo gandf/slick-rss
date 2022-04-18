@@ -97,6 +97,10 @@ function ButtonClicked(tab) {
 }
 
 function ExternalRequest(request, sender, sendResponse) {
+    if (request.type == undefined) {
+      sendResponse({});
+      return;
+    }
     if (request.type == "addfeed") {
       var maxOrder = 0;
       var order = 0;
@@ -119,6 +123,7 @@ function ExternalRequest(request, sender, sendResponse) {
         ReloadViewer();
 
         sendResponse({});
+        return;
       });
     }
 
@@ -133,15 +138,18 @@ function ExternalRequest(request, sender, sendResponse) {
           UpdateGroups();
           ReloadViewer();
           sendResponse({});
+          return;
       });
     }
     if (request.type == "checkForUnread") {
       CheckForUnreadStart();
       sendResponse({});
+      return;
     }
     if (request.type == "checkForUnreadOnSelectedFeed") {
       CheckForUnreadStart(request.selectedFeedKey);
       sendResponse({});
+      return;
     }
 
     if (request.type == "checkForUnreadOnSelectedFeedCompleted") {
@@ -160,40 +168,49 @@ function ExternalRequest(request, sender, sendResponse) {
         }
       }
       sendResponse({});
+      return;
     }
 
     if (request.type == "setUnreadInfo") {
       store.setItem('unreadinfo', request.data);
       unreadInfo = request.data;
       sendResponse({});
+      return;
     }
 
     if (request.type == "getFeeds") {
       sendResponse(GetStrFromObject(feeds));
+      return;
     }
 
     if (request.type == "getFeedInfo") {
       sendResponse(GetStrFromObject(feedInfo));
+      return;
     }
 
     if (request.type == "getGroups") {
       sendResponse(GetStrFromObject(groups));
+      return;
     }
 
     if (request.type == "getGroupInfo") {
       sendResponse(GetStrFromObject(groupInfo));
+      return;
     }
 
     if (request.type == "calcGroupCountUnread") {
       sendResponse(CalcGroupCountUnread(request.data));
+      return;
     }
 
     if (request.type == "getUnreadTotal") {
       sendResponse(unreadTotal);
+      return;
     }
 
     if (request.type == "getRefreshFeed") {
       sendResponse(GetStrFromObject({"refreshFeed": refreshFeed, "checkForUnreadCounter": checkForUnreadCounter, checkingForUnread: checkingForUnread}));
+      return;
     }
 }
 
