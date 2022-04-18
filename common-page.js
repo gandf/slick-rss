@@ -26,6 +26,10 @@ function loadReadlaterInfo() {
   });
 }
 
+function saveReadlaterInfo() {
+  store.setItem('readlaterinfo', readlaterInfo);
+}
+
 function addReadlaterInfo(itemInfo) {
   store.getItem('readlaterinfo').then(function(data) {
       if (data != null) {
@@ -34,8 +38,7 @@ function addReadlaterInfo(itemInfo) {
         }
       }
       readlaterInfo[readLaterFeedID].items.push(itemInfo);
-      store.setItem('readlaterinfo', readlaterInfo).then(function(data) {
-      });
+      store.setItem('readlaterinfo', readlaterInfo);
   });
 }
 

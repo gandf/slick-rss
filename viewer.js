@@ -471,9 +471,6 @@ function MarkFeedRead(feedID) {
     var groupKey = null;
     var intfeedID = parseInt(feedID, 10);
     if (selectedFeedKeyIsFeed) {
-      if (unreadInfo[feedID].unreadtotal == 0) {
-          return;
-      }
 
       unreadInfo[feedID].unreadtotal = 0;
 
@@ -699,15 +696,29 @@ function MarkItemUnread(itemID) {
 
 function MarkItemReadLater(feedID, itemIndex) {
     var currentItem = GetFeedInfoItem(feedID, itemIndex);
-    var itemID = sha256(currentItem.title + currentItem.date);
+    var itemID = currentItem.itemID;
+    var itemExist = false;
+    if (itemID == undefined) {
+      itemID = sha256(currentItem.title + currentItem.date);
+    }
 
-    feedInfo[readLaterFeedID].items.push(currentItem);
-    unreadInfo[readLaterFeedID].unreadtotal++;
+    for (var i = 0; i < readlaterInfo[readLaterFeedID].items.length; i++) {
+      if (readlaterInfo[readLaterFeedID].items[i].itemID == itemID) {
+        itemExist = true;
+        //update items
+        readlaterInfo[readLaterFeedID].items[i] = currentItem;
+        break;
+      }
+    }
+    if (!itemExist) {
+      readlaterInfo[readLaterFeedID].items.push(currentItem);
+      unreadInfo[readLaterFeedID].unreadtotal++;
+    }
 
     MarkItemRead(itemID);
     UpdateFeedUnread(readLaterFeedID);
 
-    addReadlaterInfo(currentItem);
+    saveReadlaterInfo();
 }
 
 function UnMarkItemReadLater(itemIndex) {
