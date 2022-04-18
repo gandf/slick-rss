@@ -569,7 +569,9 @@ function CheckForUnread() {
             }
           )
           .catch(function(err) {
-            console.log('Fetch Error :-S', err);
+            feedInfo[feedID].loading = false;
+            feedInfo[feedID].error = 'Fetch Error :-S', err.message;
+            //console.log('Fetch Error :-S', err);
           });
       } catch (err) {
           console.log('Error :-S', err);
