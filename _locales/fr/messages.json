@@ -263,9 +263,6 @@
   "optionRemoveViewed": {
     "message": "Supprimer après lecture"
   },
-  "optionIncludeItemsUnreadTotal": {
-    "message": "Inclure sujets dans les totaux non lu"
-  },
   "optionAlertMaxItemsInvalid": {
     "message": "'Nb sujets max' semble être invalide. C'est le nombre maximum de sujets dans un flux de prévisualisation et devrait être > 0"
   },

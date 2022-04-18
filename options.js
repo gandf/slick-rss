@@ -39,7 +39,6 @@ function SetupScreen()
 	    document.getElementById("columns").selectedIndex = options.columns - 1;
 	    document.getElementById("readLaterEnabled").selectedIndex = options.readlaterenabled;
 	    document.getElementById("readLaterRemoveWhenViewed").selectedIndex = options.readlaterremovewhenviewed;
-	    document.getElementById("readLaterIncludeTotal").selectedIndex = options.readlaterincludetotal;
 	    document.getElementById("loadLinksInBackground").selectedIndex = options.loadlinksinbackground;
 			document.getElementById("showAllFeeds").selectedIndex = options.showallfeeds;
 			document.getElementById("useThumbnail").selectedIndex = options.usethumbnail;
@@ -99,7 +98,6 @@ function Save()
     options.columns = document.getElementById("columns")[document.getElementById("columns").selectedIndex].value;
     options.readlaterenabled = (document.getElementById("readLaterEnabled").selectedIndex == 1);
     options.readlaterremovewhenviewed = (document.getElementById("readLaterRemoveWhenViewed").selectedIndex == 1);
-    options.readlaterincludetotal = (document.getElementById("readLaterIncludeTotal").selectedIndex == 1);
     options.loadlinksinbackground = (document.getElementById("loadLinksInBackground").selectedIndex == 1);
 		options.showallfeeds = (document.getElementById("showAllFeeds").selectedIndex == 1);
 		options.usethumbnail = (document.getElementById("useThumbnail").selectedIndex == 1);

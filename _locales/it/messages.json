@@ -260,9 +260,6 @@
   "optionRemoveViewed": {
     "message": "Remove when viewed"
   },
-  "optionIncludeItemsUnreadTotal": {
-    "message": "Include items in unread totals"
-  },
   "optionAlertMaxItemsInvalid": {
     "message": "'Max Items' seems invalid.  It's the max number of items in a feed preview and should be > 0"
   },

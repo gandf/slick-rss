@@ -257,7 +257,6 @@ function GetDefaultOptions() {
         "columns": 2,
         "readlaterenabled": true,
         "readlaterremovewhenviewed": true,
-        "readlaterincludetotal": true,
         "loadlinksinbackground": true,
         "showallfeeds": false,
         "usethumbnail": false,
@@ -397,10 +396,6 @@ function UpdateUnreadBadge() {
         if ((key != readLaterFeedID) && (key != allFeedsID)){
           total = total + unreadInfo[key].unreadtotal;
         }
-    }
-
-    if (!options.readlaterincludetotal && (unreadInfo[readLaterFeedID] != null)) {
-        total = total - unreadInfo[readLaterFeedID].unreadtotal;
     }
 
     if (total > 0) {
