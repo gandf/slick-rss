@@ -60,8 +60,6 @@ function GetFeedsSimple(callBack) {
             return a.order - b.order;
         });
     }
-
-    //feeds.unshift(GetReadLaterFeed()); //TODO
     getFeedsCallBack(feeds);
   });
 }

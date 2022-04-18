@@ -257,7 +257,6 @@ function CheckForUnreadStart(key) {
 
     if (key == null) {
       if (checkForUnreadCounter < feeds.length) {
-        //while ((checkForUnreadCounter < feeds.length) && (feeds[checkForUnreadCounter].id == readLaterFeedID) || (feeds[checkForUnreadCounter].id == allFeedsID)) {
         while ((checkForUnreadCounter < feeds.length) && (feeds[checkForUnreadCounter].id == allFeedsID)) {
           checkForUnreadCounter++;
         }

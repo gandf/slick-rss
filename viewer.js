@@ -476,11 +476,7 @@ function MarkFeedRead(feedID) {
           SelectFeed(0);
       } else {
           for (var i = 0; i < feedInfo[intfeedID].items.length; i++) {
-              if (feedInfo[intfeedID].items[i].itemID == undefined) {
-                itemID = sha256(feedInfo[intfeedID].items[i].title + feedInfo[intfeedID].items[i].date);
-              } else {
-                itemID = feedInfo[intfeedID].items[i].itemID;
-              }
+              itemID = feedInfo[intfeedID].items[i].itemID;
               if (unreadInfo[feedID].readitems[itemID] == undefined) {
                 unreadInfo[feedID].readitems[itemID] = expireMs;
                 container = document.getElementById("item_" + intfeedID + "_" + itemID);
@@ -540,11 +536,12 @@ function MarkFeedReadFromGroup(feedID) {
 
       unreadInfo[feedID].unreadtotal = 0;
 
-      for (var i = 0; i < feedInfo[feedID].items.length; i++) {
-          itemID = sha256(feedInfo[feedID].items[i].title + feedInfo[feedID].items[i].date);
+      var intfeedID = parseInt(feedID, 10);
+      for (var i = 0; i < feedInfo[intfeedID].items.length; i++) {
+          itemID = feedInfo[intfeedID].items[i].itemID;
           if (unreadInfo[feedID].readitems[itemID] == undefined) {
             unreadInfo[feedID].readitems[itemID] = expireMs;
-            container = document.getElementById("item_" + parseInt(feedID, 10) + "_" + itemID);
+            container = document.getElementById("item_" + intfeedID + "_" + itemID);
 
             if (container != null) {
                 container.className = container.className + className;
@@ -693,9 +690,6 @@ function MarkItemReadLater(feedID, itemIndex) {
     var currentItem = GetFeedInfoItem(feedID, itemIndex);
     var itemID = currentItem.itemID;
     var itemExist = false;
-    if (itemID == undefined) {
-      itemID = sha256(currentItem.title + currentItem.date);
-    }
 
     for (var i = 0; i < readlaterInfo[readLaterFeedID].items.length; i++) {
       if (readlaterInfo[readLaterFeedID].items[i].itemID == itemID) {
@@ -940,7 +934,7 @@ function RenderFeed(type) {
 
     for (var i = 0; i < feedsOrGroupsInfo[feedID].items.length && i < feedsOrGroups[selectedFeedKey].maxitems; i++) {
         item = feedsOrGroupsInfo[feedID].items[i];
-        itemID = sha256(item.title + item.date);
+        itemID = item.itemID;
 
         feedMarkRead = null;
         feedMarkRead = document.createElement("img");
@@ -1254,7 +1248,7 @@ function OpenAllFeedButton(feedID) {
           SelectFeed(0);
       } else {
           for (var i = 0; i < feedInfo[feedID].items.length; i++) {
-              itemID = sha256(feedInfo[feedID].items[i].title + feedInfo[feedID].items[i].date);
+              itemID = feedInfo[feedID].items[i].itemID;
 
               if (unreadInfo[feedID].readitems[itemID] == undefined) {
                 LinkProxy(feedInfo[feedID].items[i].url);
@@ -1317,7 +1311,7 @@ function OpenAllFeedButtonFromGroup(feedID) {
       unreadInfo[feedID].unreadtotal = 0;
 
       for (var i = 0; i < feedInfo[feedID].items.length; i++) {
-          itemID = sha256(feedInfo[feedID].items[i].title + feedInfo[feedID].items[i].date);
+          itemID = feedInfo[feedID].items[i].itemID;
 
           if (unreadInfo[feedID].readitems[itemID] == undefined) {
             LinkProxy(feedInfo[feedID].items[i].url);
