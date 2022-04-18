@@ -16,41 +16,6 @@ function disableDarkMode() {
   }
 }
 
-function loadReadlaterInfo() {
-  return store.getItem('readlaterinfo').then(function(data) {
-      if (data != null) {
-        if (data[readLaterFeedID].items.length > 0) {
-          readlaterInfo = data;
-        }
-      }
-  });
-}
-
-function saveReadlaterInfo() {
-  store.setItem('readlaterinfo', readlaterInfo);
-}
-
-function addReadlaterInfo(itemInfo) {
-  store.getItem('readlaterinfo').then(function(data) {
-      if (data != null) {
-        if (data[readLaterFeedID].items.length > 0) {
-          readlaterInfo = data;
-        }
-      }
-      readlaterInfo[readLaterFeedID].items.push(itemInfo);
-      store.setItem('readlaterinfo', readlaterInfo);
-  });
-}
-
-function removeReadlaterInfo(itemID) {
-    for(var i = 0; i < readlaterInfo[readLaterFeedID].items.length; i++) {
-        if(readlaterInfo[readLaterFeedID].items[i].itemID === itemID) {
-            delete readlaterInfo[readLaterFeedID].items[i];
-            break;
-        }
-    }
-}
-
 function GetGroupKeyByID(id) {
     if (groups == null) {
       return null;
@@ -95,7 +60,7 @@ function GetFeedsSimple(callBack) {
         });
     }
 
-    //feeds.unshift(GetReadLaterFeed());
+    //feeds.unshift(GetReadLaterFeed()); //TODO
     getFeedsCallBack(feeds);
   });
 }

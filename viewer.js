@@ -448,16 +448,11 @@ function UpdateReadAllIcon(type) {
 
 // marks everything but ReadLater read
 function MarkAllFeedsRead() {
-    var id;
-
     for (var i = 0; i < feeds.length; i++) {
-        id = feeds[i].id;
-
-        if ((id != readLaterFeedID) && (id != allFeedsID)) {
-            MarkFeedRead(id);
+        if ((feeds[i].id != readLaterFeedID) && (feeds[i].id != allFeedsID)) {
+            MarkFeedRead(feeds[i].id);
         }
     }
-
     // this helps the refresh all progress bar be the right width
     FixFeedList();
 }
@@ -476,8 +471,8 @@ function MarkFeedRead(feedID) {
 
       // for read later feeds, nuke the items instead of mark read
       if (feedID == readLaterFeedID) {
-          feedInfo[readLaterFeedID].items = [];
-          store.setItem('readlater', feedInfo[readLaterFeedID]);
+          readlaterInfo[readLaterFeedID].items = [];
+          saveReadlaterInfo();
           SelectFeed(0);
       } else {
           for (var i = 0; i < feedInfo[intfeedID].items.length; i++) {
@@ -679,7 +674,7 @@ function MarkItemUnread(itemID) {
 
         unreadInfo[feedID].unreadtotal++;
 
-        UnMarkItemReadLaterWithoutSelectFeed(findWithAttr(feedInfo[readLaterFeedID].items, 'itemID', itemID));
+        UnMarkItemReadLaterWithoutSelectFeed(findWithAttr(readlaterInfo[readLaterFeedID].items, 'itemID', itemID));
 
         var request = {
             "type": "setUnreadInfo",
@@ -712,8 +707,9 @@ function MarkItemReadLater(feedID, itemIndex) {
     }
     if (!itemExist) {
       readlaterInfo[readLaterFeedID].items.push(currentItem);
-      unreadInfo[readLaterFeedID].unreadtotal++;
     }
+
+    unreadInfo[readLaterFeedID].unreadtotal = readlaterInfo[readLaterFeedID].items.length;
 
     MarkItemRead(itemID);
     UpdateFeedUnread(readLaterFeedID);
@@ -723,22 +719,25 @@ function MarkItemReadLater(feedID, itemIndex) {
 
 function UnMarkItemReadLater(itemIndex) {
     if (itemIndex >= 0) {
-        UnMarkItemReadLaterWithoutSelectFeed(itemIndex);
-        SelectFeed(0);
+        UnMarkItemReadLaterWithoutSelectFeed(itemIndex).then(function(){
+          SelectFeed(0);
+        });
     }
 }
 
 function UnMarkItemReadLaterWithoutSelectFeed(itemIndex) {
+    var promiseSaved = null;
     if (itemIndex >= 0) {
-        unreadInfo[readLaterFeedID].unreadtotal--;
-        feedInfo[readLaterFeedID].items.splice(itemIndex, 1);
+      if (readlaterInfo[readLaterFeedID].items[itemIndex] != undefined) {
+        readlaterInfo[readLaterFeedID].items.splice(itemIndex, 1);
+        unreadInfo[readLaterFeedID].unreadtotal = readlaterInfo[readLaterFeedID].items.length;
+        promiseSaved = saveReadlaterInfo();
         UpdateUnreadBadge();
 
-        store.setItem('readlater', feedInfo[readLaterFeedID]);
-
         UpdateFeedUnread(readLaterFeedID);
-        removeReadlaterInfo(itemIndex);
+      }
     }
+    return promiseSaved;
 }
 
 function SelectFeed(key) {
@@ -996,7 +995,7 @@ function RenderFeed(type) {
         feedTitle.setAttribute("class", "feedPreviewTitle");
         feedTitle.appendChild(feedMarkRead);
 
-        if (options.readlaterenabled && feedID != readLaterFeedID) {
+        if (options.readlaterenabled && (feedID != readLaterFeedID)) {
             feedReadLater = document.createElement("img");
             feedReadLater.setAttribute("src", "star.png");
             feedReadLater.setAttribute("class", "feedPreviewReadLater");
@@ -1246,12 +1245,12 @@ function OpenAllFeedButton(feedID) {
 
       // for read later feeds, nuke the items instead of mark read
       if (feedID == readLaterFeedID) {
-        for (var i = 0; i < feedInfo[readLaterFeedID].items.length; i++) {
-            LinkProxy(feedInfo[readLaterFeedID].items[i].url);
+        for (var i = 0; i < readlaterInfo[readLaterFeedID].items.length; i++) {
+            LinkProxy(readlaterInfo[readLaterFeedID].items[i].url);
         }
 
-          feedInfo[readLaterFeedID].items = [];
-          store.setItem('readlater', feedInfo[readLaterFeedID]);
+          readlaterInfo[readLaterFeedID].items = [];
+          saveReadlaterInfo();
           SelectFeed(0);
       } else {
           for (var i = 0; i < feedInfo[feedID].items.length; i++) {

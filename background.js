@@ -10,14 +10,6 @@ var getFeedsCallBack = null;
 var refreshFeed = false;
 var viewPortTabID = null;
 var referenceDate = GetDate("Thu, 31 Dec 2019 23:59:59 +0000").getTime();
-var readlater = {
-    title: GetMessageText("backReadLater"),
-    description: GetMessageText("backItemsMarkedReadLater"),
-    group: "",
-    loading: false,
-    items: [],
-    error: ""
-};
 
 chrome.action.onClicked.addListener(ButtonClicked);
 chrome.runtime.onMessage.addListener(ExternalRequest);
@@ -29,7 +21,7 @@ waitOptionReady().then(function () {
     waitUpgrade().then(function () {
       promiseGetUnreadCounts = GetUnreadCounts();
       waitGetUnreadCounts().then(function () {
-        promiseGetReadLaterItems = GetReadLaterItems();
+        promiseGetReadLaterItems = loadReadlaterInfo();
         waitGetReadLaterItems().then(function () {
           GetFeeds(function () {
               var promiseCleanUpUnreadOrphans = CleanUpUnreadOrphans();
@@ -222,25 +214,6 @@ function GetFeeds(callBack) {
   });
 }
 
-function GetReadLaterItems() {
-  var resultPromise = store.getItem('readlater').then(function(data) {
-    if (data != null) {
-      readlater = JSON.parse(data);
-    } else {
-      store.setItem('readlater', {
-          title: GetMessageText("backReadLater"),
-          description: GetMessageText("backItemsMarkedReadLater"),
-          group: "",
-          loading: false,
-          items: [],
-          error: ""
-      });
-      }
-  });
-
-  return resultPromise;
-}
-
 // as this project gets larger there will be upgrades to storage items this will help
 function DoUpgrades() {
     var lastVersion = parseFloat(options.lastversion);
@@ -251,6 +224,8 @@ function DoUpgrades() {
     if (options.lastversion != manifest.version) {
       options.lastversion = manifest.version;
       listPromise.push(store.setItem('options', options));
+      //remove old system for readlater
+      store.removeItem('readlater').then(function() {}).catch(function(err) {});
     }
 
     listPromise.push(store.getItem('feeds').then(function(data){
@@ -263,11 +238,7 @@ function DoUpgrades() {
             unreadInfo = data;
         }
       }));
-    listPromise.push(store.getItem('readlater').then(function(data){
-        if (data != null) {
-            readlater = data;
-        }
-      }));
+    
     resultPromise = Promise.allSettled(listPromise);
     return resultPromise;
 }
@@ -334,21 +305,22 @@ function CheckForUnread() {
     unreadInfo[feedID].unreadtotal = 0;
 
     if (feedID == readLaterFeedID) {
-        feedInfo[feedID] = readlater;
-        unreadInfo[feedID].unreadtotal = feedInfo[feedID].items.length;
+        loadReadlaterInfo().then(function(){
+          unreadInfo[feedID].unreadtotal = readlaterInfo[feedID].items.length;
 
-        checkForUnreadCounter++;
-        if (checkForUnreadCounter < feeds.length) {
-          if (feeds[checkForUnreadCounter].id === allFeedsID) {
-            checkForUnreadCounter++;
+          checkForUnreadCounter++;
+          if (checkForUnreadCounter < feeds.length) {
+            if (feeds[checkForUnreadCounter].id === allFeedsID) {
+              checkForUnreadCounter++;
+            }
           }
-        }
 
-        if (checkForUnreadCounter >= feeds.length || refreshFeed) {
-            CheckForUnreadComplete();
-        } else {
-            CheckForUnread();
-        }
+          if (checkForUnreadCounter >= feeds.length || refreshFeed) {
+              CheckForUnreadComplete();
+          } else {
+              CheckForUnread();
+          }
+        });
     }
     else {
       feedInfo[feedID] = {title: "", description: "", group: "", loading: true, items: [], error: ""};
