@@ -453,7 +453,7 @@ function MarkAllFeedsRead() {
     for (var i = 0; i < feeds.length; i++) {
         id = feeds[i].id;
 
-        if (id != readLaterFeedID) {
+        if ((id != readLaterFeedID) && (id != allFeedsID)) {
             MarkFeedRead(id);
         }
     }
@@ -469,7 +469,7 @@ function MarkFeedRead(feedID) {
     var className = (options.readitemdisplay == 0) ? " feedPreviewContainerRead" : " feedPreviewContainerRead feedPreviewContainerCondensed";
     var expireMs = new Date().getTime() + 5184000000; // 2 months;
     var groupKey = null;
-
+    var intfeedID = parseInt(feedID, 10);
     if (selectedFeedKeyIsFeed) {
       if (unreadInfo[feedID].unreadtotal == 0) {
           return;
@@ -483,11 +483,15 @@ function MarkFeedRead(feedID) {
           store.setItem('readlater', feedInfo[readLaterFeedID]);
           SelectFeed(0);
       } else {
-          for (var i = 0; i < feedInfo[feedID].items.length; i++) {
-              itemID = sha256(feedInfo[feedID].items[i].title + feedInfo[feedID].items[i].date);
+          for (var i = 0; i < feedInfo[intfeedID].items.length; i++) {
+              if (feedInfo[intfeedID].items[i].itemID == undefined) {
+                itemID = sha256(feedInfo[intfeedID].items[i].title + feedInfo[intfeedID].items[i].date);
+              } else {
+                itemID = feedInfo[intfeedID].items[i].itemID;
+              }
               if (unreadInfo[feedID].readitems[itemID] == undefined) {
                 unreadInfo[feedID].readitems[itemID] = expireMs;
-                container = document.getElementById("item_" + parseInt(feedID, 10) + "_" + itemID);
+                container = document.getElementById("item_" + intfeedID + "_" + itemID);
 
                 if (container != null) {
                     container.className = container.className + className;
