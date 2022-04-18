@@ -114,6 +114,9 @@ port.onMessage.addListener(function (msg) {
     if (msg.type == "unreadtotalchanged") {
         UpdateTitle();
     }
+    if (msg.type == "playSound") {
+        PlayNotificationSound();
+    }
 });
 
 window.onload = ShowFeeds;

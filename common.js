@@ -434,9 +434,18 @@ function UpdateUnreadBadge() {
 }
 
 function PlayNotificationSound() {
-  if (options.playSoundNotif) {
-    var audio = new Audio('Glisten.ogg');
-    audio.play();
+  if (!isServiceWorker) {
+    if (options.playSoundNotif) {
+      var audio = new Audio('Glisten.ogg');
+      audio.play();
+    }
+  } else {
+    if (viewerPort != null) {
+        viewerPort.postMessage({type: "playSound"});
+    }
+    else {
+      
+    }
   }
 }
 

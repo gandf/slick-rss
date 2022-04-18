@@ -1,4 +1,5 @@
 var localLang = chrome.i18n.getUILanguage();
+var isServiceWorker = false;
 
 function GetMessageText(value)
 {
