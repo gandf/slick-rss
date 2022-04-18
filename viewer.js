@@ -24,11 +24,6 @@ $(document).ready(function () {
 var showFeedsWork = false;
 
 waitOptionReady().then(function () {
-  if (options.lang != chrome.i18n.getUILanguage()) {
-    options.lang = chrome.i18n.getUILanguage();
-    store.setItem('options', options);
-  }
-
   if (options.darkmode) {
     activeDarkMode();
   } else {

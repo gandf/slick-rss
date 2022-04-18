@@ -55,10 +55,9 @@ function GetObjectFromStr(dataStr){
   return result
 }
 
-//Manage i18n to translation
-function SetLocalLang(value)
+function GetMessageText(value)
 {
-  localLang = value;
+  return chrome.i18n.getMessage(value);
 }
 
 // converts the text date into a formatted one if possible
@@ -264,7 +263,6 @@ function GetDefaultOptions() {
         "usethumbnail": false,
         "feedsmaxheight": 200,
         "playSoundNotif": false,
-        "lang": "en",
         "darkmode": false
     };
 }
@@ -281,17 +279,8 @@ function GetOptions() {
                   options[key] = defaultOptions[key];
               }
           }
-          if (options.lang != localLang)
-          {
-            SetLocalLang(options.lang);
-          }
       }
     });
-    if (options.lang == null)
-    {
-      options.lang = "en";
-    }
-    SetLocalLang(options.lang);
     return promiseGetOption;
 }
 
@@ -444,7 +433,7 @@ function PlayNotificationSound() {
         viewerPort.postMessage({type: "playSound"});
     }
     else {
-      
+
     }
   }
 }

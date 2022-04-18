@@ -1,10 +1,4 @@
-var localLang = chrome.i18n.getUILanguage();
 var isServiceWorker = false;
-
-function GetMessageText(value)
-{
-  return chrome.i18n.getMessage(value);
-}
 
 function activeDarkMode() {
   var keys = Object.keys(document.getElementsByTagName("link"));

@@ -104,7 +104,6 @@ function Save()
 		options.showallfeeds = (document.getElementById("showAllFeeds").selectedIndex == 1);
 		options.usethumbnail = (document.getElementById("useThumbnail").selectedIndex == 1);
 		options.feedsmaxheight = parseInt(feedsMaxHeight);
-		options.lang = chrome.i18n.getUILanguage();
 
 		store.setItem('options', options);
 
