@@ -3,6 +3,7 @@ try {
   importScripts("localforage.min.js");
   importScripts("fxparser.js");
   importScripts("datamanager.js");
+  importScripts("common-worker.js");
   importScripts("common.js");
   importScripts("background.js");
 } catch (e) {

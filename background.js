@@ -11,8 +11,8 @@ var refreshFeed = false;
 var viewPortTabID = null;
 var referenceDate = GetDate("Thu, 31 Dec 2019 23:59:59 +0000").getTime();
 var readlater = {
-    title: GetMessageText("backReadLater", true),
-    description: GetMessageText("backItemsMarkedReadLater", true),
+    title: GetMessageText("backReadLater"),
+    description: GetMessageText("backItemsMarkedReadLater"),
     group: "",
     loading: false,
     items: [],
@@ -228,8 +228,8 @@ function GetReadLaterItems() {
       readlater = JSON.parse(data);
     } else {
       store.setItem('readlater', {
-          title: GetMessageText("backReadLater", true),
-          description: GetMessageText("backItemsMarkedReadLater", true),
+          title: GetMessageText("backReadLater"),
+          description: GetMessageText("backItemsMarkedReadLater"),
           group: "",
           loading: false,
           items: [],
@@ -420,7 +420,7 @@ function CheckForUnread() {
 
                         for (var e = 0; e < entries.length; e++) {
                             item = {};
-                            item.title = CleanText2(SearchTag(entries[e], GetMessageText("backNoTitle", true), ["TITLE"], 0));
+                            item.title = CleanText2(SearchTag(entries[e], GetMessageText("backNoTitle"), ["TITLE"], 0));
                             item.title = item.title.replaceAll("U+20AC", '€').replaceAll("&apos;", "'");
                             item.date = CleanText2(SearchTag(entries[e], null, ["PUBDATE", "UPDATED", "DC:DATE", "DATE", "PUBLISHED"], 0)); // not sure if date is even needed anymore
                             item.content = "";
@@ -548,10 +548,10 @@ function CheckForUnread() {
 
                         unreadInfo[feedID].unreadtotal = entries.length - readItemCount;
                     } else {
-                        feedInfo[feedID].error = GetMessageText("backErrorXML", true);
+                        feedInfo[feedID].error = GetMessageText("backErrorXML");
                     }
                 } else {
-                    feedInfo[feedID].error = GetMessageText("backError200Part1", true) + status + GetMessageText("backError200Part2", true) + response.statusText + GetMessageText("backError200Part3", true);
+                    feedInfo[feedID].error = GetMessageText("backError200Part1") + status + GetMessageText("backError200Part2") + response.statusText + GetMessageText("backError200Part3");
                 }
                 promiseCheckForUnread.push(store.setItem('unreadinfo', unreadInfo));
 
@@ -674,7 +674,7 @@ function GetFeedLink(node) {
 }
 
 function GetAllFeedsGroup() {
-  return CreateNewGroup(GetMessageText("backAllFeeds", true), "", -8, allFeedsID);
+  return CreateNewGroup(GetMessageText("backAllFeeds"), "", -8, allFeedsID);
 }
 
 // helper function for creating new feeds
@@ -737,7 +737,7 @@ function UpdateGroups() {
 
 function GetGroupAllFeedsItems() {
   if (options.showallfeeds == true) {
-    GetGroupItems(0, allFeedsID, GetMessageText("backAllFeeds", true), GetMessageText("backAllFeeds", true));
+    GetGroupItems(0, allFeedsID, GetMessageText("backAllFeeds"), GetMessageText("backAllFeeds"));
   }
 }
 
@@ -752,7 +752,7 @@ function GetGroupItems(groupIndex, id, title, description) {
     }
     if ((options.showallfeeds == true) && (id != allFeedsID)) {
       if (groupInfo[allFeedsID] == null) {
-        groupInfo[allFeedsID] = {title: GetMessageText("backAllFeeds", true), description: GetMessageText("backAllFeeds"), group: "", loading: true, items: [], error: ""};
+        groupInfo[allFeedsID] = {title: GetMessageText("backAllFeeds"), description: GetMessageText("backAllFeeds"), group: "", loading: true, items: [], error: ""};
       }
     }
     for (var i = 0; i < filteredFeeds.length; i++) {
