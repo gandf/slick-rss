@@ -359,6 +359,11 @@ function GetRandomID() {
 
     for (var i = 0; i < 10; i++) {
         rnum = Math.floor(Math.random() * chars.length);
+        if ((i == 0) && (rnum == 0)){
+          while (rnum == 0) {
+            rnum = Math.floor(Math.random() * chars.length);
+          }
+        }
         str += chars.charAt(rnum);
     }
 
