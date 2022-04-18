@@ -423,17 +423,17 @@ function UpdateUnreadBadge() {
 }
 
 function PlayNotificationSound() {
-  if (!isServiceWorker) {
-    if (options.playSoundNotif) {
-      var audio = new Audio('Glisten.ogg');
-      audio.play();
-    }
-  } else {
-    if (viewerPort != null) {
-        viewerPort.postMessage({type: "playSound"});
-    }
-    else {
-
+  if (options.playSoundNotif) {
+    if (!isServiceWorker) {
+        var audio = new Audio('Glisten.ogg');
+        audio.play();
+    } else {
+      if (viewerPort != null) {
+          viewerPort.postMessage({type: "playSound"});
+      }
+      else {
+        chrome.windows.create({url: chrome.runtime.getURL("notify.html"), width: 10, top: 1, left: 1, height: 1, focused: false, type: "popup"});
+      }
     }
   }
 }
