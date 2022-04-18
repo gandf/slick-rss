@@ -31,8 +31,11 @@ function ItemIsRead(feedID, itemID) {
   var currentFeed = feeds.find(function (el) {
     return (el.id == feedID);
   });
+  if (currentFeed != readLaterFeedID) {
+    return false;
+  }
   if (currentFeed != null) {
-      return (unreadInfo[currentFeed.id].readitems[itemID] != null);
+    return (unreadInfo[currentFeed.id].readitems[itemID] != null);
   }
   return false;
 }
