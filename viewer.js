@@ -350,11 +350,16 @@ function focusFeed() {
 
 // updates a feed item's unread count
 function UpdateFeedUnread(id) {
-    if (unreadInfo[id] == null || !options.unreaditemtotaldisplay) {
+    if (((unreadInfo[id] == null) && (id != readLaterFeedID)) || !options.unreaditemtotaldisplay) {
         return;
     }
 
-    var count = unreadInfo[id].unreadtotal;
+    var count;
+    if (id == readLaterFeedID) {
+      count = readlaterInfo[readLaterFeedID].items.length;
+    } else {
+      count = unreadInfo[id].unreadtotal;
+    }
 
     if (count > 0) {
         if (document.getElementById("feedTitle" + id) != null) {

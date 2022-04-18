@@ -17,23 +17,19 @@ chrome.runtime.onConnect.addListener(InternalConnection);
 chrome.alarms.onAlarm.addListener(AlarmRing);
 
 waitOptionReady().then(function () {
-    promiseUpgrade = DoUpgrades();
-    waitUpgrade().then(function () {
-      promiseGetUnreadCounts = GetUnreadCounts();
-      waitGetUnreadCounts().then(function () {
-        promiseGetReadLaterItems = loadReadlaterInfo();
-        waitGetReadLaterItems().then(function () {
-          GetFeeds(function () {
-              var promiseCleanUpUnreadOrphans = CleanUpUnreadOrphans();
-              promiseCleanUpUnreadOrphans.then(function(){
-                CheckForUnreadStart();
-              });
-          });
+  promiseUpgrade = DoUpgrades();
+  waitUpgrade().then(function () {
+    promiseGetUnreadCounts = GetUnreadCounts();
+    waitGetUnreadCounts().then(function () {
+      GetFeeds(function () {
+        var promiseCleanUpUnreadOrphans = CleanUpUnreadOrphans();
+        promiseCleanUpUnreadOrphans.then(function(){
+          CheckForUnreadStart();
         });
       });
     });
-  }
-);
+  });
+});
 
 async function waitUpgrade() {
   return start = await Promise.allSettled([promiseUpgrade]);
@@ -311,9 +307,6 @@ function CheckForUnread() {
     unreadInfo[feedID].unreadtotal = 0;
 
     if (feedID == readLaterFeedID) {
-        loadReadlaterInfo().then(function(){
-          unreadInfo[feedID].unreadtotal = readlaterInfo[feedID].items.length;
-
           checkForUnreadCounter++;
           if (checkForUnreadCounter < feeds.length) {
             if (feeds[checkForUnreadCounter].id === allFeedsID) {
@@ -326,7 +319,6 @@ function CheckForUnread() {
           } else {
               CheckForUnread();
           }
-        });
     }
     else {
       var oldFeedInfoItems = [];

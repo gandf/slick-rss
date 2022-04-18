@@ -492,16 +492,6 @@ function GetFeedsFilterByGroup(key) {
     return filteredFeeds;
 }
 
-function loadReadlaterInfo() {
-  return store.getItem('readlaterinfo').then(function(data) {
-      if (data != null) {
-        if (data[readLaterFeedID].items.length > 0) {
-          readlaterInfo = data;
-        }
-      }
-  });
-}
-
 function saveReadlaterInfo() {
   return store.setItem('readlaterinfo', readlaterInfo);
 }

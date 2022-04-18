@@ -72,3 +72,13 @@ function GetFeedsSimple(callBack) {
 }
 
 function formatBytes(a,b=2){var textBytes=GetMessageText("Bytes");var textKB=GetMessageText("KB");var textMB=GetMessageText("MB");var textGB=GetMessageText("GB");var textTB=GetMessageText("TB");var textPB=GetMessageText("PB");var textEB=GetMessageText("EB");var textZB=GetMessageText("ZB");var textYB=GetMessageText("YB");if(0===a)return`0 ${textBytes}`;const c=0>b?0:b,d=Math.floor(Math.log(a)/Math.log(1024));return parseFloat((a/Math.pow(1024,d)).toFixed(c))+" "+[`${textBytes}`,`${textKB}`,`${textMB}`,`${textGB}`,`${textTB}`,`${textPB}`,`${textEB}`,`${textZB}`,`${textYB}`][d]}
+
+function loadReadlaterInfo() {
+  return store.getItem('readlaterinfo').then(function(data) {
+      if (data != null) {
+        if (data[readLaterFeedID].items.length > 0) {
+          readlaterInfo = data;
+        }
+      }
+  });
+}
