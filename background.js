@@ -164,6 +164,7 @@ function ExternalRequest(request, sender, sendResponse) {
 
     if (request.type == "setUnreadInfo") {
       store.setItem('unreadinfo', request.data);
+      unreadInfo = request.data;
       sendResponse({});
     }
 
@@ -238,7 +239,7 @@ function DoUpgrades() {
             unreadInfo = data;
         }
       }));
-    
+
     resultPromise = Promise.allSettled(listPromise);
     return resultPromise;
 }
@@ -323,6 +324,15 @@ function CheckForUnread() {
         });
     }
     else {
+      var oldFeedInfoItems = [];
+      if (feedInfo[feedID] != undefined) {
+        if (feedInfo[feedID].items != undefined) {
+          for (var i = 0; i < feedInfo[feedID].items.length; i++) {
+            oldFeedInfoItems.push(feedInfo[feedID].items[i].itemID);
+          }
+        }
+      }
+
       feedInfo[feedID] = {title: "", description: "", group: "", loading: true, items: [], error: ""};
 
       if (viewerPort != null) {
@@ -503,7 +513,7 @@ function CheckForUnread() {
                             }
 
                             feedInfo[feedID].items.push(item);
-                            entryIDs[sha256(item.title + item.date)] = 1;
+                            entryIDs[item.itemID] = 1;
                         }
 
                         // count read that are in current feed
@@ -527,8 +537,13 @@ function CheckForUnread() {
                 }
                 promiseCheckForUnread.push(store.setItem('unreadinfo', unreadInfo));
 
-                if (unreadInfo[feedID].unreadtotal > previousUnreadtotal) {
-                  newNotif = true;
+                oldFeedInfoItems
+
+                for (var i = 0; i < feedInfo[feedID].items.length; i++) {
+                  if (!oldFeedInfoItems.includes(feedInfo[feedID].items[i].itemID)) {
+                    newNotif = true;
+                    break;
+                  }
                 }
 
                 checkForUnreadCounter++;

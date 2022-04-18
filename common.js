@@ -389,10 +389,12 @@ function UpdateUnreadBadge() {
     var str = "";
 
     for (var key in unreadInfo) {
-        total = total + unreadInfo[key].unreadtotal;
+        if ((key != readLaterFeedID) && (key != allFeedsID)){
+          total = total + unreadInfo[key].unreadtotal;
+        }
     }
 
-    if (!options.readlaterincludetotal && unreadInfo[readLaterFeedID] != null) {
+    if (!options.readlaterincludetotal && (unreadInfo[readLaterFeedID] != null)) {
         total = total - unreadInfo[readLaterFeedID].unreadtotal;
     }
 

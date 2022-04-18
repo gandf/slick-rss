@@ -39,8 +39,9 @@ function ItemIsRead(feedID, itemID) {
 
 function GetFeedInfoItem(feedID, itemIndex) {
     var feedGroupInfo = feedInfo[feedID];
+
     if (feedGroupInfo == null) {
-      feedGroupInfo = feedInfo[groupInfo[feedID].items[itemIndex].idOrigin].items.find(function (el) {
+      feedGroupInfo = feedInfo[parseInt(groupInfo[feedID].items[itemIndex].idOrigin, 10)].items.find(function (el) {
         return (el.itemID == groupInfo[feedID].items[itemIndex].itemID);
       });
       return feedGroupInfo;
