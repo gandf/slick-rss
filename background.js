@@ -246,17 +246,6 @@ function DoUpgrades() {
       store.removeItem('readlater').then(function() {}).catch(function(err) {});
     }
 
-    listPromise.push(store.getItem('feeds').then(function(data){
-        if (data != null) {
-            feeds = data;
-        }
-      }));
-    listPromise.push(store.getItem('unreadinfo').then(function(data){
-        if (data != null) {
-            unreadInfo = data;
-        }
-      }));
-
     resultPromise = Promise.allSettled(listPromise);
     return resultPromise;
 }
@@ -730,17 +719,10 @@ function UpdateGroups() {
       GetGroupItems(i, groups[i].id, groups[i].title, groups[i].title);
     }
   }
-  GetGroupAllFeedsItems();
 
   for (var i = 0; i < groups.length; i++) {
     groupInfo[groups[i].id].loading = false;
     SortByDate(groupInfo[groups[i].id].items);
-  }
-}
-
-function GetGroupAllFeedsItems() {
-  if (options.showallfeeds == true) {
-    GetGroupItems(0, allFeedsID, GetMessageText("backAllFeeds"), GetMessageText("backAllFeeds"));
   }
 }
 

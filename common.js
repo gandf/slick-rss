@@ -421,7 +421,6 @@ function UpdateUnreadBadge() {
 
     // update badge
     chrome.action.setBadgeText({text: str});
-    //chrome.action.setBadgeText({text: str});
 
     // update title
     if (viewerPort != null) {
@@ -470,13 +469,13 @@ function CleanUpUnreadOrphans() {
 function GetUnreadCounts() {
   var resultPromise = store.getItem('unreadinfo').then(function(data) {
       if (data != null) {
-          unreadinfo = data;
+          unreadInfo = data;
       } else {
-        unreadinfo = { };
+        unreadInfo = { };
         store.setItem('unreadinfo', { });
       }
     },function(dataError) {
-        unreadinfo = { };
+        unreadInfo = { };
         store.setItem('unreadinfo', { });
     });
 
