@@ -197,12 +197,6 @@ function Save()
 
     for(feedKey in feeds)
     {
-        // skip read later feed
-        if (feedKey == 0)
-        {
-            continue;
-        }
-
         row = document.getElementById(feedKey);
 
         title = row.childNodes[0].childNodes[0].value;
@@ -220,7 +214,7 @@ function Save()
 
         feeds[feedKey].title = title;
         feeds[feedKey].url = url;
-				feeds[feedKey].group = group;
+        feeds[feedKey].group = group;
         feeds[feedKey].maxitems = maxItems;
         feeds[feedKey].order = order;
     }
@@ -235,9 +229,6 @@ function Save()
             feeds.splice(i, 1);
         }
     }
-
-    // remove read later feed
-    feeds.splice(0,1);
 
 		var resultPromise = store.setItem('feeds', feeds).then(function(data){
 			GetUnreadCounts();
