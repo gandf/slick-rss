@@ -35,7 +35,9 @@ function ItemIsRead(feedID, itemID) {
     return false;
   }
   if (currentFeed != null) {
-    return (unreadInfo[currentFeed.id].readitems[itemID] != null);
+    if (unreadInfo[currentFeed.id].readitems != undefined) {
+      return (unreadInfo[currentFeed.id].readitems[itemID] != null);
+    }
   }
   return false;
 }
