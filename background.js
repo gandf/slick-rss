@@ -194,6 +194,11 @@ function ExternalRequest(request, sender, sendResponse) {
         return;
     }
 
+    if (request.type == "getFeedsAndGroupsInfo") {
+        sendResponse(JSON.stringify({"feeds": GetStrFromObject(feeds), "feedInfo": GetStrFromObject(feedInfo), "groups": GetStrFromObject(groups), "groupInfo": GetStrFromObject(groupInfo)}));
+        return;
+    }
+
     if (request.type == "calcGroupCountUnread") {
         sendResponse(CalcGroupCountUnread(request.data));
         return;
@@ -205,7 +210,7 @@ function ExternalRequest(request, sender, sendResponse) {
     }
 
     if (request.type == "getRefreshFeed") {
-        sendResponse(GetStrFromObject({"refreshFeed": refreshFeed, "checkForUnreadCounter": checkForUnreadCounter, checkingForUnread: checkingForUnread}));
+        sendResponse(GetStrFromObject({"refreshFeed": refreshFeed, "checkForUnreadCounter": checkForUnreadCounter, "checkingForUnread": checkingForUnread}));
         return;
     }
 
@@ -370,8 +375,6 @@ function CheckForUnread() {
                             decoder = new TextDecoder(encodeName);
                             doc = decoder.decode(data);
                         }
-
-                        var previousUnreadtotal = unreadInfo[feedID].unreadtotal;
 
                         if (status == 200) {
                             if (doc) {
