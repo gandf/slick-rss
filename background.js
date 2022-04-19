@@ -356,18 +356,17 @@ function CheckForUnread() {
                     'Content-Type': 'text/xml',
                     'Accept-Charset': 'utf-8'
                 },
-            })
-            .then(
-                function(response) {
-                    if (!response.ok) {
-                        console.log('Looks like there was a problem. Status Code: ' + response.status);
-                        return;
-                    }
-                    status = response.status;
-                    response.arrayBuffer().then(function(data) {
-                        var decoder = new TextDecoder("UTF-8");
-                        var doc = decoder.decode(data);
-                        var encodeName = doc.substring(0, 100);
+            }).then(function(response) {
+                if (!response.ok) {
+                    console.log('Looks like there was a problem. Status Code: ' + response.status);
+                    return;
+                }
+                status = response.status;
+                response.arrayBuffer().then(function(data) {
+                    var decoder = new TextDecoder("UTF-8");
+                    var doc = decoder.decode(data);
+                    var encodeName = doc.substring(0, 100);
+                    if (encodeName.indexOf("encoding=") >= 0) {
                         encodeName = encodeName.substring(encodeName.indexOf("encoding=") + ("encoding=").length, encodeName.indexOf("?>"));
                         encodeName = encodeName.replaceAll('\"', '');
                         encodeName = encodeName.replaceAll('"', '');
@@ -375,184 +374,196 @@ function CheckForUnread() {
                             decoder = new TextDecoder(encodeName);
                             doc = decoder.decode(data);
                         }
+                    }
 
-                        if (status == 200) {
-                            if (doc) {
-                                var readItemCount = 0;
-                                var item = null;
-                                var entryID = null;
-                                var entryIDs = {};
-                                var entries = GetElementsByTagNameJS(doc, [], "entry", "item");
-                                var rootNode = GetElementByTagNameJS(doc, null, "feed", "rss", "rdf:RDF");
-                                var author = null;
-                                var name = null;
-                                var thumbnail = null;
-                                var thumbnailurl = null;
-                                var thumbnailtype = null;
-                                var thumbnailNode = null;
-                                var dummyDate = null;
-                                var keys = null
+                    if (status == 200) {
+                        if (doc) {
+                            var readItemCount = 0;
+                            var item = null;
+                            var entryID = null;
+                            var entryIDs = {};
+                            var entries = GetElementsByTagNameJS(doc, [], "entry", "item");
+                            var rootNode = GetElementByTagNameJS(doc, null, "feed", "rss", "rdf:RDF");
+                            var author = null;
+                            var name = null;
+                            var thumbnail = null;
+                            var thumbnailurl = null;
+                            var thumbnailtype = null;
+                            var thumbnailNode = null;
+                            var dummyDate = null;
+                            var keys = null
 
-                                if (rootNode != null) {
-                                    keys = Object.keys(rootNode);
-                                    if (keys[0].toUpperCase() == "FEED") {
-                                        feedInfo[feedID].title = SearchTag(rootNode, null, ["TITLE"], 0);
-                                        feedInfo[feedID].description = SearchTag(rootNode, null, ["SUBTITLE", "DESCRIPTION"], 0);
-                                    } else {
-                                        var channel = SearchTag(rootNode, null, ["CHANNEL"], 0);
+                            if (rootNode != null) {
+                                keys = Object.keys(rootNode);
+                                if (keys[0].toUpperCase() == "FEED") {
+                                    feedInfo[feedID].title = SearchTag(rootNode, null, ["TITLE"], 0);
+                                    feedInfo[feedID].description = SearchTag(rootNode, null, ["SUBTITLE", "DESCRIPTION"], 0);
+                                } else {
+                                    var channel = SearchTag(rootNode, null, ["CHANNEL"], 0);
 
-                                        if (channel != null) {
-                                            feedInfo[feedID].title = SearchTag(channel, null, ["TITLE"], 0);
-                                            feedInfo[feedID].description = SearchTag(channel, null, ["DESCRIPTION", "SUBTITLE"], 0);
-                                        }
+                                    if (channel != null) {
+                                        feedInfo[feedID].title = SearchTag(channel, null, ["TITLE"], 0);
+                                        feedInfo[feedID].description = SearchTag(channel, null, ["DESCRIPTION", "SUBTITLE"], 0);
                                     }
                                 }
+                            }
 
-                                for (var e = 0; e < entries.length; e++) {
-                                    item = {};
-                                    item.title = CleanText2(SearchTag(entries[e], GetMessageText("backNoTitle"), ["TITLE"], 0));
-                                    item.title = item.title.replaceAll("U+20AC", '€').replaceAll("&apos;", "'");
-                                    item.date = CleanText2(SearchTag(entries[e], null, ["PUBDATE", "UPDATED", "DC:DATE", "DATE", "PUBLISHED"], 0)); // not sure if date is even needed anymore
-                                    item.content = "";
-                                    item.idOrigin = feedID;
-                                    item.itemID = sha256(item.title + item.date);
-                                    thumbnailurl = null;
-                                    thumbnailtype = null;
+                            for (var e = 0; e < entries.length; e++) {
+                                item = {};
+                                item.title = CleanText2(SearchTag(entries[e], GetMessageText("backNoTitle"), ["TITLE"], 0));
+                                item.title = item.title.replaceAll("U+20AC", '€').replaceAll("&apos;", "'");
+                                item.date = CleanText2(SearchTag(entries[e], null, ["PUBDATE", "UPDATED", "DC:DATE", "DATE", "PUBLISHED"], 0)); // not sure if date is even needed anymore
+                                item.content = "";
+                                item.idOrigin = feedID;
+                                item.itemID = sha256(item.title + item.date);
+                                thumbnailurl = null;
+                                thumbnailtype = null;
 
-                                    // don't bother storing extra stuff past max.. only title for Mark All Read
-                                    if (e <= feeds[checkForUnreadCounter].maxitems) {
-                                        item.url = GetFeedLink(entries[e]);
+                                // don't bother storing extra stuff past max.. only title for Mark All Read
+                                if (e <= feeds[checkForUnreadCounter].maxitems) {
+                                    item.url = GetFeedLink(entries[e]);
 
-                                        if (options.showfeedcontent) {
-                                            item.content = CleanText2(SearchTag(entries[e], null, ["CONTENT:ENCODED", "CONTENT"], 0)); // only guessing on just "content"
-                                        }
+                                    if (options.showfeedcontent) {
+                                        item.content = CleanText2(SearchTag(entries[e], null, ["CONTENT:ENCODED", "CONTENT"], 0)); // only guessing on just "content"
+                                    }
 
-                                        if ((item.content == "") || (item.content == null)) {
-                                            item.content = CleanText2(SearchTag(entries[e], null, ["DESCRIPTION", "SUMMARY"], 0));
-                                        }
-                                        item.content = item.content.replaceAll("U+20AC", '€').replaceAll("&apos;", "'");
-                                        item.thumbnail = null;
+                                    if ((item.content == "") || (item.content == null)) {
+                                        item.content = CleanText2(SearchTag(entries[e], null, ["DESCRIPTION", "SUMMARY"], 0));
+                                    }
+                                    item.content = item.content.replaceAll("U+20AC", '€').replaceAll("&apos;", "'");
+                                    item.thumbnail = null;
 
-                                        author = CleanText2(SearchTag(entries[e], null, ["AUTHOR", "DC:CREATOR", "CREATOR"], 0));
-                                        thumbnail = SearchTag(entries[e], null, ["ENCLOSURE", "MEDIA:GROUP"], 0);
-                                        if (thumbnail != null) {
-                                            keys = Object.keys(thumbnail);
-                                            for (var k = 0; k < thumbnail.length; k++) {
-                                                if (thumbnail[k].length > 0) {
-                                                    if (thumbnail[k].constructor === Array) {
-                                                        thumbnail = thumbnail[k];
-                                                        break;
-                                                    }
-                                                } else {
-                                                    delete thumbnail[k];
+                                    author = CleanText2(SearchTag(entries[e], null, ["AUTHOR", "DC:CREATOR", "CREATOR"], 0));
+                                    thumbnail = SearchTag(entries[e], null, ["ENCLOSURE", "MEDIA:GROUP"], 0);
+                                    if (thumbnail != null) {
+                                        keys = Object.keys(thumbnail);
+                                        for (var k = 0; k < thumbnail.length; k++) {
+                                            if (thumbnail[k].length > 0) {
+                                                if (thumbnail[k].constructor === Array) {
+                                                    thumbnail = thumbnail[k];
+                                                    break;
                                                 }
+                                            } else {
+                                                delete thumbnail[k];
                                             }
+                                        }
 
-                                            keys = Object.keys(thumbnail);
-                                            var thumbtemp = [];
-                                            for (var k = 0; k < keys.length; k++)
-                                            {
-                                                thumbtemp[k] = thumbnail[keys[k]];
-                                            }
-                                            thumbnail = thumbtemp;
+                                        keys = Object.keys(thumbnail);
+                                        var thumbtemp = [];
+                                        for (var k = 0; k < keys.length; k++) {
+                                            thumbtemp[k] = thumbnail[keys[k]];
+                                        }
+                                        thumbnail = thumbtemp;
 
-                                            for (var k = 0; k < thumbnail.length; k++)
-                                            {
-                                                keys = Object.keys(thumbnail[k]);
-                                                var val = Object.values(thumbnail[k]);
-                                                for (var j = 0; j < keys.length; j++)
-                                                {
-                                                    if (keys[j].toUpperCase() == "MEDIA:CONTENT") {
-                                                        for (var n1 = 0; n1 < val[j].length; n1++)
-                                                        {
-                                                            var keys2 = Object.keys(val[j][n1]);
-                                                            var val2 = Object.values(val[j][n1]);
-                                                            for (var n2 = 0; n2 < keys2.length; n2++)
-                                                            {
-                                                                if (keys2[n2].toUpperCase() == "MEDIA:DESCRIPTION") {
-                                                                    if (CleanText(val2[n2]).includes("thumbnail"))
-                                                                    {
-                                                                        if (thumbnail[k][":@"] != undefined) {
-                                                                            thumbnailurl = thumbnail[k][":@"]["url"];
-                                                                            thumbnailtype = thumbnail[k][":@"]["medium"];
-                                                                            if (thumbnailtype == "image") {
-                                                                                item.thumbnail = "<img src=\"" + thumbnailurl + "\" class=\"thumbnail\">";
-                                                                                break;
-                                                                            }
+                                        for (var k = 0; k < thumbnail.length; k++) {
+                                            keys = Object.keys(thumbnail[k]);
+                                            var val = Object.values(thumbnail[k]);
+                                            for (var j = 0; j < keys.length; j++) {
+                                                if (keys[j].toUpperCase() == "MEDIA:CONTENT") {
+                                                    for (var n1 = 0; n1 < val[j].length; n1++) {
+                                                        var keys2 = Object.keys(val[j][n1]);
+                                                        var val2 = Object.values(val[j][n1]);
+                                                        for (var n2 = 0; n2 < keys2.length; n2++) {
+                                                            if (keys2[n2].toUpperCase() == "MEDIA:DESCRIPTION") {
+                                                                if (CleanText(val2[n2]).includes("thumbnail")) {
+                                                                    if (thumbnail[k][":@"] != undefined) {
+                                                                        thumbnailurl = thumbnail[k][":@"]["url"];
+                                                                        thumbnailtype = thumbnail[k][":@"]["medium"];
+                                                                        if (thumbnailtype == "image") {
+                                                                            item.thumbnail = "<img src=\"" + thumbnailurl + "\" class=\"thumbnail\">";
+                                                                            break;
                                                                         }
                                                                     }
                                                                 }
                                                             }
-                                                            if (thumbnailurl != null) {
-                                                                break;
-                                                            }
                                                         }
-                                                    }
-                                                    if (thumbnailurl != null) {
-                                                        break;
+                                                        if (thumbnailurl != null) {
+                                                            break;
+                                                        }
                                                     }
                                                 }
                                                 if (thumbnailurl != null) {
                                                     break;
                                                 }
                                             }
+                                            if (thumbnailurl != null) {
+                                                break;
+                                            }
                                         }
+                                    }
 
-                                        if (author != null) {
-                                            item.author = author;
-                                            /*name = GetElementByTagNameJS(author, null, "name");
+                                    if (author != null) {
+                                        item.author = author;
+                                    } else {   // for some reason the author gets funky with floats if it's empty..  so whatever
+                                        item.author = '\u00a0';
+                                    }
+                                }
+                                dummyDate = GetDate(item.date);
+                                if(dummyDate != null) {
+                                    item.order = dummyDate.getTime() - referenceDate;
+                                }
+                                else {
+                                    item.order = referenceDate;
+                                }
 
-                                            if (name != null) {
-                                            item.author = GetNodeTextValue(name);
-                                        } else {
-                                        item.author = GetNodeTextValue(author);
-                                    }*/
-                                } else {   // for some reason the author gets funky with floats if it's empty..  so whatever
-                                    item.author = '\u00a0';
+                                feedInfo[feedID].items.push(item);
+                                entryIDs[item.itemID] = 1;
+                            }
+
+                            // count read that are in current feed
+                            for (var key in unreadInfo[feedID].readitems) {
+                                if (entryIDs[key] == null) {
+                                    // if the read item isn't in the current feed and it's past it's expiration date, nuke it
+                                    if (now > new Date(unreadInfo[feedID].readitems[key])) {
+                                        delete unreadInfo[feedID].readitems[key];
+                                    }
+                                } else {
+                                    readItemCount++;
                                 }
                             }
-                            dummyDate = GetDate(item.date);
-                            if(dummyDate != null)
-                            {
-                                item.order = dummyDate.getTime() - referenceDate;
-                            }
-                            else {
-                                item.order = referenceDate;
-                            }
-
-                            feedInfo[feedID].items.push(item);
-                            entryIDs[item.itemID] = 1;
+                            unreadInfo[feedID].unreadtotal = entries.length - readItemCount;
+                        } else {
+                            feedInfo[feedID].error = GetMessageText("backErrorXML");
                         }
-
-                        // count read that are in current feed
-                        for (var key in unreadInfo[feedID].readitems) {
-                            if (entryIDs[key] == null) {
-                                // if the read item isn't in the current feed and it's past it's expiration date, nuke it
-                                if (now > new Date(unreadInfo[feedID].readitems[key])) {
-                                    delete unreadInfo[feedID].readitems[key];
-                                }
-                            } else {
-                                readItemCount++;
-                            }
-                        }
-
-                        unreadInfo[feedID].unreadtotal = entries.length - readItemCount;
                     } else {
-                        feedInfo[feedID].error = GetMessageText("backErrorXML");
+                        feedInfo[feedID].error = GetMessageText("backError200Part1") + status + GetMessageText("backError200Part2") + response.statusText + GetMessageText("backError200Part3");
                     }
-                } else {
-                    feedInfo[feedID].error = GetMessageText("backError200Part1") + status + GetMessageText("backError200Part2") + response.statusText + GetMessageText("backError200Part3");
-                }
-                promiseCheckForUnread.push(store.setItem('unreadinfo', unreadInfo));
+                    promiseCheckForUnread.push(store.setItem('unreadinfo', unreadInfo));
 
-                oldFeedInfoItems
-
-                for (var i = 0; i < feedInfo[feedID].items.length; i++) {
-                    if (!oldFeedInfoItems.includes(feedInfo[feedID].items[i].itemID)) {
-                        newNotif = true;
-                        break;
+                    for (var i = 0; i < feedInfo[feedID].items.length; i++) {
+                        if (!oldFeedInfoItems.includes(feedInfo[feedID].items[i].itemID)) {
+                            newNotif = true;
+                            break;
+                        }
                     }
-                }
+
+                    checkForUnreadCounter++;
+                    if (checkForUnreadCounter < feeds.length) {
+                        if (feeds[checkForUnreadCounter].id === allFeedsID) {
+                            checkForUnreadCounter++;
+                        }
+                    }
+
+                    doc = null;
+
+                    feedInfo[feedID].loading = false;
+
+                    waitPromise(promiseCheckForUnread).then(function () {
+                        if (viewerPort != null) {
+                            viewerPort.postMessage({type: "feedupdatecomplete", id: feedID});
+                        }
+
+                        if (checkForUnreadCounter >= feeds.length || refreshFeed) {
+                            CheckForUnreadComplete();
+                        } else {
+                            CheckForUnread();
+                        }
+                    });
+                });
+            })
+            .catch(function(err) {
+                feedInfo[feedID].loading = false;
+                feedInfo[feedID].error = 'Fetch Error :-S', err.message;
 
                 checkForUnreadCounter++;
                 if (checkForUnreadCounter < feeds.length) {
@@ -560,34 +571,17 @@ function CheckForUnread() {
                         checkForUnreadCounter++;
                     }
                 }
-
-                doc = null;
-
-                feedInfo[feedID].loading = false;
-
-                waitPromise(promiseCheckForUnread).then(function () {
-                    if (viewerPort != null) {
-                        viewerPort.postMessage({type: "feedupdatecomplete", id: feedID});
-                    }
-
-                    if (checkForUnreadCounter >= feeds.length || refreshFeed) {
-                        CheckForUnreadComplete();
-                    } else {
-                        CheckForUnread();
-                    }
-                });
+                if (checkForUnreadCounter >= feeds.length || refreshFeed) {
+                    CheckForUnreadComplete();
+                } else {
+                    CheckForUnread();
+                }
             });
         }
-    )
-    .catch(function(err) {
-        feedInfo[feedID].loading = false;
-        feedInfo[feedID].error = 'Fetch Error :-S', err.message;
-        //console.log('Fetch Error :-S', err);
-    });
-} catch (err) {
-    console.log('Error :-S', err);
-}
-}
+        catch (err) {
+            console.log('Error :-S', err);
+        }
+    }
 }
 
 // ran after checking for unread is done
