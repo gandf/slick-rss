@@ -23,7 +23,7 @@ readlaterInfo[readLaterFeedID] = {
 
 var promiseOptionBegin = GetOptions();
 async function waitOptionReady() {
-  return start = await Promise.allSettled([promiseOptionBegin]);
+    return start = await Promise.allSettled([promiseOptionBegin]);
 }
 
 function GetStrFromObject(obj){

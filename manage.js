@@ -11,267 +11,267 @@ window.onload = ShowFeeds;
 
 function Add()
 {
-    var title = document.getElementById("newTitle").value;
-    var url = document.getElementById("newUrl").value;
-		var group = document.getElementById("newGroup").value;
-    var maxItems = document.getElementById("newMaxItems").value;
-    var order = document.getElementById("newOrder").value;
-    var key = null;
-    var maxOrder = 0;
-    var itemOrder = 0;
+	var title = document.getElementById("newTitle").value;
+	var url = document.getElementById("newUrl").value;
+	var group = document.getElementById("newGroup").value;
+	var maxItems = document.getElementById("newMaxItems").value;
+	var order = document.getElementById("newOrder").value;
+	var key = null;
+	var maxOrder = 0;
+	var itemOrder = 0;
 
-    if(!IsValid(title, url, group, maxItems, order))
-    {
-        return;
-    }
+	if(!IsValid(title, url, group, maxItems, order))
+	{
+		return;
+	}
 
-    AddRow(feeds.push(CreateNewFeed(title, url, group, maxItems, order)) - 1);
+	AddRow(feeds.push(CreateNewFeed(title, url, group, maxItems, order)) - 1);
 
-    for(feedKey in feeds)
-    {
-        itemOrder = parseInt(feeds[feedKey].order);
+	for(feedKey in feeds)
+	{
+		itemOrder = parseInt(feeds[feedKey].order);
 
-        if(itemOrder > maxOrder)
-        {
-            maxOrder = itemOrder;
-        }
-    }
+		if(itemOrder > maxOrder)
+		{
+			maxOrder = itemOrder;
+		}
+	}
 
-    document.getElementById("newOrder").value = maxOrder + 1;
-    document.getElementById("newTitle").value = "";
-    document.getElementById("newUrl").value = "";
-		document.getElementById("newGroup").value = "";
+	document.getElementById("newOrder").value = maxOrder + 1;
+	document.getElementById("newTitle").value = "";
+	document.getElementById("newUrl").value = "";
+	document.getElementById("newGroup").value = "";
 
 }
 
 function IsValid(title, url, group, maxItems, order)
 {
 
-    if(title == "")
-    {
-        alert(GetMessageText("manageAlertTitle"));
-        return false;
-    }
+	if(title == "")
+	{
+		alert(GetMessageText("manageAlertTitle"));
+		return false;
+	}
 
-    if(url == "")
-    {
-        alert(GetMessageText("manageAlertUrl"));
-        return false;
-    }
+	if(url == "")
+	{
+		alert(GetMessageText("manageAlertUrl"));
+		return false;
+	}
 
-    if(maxItems == "")
-    {
-        alert(GetMessageText("manageAlertMaxItemsEmpty"));
-        return false;
-    }
+	if(maxItems == "")
+	{
+		alert(GetMessageText("manageAlertMaxItemsEmpty"));
+		return false;
+	}
 
-    if(maxItems == "0")
-    {
-        alert(GetMessageText("manageAlertMaxItemsZero"));
-        return false;
-    }
+	if(maxItems == "0")
+	{
+		alert(GetMessageText("manageAlertMaxItemsZero"));
+		return false;
+	}
 
-    if(!/^\d+$/.test(maxItems))
-    {
-        alert(GetMessageText("manageAlertMaxItemsNotItem1") + maxItems + GetMessageText("manageAlertMaxItemsNotItem2"));
-        return false;
-    }
+	if(!/^\d+$/.test(maxItems))
+	{
+		alert(GetMessageText("manageAlertMaxItemsNotItem1") + maxItems + GetMessageText("manageAlertMaxItemsNotItem2"));
+		return false;
+	}
 
-    if(order == "")
-    {
-        alert(GetMessageText("manageAlertOrder"));
-        return false;
-    }
+	if(order == "")
+	{
+		alert(GetMessageText("manageAlertOrder"));
+		return false;
+	}
 
-    if(!/^\d+$/.test(order))
-    {
-        alert(GetMessageText("manageAlertOrderNotItem1") + order + GetMessageText("manageAlertOrderNotItem2"));
-        return false;
-    }
+	if(!/^\d+$/.test(order))
+	{
+		alert(GetMessageText("manageAlertOrderNotItem1") + order + GetMessageText("manageAlertOrderNotItem2"));
+		return false;
+	}
 
-    return true;
+	return true;
 }
 
 function AddRow(feedKey)
 {
-    var grid = null;
-    var row = null;
-    var input = null;
-    var button = null;
+	var grid = null;
+	var row = null;
+	var input = null;
+	var button = null;
 
-    grid = document.getElementById("feedGrid");
-    row = grid.insertRow(grid.rows.length);
-    row.setAttribute("id", feedKey);
+	grid = document.getElementById("feedGrid");
+	row = grid.insertRow(grid.rows.length);
+	row.setAttribute("id", feedKey);
 
-    input = document.createElement('input');
-    input.setAttribute("type", "text");
-    input.setAttribute("class", "title");
-    input.setAttribute("value", feeds[feedKey].title);
+	input = document.createElement('input');
+	input.setAttribute("type", "text");
+	input.setAttribute("class", "title");
+	input.setAttribute("value", feeds[feedKey].title);
 
-    row.insertCell(0).appendChild(input);
+	row.insertCell(0).appendChild(input);
 
-    input = document.createElement('input');
-    input.setAttribute("type", "text");
-    input.setAttribute("class", "url");
-    input.setAttribute("value", feeds[feedKey].url);
+	input = document.createElement('input');
+	input.setAttribute("type", "text");
+	input.setAttribute("class", "url");
+	input.setAttribute("value", feeds[feedKey].url);
 
-    row.insertCell(1).appendChild(input);
+	row.insertCell(1).appendChild(input);
 
-		input = document.createElement('input');
-    input.setAttribute("type", "text");
-    input.setAttribute("class", "group");
-    input.setAttribute("value", feeds[feedKey].group);
+	input = document.createElement('input');
+	input.setAttribute("type", "text");
+	input.setAttribute("class", "group");
+	input.setAttribute("value", feeds[feedKey].group);
 
-    row.insertCell(2).appendChild(input);
+	row.insertCell(2).appendChild(input);
 
-    input = document.createElement('input');
-    input.setAttribute("type", "text");
-    input.setAttribute("class", "maxItems");
-    input.setAttribute("value", feeds[feedKey].maxitems);
+	input = document.createElement('input');
+	input.setAttribute("type", "text");
+	input.setAttribute("class", "maxItems");
+	input.setAttribute("value", feeds[feedKey].maxitems);
 
-    row.insertCell(3).appendChild(input);
+	row.insertCell(3).appendChild(input);
 
-    input = document.createElement('input');
-    input.setAttribute("type", "text");
-    input.setAttribute("class", "order");
-    input.setAttribute("value", feeds[feedKey].order);
+	input = document.createElement('input');
+	input.setAttribute("type", "text");
+	input.setAttribute("class", "order");
+	input.setAttribute("value", feeds[feedKey].order);
 
-    row.insertCell(4).appendChild(input);
+	row.insertCell(4).appendChild(input);
 
-    button = document.createElement("img");
-    button.setAttribute("src", "x_gray.png");
-    button.setAttribute("class", "delete");
+	button = document.createElement("img");
+	button.setAttribute("src", "x_gray.png");
+	button.setAttribute("class", "delete");
 
-    //var tmp = this.parentNode.parentNode;
+	//var tmp = this.parentNode.parentNode;
 
-    $(button).click({id:feedKey}, function(event)
-    {
-    		MarkDelete($('#' + event.data.id).get(0));
-    });
-    //button.setAttribute("onclick", "MarkDelete(this.parentNode.parentNode);");
-    button.setAttribute("title", "Delete feed");
-    row.insertCell(5).appendChild(button);
+	$(button).click({id:feedKey}, function(event)
+	{
+		MarkDelete($('#' + event.data.id).get(0));
+	});
+	//button.setAttribute("onclick", "MarkDelete(this.parentNode.parentNode);");
+	button.setAttribute("title", "Delete feed");
+	row.insertCell(5).appendChild(button);
 }
 
 function MarkDelete(row)
 {
-    var marked = (row.className == "markDelete");
+	var marked = (row.className == "markDelete");
 
-    if(!marked)
-    {
-        row.setAttribute("class", "markDelete");
-    }
-    else
-    {
-        if(row != lastBadRow)
-        {
-            row.setAttribute("class", "");
-        }
-        else
-        {
-            row.setAttribute("class", "badRow");
-        }
-    }
+	if(!marked)
+	{
+		row.setAttribute("class", "markDelete");
+	}
+	else
+	{
+		if(row != lastBadRow)
+		{
+			row.setAttribute("class", "");
+		}
+		else
+		{
+			row.setAttribute("class", "badRow");
+		}
+	}
 
-    row.childNodes[0].childNodes[0].disabled = !marked; // title
-    row.childNodes[1].childNodes[0].disabled = !marked; // url
-		row.childNodes[2].childNodes[0].disabled = !marked; // group
-    row.childNodes[3].childNodes[0].disabled = !marked; // max items
-    row.childNodes[4].childNodes[0].disabled = !marked; // order
+	row.childNodes[0].childNodes[0].disabled = !marked; // title
+	row.childNodes[1].childNodes[0].disabled = !marked; // url
+	row.childNodes[2].childNodes[0].disabled = !marked; // group
+	row.childNodes[3].childNodes[0].disabled = !marked; // max items
+	row.childNodes[4].childNodes[0].disabled = !marked; // order
 
 }
 
 function Save()
 {
-    var row = null;
-    var title;
-    var url;
-		var group;
-    var maxItems;
-    var order;
+	var row = null;
+	var title;
+	var url;
+	var group;
+	var maxItems;
+	var order;
 
-    if(lastBadRow != null && lastBadRow.className != "markDelete")
-    {
-        lastBadRow.className = "";
-    }
+	if(lastBadRow != null && lastBadRow.className != "markDelete")
+	{
+		lastBadRow.className = "";
+	}
 
-    for(feedKey in feeds)
-    {
-        row = document.getElementById(feedKey);
+	for(feedKey in feeds)
+	{
+		row = document.getElementById(feedKey);
 
-        title = row.childNodes[0].childNodes[0].value;
-        url = row.childNodes[1].childNodes[0].value;
-        group = row.childNodes[2].childNodes[0].value;
-        maxItems = row.childNodes[3].childNodes[0].value;
-        order = row.childNodes[4].childNodes[0].value;
+		title = row.childNodes[0].childNodes[0].value;
+		url = row.childNodes[1].childNodes[0].value;
+		group = row.childNodes[2].childNodes[0].value;
+		maxItems = row.childNodes[3].childNodes[0].value;
+		order = row.childNodes[4].childNodes[0].value;
 
-        if(row.className != "markDelete" && !IsValid(title, url, group, maxItems, order))
-        {
-            row.className = "badRow";
-            lastBadRow = row;
-            return;
-        }
+		if(row.className != "markDelete" && !IsValid(title, url, group, maxItems, order))
+		{
+			row.className = "badRow";
+			lastBadRow = row;
+			return;
+		}
 
-        feeds[feedKey].title = title;
-        feeds[feedKey].url = url;
-        feeds[feedKey].group = group;
-        feeds[feedKey].maxitems = maxItems;
-        feeds[feedKey].order = order;
-    }
+		feeds[feedKey].title = title;
+		feeds[feedKey].url = url;
+		feeds[feedKey].group = group;
+		feeds[feedKey].maxitems = maxItems;
+		feeds[feedKey].order = order;
+	}
 
-    // delete feeds that are marked, start from end so indexes don't get screwed up
-    for(i = feeds.length - 1;i > 0;i--)
-    {
-        row = document.getElementById(i);
+	// delete feeds that are marked, start from end so indexes don't get screwed up
+	for(i = feeds.length - 1;i > 0;i--)
+	{
+		row = document.getElementById(i);
 
-        if(row.className == "markDelete")
-        {
-            feeds.splice(i, 1);
-        }
-    }
+		if(row.className == "markDelete")
+		{
+			feeds.splice(i, 1);
+		}
+	}
 
-		var resultPromise = store.setItem('feeds', feeds).then(function(data){
-			GetUnreadCounts();
-			CleanUpUnreadOrphans();
+	var resultPromise = store.setItem('feeds', feeds).then(function(data){
+		GetUnreadCounts();
+		CleanUpUnreadOrphans();
+	});
+
+	resultPromise.then(function(){
+		chrome.runtime.sendMessage({"type": "refreshFeeds" }).then(function(){
+			window.location = chrome.runtime.getURL("viewer.html");
 		});
-
-		resultPromise.then(function(){
-				chrome.runtime.sendMessage({"type": "checkForUnread" }).then(function(){
-	        window.location = chrome.runtime.getURL("viewer.html");
-	      });
-		});
+	});
 }
 
 function ShowFeeds()
 {
-    var maxOrder = 0;
-    var itemOrder = 0;
+	var maxOrder = 0;
+	var itemOrder = 0;
 
-		GetFeedsSimple(function(feeds)
+	GetFeedsSimple(function(feeds)
+	{
+		for(feedKey in feeds)
 		{
-	    for(feedKey in feeds)
-	    {
-	        // skip read later feed
-					if (feeds[feedKey].id != readLaterFeedID)
-					{
-						AddRow(feedKey);
-		        itemOrder = parseInt(feeds[feedKey].order);
+			// skip read later feed
+			if (feeds[feedKey].id != readLaterFeedID)
+			{
+				AddRow(feedKey);
+				itemOrder = parseInt(feeds[feedKey].order);
 
-		        if(itemOrder > maxOrder)
-		        {
-		            maxOrder = itemOrder;
-		        }
-					}
-	    }
-
-	    document.getElementById("newOrder").value = maxOrder + 1;
-			waitOptionReady().then(function () {
-				if (options.darkmode) {
-					activeDarkMode();
-				} else {
-					disableDarkMode();
+				if(itemOrder > maxOrder)
+				{
+					maxOrder = itemOrder;
 				}
-	    	document.getElementById("newMaxItems").value = options.maxitems;
-			});
+			}
+		}
+
+		document.getElementById("newOrder").value = maxOrder + 1;
+		waitOptionReady().then(function () {
+			if (options.darkmode) {
+				activeDarkMode();
+			} else {
+				disableDarkMode();
+			}
+			document.getElementById("newMaxItems").value = options.maxitems;
 		});
+	});
 }

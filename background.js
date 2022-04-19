@@ -17,48 +17,48 @@ chrome.runtime.onConnect.addListener(InternalConnection);
 chrome.alarms.onAlarm.addListener(AlarmRing);
 
 waitOptionReady().then(function () {
-  promiseUpgrade = DoUpgrades();
-  waitUpgrade().then(function () {
-    promiseGetUnreadCounts = GetUnreadCounts();
-    waitGetUnreadCounts().then(function () {
-      GetFeeds(function () {
-        var promiseCleanUpUnreadOrphans = CleanUpUnreadOrphans();
-        promiseCleanUpUnreadOrphans.then(function(){
-          CheckForUnreadStart();
+    promiseUpgrade = DoUpgrades();
+    waitUpgrade().then(function () {
+        promiseGetUnreadCounts = GetUnreadCounts();
+        waitGetUnreadCounts().then(function () {
+            GetFeeds(function () {
+                var promiseCleanUpUnreadOrphans = CleanUpUnreadOrphans();
+                promiseCleanUpUnreadOrphans.then(function(){
+                    CheckForUnreadStart();
+                });
+            });
         });
-      });
     });
-  });
 });
 
 async function waitUpgrade() {
-  return start = await Promise.allSettled([promiseUpgrade]);
+    return start = await Promise.allSettled([promiseUpgrade]);
 }
 
 async function waitGetUnreadCounts() {
-  return start = await Promise.allSettled([promiseGetUnreadCounts]);
+    return start = await Promise.allSettled([promiseGetUnreadCounts]);
 }
 
 async function waitGetReadLaterItems() {
-  return start = await Promise.allSettled([promiseGetReadLaterItems]);
+    return start = await Promise.allSettled([promiseGetReadLaterItems]);
 }
 
 async function waitPromise(listPromiseToWait) {
-  return start = await Promise.allSettled([listPromiseToWait]);
+    return start = await Promise.allSettled([listPromiseToWait]);
 }
 
 async function waitExternalRequest() {
-  return start = await Promise.allSettled([promiseExternalRequest]);
+    return start = await Promise.allSettled([promiseExternalRequest]);
 }
 
 function AlarmRing(alarm){
-  if (alarm.name == 'CheckForUnread') {
-      try {
-          CheckForUnreadStart();
-      } catch(e){
-          console.log(e);
-      }
-  }
+    if (alarm.name == 'CheckForUnread') {
+        try {
+            CheckForUnreadStart();
+        } catch(e){
+            console.log(e);
+        }
+    }
 }
 
 // communicate with other pages
@@ -75,9 +75,9 @@ function InternalConnection(port) {
 function ReloadViewer() {
     var promiseCleanUpUnreadOrphans = CleanUpUnreadOrphans();
     promiseCleanUpUnreadOrphans.then(function() {
-      if (viewerPort != null) {
-          viewerPort.postMessage({type: "feedschanged"});
-      }
+        if (viewerPort != null) {
+            viewerPort.postMessage({type: "feedschanged"});
+        }
     });
 }
 
@@ -94,138 +94,146 @@ function ButtonClicked(tab) {
 
 function ExternalRequest(request, sender, sendResponse) {
     if (request.type == undefined) {
-      sendResponse({});
-      return;
-    }
-    if (request.type == "addfeed") {
-      var maxOrder = 0;
-      var order = 0;
-      var resultPromise = null;
-
-      for (var i = 0; i < feeds.length; i++) {
-          order = parseInt(feeds[i].order);
-
-          if (order > maxOrder) {
-              maxOrder = order;
-          }
-      }
-
-      maxOrder++;
-
-      feeds.push(CreateNewFeed(request.title, request.url, request.group, options.maxitems, maxOrder));
-      resultPromise = store.setItem('feeds', feeds);
-      resultPromise.then(function(){
-        UpdateGroups();
-        ReloadViewer();
-
         sendResponse({});
         return;
-      });
+    }
+    if (request.type == "addfeed") {
+        var maxOrder = 0;
+        var order = 0;
+        var resultPromise = null;
+
+        for (var i = 0; i < feeds.length; i++) {
+            order = parseInt(feeds[i].order);
+
+            if (order > maxOrder) {
+                maxOrder = order;
+            }
+        }
+
+        maxOrder++;
+
+        feeds.push(CreateNewFeed(request.title, request.url, request.group, options.maxitems, maxOrder));
+        resultPromise = store.setItem('feeds', feeds);
+        resultPromise.then(function(){
+            UpdateGroups();
+            ReloadViewer();
+
+            sendResponse({});
+            return;
+        });
     }
 
     if (request.type == "deletefeed") {
         for (var i = 0; i < feeds.length; i++) {
             if (feeds[i].url == request.url) {
-              feeds.splice(i, 1);
+                feeds.splice(i, 1);
             }
         }
         resultPromise = store.setItem('feeds', feeds);
         resultPromise.then(function(){
-          UpdateGroups();
-          ReloadViewer();
-          sendResponse({});
-          return;
-      });
+            UpdateGroups();
+            ReloadViewer();
+            sendResponse({});
+            return;
+        });
     }
     if (request.type == "checkForUnread") {
-      CheckForUnreadStart();
-      sendResponse({});
-      return;
+        CheckForUnreadStart();
+        sendResponse({});
+        return;
     }
     if (request.type == "checkForUnreadOnSelectedFeed") {
-      CheckForUnreadStart(request.selectedFeedKey);
-      sendResponse({});
-      return;
+        CheckForUnreadStart(request.selectedFeedKey);
+        sendResponse({});
+        return;
     }
 
     if (request.type == "checkForUnreadOnSelectedFeedCompleted") {
-      if ((feeds[request.selectedFeedKey].id != readLaterFeedID) && (feeds[request.selectedFeedKey].id != allFeedsID)) {
-        if (feedInfo[feeds[request.selectedFeedKey].id] != undefined) {
-          if (!feedInfo[feeds[request.selectedFeedKey].id].loading) {
-              if (viewerPort != null) {
-                  viewerPort.postMessage({type: "feedupdatecomplete", id: feeds[request.selectedFeedKey].id});
-              }
-          }
+        if ((feeds[request.selectedFeedKey].id != readLaterFeedID) && (feeds[request.selectedFeedKey].id != allFeedsID)) {
+            if (feedInfo[feeds[request.selectedFeedKey].id] != undefined) {
+                if (!feedInfo[feeds[request.selectedFeedKey].id].loading) {
+                    if (viewerPort != null) {
+                        viewerPort.postMessage({type: "feedupdatecomplete", id: feeds[request.selectedFeedKey].id});
+                    }
+                }
+            }
         }
-      }
-      else {
-        if (viewerPort != null) {
-            viewerPort.postMessage({type: "feedupdatecomplete", id: feeds[request.selectedFeedKey].id});
+        else {
+            if (viewerPort != null) {
+                viewerPort.postMessage({type: "feedupdatecomplete", id: feeds[request.selectedFeedKey].id});
+            }
         }
-      }
-      sendResponse({});
-      return;
+        sendResponse({});
+        return;
     }
 
     if (request.type == "setUnreadInfo") {
-      store.setItem('unreadinfo', request.data);
-      unreadInfo = request.data;
-      sendResponse({});
-      return;
+        store.setItem('unreadinfo', request.data);
+        unreadInfo = request.data;
+        sendResponse({});
+        return;
     }
 
     if (request.type == "getFeeds") {
-      sendResponse(GetStrFromObject(feeds));
-      return;
+        sendResponse(GetStrFromObject(feeds));
+        return;
     }
 
     if (request.type == "getFeedInfo") {
-      sendResponse(GetStrFromObject(feedInfo));
-      return;
+        sendResponse(GetStrFromObject(feedInfo));
+        return;
     }
 
     if (request.type == "getGroups") {
-      sendResponse(GetStrFromObject(groups));
-      return;
+        sendResponse(GetStrFromObject(groups));
+        return;
     }
 
     if (request.type == "getGroupInfo") {
-      sendResponse(GetStrFromObject(groupInfo));
-      return;
+        sendResponse(GetStrFromObject(groupInfo));
+        return;
     }
 
     if (request.type == "calcGroupCountUnread") {
-      sendResponse(CalcGroupCountUnread(request.data));
-      return;
+        sendResponse(CalcGroupCountUnread(request.data));
+        return;
     }
 
     if (request.type == "getUnreadTotal") {
-      sendResponse(unreadTotal);
-      return;
+        sendResponse(unreadTotal);
+        return;
     }
 
     if (request.type == "getRefreshFeed") {
-      sendResponse(GetStrFromObject({"refreshFeed": refreshFeed, "checkForUnreadCounter": checkForUnreadCounter, checkingForUnread: checkingForUnread}));
-      return;
+        sendResponse(GetStrFromObject({"refreshFeed": refreshFeed, "checkForUnreadCounter": checkForUnreadCounter, checkingForUnread: checkingForUnread}));
+        return;
+    }
+
+    if (request.type == "refreshFeeds") {
+        GetFeeds(function () {
+            CheckForUnreadStart();
+        });
+        sendResponse({});
+        return;
     }
 }
 
 // gets the feed array for everyone to use
 function GetFeeds(callBack) {
-  feeds = [];
-  getFeedsCallBack = callBack;
+    feeds = [];
+    getFeedsCallBack = callBack;
 
-  store.getItem('feeds').then(function(datafeeds) {
-    if (datafeeds != null) {
-        feeds = datafeeds.sort(function (a, b) {
-            return a.order - b.order;
-        });
-    }
+    store.getItem('feeds').then(function(datafeeds) {
+        if (datafeeds != null) {
+            feeds = datafeeds.sort(function (a, b) {
+                return a.order - b.order;
+            });
+        }
 
-    feeds.unshift(GetReadLaterFeed());
-    UpdateGroups();
-    getFeedsCallBack();
-  });
+        feeds.unshift(GetReadLaterFeed());
+        UpdateGroups();
+        getFeedsCallBack();
+    });
 }
 
 // as this project gets larger there will be upgrades to storage items this will help
@@ -236,10 +244,10 @@ function DoUpgrades() {
 
     // update the last version to now
     if (options.lastversion != manifest.version) {
-      options.lastversion = manifest.version;
-      listPromise.push(store.setItem('options', options));
-      //remove old system for readlater
-      store.removeItem('readlater').then(function() {}).catch(function(err) {});
+        options.lastversion = manifest.version;
+        listPromise.push(store.setItem('options', options));
+        //remove old system for readlater
+        store.removeItem('readlater').then(function() {}).catch(function(err) {});
     }
 
     resultPromise = Promise.allSettled(listPromise);
@@ -258,26 +266,26 @@ function CheckForUnreadStart(key) {
     checkingForUnread = true;
 
     if (key == null) {
-      if (checkForUnreadCounter < feeds.length) {
-        while ((checkForUnreadCounter < feeds.length) && (feeds[checkForUnreadCounter].id == allFeedsID)) {
-          checkForUnreadCounter++;
+        if (checkForUnreadCounter < feeds.length) {
+            while ((checkForUnreadCounter < feeds.length) && (feeds[checkForUnreadCounter].id == allFeedsID)) {
+                checkForUnreadCounter++;
+            }
         }
-      }
     }
 
     // keep timer going on "refresh"
     if (key == null) {
-      chrome.alarms.get('CheckForUnread', function(alarm) {
-        if (typeof alarm === 'undefined' || alarm.name !== 'CheckForUnread') {
-          if ((options.checkinterval == 0) || (options.checkinterval == null)) {
-            options.checkinterval = 60;
-          }
-          if (options.checkinterval < 3) {
-            options.checkinterval = 3;
-          }
-          chrome.alarms.create('CheckForUnread', {periodInMinutes: Number(options.checkinterval)});
-        }
-      });
+        chrome.alarms.get('CheckForUnread', function(alarm) {
+            if (typeof alarm === 'undefined' || alarm.name !== 'CheckForUnread') {
+                if ((options.checkinterval == 0) || (options.checkinterval == null)) {
+                    options.checkinterval = 60;
+                }
+                if (options.checkinterval < 3) {
+                    options.checkinterval = 3;
+                }
+                chrome.alarms.create('CheckForUnread', {periodInMinutes: Number(options.checkinterval)});
+            }
+        });
 
         if (viewerPort != null) {
             viewerPort.postMessage({type: "refreshallstarted"});
@@ -298,7 +306,7 @@ function CheckForUnread() {
 
     // initialize unread object if not setup yet
     if (unreadInfo == null) {
-      unreadInfo = { };
+        unreadInfo = { };
     }
     if (unreadInfo[feedID] == null) {
         unreadInfo[feedID] = {unreadtotal: 0, readitems: {}};
@@ -307,193 +315,193 @@ function CheckForUnread() {
     unreadInfo[feedID].unreadtotal = 0;
 
     if (feedID == readLaterFeedID) {
-          checkForUnreadCounter++;
-          if (checkForUnreadCounter < feeds.length) {
+        checkForUnreadCounter++;
+        if (checkForUnreadCounter < feeds.length) {
             if (feeds[checkForUnreadCounter].id === allFeedsID) {
-              checkForUnreadCounter++;
+                checkForUnreadCounter++;
             }
-          }
+        }
 
-          if (checkForUnreadCounter >= feeds.length || refreshFeed) {
-              CheckForUnreadComplete();
-          } else {
-              CheckForUnread();
-          }
+        if (checkForUnreadCounter >= feeds.length || refreshFeed) {
+            CheckForUnreadComplete();
+        } else {
+            CheckForUnread();
+        }
     }
     else {
-      var oldFeedInfoItems = [];
-      if (feedInfo[feedID] != undefined) {
-        if (feedInfo[feedID].items != undefined) {
-          for (var i = 0; i < feedInfo[feedID].items.length; i++) {
-            oldFeedInfoItems.push(feedInfo[feedID].items[i].itemID);
-          }
-        }
-      }
-
-      feedInfo[feedID] = {title: "", description: "", group: "", loading: true, items: [], error: ""};
-
-      if (viewerPort != null) {
-          viewerPort.postMessage({type: "feedupdatestarted", id: feedID, refreshFeed: refreshFeed, checkForUnreadCounter: checkForUnreadCounter, checkingForUnread: checkingForUnread});
-      }
-
-      try {
-        fetch(feeds[checkForUnreadCounter].url.replace(/feed:\/\//i, "http://"), {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'text/xml',
-            'Accept-Charset': 'utf-8'
-          },
-        })
-          .then(
-            function(response) {
-              if (!response.ok) {
-                console.log('Looks like there was a problem. Status Code: ' + response.status);
-                return;
-              }
-              status = response.status;
-              response.arrayBuffer().then(function(data) {
-                var decoder = new TextDecoder("UTF-8");
-                var doc = decoder.decode(data);
-                var encodeName = doc.substring(0, 100);
-                encodeName = encodeName.substring(encodeName.indexOf("encoding=") + ("encoding=").length, encodeName.indexOf("?>"));
-                encodeName = encodeName.replaceAll('\"', '');
-                encodeName = encodeName.replaceAll('"', '');
-                if (encodeName.replaceAll('-', '').toUpperCase() != "UTF8"){
-                  decoder = new TextDecoder(encodeName);
-                  doc = decoder.decode(data);
+        var oldFeedInfoItems = [];
+        if (feedInfo[feedID] != undefined) {
+            if (feedInfo[feedID].items != undefined) {
+                for (var i = 0; i < feedInfo[feedID].items.length; i++) {
+                    oldFeedInfoItems.push(feedInfo[feedID].items[i].itemID);
                 }
+            }
+        }
 
-                var previousUnreadtotal = unreadInfo[feedID].unreadtotal;
+        feedInfo[feedID] = {title: "", description: "", group: "", loading: true, items: [], error: ""};
 
-                if (status == 200) {
-                    if (doc) {
-                        var readItemCount = 0;
-                        var item = null;
-                        var entryID = null;
-                        var entryIDs = {};
-                        var entries = GetElementsByTagNameJS(doc, [], "entry", "item");
-                        var rootNode = GetElementByTagNameJS(doc, null, "feed", "rss", "rdf:RDF");
-                        var author = null;
-                        var name = null;
-                        var thumbnail = null;
-                        var thumbnailurl = null;
-                        var thumbnailtype = null;
-                        var thumbnailNode = null;
-                        var dummyDate = null;
-                        var keys = null
+        if (viewerPort != null) {
+            viewerPort.postMessage({type: "feedupdatestarted", id: feedID, refreshFeed: refreshFeed, checkForUnreadCounter: checkForUnreadCounter, checkingForUnread: checkingForUnread});
+        }
 
-                        if (rootNode != null) {
-                            keys = Object.keys(rootNode);
-                            if (keys[0].toUpperCase() == "FEED") {
-                                feedInfo[feedID].title = SearchTag(rootNode, null, ["TITLE"], 0);
-                                feedInfo[feedID].description = SearchTag(rootNode, null, ["SUBTITLE", "DESCRIPTION"], 0);
-                            } else {
-                                var channel = SearchTag(rootNode, null, ["CHANNEL"], 0);
-
-                                if (channel != null) {
-                                    feedInfo[feedID].title = SearchTag(channel, null, ["TITLE"], 0);
-                                    feedInfo[feedID].description = SearchTag(channel, null, ["DESCRIPTION", "SUBTITLE"], 0);
-                                }
-                            }
+        try {
+            fetch(feeds[checkForUnreadCounter].url.replace(/feed:\/\//i, "http://"), {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'text/xml',
+                    'Accept-Charset': 'utf-8'
+                },
+            })
+            .then(
+                function(response) {
+                    if (!response.ok) {
+                        console.log('Looks like there was a problem. Status Code: ' + response.status);
+                        return;
+                    }
+                    status = response.status;
+                    response.arrayBuffer().then(function(data) {
+                        var decoder = new TextDecoder("UTF-8");
+                        var doc = decoder.decode(data);
+                        var encodeName = doc.substring(0, 100);
+                        encodeName = encodeName.substring(encodeName.indexOf("encoding=") + ("encoding=").length, encodeName.indexOf("?>"));
+                        encodeName = encodeName.replaceAll('\"', '');
+                        encodeName = encodeName.replaceAll('"', '');
+                        if (encodeName.replaceAll('-', '').toUpperCase() != "UTF8"){
+                            decoder = new TextDecoder(encodeName);
+                            doc = decoder.decode(data);
                         }
 
-                        for (var e = 0; e < entries.length; e++) {
-                            item = {};
-                            item.title = CleanText2(SearchTag(entries[e], GetMessageText("backNoTitle"), ["TITLE"], 0));
-                            item.title = item.title.replaceAll("U+20AC", '€').replaceAll("&apos;", "'");
-                            item.date = CleanText2(SearchTag(entries[e], null, ["PUBDATE", "UPDATED", "DC:DATE", "DATE", "PUBLISHED"], 0)); // not sure if date is even needed anymore
-                            item.content = "";
-                            item.idOrigin = feedID;
-                            item.itemID = sha256(item.title + item.date);
-                            thumbnailurl = null;
-                            thumbnailtype = null;
+                        var previousUnreadtotal = unreadInfo[feedID].unreadtotal;
 
-                            // don't bother storing extra stuff past max.. only title for Mark All Read
-                            if (e <= feeds[checkForUnreadCounter].maxitems) {
-                                item.url = GetFeedLink(entries[e]);
+                        if (status == 200) {
+                            if (doc) {
+                                var readItemCount = 0;
+                                var item = null;
+                                var entryID = null;
+                                var entryIDs = {};
+                                var entries = GetElementsByTagNameJS(doc, [], "entry", "item");
+                                var rootNode = GetElementByTagNameJS(doc, null, "feed", "rss", "rdf:RDF");
+                                var author = null;
+                                var name = null;
+                                var thumbnail = null;
+                                var thumbnailurl = null;
+                                var thumbnailtype = null;
+                                var thumbnailNode = null;
+                                var dummyDate = null;
+                                var keys = null
 
-                                if (options.showfeedcontent) {
-                                    item.content = CleanText2(SearchTag(entries[e], null, ["CONTENT:ENCODED", "CONTENT"], 0)); // only guessing on just "content"
-                                }
-
-                                if ((item.content == "") || (item.content == null)) {
-                                    item.content = CleanText2(SearchTag(entries[e], null, ["DESCRIPTION", "SUMMARY"], 0));
-                                }
-                                item.content = item.content.replaceAll("U+20AC", '€').replaceAll("&apos;", "'");
-                                item.thumbnail = null;
-
-                                author = CleanText2(SearchTag(entries[e], null, ["AUTHOR", "DC:CREATOR", "CREATOR"], 0));
-                                thumbnail = SearchTag(entries[e], null, ["ENCLOSURE", "MEDIA:GROUP"], 0);
-                                if (thumbnail != null) {
-                                  keys = Object.keys(thumbnail);
-                                  for (var k = 0; k < thumbnail.length; k++) {
-                                    if (thumbnail[k].length > 0) {
-                                      if (thumbnail[k].constructor === Array) {
-                                        thumbnail = thumbnail[k];
-                                        break;
-                                      }
+                                if (rootNode != null) {
+                                    keys = Object.keys(rootNode);
+                                    if (keys[0].toUpperCase() == "FEED") {
+                                        feedInfo[feedID].title = SearchTag(rootNode, null, ["TITLE"], 0);
+                                        feedInfo[feedID].description = SearchTag(rootNode, null, ["SUBTITLE", "DESCRIPTION"], 0);
                                     } else {
-                                      delete thumbnail[k];
-                                    }
-                                  }
+                                        var channel = SearchTag(rootNode, null, ["CHANNEL"], 0);
 
-                                  keys = Object.keys(thumbnail);
-                                  var thumbtemp = [];
-                                  for (var k = 0; k < keys.length; k++)
-                                  {
-                                    thumbtemp[k] = thumbnail[keys[k]];
-                                  }
-                                  thumbnail = thumbtemp;
-
-                                  for (var k = 0; k < thumbnail.length; k++)
-                                  {
-                                    keys = Object.keys(thumbnail[k]);
-                                    var val = Object.values(thumbnail[k]);
-                                    for (var j = 0; j < keys.length; j++)
-                                    {
-                                      if (keys[j].toUpperCase() == "MEDIA:CONTENT") {
-                                        for (var n1 = 0; n1 < val[j].length; n1++)
-                                        {
-                                          var keys2 = Object.keys(val[j][n1]);
-                                          var val2 = Object.values(val[j][n1]);
-                                          for (var n2 = 0; n2 < keys2.length; n2++)
-                                          {
-                                            if (keys2[n2].toUpperCase() == "MEDIA:DESCRIPTION") {
-                                              if (CleanText(val2[n2]).includes("thumbnail"))
-                                              {
-                                                if (thumbnail[k][":@"] != undefined) {
-                                                  thumbnailurl = thumbnail[k][":@"]["url"];
-                                                  thumbnailtype = thumbnail[k][":@"]["medium"];
-                                                  if (thumbnailtype == "image") {
-                                                    item.thumbnail = "<img src=\"" + thumbnailurl + "\" class=\"thumbnail\">";
-                                                    break;
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                          if (thumbnailurl != null) {
-                                            break;
-                                          }
+                                        if (channel != null) {
+                                            feedInfo[feedID].title = SearchTag(channel, null, ["TITLE"], 0);
+                                            feedInfo[feedID].description = SearchTag(channel, null, ["DESCRIPTION", "SUBTITLE"], 0);
                                         }
                                     }
-                                    if (thumbnailurl != null) {
-                                      break;
-                                    }
-                                  }
-                                  if (thumbnailurl != null) {
-                                    break;
-                                  }
-                                }
                                 }
 
-                                if (author != null) {
-                                    item.author = author;
-                                    /*name = GetElementByTagNameJS(author, null, "name");
+                                for (var e = 0; e < entries.length; e++) {
+                                    item = {};
+                                    item.title = CleanText2(SearchTag(entries[e], GetMessageText("backNoTitle"), ["TITLE"], 0));
+                                    item.title = item.title.replaceAll("U+20AC", '€').replaceAll("&apos;", "'");
+                                    item.date = CleanText2(SearchTag(entries[e], null, ["PUBDATE", "UPDATED", "DC:DATE", "DATE", "PUBLISHED"], 0)); // not sure if date is even needed anymore
+                                    item.content = "";
+                                    item.idOrigin = feedID;
+                                    item.itemID = sha256(item.title + item.date);
+                                    thumbnailurl = null;
+                                    thumbnailtype = null;
 
-                                    if (name != null) {
-                                        item.author = GetNodeTextValue(name);
-                                    } else {
+                                    // don't bother storing extra stuff past max.. only title for Mark All Read
+                                    if (e <= feeds[checkForUnreadCounter].maxitems) {
+                                        item.url = GetFeedLink(entries[e]);
+
+                                        if (options.showfeedcontent) {
+                                            item.content = CleanText2(SearchTag(entries[e], null, ["CONTENT:ENCODED", "CONTENT"], 0)); // only guessing on just "content"
+                                        }
+
+                                        if ((item.content == "") || (item.content == null)) {
+                                            item.content = CleanText2(SearchTag(entries[e], null, ["DESCRIPTION", "SUMMARY"], 0));
+                                        }
+                                        item.content = item.content.replaceAll("U+20AC", '€').replaceAll("&apos;", "'");
+                                        item.thumbnail = null;
+
+                                        author = CleanText2(SearchTag(entries[e], null, ["AUTHOR", "DC:CREATOR", "CREATOR"], 0));
+                                        thumbnail = SearchTag(entries[e], null, ["ENCLOSURE", "MEDIA:GROUP"], 0);
+                                        if (thumbnail != null) {
+                                            keys = Object.keys(thumbnail);
+                                            for (var k = 0; k < thumbnail.length; k++) {
+                                                if (thumbnail[k].length > 0) {
+                                                    if (thumbnail[k].constructor === Array) {
+                                                        thumbnail = thumbnail[k];
+                                                        break;
+                                                    }
+                                                } else {
+                                                    delete thumbnail[k];
+                                                }
+                                            }
+
+                                            keys = Object.keys(thumbnail);
+                                            var thumbtemp = [];
+                                            for (var k = 0; k < keys.length; k++)
+                                            {
+                                                thumbtemp[k] = thumbnail[keys[k]];
+                                            }
+                                            thumbnail = thumbtemp;
+
+                                            for (var k = 0; k < thumbnail.length; k++)
+                                            {
+                                                keys = Object.keys(thumbnail[k]);
+                                                var val = Object.values(thumbnail[k]);
+                                                for (var j = 0; j < keys.length; j++)
+                                                {
+                                                    if (keys[j].toUpperCase() == "MEDIA:CONTENT") {
+                                                        for (var n1 = 0; n1 < val[j].length; n1++)
+                                                        {
+                                                            var keys2 = Object.keys(val[j][n1]);
+                                                            var val2 = Object.values(val[j][n1]);
+                                                            for (var n2 = 0; n2 < keys2.length; n2++)
+                                                            {
+                                                                if (keys2[n2].toUpperCase() == "MEDIA:DESCRIPTION") {
+                                                                    if (CleanText(val2[n2]).includes("thumbnail"))
+                                                                    {
+                                                                        if (thumbnail[k][":@"] != undefined) {
+                                                                            thumbnailurl = thumbnail[k][":@"]["url"];
+                                                                            thumbnailtype = thumbnail[k][":@"]["medium"];
+                                                                            if (thumbnailtype == "image") {
+                                                                                item.thumbnail = "<img src=\"" + thumbnailurl + "\" class=\"thumbnail\">";
+                                                                                break;
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                            if (thumbnailurl != null) {
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                    if (thumbnailurl != null) {
+                                                        break;
+                                                    }
+                                                }
+                                                if (thumbnailurl != null) {
+                                                    break;
+                                                }
+                                            }
+                                        }
+
+                                        if (author != null) {
+                                            item.author = author;
+                                            /*name = GetElementByTagNameJS(author, null, "name");
+
+                                            if (name != null) {
+                                            item.author = GetNodeTextValue(name);
+                                        } else {
                                         item.author = GetNodeTextValue(author);
                                     }*/
                                 } else {   // for some reason the author gets funky with floats if it's empty..  so whatever
@@ -503,10 +511,10 @@ function CheckForUnread() {
                             dummyDate = GetDate(item.date);
                             if(dummyDate != null)
                             {
-                              item.order = dummyDate.getTime() - referenceDate;
+                                item.order = dummyDate.getTime() - referenceDate;
                             }
                             else {
-                              item.order = referenceDate;
+                                item.order = referenceDate;
                             }
 
                             feedInfo[feedID].items.push(item);
@@ -537,17 +545,17 @@ function CheckForUnread() {
                 oldFeedInfoItems
 
                 for (var i = 0; i < feedInfo[feedID].items.length; i++) {
-                  if (!oldFeedInfoItems.includes(feedInfo[feedID].items[i].itemID)) {
-                    newNotif = true;
-                    break;
-                  }
+                    if (!oldFeedInfoItems.includes(feedInfo[feedID].items[i].itemID)) {
+                        newNotif = true;
+                        break;
+                    }
                 }
 
                 checkForUnreadCounter++;
                 if (checkForUnreadCounter < feeds.length) {
-                  if (feeds[checkForUnreadCounter].id === allFeedsID) {
-                    checkForUnreadCounter++;
-                  }
+                    if (feeds[checkForUnreadCounter].id === allFeedsID) {
+                        checkForUnreadCounter++;
+                    }
                 }
 
                 doc = null;
@@ -555,43 +563,43 @@ function CheckForUnread() {
                 feedInfo[feedID].loading = false;
 
                 waitPromise(promiseCheckForUnread).then(function () {
-                  if (viewerPort != null) {
-                      viewerPort.postMessage({type: "feedupdatecomplete", id: feedID});
-                  }
+                    if (viewerPort != null) {
+                        viewerPort.postMessage({type: "feedupdatecomplete", id: feedID});
+                    }
 
-                  if (checkForUnreadCounter >= feeds.length || refreshFeed) {
-                      CheckForUnreadComplete();
-                  } else {
-                      CheckForUnread();
-                  }
+                    if (checkForUnreadCounter >= feeds.length || refreshFeed) {
+                        CheckForUnreadComplete();
+                    } else {
+                        CheckForUnread();
+                    }
                 });
-              });
-            }
-          )
-          .catch(function(err) {
-            feedInfo[feedID].loading = false;
-            feedInfo[feedID].error = 'Fetch Error :-S', err.message;
-            //console.log('Fetch Error :-S', err);
-          });
-      } catch (err) {
-          console.log('Error :-S', err);
-      }
-  }
+            });
+        }
+    )
+    .catch(function(err) {
+        feedInfo[feedID].loading = false;
+        feedInfo[feedID].error = 'Fetch Error :-S', err.message;
+        //console.log('Fetch Error :-S', err);
+    });
+} catch (err) {
+    console.log('Error :-S', err);
+}
+}
 }
 
 // ran after checking for unread is done
 function CheckForUnreadComplete() {
-  checkingForUnread = false;
-  refreshFeed = false;
+    checkingForUnread = false;
+    refreshFeed = false;
     if (viewerPort != null && !refreshFeed) {
         viewerPort.postMessage({type: "refreshallcomplete"});
     }
 
     for (var i = 0; i < feeds.length; i++) {
-      if (feedInfo[feeds[i].id] != undefined)
-      {
-        SortByDate(feedInfo[feeds[i].id].items);
-      }
+        if (feedInfo[feeds[i].id] != undefined)
+        {
+            SortByDate(feedInfo[feeds[i].id].items);
+        }
     }
 
     UpdateGroups();
@@ -621,7 +629,7 @@ function GetFeedLink(node) {
 
     for (var i = 0 ; i < links.length ; i++)
     {
-      links[i][0] = CleanText(links[i][0]);
+        links[i][0] = CleanText(links[i][0]);
     }
 
     if (links.length == 0) {
@@ -635,9 +643,9 @@ function GetFeedLink(node) {
         lien = guids[0];
         if ((guids.length > 1) && (lien.length > 0))
         {
-          if ((guids[1]["isPermaLink"] == "false") && (lien.substring(0, 8) != "https://") && (lien.substring(0, 7) != "http://")) {
-              return "";
-          }
+            if ((guids[1]["isPermaLink"] == "false") && (lien.substring(0, 8) != "https://") && (lien.substring(0, 7) != "http://")) {
+                return "";
+            }
         }
         return lien;
     }
@@ -646,21 +654,21 @@ function GetFeedLink(node) {
         // in atom feeds alternate is the default so if something else is there then skip
         lien = links[i];
         if (lien[0] != null) {
-          if (lien[1] == undefined) {
-            return lien[0];
-          }
-          else {
-              if ((lien[1]["rel"] == "alternate") || (lien[1]["rel"] == undefined)) {
+            if (lien[1] == undefined) {
                 return lien[0];
-              }
-          }
+            }
+            else {
+                if ((lien[1]["rel"] == "alternate") || (lien[1]["rel"] == undefined)) {
+                    return lien[0];
+                }
+            }
         }
     }
     return ""; // has links, but I can't read them?!
 }
 
 function GetAllFeedsGroup() {
-  return CreateNewGroup(GetMessageText("backAllFeeds"), "", -8, allFeedsID);
+    return CreateNewGroup(GetMessageText("backAllFeeds"), "", -8, allFeedsID);
 }
 
 // helper function for creating new feeds
@@ -670,14 +678,14 @@ function CreateNewGroup(title, group, order, id) {
         id = GetRandomID();
     }
     if (order == null) {
-      if (groups.length == 0) {
-        order = 1;
-      } else {
-        order = Math.max.apply(Math, groups.map(function(o) { return o.order; })) + 1;
-      }
-      if (order < 1) {
-        order = 1;
-      }
+        if (groups.length == 0) {
+            order = 1;
+        } else {
+            order = Math.max.apply(Math, groups.map(function(o) { return o.order; })) + 1;
+        }
+        if (order < 1) {
+            order = 1;
+        }
     }
     url = chrome.runtime.getURL("group.html");
     maxitems = 99999;
@@ -686,80 +694,80 @@ function CreateNewGroup(title, group, order, id) {
 }
 
 function UpdateGroups() {
-  var oldgroups = groups;
-  var oldgroupindex;
-  groups = [];
-  groupInfo = [];
-  if (options.showallfeeds == true) {
-    groups.push(GetAllFeedsGroup());
-  }
-  for (var i = 0; i < feeds.length; i++) {
-      if ((feeds[i].id != readLaterFeedID) && (feeds[i].group != "")) {
-        var filteredGroup = groups.find(function (el) {
-          return el.group == feeds[i].group;
-        });
-        if (filteredGroup == null) {
-          oldgroupindex = findWithAttr(oldgroups, 'group', feeds[i].group);
-          if (oldgroupindex == -1) {
-            groups.push(CreateNewGroup(feeds[i].group, feeds[i].group, null, null));
-          } else {
-            groups.push(oldgroups[oldgroupindex]);
-          }
-        }
-      }
-  }
-  for (var i = 0; i < groups.length; i++) {
-    if (groups[i].id != allFeedsID) {
-      GetGroupItems(i, groups[i].id, groups[i].title, groups[i].title);
+    var oldgroups = groups;
+    var oldgroupindex;
+    groups = [];
+    groupInfo = [];
+    if (options.showallfeeds == true) {
+        groups.push(GetAllFeedsGroup());
     }
-  }
+    for (var i = 0; i < feeds.length; i++) {
+        if ((feeds[i].id != readLaterFeedID) && (feeds[i].group != "")) {
+            var filteredGroup = groups.find(function (el) {
+                return el.group == feeds[i].group;
+            });
+            if (filteredGroup == null) {
+                oldgroupindex = findWithAttr(oldgroups, 'group', feeds[i].group);
+                if (oldgroupindex == -1) {
+                    groups.push(CreateNewGroup(feeds[i].group, feeds[i].group, null, null));
+                } else {
+                    groups.push(oldgroups[oldgroupindex]);
+                }
+            }
+        }
+    }
+    for (var i = 0; i < groups.length; i++) {
+        if (groups[i].id != allFeedsID) {
+            GetGroupItems(i, groups[i].id, groups[i].title, groups[i].title);
+        }
+    }
 
-  for (var i = 0; i < groups.length; i++) {
-    groupInfo[groups[i].id].loading = false;
-    SortByDate(groupInfo[groups[i].id].items);
-  }
+    for (var i = 0; i < groups.length; i++) {
+        groupInfo[groups[i].id].loading = false;
+        SortByDate(groupInfo[groups[i].id].items);
+    }
 }
 
 function GetGroupItems(groupIndex, id, title, description) {
-  var info, item;
-  var filteredFeeds = feeds.filter(function (el) {
-    return (el.group == groups[groupIndex].group) && (el.id != readLaterFeedID);
-  });
-  if (filteredFeeds != null) {
-    if (groupInfo[id] == null) {
-      groupInfo[id] = {title: title, description: description, group: "", loading: true, items: [], error: ""};
-    }
-    if ((options.showallfeeds == true) && (id != allFeedsID)) {
-      if (groupInfo[allFeedsID] == null) {
-        groupInfo[allFeedsID] = {title: GetMessageText("backAllFeeds"), description: GetMessageText("backAllFeeds"), group: "", loading: true, items: [], error: ""};
-      }
-    }
-    for (var i = 0; i < filteredFeeds.length; i++) {
-      if (feedInfo[filteredFeeds[i].id] != null) {
-        info = feedInfo[filteredFeeds[i].id].items;
-        for (var j = 0; j < info.length; j++) {
-          item = GetNewItem(info[j].title, info[j].date, info[j].order, info[j].content, info[j].idOrigin, info[j].itemID, info[j].url, info[j].author, info[j].thumbnail);
-          groupInfo[id].items.push(item);
-          if ((options.showallfeeds == true) && (id != allFeedsID)) {
-            groupInfo[allFeedsID].items.push(item);
-          }
+    var info, item;
+    var filteredFeeds = feeds.filter(function (el) {
+        return (el.group == groups[groupIndex].group) && (el.id != readLaterFeedID);
+    });
+    if (filteredFeeds != null) {
+        if (groupInfo[id] == null) {
+            groupInfo[id] = {title: title, description: description, group: "", loading: true, items: [], error: ""};
         }
-      }
+        if ((options.showallfeeds == true) && (id != allFeedsID)) {
+            if (groupInfo[allFeedsID] == null) {
+                groupInfo[allFeedsID] = {title: GetMessageText("backAllFeeds"), description: GetMessageText("backAllFeeds"), group: "", loading: true, items: [], error: ""};
+            }
+        }
+        for (var i = 0; i < filteredFeeds.length; i++) {
+            if (feedInfo[filteredFeeds[i].id] != null) {
+                info = feedInfo[filteredFeeds[i].id].items;
+                for (var j = 0; j < info.length; j++) {
+                    item = GetNewItem(info[j].title, info[j].date, info[j].order, info[j].content, info[j].idOrigin, info[j].itemID, info[j].url, info[j].author, info[j].thumbnail);
+                    groupInfo[id].items.push(item);
+                    if ((options.showallfeeds == true) && (id != allFeedsID)) {
+                        groupInfo[allFeedsID].items.push(item);
+                    }
+                }
+            }
+        }
     }
-  }
 }
 
 function GetNewItem(title, date, order, content, idOrigin, itemID, url, author, thumbnail) {
-  return {title: title, date: date, order: order, content: content, idOrigin: idOrigin, itemID: itemID, url: url, author: author, thumbnail: thumbnail};
+    return {title: title, date: date, order: order, content: content, idOrigin: idOrigin, itemID: itemID, url: url, author: author, thumbnail: thumbnail};
 }
 
 function CalcGroupCountUnread(key) {
     var filteredFeeds = GetFeedsFilterByGroup(key);
     var count = 0;
     for (var i = 0; i < filteredFeeds.length; i++) {
-      if (unreadInfo[filteredFeeds[i].id] != null) {
-        count += unreadInfo[filteredFeeds[i].id].unreadtotal;
-      }
+        if (unreadInfo[filteredFeeds[i].id] != null) {
+            count += unreadInfo[filteredFeeds[i].id].unreadtotal;
+        }
     }
     return count;
 }
