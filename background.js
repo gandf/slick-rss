@@ -103,7 +103,7 @@ function ExternalRequest(request, sender, sendResponse) {
         var resultPromise = null;
 
         for (var i = 0; i < feeds.length; i++) {
-            order = parseInt(feeds[i].order);
+            order = parseInt(feeds[i].order, 10);
 
             if (order > maxOrder) {
                 maxOrder = order;
@@ -168,9 +168,42 @@ function ExternalRequest(request, sender, sendResponse) {
     }
 
     if (request.type == "setUnreadInfo") {
-        store.setItem('unreadinfo', request.data);
-        unreadInfo = request.data;
-        sendResponse({});
+        if (request.data != undefined) {
+            var listUnread = GetObjectFromStr(request.data);
+            var keys = Object.keys(listUnread);
+            var updated = false;
+            var k;
+            for (var i = 0; i < keys.length; i++) {
+                k = listUnread[keys[i]].id;
+                unreadInfo[k].readitems[listUnread[keys[i]].key] = new Date().getTime() + 5184000000;
+                if (unreadInfo[k].unreadtotal > 0) {
+                    unreadInfo[k].unreadtotal--;
+                }
+                updated = true;
+            }
+            if (updated) {
+                store.setItem('unreadinfo', unreadInfo);
+            }
+        }
+        sendResponse(JSON.stringify(unreadInfo));
+        return;
+    }
+
+    if (request.type == "unsetUnreadInfo") {
+        if (request.data != undefined) {
+            var listUnread = GetObjectFromStr(request.data);
+            var keys = Object.keys(listUnread);
+            var updated = false;
+            for (var i = 0; i < keys.length; i++) {
+                delete unreadInfo[listUnread[keys[i]].id].readitems[listUnread[keys[i]].key];
+                unreadInfo[listUnread[keys[i]].id].unreadtotal++;
+                updated = true;
+            }
+            if (updated) {
+                store.setItem('unreadinfo', unreadInfo);
+            }
+        }
+        sendResponse(JSON.stringify(unreadInfo));
         return;
     }
 
@@ -195,7 +228,7 @@ function ExternalRequest(request, sender, sendResponse) {
     }
 
     if (request.type == "getFeedsAndGroupsInfo") {
-        sendResponse(JSON.stringify({"feeds": GetStrFromObject(feeds), "feedInfo": GetStrFromObject(feedInfo), "groups": GetStrFromObject(groups), "groupInfo": GetStrFromObject(groupInfo)}));
+        sendResponse(JSON.stringify({"feeds": GetStrFromObject(feeds), "feedInfo": GetStrFromObject(feedInfo), "groups": GetStrFromObject(groups), "groupInfo": GetStrFromObject(groupInfo), "unreadInfo": GetStrFromObject(unreadInfo)}));
         return;
     }
 
@@ -253,6 +286,43 @@ function DoUpgrades() {
         listPromise.push(store.setItem('options', options));
         //remove old system for readlater
         store.removeItem('readlater').then(function() {}).catch(function(err) {});
+
+        listPromise.push(store.getItem('feeds').then(function(datafeeds) {
+            if (datafeeds != null) {
+                keys = Object.keys(datafeeds);
+                var feedsToChange = {};
+                var changed = false;
+                for (var i = 0; i < keys.length; i++) {
+                    if (parseInt(datafeeds[keys[i]].id) < 1000000000) {
+                        feedsToChange.push({key: keys[i], original: datafeeds[keys[i]].id, final: GetRandomID()});
+                    }
+                }
+                for (var i = 0; i < feedsToChange.length; i++) {
+                    datafeeds[keys[i]].id = feedsToChange[i].final;
+                    changed = true;
+                }
+                feeds = datafeeds;
+                if (changed) {
+                    listPromise.push(store.setItem('feeds', feeds));
+                    listPromise.push(store.getItem('unreadinfo').then(function(datareadinfo) {
+                        if (datareadinfo != null) {
+                            changed = false;
+                            for (var i = 0; i < feedsToChange.length; i++) {
+                                if (datareadinfo[feedsToChange[i].original] != undefined) {
+                                    datareadinfo[feedsToChange[i].final] = datareadinfo[feedsToChange[i].original];
+                                    delete datareadinfo[feedsToChange[i].original];
+                                    changed = true;
+                                }
+                            }
+                            if (changed) {
+                                unreadInfo = datareadinfo;
+                                listPromise.push(store.setItem('unreadinfo', unreadInfo));
+                            }
+                        }
+                    }));
+                }
+            }
+        }));
     }
 
     resultPromise = Promise.allSettled(listPromise);
@@ -310,10 +380,10 @@ function CheckForUnread() {
     var status;
 
     // initialize unread object if not setup yet
-    if (unreadInfo == null) {
+    if (unreadInfo == undefined) {
         unreadInfo = { };
     }
-    if (unreadInfo[feedID] == null) {
+    if (unreadInfo[feedID] == undefined) {
         unreadInfo[feedID] = {unreadtotal: 0, readitems: {}};
     }
 
@@ -511,14 +581,18 @@ function CheckForUnread() {
                             }
 
                             // count read that are in current feed
-                            for (var key in unreadInfo[feedID].readitems) {
-                                if (entryIDs[key] == null) {
-                                    // if the read item isn't in the current feed and it's past it's expiration date, nuke it
-                                    if (now > new Date(unreadInfo[feedID].readitems[key])) {
-                                        delete unreadInfo[feedID].readitems[key];
+                            if ((unreadInfo[feedID] == undefined) || (unreadInfo[feedID] == null)) {
+                                unreadInfo[feedID] = {unreadtotal: 0, readitems: {}};
+                            } else {
+                                for (var key in unreadInfo[feedID].readitems) {
+                                    if (entryIDs[key] == null) {
+                                        // if the read item isn't in the current feed and it's past it's expiration date, nuke it
+                                        if (now > new Date(unreadInfo[feedID].readitems[key])) {
+                                            delete unreadInfo[feedID].readitems[key];
+                                        }
+                                    } else {
+                                        readItemCount++;
                                     }
-                                } else {
-                                    readItemCount++;
                                 }
                             }
                             unreadInfo[feedID].unreadtotal = entries.length - readItemCount;

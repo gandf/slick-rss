@@ -1,5 +1,3 @@
-var isServiceWorker = true;
-
 function CleanText2(text)
 {
     if ((text == undefined) || (text == null))

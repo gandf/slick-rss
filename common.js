@@ -346,7 +346,7 @@ function SortByDate(items) {
     return items;
   }
   return items.sort(function(a, b) {
-    return (parseInt(b["order"]) - parseInt(a["order"]));
+    return (parseInt(b["order"], 10) - parseInt(a["order"], 10));
     });
 }
 
@@ -424,19 +424,14 @@ function UpdateUnreadBadge() {
 }
 
 function PlayNotificationSound() {
-  if (options.playSoundNotif) {
-    if (!isServiceWorker) {
-        var audio = new Audio('Glisten.ogg');
-        audio.play();
-    } else {
-      if (viewerPort != null) {
-          viewerPort.postMessage({type: "playSound"});
-      }
-      else {
-        chrome.windows.create({url: chrome.runtime.getURL("notify.html"), width: 10, top: 1, left: 1, height: 1, focused: false, type: "popup"});
-      }
+    if (options.playSoundNotif) {
+        if (viewerPort != null) {
+            viewerPort.postMessage({type: "playSound"});
+        }
+        else {
+          chrome.windows.create({url: chrome.runtime.getURL("notify.html"), width: 10, top: 1, left: 1, height: 1, focused: false, type: "popup"});
+        }
     }
-  }
 }
 
 // since the key for unread is the feed id, it's possible that you removed some, as such we should update and clean house

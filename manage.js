@@ -29,7 +29,7 @@ function Add()
 
 	for(feedKey in feeds)
 	{
-		itemOrder = parseInt(feeds[feedKey].order);
+		itemOrder = parseInt(feeds[feedKey].order, 10);
 
 		if(itemOrder > maxOrder)
 		{
@@ -255,7 +255,7 @@ function ShowFeeds()
 			if (feeds[feedKey].id != readLaterFeedID)
 			{
 				AddRow(feedKey);
-				itemOrder = parseInt(feeds[feedKey].order);
+				itemOrder = parseInt(feeds[feedKey].order, 10);
 
 				if(itemOrder > maxOrder)
 				{

@@ -81,7 +81,7 @@ function Save()
 		return;
 	}
 
-	options.maxitems = parseInt(maxItems);
+	options.maxitems = parseInt(maxItems, 10);
 	options.darkmode = (document.getElementById("darkMode").selectedIndex == 1);
 	options.showdescriptions = (document.getElementById("showDescriptions").selectedIndex == 1);
 	options.showfeedimages = (document.getElementById("showFeedImages").selectedIndex == 1);
@@ -101,7 +101,7 @@ function Save()
 	options.loadlinksinbackground = (document.getElementById("loadLinksInBackground").selectedIndex == 1);
 	options.showallfeeds = (document.getElementById("showAllFeeds").selectedIndex == 1);
 	options.usethumbnail = (document.getElementById("useThumbnail").selectedIndex == 1);
-	options.feedsmaxheight = parseInt(feedsMaxHeight);
+	options.feedsmaxheight = parseInt(feedsMaxHeight, 10);
 
 	store.setItem('options', options);
 

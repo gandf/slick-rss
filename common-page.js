@@ -1,5 +1,3 @@
-var isServiceWorker = false;
-
 function activeDarkMode() {
     var keys = Object.keys(document.getElementsByTagName("link"));
     for (var i = 0; i < keys.length; i++) {
@@ -48,7 +46,7 @@ function GetFeedInfoItem(feedID, itemIndex) {
     var feedGroupInfo = feedInfo[feedID];
 
     if (feedGroupInfo == null) {
-        feedGroupInfo = feedInfo[parseInt(groupInfo[feedID].items[itemIndex].idOrigin, 10)].items.find(function (el) {
+        feedGroupInfo = feedInfo[groupInfo[feedID].items[itemIndex].idOrigin].items.find(function (el) {
             return (el.itemID == groupInfo[feedID].items[itemIndex].itemID);
         });
         return feedGroupInfo;
@@ -81,4 +79,29 @@ function loadReadlaterInfo() {
             }
         }
     });
+}
+
+function GetUnreadCount(feedID){
+    var count = 0;
+    if (unreadInfo[feedID] != undefined) {
+        count = unreadInfo[feedID].unreadtotal;
+    }
+
+    if (count == 0) {
+        if (unreadInfo[feedID] == undefined) {
+            if (feedInfo[feedID] != undefined) {
+                if (feedInfo[feedID].items.length > 0) {
+                    count = feedInfo[feedID].items.length;
+                }
+            }
+        } else {
+            if (unreadInfo[feedID].readitems.length == 0) {
+                if (feedInfo[feedID] != undefined) {
+                    if (feedInfo[feedID].items.length > 0) {
+                        count = feedInfo[feedID].items.length;
+                    }
+                }
+            }
+        }
+    }
 }
