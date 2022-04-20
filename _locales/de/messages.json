@@ -21,13 +21,13 @@
     "message": "A title is required.  Name it something useful like 'My Awesome Gaming News Feed'."
   },
   "manageAlertUrl": {
-    "message": "A URL is required.  It's the full HTTP path to your feed."
+    "message": "A URL is required. It's the full HTTP path to your feed."
   },
   "manageAlertMaxItemsEmpty": {
-    "message": "Max items is required.  It's the max number of items you want me to show you for this feed."
+    "message": "Max items is required. It's the max number of items you want me to show you for this feed."
   },
   "manageAlertMaxItemsZero": {
-    "message": "Ha ha funny person.  You need at least 1 max item in order to show you a feed."
+    "message": "Ha ha funny person. You need at least 1 max item in order to show you a feed."
   },
   "manageAlertMaxItemsNotItem1": {
     "message": "Very funny, you and I both know '"
@@ -36,7 +36,7 @@
     "message": "' isn't a value max item number."
   },
   "manageAlertOrder": {
-    "message": "Order is required.  It's the order I'll display your feeds in the viewer."
+    "message": "Order is required. It's the order I'll display your feeds in the viewer."
   },
   "manageAlertOrderNotItem1": {
     "message": "Very funny, you and I both know '"

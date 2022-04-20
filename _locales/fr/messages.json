@@ -92,9 +92,6 @@
   "optionFeedManagement": {
     "message": "Gestion flux"
   },
-  "optionBoolmarkFolder": {
-    "message": "Dossier de signet"
-  },
   "optionColumns": {
     "message": "Colonnes"
   },

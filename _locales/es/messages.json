@@ -3,205 +3,205 @@
     "message": "Slick RSS by users"
   },
   "appDesc": {
-    "message": "A full featured RSS reader that's fully contained within the browser."
+    "message": "Un lector de RSS con todas las funciones que está completamente contenido dentro del navegador."
   },
   "exportTitle": {
-    "message": "Slick RSS : Export Feeds"
+    "message": "Slick RSS : Exportar fuentes"
   },
   "exportMainForm": {
-    "message": "Here is an OPML export of your feed data."
+    "message": "Aquí hay una exportación OPML de sus datos de alimentación."
   },
   "manageTitle": {
-    "message": "Slick RSS : Manage Feeds"
+    "message": "Slick RSS : Administrar fuentes"
   },
   "manageManageFeeds": {
-    "message": "Manage Feeds"
+    "message": "Administrar fuentes"
   },
   "manageAlertTitle": {
-    "message": "A title is required.  Name it something useful like 'My Awesome Gaming News Feed'."
+    "message": "Se requiere un título. Nómbralo con algo útil como 'Mis impresionantes noticias de juegos'."
   },
   "manageAlertUrl": {
-    "message": "A URL is required.  It's the full HTTP path to your feed."
+    "message": "Se requiere una URL. Es la ruta HTTP completa a tu feed"."
   },
   "manageAlertMaxItemsEmpty": {
-    "message": "Max items is required.  It's the max number of items you want me to show you for this feed."
+    "message": "Se requiere un máximo de artículos. Es el número máximo de artículos que quieres que te muestre para este feed."
   },
   "manageAlertMaxItemsZero": {
-    "message": "Ha ha funny person.  You need at least 1 max item in order to show you a feed."
+    "message": "Ja, ja, persona divertida. Necesita al menos 1 elemento máximo para mostrarle un feed."
   },
   "manageAlertMaxItemsNotItem1": {
-    "message": "Very funny, you and I both know '"
+    "message": "Muy divertida, tú y yo sabemos '"
   },
   "manageAlertMaxItemsNotItem2": {
-    "message": "' isn't a value max item number."
+    "message": "' no es un número de artículo de valor máximo."
   },
   "manageAlertOrder": {
-    "message": "Order is required.  It's the order I'll display your feeds in the viewer."
+    "message": "Se requiere orden. Es el orden en el que mostraré tus feeds en el visor."
   },
   "manageAlertOrderNotItem1": {
-    "message": "Very funny, you and I both know '"
+    "message": "Muy divertida, tú y yo sabemos '"
   },
   "manageAlertOrderNotItem2": {
-    "message": "' isn't a value order."
+    "message": "' no es una orden de valor."
   },
   "manageName": {
-    "message": "Name"
+    "message": "Nombre"
   },
   "manageUrl": {
     "message": "URL"
   },
   "manageGroup": {
-    "message": "Group"
+    "message": "Grupo"
   },
   "manageMaxItems": {
-    "message": "Max Items"
+    "message": "Artículos máximos"
   },
   "manageOrder": {
-    "message": "Order"
+    "message": "Pedido"
   },
   "importForm": {
-    "message": "Copy and paste your OPML file contents into the textbox below."
+    "message": "Copie y pegue el contenido de su archivo OPML en el cuadro de texto a continuación."
   },
   "importImportFeeds": {
-    "message": "Import Feeds"
+    "message": "Importar fuentes"
   },
   "importTitle": {
-    "message": "Slick RSS : Import Feeds"
+    "message": "Slick RSS : Importar fuentes"
   },
   "importAlertNothing": {
-    "message": "Nothing to import"
+    "message": "Nada que importar"
   },
   "importAlertNoOutlineRss": {
-    "message": "No outline nodes of type 'rss' were found to import."
+    "message": "No se encontraron nodos de contorno de tipo 'rss' para importar."
   },
   "importAlertImportedFeeds1": {
-    "message": "Imported "
+    "message": "Importada "
   },
   "importAlertImportedFeeds2": {
-    "message": " feeds."
+    "message": " fuentes."
   },
   "exportLinkTitle": {
-    "message": "Slick RSS OPML Export"
+    "message": "Slick RSS Exportación OPML"
   },
   "optionTitle": {
-    "message": "Slick RSS : Options"
+    "message": "Slick RSS : Opciones"
   },
   "optionFeedBehavior": {
-    "message": "Feed Behavior Options"
+    "message": "Opciones de comportamiento de fuentes"
   },
   "optionFeedManagement": {
-    "message": "Feed management"
+    "message": "Fuentes administración"
   },
   "optionColumns": {
-    "message": "Columns"
+    "message": "Columnas"
   },
   "optionImportFeeds": {
-    "message": "Import Feeds"
+    "message": "Importar fuentes"
   },
   "optionExportFeeds": {
-    "message": "Export Feeds"
+    "message": "Exportar fuentes"
   },
   "optionDefMaxItems": {
-    "message": "Default max items"
+    "message": "Elementos máximos predeterminados"
   },
   "optionFeedDisplay": {
-    "message": "Feed Display Options"
+    "message": "Fuentes Opciones de pantalla"
   },
   "optionDarkMode": {
-    "message": "Dark mode"
+    "message": "Modo oscuro"
   },
   "optionDescription": {
-    "message": "Description"
+    "message": "Descripción"
   },
   "optionImages": {
-    "message": "Images"
+    "message": "Imágenes"
   },
   "optionObjects": {
-    "message": "Objects (like movies)"
+    "message": "Objetos (como películas)"
   },
   "optionIFrames": {
     "message": "IFrames"
   },
   "optionLoadInBack": {
-    "message": "Load links in background"
+    "message": "Cargar enlaces en segundo plano"
   },
   "optionShowAllInOne": {
-    "message": "Show all feeds in one"
+    "message": "Mostrar todos los Fuentes en uno"
   },
   "optionShowOnlySummary": {
-    "message": "Show only summary"
+    "message": "Mostrar solo resumen"
   },
   "optionShowFeedContent": {
-    "message": "Show feed content (if available)"
+    "message": "Mostrar contenido del fuentes (si está disponible)"
   },
   "optionContent": {
-    "message": "Content"
+    "message": "Contenido"
   },
   "optionDateFormat": {
-    "message": "Date format"
+    "message": "Formato de fecha"
   },
   "optionDone": {
-    "message": "Done"
+    "message": "Hecho"
   },
   "optionGMT": {
-    "message": "Makes the output use GMT. (Otherwise local)"
+    "message": "Hace que la salida use GMT. (De lo contrario local)"
   },
   "optionY4": {
-    "message": "4 digit year"
+    "message": "año de 4 dígitos"
   },
   "optionY2": {
-    "message": "2 digit year"
+    "message": "año de 2 dígitos"
   },
   "optionMfullText": {
-    "message": "Full text month"
+    "message": "Mes de texto completo"
   },
   "optionM3Letters": {
-    "message": "3 letter month"
+    "message": "mes de 3 letras"
   },
   "optionM0": {
-    "message": "Zero padded month"
+    "message": "Mes rellenado con ceros"
   },
   "optionM": {
-    "message": "Month"
+    "message": "Mes"
   },
   "optionDWithSuffix": {
-    "message": "The day with suffix"
+    "message": "El día con sufijo"
   },
   "optionD0": {
-    "message": "Zero padded day"
+    "message": "Día cero acolchado"
   },
   "optionD": {
-    "message": "Day"
+    "message": "Día"
   },
   "optionH0": {
-    "message": "Zero padded hours"
+    "message": "Cero horas rellenas"
   },
   "optionH": {
-    "message": "Hours"
+    "message": "Horas"
   },
   "optionH012": {
-    "message": "Hours in zero padded 12 hour format"
+    "message": "Horas en formato de 12 horas rellenado con ceros"
   },
   "optionH12": {
-    "message": "The hour in 12 hour format"
+    "message": "La hora en formato de 12 horas"
   },
   "optionMin0": {
-    "message": "Zero padded minutes"
+    "message": "Cero minutos rellenados"
   },
   "optionM": {
-    "message": "Minutes"
+    "message": "Minutos"
   },
   "optionS0": {
-    "message": "Zero padded seconds"
+    "message": "Cero segundos acolchados"
   },
   "optionS": {
-    "message": "Seconds"
+    "message": "Segundos"
   },
   "optionWFullText": {
-    "message": "Full text weekday"
+    "message": "Día de la semana de texto completo"
   },
   "optionW3": {
-    "message": "3 letter weekday"
+    "message": "Día de la semana de 3 letras"
   },
   "optionAM": {
     "message": "AM/PM"
@@ -210,55 +210,55 @@
     "message": "GitHub URL:"
   },
   "optionFeedUnread": {
-    "message": "Feed Unread Options"
+    "message": "Fuentes Opciones no leídas"
   },
   "optionMinutes": {
-    "message": " minutes"
+    "message": " minutos"
   },
   "optionSecondDisabled": {
-    "message": " seconds (0 = disabled)"
+    "message": " segundos (0 = desactivada)"
   },
   "optionMarkAllRead": {
-    "message": "Mark all read after"
+    "message": "Marcar todo leído después"
   },
   "optionMarkAllReadTitleClick": {
-    "message": "Mark all read after title click"
+    "message": "Marcar todo como leído después de hacer clic en el título"
   },
   "optionReadItemDisplay": {
-    "message": "Read item display"
+    "message": "Visualización de elementos de lectura"
   },
   "optionGray": {
-    "message": "Gray"
+    "message": "Gris"
   },
   "optionCondensed": {
-    "message": "Condensed"
+    "message": "Condensado"
   },
   "optionShowTotalUnread": {
-    "message": "Show total unread"
+    "message": "Mostrar total no leído"
   },
   "optionOnToolbar": {
-    "message": "On toolbar"
+    "message": "En la barra de herramientas"
   },
   "optionOnTab": {
-    "message": "On tab"
+    "message": "en la pestaña"
   },
   "optionOnToolbarAndTab": {
-    "message": "On toolbar & tab"
+    "message": "En barra de herramientas y pestaña"
   },
   "optionShowTotlaFeedList": {
-    "message": "Show totals in feed list"
+    "message": "Mostrar totales en la lista de fuentes"
   },
   "optionPlaySound": {
-    "message": "Play notification sound"
+    "message": "Reproducir sonido de notificación"
   },
   "optionReadLater": {
-    "message": "Read Later Options"
+    "message": "Opciones de lectura posterior"
   },
   "optionReadLaterSupport": {
-    "message": "Read later support"
+    "message": "Leer más tarde soporte"
   },
   "optionRemoveViewed": {
-    "message": "Remove when viewed"
+    "message": "Eliminar cuando se vea"
   },
   "optionAlertMaxItemsInvalid": {
     "message": "'Max Items' seems invalid.  It's the max number of items in a feed preview and should be > 0"
