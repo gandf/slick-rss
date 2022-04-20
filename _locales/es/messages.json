@@ -261,43 +261,43 @@
     "message": "Eliminar cuando se vea"
   },
   "optionAlertMaxItemsInvalid": {
-    "message": "'Max Items' seems invalid.  It's the max number of items in a feed preview and should be > 0"
+    "message": "'Artículos máximos' parece inválido. Es el número máximo de elementos en una vista previa de feed y debe ser > 0"
   },
   "optionAlertUpdateIntervalInvalid": {
-    "message": "'Update Interval' seems invalid.  It's the number of minutes between fetching unread counts."
+    "message": "'Intervalo de actualización' parece inválido. Es la cantidad de minutos entre la obtención de recuentos no leídos."
   },
   "optionAlertUpdateIntervalSup0": {
-    "message": "'Update Interval' must be > 0."
+    "message": "'Intervalo de actualización' debe ser > 0."
   },
   "optionAlertMarkFeedReadInvalid": {
-    "message": "'Mark feed read after' seems invalid.  It's the number of seconds after you've viewed a feed before it's marked read."
+    "message": "'Marcar fuentes como leído después' parece inválido. Es la cantidad de segundos después de haber visto un feed antes de que se marque como leído."
   },
   "optionUpdateInterval": {
-    "message": "Update interval"
+    "message": "Intervalo de actualización"
   },
   "optionUseThumbnail": {
-    "message": "Show thumbnail in feeds"
+    "message": "Mostrar miniatura en fuentes"
   },
   "optionUnlimited": {
-    "message": "unlimited"
+    "message": "ilimitado"
   },
   "optionFeedsMaxHeight": {
-    "message": "Max height of feeds"
+    "message": "Altura máxima de los fuentes"
   },
   "optionFeedsMaxHeightUnits": {
-    "message": " px (0 = unlimited)"
+    "message": " px (0 = ilimitado)"
   },
   "optionStorageUsage": {
-    "message": "Storage usage:"
+    "message": "Uso de almacenamiento:"
   },
   "optionStorageUsageValue1": {
-    "message": "Using "
+    "message": "Utilizando "
   },
   "optionStorageUsageValue2": {
-    "message": " out of "
+    "message": " fuera de "
   },
   "optionStorageUsageValue3": {
-    "message": " available"
+    "message": " disponible"
   },
   "Bytes": {
     "message": "Bytes"
@@ -327,177 +327,177 @@
     "message": "YB"
   },
   "backReadLater": {
-    "message": "Read Later"
+    "message": "Leer más tarde"
   },
   "backAllFeeds": {
-    "message": "All Feeds"
+    "message": "Todas las fuentes
   },
   "backItemsMarkedReadLater": {
-    "message": "Items you marked to read later"
+    "message": "Elementos que marcó para leer más tarde"
   },
   "backAllFeedsShow": {
-    "message": "All Feeds are show here."
+    "message": "Todos los fuentes se muestran aquí."
   },
   "backNoTitle": {
-    "message": "No Title"
+    "message": "Sin título"
   },
   "backErrorXML": {
-    "message": "The response didn't have a valid responseXML property."
+    "message": "La respuesta no tenía una propiedad responseXML válida."
   },
   "backError200Part1": {
-    "message": "Status wasn't 200.  It was "
+    "message": "El estado no era 200. Era "
   },
   "backError200Part2": {
-    "message": " and frankly I don't know how to handle that.  If it helps, the status text was '"
+    "message": " y francamente no sé cómo manejar eso. Si ayuda, el texto de estado fue '"
   },
   "backError200Part3": {
     "message": "'."
   },
   "backViewerMarkRead": {
-    "message": "Mark read"
+    "message": "Marcar como leído"
   },
   "openAllFeed": {
-    "message": "Open all unread"
+    "message": "Abrir todos los no leídos"
   },
   "backViewerMarkUnread": {
-    "message": "Mark unread"
+    "message": "Marcar como no leido"
   },
   "backViewerFeedIssue": {
-    "message": "Feed Problems"
+    "message": "Problemas de Fuentes"
   },
   "backViewerRefreshing": {
-    "message": "Refreshing"
+    "message": "Refrescante"
   },
   "backViewerRefreshAll": {
-    "message": "Refresh All"
+    "message": "Refrescar todo"
   },
   "backViewerMarkAllRead": {
-    "message": "Mark All Read"
+    "message": "Marcar todo como leido"
   },
   "backViewerManage": {
-    "message": "Manage"
+    "message": "Gestionar"
   },
   "backViewerRefresh": {
-    "message": "Refresh"
+    "message": "Actualizar"
   },
   "backViewerOptions": {
-    "message": "Options"
+    "message": "Opciones"
   },
   "backViewerNoFeed": {
-    "message": "You have no feeds. Now is a great time to add some."
+    "message": "No tienes fuentes. Ahora es un buen momento para agregar algunos."
   },
   "backViewerAddFeeds": {
-    "message": "Add Feeds"
+    "message": "Añadir fuentes"
   },
   "backViewerFeedSelectedInvalid": {
-    "message": "The feed selected seems to be invalid. Please check the URL."
+    "message": "El fuentes seleccionado parece no ser válido. Por favor, compruebe la URL."
   },
   "backViewerNerdy": {
-    "message": "Nerdy Details"
+    "message": "Detalles nerds"
   },
   "backViewerNoItemInFeed": {
-    "message": "There are no items in this feed."
+    "message": "No hay elementos en este fuentes."
   },
   "backViewerFeedMe": {
-    "message": "Feed Me"
+    "message": "Fuente Me"
   },
   "backViewerLoadingFeed": {
-    "message": "Loading Feed ..."
+    "message": "Cargando Fuente ..."
   },
   "monthJanuary": {
-    "message": "January"
+    "message": "Enero"
   },
   "monthFebruary": {
-    "message": "February"
+    "message": "Febrero"
   },
   "monthMarch": {
-    "message": "March"
+    "message": "Marzo"
   },
   "monthApril": {
-    "message": "April"
+    "message": "Abril"
   },
   "monthMay": {
-    "message": "May"
+    "message": "Puede"
   },
   "monthJune": {
-    "message": "June"
+    "message": "Junio"
   },
   "monthJuly": {
-    "message": "July"
+    "message": "Julio"
   },
   "monthAugust": {
-    "message": "August"
+    "message": "Agosto"
   },
   "monthSeptember": {
-    "message": "September"
+    "message": "Septiembre"
   },
   "monthOctober": {
-    "message": "October"
+    "message": "Octubre"
   },
   "monthNovember": {
-    "message": "November"
+    "message": "Noviembre"
   },
   "monthDecember": {
-    "message": "December"
+    "message": "Diciembre"
   },
   "daySunday": {
-    "message": "Sunday"
+    "message": "Domingo"
   },
   "dayMonday": {
-    "message": "Monday"
+    "message": "Lunes"
   },
   "dayTuesday": {
-    "message": "Tuesday"
+    "message": "Martes"
   },
   "dayWednesday": {
-    "message": "Wednesday"
+    "message": "Miércoles"
   },
   "dayThursday": {
-    "message": "Thursday"
+    "message": "Jueves"
   },
   "dayFriday": {
-    "message": "Friday"
+    "message": "Viernes"
   },
   "daySaturday": {
-    "message": "Saturday"
+    "message": "Sábado"
   },
   "daySuffix1": {
-    "message": "st"
+    "message": "º"
   },
   "daySuffix2": {
-    "message": "nd"
+    "message": "do"
   },
   "daySuffix3": {
-    "message": "rd"
+    "message": "ro"
   },
   "daySuffix4": {
-    "message": "th"
+    "message": "to"
   },
   "daySuffix5": {
-    "message": "th"
+    "message": "to"
   },
   "optionOff": {
-    "message": "Off"
+    "message": "Desactivado"
   },
   "optionOn": {
-    "message": "On"
+    "message": "Activo"
   },
   "close": {
-    "message": "Close"
+    "message": "Cerrar"
   },
   "cancel": {
-    "message": "Cancel"
+    "message": "Cancelar"
   },
   "save": {
-    "message": "Save"
+    "message": "Guardar"
   },
   "add": {
-    "message": "Add"
+    "message": "Agregar"
   },
   "import": {
-    "message": "Import"
+    "message": "Importar"
   },
   "export": {
-    "message": "Export"
+    "message": "Exportar"
   }
 }
