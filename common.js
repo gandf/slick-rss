@@ -57,7 +57,11 @@ function GetObjectFromStr(dataStr){
 
 function GetMessageText(value)
 {
-  return chrome.i18n.getMessage(value);
+    if (options.forcelangen) {
+        return chrome.i18n.getMessage('en' + value);
+    } else {
+        return chrome.i18n.getMessage(value);
+    }
 }
 
 // converts the text date into a formatted one if possible
@@ -262,7 +266,8 @@ function GetDefaultOptions() {
         "usethumbnail": false,
         "feedsmaxheight": 200,
         "playSoundNotif": false,
-        "darkmode": false
+        "darkmode": false,
+        "forcelangen": false
     };
 }
 

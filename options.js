@@ -43,6 +43,7 @@ function SetupScreen()
 		document.getElementById("showAllFeeds").selectedIndex = options.showallfeeds;
 		document.getElementById("useThumbnail").selectedIndex = options.usethumbnail;
 		document.getElementById("feedsMaxHeight").value = options.feedsmaxheight;
+		document.getElementById("forceLangEn").selectedIndex = options.forcelangen;
 
 		navigator.storage.estimate().then(({usage, quota}) => {
 			document.getElementById("StorageUsageValue").innerHTML = GetMessageText("optionStorageUsageValue1") + formatBytes(usage) + GetMessageText("optionStorageUsageValue2") + formatBytes(quota) + GetMessageText("optionStorageUsageValue3");
@@ -102,6 +103,7 @@ function Save()
 	options.showallfeeds = (document.getElementById("showAllFeeds").selectedIndex == 1);
 	options.usethumbnail = (document.getElementById("useThumbnail").selectedIndex == 1);
 	options.feedsmaxheight = parseInt(feedsMaxHeight, 10);
+	options.forcelangen = (document.getElementById("forceLangEn").selectedIndex == 1);
 
 	store.setItem('options', options);
 

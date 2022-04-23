@@ -21,7 +21,7 @@
     "message": "Se requiere un título. Nómbralo con algo útil como 'Mis impresionantes noticias de juegos'."
   },
   "manageAlertUrl": {
-    "message": "Se requiere una URL. Es la ruta HTTP completa a tu feed"."
+    "message": "Se requiere una URL. Es la ruta HTTP completa a tu feed."
   },
   "manageAlertMaxItemsEmpty": {
     "message": "Se requiere un máximo de artículos. Es el número máximo de artículos que quieres que te muestre para este feed."
@@ -139,6 +139,9 @@
   },
   "optionDateFormat": {
     "message": "Formato de fecha"
+  },
+  "optionForceEnglishLang": {
+    "message": "Forzar idioma Inglés"
   },
   "optionDone": {
     "message": "Hecho"
@@ -330,7 +333,7 @@
     "message": "Leer más tarde"
   },
   "backAllFeeds": {
-    "message": "Todas las fuentes
+    "message": "Todas las fuentes"
   },
   "backItemsMarkedReadLater": {
     "message": "Elementos que marcó para leer más tarde"

@@ -499,5 +499,8 @@
   },
   "export": {
     "message": "Exporter"
+  },
+  "optionForceEnglishLang": {
+    "message": "Forcer langue Anglaise"
   }
 }

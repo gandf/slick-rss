@@ -499,5 +499,512 @@
   },
   "export": {
     "message": "Export"
+  },
+  "optionForceEnglishLang": {
+    "message": "Force English language"
+  },
+  "enappName": {
+      "message": "Slick RSS by users"
+  },
+  "enappDesc": {
+      "message": "A full featured RSS reader that's fully contained within the browser."
+  },
+  "enexportTitle": {
+      "message": "Slick RSS : Export Feeds"
+  },
+  "enexportMainForm": {
+      "message": "Here is an OPML export of your feed data."
+  },
+  "enmanageTitle": {
+      "message": "Slick RSS : Manage Feeds"
+  },
+  "enmanageManageFeeds": {
+      "message": "Manage Feeds"
+  },
+  "enmanageAlertTitle": {
+      "message": "A title is required.  Name it something useful like 'My Awesome Gaming News Feed'."
+  },
+  "enmanageAlertUrl": {
+      "message": "A URL is required. It's the full HTTP path to your feed."
+  },
+  "enmanageAlertMaxItemsEmpty": {
+      "message": "Max items is required. It's the max number of items you want me to show you for this feed."
+  },
+  "enmanageAlertMaxItemsZero": {
+      "message": "Ha ha funny person. You need at least 1 max item in order to show you a feed."
+  },
+  "enmanageAlertMaxItemsNotItem1": {
+      "message": "Very funny, you and I both know '"
+  },
+  "enmanageAlertMaxItemsNotItem2": {
+      "message": "' isn't a value max item number."
+  },
+  "enmanageAlertOrder": {
+      "message": "Order is required. It's the order I'll display your feeds in the viewer."
+  },
+  "enmanageAlertOrderNotItem1": {
+      "message": "Very funny, you and I both know '"
+  },
+  "enmanageAlertOrderNotItem2": {
+      "message": "' isn't a value order."
+  },
+  "enmanageName": {
+      "message": "Name"
+  },
+  "enmanageUrl": {
+      "message": "URL"
+  },
+  "enmanageGroup": {
+      "message": "Group"
+  },
+  "enmanageMaxItems": {
+      "message": "Max Items"
+  },
+  "enmanageOrder": {
+      "message": "Order"
+  },
+  "enimportForm": {
+      "message": "Copy and paste your OPML file contents into the textbox below."
+  },
+  "enimportImportFeeds": {
+      "message": "Import Feeds"
+  },
+  "enimportTitle": {
+      "message": "Slick RSS : Import Feeds"
+  },
+  "enimportAlertNothing": {
+      "message": "Nothing to import"
+  },
+  "enimportAlertNoOutlineRss": {
+      "message": "No outline nodes of type 'rss' were found to import."
+  },
+  "enimportAlertImportedFeeds1": {
+      "message": "Imported "
+  },
+  "enimportAlertImportedFeeds2": {
+      "message": " feeds."
+  },
+  "enexportLinkTitle": {
+      "message": "Slick RSS OPML Export"
+  },
+  "enoptionTitle": {
+      "message": "Slick RSS : Options"
+  },
+  "enoptionFeedBehavior": {
+      "message": "Feed Behavior Options"
+  },
+  "enoptionFeedManagement": {
+      "message": "Feed management"
+  },
+  "enoptionColumns": {
+      "message": "Columns"
+  },
+  "enoptionImportFeeds": {
+      "message": "Import Feeds"
+  },
+  "enoptionExportFeeds": {
+      "message": "Export Feeds"
+  },
+  "enoptionDefMaxItems": {
+      "message": "Default max items"
+  },
+  "enoptionFeedDisplay": {
+      "message": "Feed Display Options"
+  },
+  "enoptionDarkMode": {
+      "message": "Dark mode"
+  },
+  "enoptionDescription": {
+      "message": "Description"
+  },
+  "enoptionImages": {
+      "message": "Images"
+  },
+  "enoptionObjects": {
+      "message": "Objects (like movies)"
+  },
+  "enoptionIFrames": {
+      "message": "IFrames"
+  },
+  "enoptionLoadInBack": {
+      "message": "Load links in background"
+  },
+  "enoptionShowAllInOne": {
+      "message": "Show all feeds in one"
+  },
+  "enoptionShowOnlySummary": {
+      "message": "Show only summary"
+  },
+  "enoptionShowFeedContent": {
+      "message": "Show feed content (if available)"
+  },
+  "enoptionContent": {
+      "message": "Content"
+  },
+  "enoptionDateFormat": {
+      "message": "Date format"
+  },
+  "enoptionDone": {
+      "message": "Done"
+  },
+  "enoptionGMT": {
+      "message": "Makes the output use GMT. (Otherwise local)"
+  },
+  "enoptionY4": {
+      "message": "4 digit year"
+  },
+  "enoptionY2": {
+      "message": "2 digit year"
+  },
+  "enoptionMfullText": {
+      "message": "Full text month"
+  },
+  "enoptionM3Letters": {
+      "message": "3 letter month"
+  },
+  "enoptionM0": {
+      "message": "Zero padded month"
+  },
+  "enoptionM": {
+      "message": "Month"
+  },
+  "enoptionDWithSuffix": {
+      "message": "The day with suffix"
+  },
+  "enoptionD0": {
+      "message": "Zero padded day"
+  },
+  "enoptionD": {
+      "message": "Day"
+  },
+  "enoptionH0": {
+      "message": "Zero padded hours"
+  },
+  "enoptionH": {
+      "message": "Hours"
+  },
+  "enoptionH012": {
+      "message": "Hours in zero padded 12 hour format"
+  },
+  "enoptionH12": {
+      "message": "The hour in 12 hour format"
+  },
+  "enoptionMin0": {
+      "message": "Zero padded minutes"
+  },
+  "enoptionM": {
+      "message": "Minutes"
+  },
+  "enoptionS0": {
+      "message": "Zero padded seconds"
+  },
+  "enoptionS": {
+      "message": "Seconds"
+  },
+  "enoptionWFullText": {
+      "message": "Full text weekday"
+  },
+  "enoptionW3": {
+      "message": "3 letter weekday"
+  },
+  "enoptionAM": {
+      "message": "AM/PM"
+  },
+  "enoptionGithubUrl": {
+      "message": "GitHub URL:"
+  },
+  "enoptionFeedUnread": {
+      "message": "Feed Unread Options"
+  },
+  "enoptionMinutes": {
+      "message": " minutes"
+  },
+  "enoptionSecondDisabled": {
+      "message": " seconds (0 = disabled)"
+  },
+  "enoptionMarkAllRead": {
+      "message": "Mark all read after"
+  },
+  "enoptionMarkAllReadTitleClick": {
+      "message": "Mark all read after title click"
+  },
+  "enoptionReadItemDisplay": {
+      "message": "Read item display"
+  },
+  "enoptionGray": {
+      "message": "Gray"
+  },
+  "enoptionCondensed": {
+      "message": "Condensed"
+  },
+  "enoptionShowTotalUnread": {
+      "message": "Show total unread"
+  },
+  "enoptionOnToolbar": {
+      "message": "On toolbar"
+  },
+  "enoptionOnTab": {
+      "message": "On tab"
+  },
+  "enoptionOnToolbarAndTab": {
+      "message": "On toolbar & tab"
+  },
+  "enoptionShowTotlaFeedList": {
+      "message": "Show totals in feed list"
+  },
+  "enoptionPlaySound": {
+      "message": "Play notification sound"
+  },
+  "enoptionReadLater": {
+      "message": "Read Later Options"
+  },
+  "enoptionReadLaterSupport": {
+      "message": "Read later support"
+  },
+  "enoptionRemoveViewed": {
+      "message": "Remove when viewed"
+  },
+  "enoptionAlertMaxItemsInvalid": {
+      "message": "'Max Items' seems invalid.  It's the max number of items in a feed preview and should be > 0"
+  },
+  "enoptionAlertUpdateIntervalInvalid": {
+      "message": "'Update Interval' seems invalid.  It's the number of minutes between fetching unread counts."
+  },
+  "enoptionAlertUpdateIntervalSup0": {
+      "message": "'Update Interval' must be > 0."
+  },
+  "enoptionAlertMarkFeedReadInvalid": {
+      "message": "'Mark feed read after' seems invalid.  It's the number of seconds after you've viewed a feed before it's marked read."
+  },
+  "enoptionUpdateInterval": {
+      "message": "Update interval"
+  },
+  "enoptionUseThumbnail": {
+      "message": "Show thumbnail in feeds"
+  },
+  "enoptionUnlimited": {
+      "message": "unlimited"
+  },
+  "enoptionFeedsMaxHeight": {
+      "message": "Max height of feeds"
+  },
+  "enoptionFeedsMaxHeightUnits": {
+      "message": " px (0 = unlimited)"
+  },
+  "enoptionStorageUsage": {
+      "message": "Storage usage:"
+  },
+  "enoptionStorageUsageValue1": {
+      "message": "Using "
+  },
+  "enoptionStorageUsageValue2": {
+      "message": " out of "
+  },
+  "enoptionStorageUsageValue3": {
+      "message": " available"
+  },
+  "enBytes": {
+      "message": "Bytes"
+  },
+  "enKB": {
+      "message": "KB"
+  },
+  "enMB": {
+      "message": "MB"
+  },
+  "enGB": {
+      "message": "GB"
+  },
+  "enTB": {
+      "message": "TB"
+  },
+  "enPB": {
+      "message": "PB"
+  },
+  "enEB": {
+      "message": "EB"
+  },
+  "enZB": {
+      "message": "ZB"
+  },
+  "enYB": {
+      "message": "YB"
+  },
+  "enbackReadLater": {
+      "message": "Read Later"
+  },
+  "enbackAllFeeds": {
+      "message": "All Feeds"
+  },
+  "enbackItemsMarkedReadLater": {
+      "message": "Items you marked to read later"
+  },
+  "enbackAllFeedsShow": {
+      "message": "All Feeds are show here."
+  },
+  "enbackNoTitle": {
+      "message": "No Title"
+  },
+  "enbackErrorXML": {
+      "message": "The response didn't have a valid responseXML property."
+  },
+  "enbackError200Part1": {
+      "message": "Status wasn't 200.  It was "
+  },
+  "enbackError200Part2": {
+      "message": " and frankly I don't know how to handle that.  If it helps, the status text was '"
+  },
+  "enbackError200Part3": {
+      "message": "'."
+  },
+  "enbackViewerMarkRead": {
+      "message": "Mark read"
+  },
+  "enbackViewerMarkUnread": {
+      "message": "Mark unread"
+  },
+  "enopenAllFeed": {
+      "message": "Open all unread"
+  },
+  "enbackViewerFeedIssue": {
+      "message": "Feed Problems"
+  },
+  "enbackViewerRefreshing": {
+      "message": "Refreshing"
+  },
+  "enbackViewerRefreshAll": {
+      "message": "Refresh All"
+  },
+  "enbackViewerMarkAllRead": {
+      "message": "Mark All Read"
+  },
+  "enbackViewerManage": {
+      "message": "Manage"
+  },
+  "enbackViewerRefresh": {
+      "message": "Refresh"
+  },
+  "enbackViewerOptions": {
+      "message": "Options"
+  },
+  "enbackViewerNoFeed": {
+      "message": "You have no feeds. Now is a great time to add some."
+  },
+  "enbackViewerAddFeeds": {
+      "message": "Add Feeds"
+  },
+  "enbackViewerFeedSelectedInvalid": {
+      "message": "The feed selected seems to be invalid. Please check the URL."
+  },
+  "enbackViewerNerdy": {
+      "message": "Nerdy Details"
+  },
+  "enbackViewerNoItemInFeed": {
+      "message": "There are no items in this feed."
+  },
+  "enbackViewerFeedMe": {
+      "message": "Feed Me"
+  },
+  "enbackViewerLoadingFeed": {
+      "message": "Loading Feed ..."
+  },
+  "enmonthJanuary": {
+      "message": "January"
+  },
+  "enmonthFebruary": {
+      "message": "February"
+  },
+  "enmonthMarch": {
+      "message": "March"
+  },
+  "enmonthApril": {
+      "message": "April"
+  },
+  "enmonthMay": {
+      "message": "May"
+  },
+  "enmonthJune": {
+      "message": "June"
+  },
+  "enmonthJuly": {
+      "message": "July"
+  },
+  "enmonthAugust": {
+      "message": "August"
+  },
+  "enmonthSeptember": {
+      "message": "September"
+  },
+  "enmonthOctober": {
+      "message": "October"
+  },
+  "enmonthNovember": {
+      "message": "November"
+  },
+  "enmonthDecember": {
+      "message": "December"
+  },
+  "endaySunday": {
+      "message": "Sunday"
+  },
+  "endayMonday": {
+      "message": "Monday"
+  },
+  "endayTuesday": {
+      "message": "Tuesday"
+  },
+  "endayWednesday": {
+      "message": "Wednesday"
+  },
+  "endayThursday": {
+      "message": "Thursday"
+  },
+  "endayFriday": {
+      "message": "Friday"
+  },
+  "endaySaturday": {
+      "message": "Saturday"
+  },
+  "endaySuffix1": {
+      "message": "st"
+  },
+  "endaySuffix2": {
+      "message": "nd"
+  },
+  "endaySuffix3": {
+      "message": "rd"
+  },
+  "endaySuffix4": {
+      "message": "th"
+  },
+  "endaySuffix5": {
+      "message": "th"
+  },
+  "enoptionOff": {
+      "message": "Off"
+  },
+  "enoptionOn": {
+      "message": "On"
+  },
+  "enclose": {
+      "message": "Close"
+  },
+  "encancel": {
+      "message": "Cancel"
+  },
+  "ensave": {
+      "message": "Save"
+  },
+  "enadd": {
+      "message": "Add"
+  },
+  "enimport": {
+      "message": "Import"
+  },
+  "enexport": {
+      "message": "Export"
+  },
+  "enoptionForceEnglishLang": {
+    "message": "Force English language"
   }
 }
