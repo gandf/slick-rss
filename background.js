@@ -254,6 +254,23 @@ function ExternalRequest(request, sender, sendResponse) {
         sendResponse({});
         return;
     }
+
+    if (request.type == "refreshOptionsAndRefreshFeeds") {
+        GetOptions().then(function() {
+            if (readlaterInfo[readLaterFeedID] != undefined) {
+                readlaterInfo[readLaterFeedID].title = GetMessageText("backReadLater");
+                readlaterInfo[readLaterFeedID].description = GetMessageText("backItemsMarkedReadLater");
+            }
+            if (groupInfo[allFeedsID] != undefined) {
+                groupInfo[allFeedsID].title = GetMessageText("backAllFeeds");
+            }
+            GetFeeds(function () {
+                CheckForUnreadStart();
+            });
+        });
+        sendResponse({});
+        return;
+    }
 }
 
 // gets the feed array for everyone to use
@@ -630,7 +647,9 @@ function CheckForUnread() {
                         if (checkForUnreadCounter >= feeds.length || refreshFeed) {
                             CheckForUnreadComplete();
                         } else {
-                            CheckForUnread();
+                            setTimeout(function() {
+                                CheckForUnread();
+                            }, 200);
                         }
                     });
                 });
@@ -648,7 +667,9 @@ function CheckForUnread() {
                 if (checkForUnreadCounter >= feeds.length || refreshFeed) {
                     CheckForUnreadComplete();
                 } else {
-                    CheckForUnread();
+                    setTimeout(function() {
+                        CheckForUnread();
+                    }, 200);
                 }
             });
         }

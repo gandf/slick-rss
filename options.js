@@ -57,6 +57,7 @@ function Save()
 {
 	var maxItems = document.getElementById("maxItems").value;
 	var feedsMaxHeight = document.getElementById("feedsMaxHeight").value;
+	var forceRefreshOptionInWorker;
 
 	if(!/^\d+$/.test(maxItems) || maxItems == "0")
 	{
@@ -82,6 +83,16 @@ function Save()
 		return;
 	}
 
+	forceRefreshOptionInWorker = options.forcelangen != (document.getElementById("forceLangEn").selectedIndex == 1);
+	if (!forceRefreshOptionInWorker) {
+		forceRefreshOptionInWorker = options.readlaterenabled != (document.getElementById("readLaterEnabled").selectedIndex == 1);
+	}
+	if (!forceRefreshOptionInWorker) {
+		forceRefreshOptionInWorker = options.maxitems != parseInt(maxItems, 10);
+	}
+	if (!forceRefreshOptionInWorker) {
+		forceRefreshOptionInWorker = options.showdescriptions != (document.getElementById("showDescriptions").selectedIndex == 1);
+	}
 	options.maxitems = parseInt(maxItems, 10);
 	options.darkmode = (document.getElementById("darkMode").selectedIndex == 1);
 	options.showdescriptions = (document.getElementById("showDescriptions").selectedIndex == 1);
@@ -112,7 +123,12 @@ function Save()
 		store.setItem('readlater', {}); //delete readlater
 	}
 
-	chrome.runtime.sendMessage({"type": "refreshFeeds" }).then(function(){
+	var requestType = "refreshFeeds";
+	if (forceRefreshOptionInWorker) {
+		requestType = "refreshOptionsAndRefreshFeeds";
+	}
+
+	chrome.runtime.sendMessage({"type": requestType}).then(function(){
 		chrome.tabs.query({url: chrome.runtime.getURL("viewer.html")}, function (tab) {
 			chrome.tabs.reload(tab[0].id, { });
 			window.close();

@@ -13,8 +13,8 @@ var groups = [];
 var unreadTotal = 0;
 var readlaterInfo = [];
 readlaterInfo[readLaterFeedID] = {
-    title: GetMessageText("backReadLater", true),
-    description: GetMessageText("backItemsMarkedReadLater", true),
+    title: GetMessageText("backReadLater"),
+    description: GetMessageText("backItemsMarkedReadLater"),
     group: "",
     loading: false,
     items: [],
