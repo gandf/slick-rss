@@ -437,7 +437,22 @@ function CheckForUnread() {
                 },
             }).then(function(response) {
                 if (!response.ok) {
-                    console.log('Looks like there was a problem. Status Code: ' + response.status);
+                    feedInfo[feedID].loading = false;
+                    feedInfo[feedID].error = 'Looks like there was a problem. Status Code: ' + response.status;
+
+                    checkForUnreadCounter++;
+                    if (checkForUnreadCounter < feeds.length) {
+                        if (feeds[checkForUnreadCounter].id === allFeedsID) {
+                            checkForUnreadCounter++;
+                        }
+                    }
+                    if (checkForUnreadCounter >= feeds.length || refreshFeed) {
+                        CheckForUnreadComplete();
+                    } else {
+                        setTimeout(function() {
+                            CheckForUnread();
+                        }, 200);
+                    }
                     return;
                 }
                 status = response.status;
@@ -495,7 +510,9 @@ function CheckForUnread() {
                             for (var e = 0; e < entries.length; e++) {
                                 item = {};
                                 item.title = CleanText2(SearchTag(entries[e], GetMessageText("backNoTitle"), ["TITLE"], 0));
-                                item.title = item.title.replaceAll("U+20AC", '€').replaceAll("&apos;", "'");
+                                if (typeof item.title == 'string') {
+                                    item.title = item.title.replaceAll("U+20AC", '€').replaceAll("&apos;", "'");
+                                }
                                 item.date = CleanText2(SearchTag(entries[e], null, ["PUBDATE", "UPDATED", "DC:DATE", "DATE", "PUBLISHED"], 0)); // not sure if date is even needed anymore
                                 item.content = "";
                                 item.idOrigin = feedID;
@@ -514,7 +531,9 @@ function CheckForUnread() {
                                     if ((item.content == "") || (item.content == null)) {
                                         item.content = CleanText2(SearchTag(entries[e], null, ["DESCRIPTION", "SUMMARY"], 0));
                                     }
-                                    item.content = item.content.replaceAll("U+20AC", '€').replaceAll("&apos;", "'");
+                                    if (typeof item.content == 'string') {
+                                        item.content = item.content.replaceAll("U+20AC", '€').replaceAll("&apos;", "'");
+                                    }
                                     item.thumbnail = null;
 
                                     author = CleanText2(SearchTag(entries[e], null, ["AUTHOR", "DC:CREATOR", "CREATOR", "ATOM:CONTRIBUTOR"], 0));
@@ -677,7 +696,22 @@ function CheckForUnread() {
             });
         }
         catch (err) {
-            console.log('Error :-S', err);
+            feedInfo[feedID].loading = false;
+            feedInfo[feedID].error = 'Error :-S ' + err;
+
+            checkForUnreadCounter++;
+            if (checkForUnreadCounter < feeds.length) {
+                if (feeds[checkForUnreadCounter].id === allFeedsID) {
+                    checkForUnreadCounter++;
+                }
+            }
+            if (checkForUnreadCounter >= feeds.length || refreshFeed) {
+                CheckForUnreadComplete();
+            } else {
+                setTimeout(function() {
+                    CheckForUnread();
+                }, 200);
+            }
         }
     }
 }
