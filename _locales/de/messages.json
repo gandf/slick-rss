@@ -505,5 +505,8 @@
   },
   "optionLevelSearchTags": {
     "message": "Suchtiefen-Tags"
+  },
+  "optionHelpTranslation": {
+    "message": "Hilfe bei der Übersetzung"
   }
 }

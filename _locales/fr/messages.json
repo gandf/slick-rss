@@ -508,5 +508,8 @@
   },
   "optionLevelSearchTags": {
     "message": "Niveau de profondeur de recherche des balises"
+  },
+  "optionHelpTranslation": {
+    "message": "Aide avec la traduction"
   }
 }

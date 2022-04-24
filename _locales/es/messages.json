@@ -508,5 +508,8 @@
   },
   "optionLevelSearchTags": {
     "message": "Buscar etiquetas de nivel de profundidad"
+  },
+  "optionHelpTranslation": {
+    "message": "Ayuda con la traducción"
   }
 }

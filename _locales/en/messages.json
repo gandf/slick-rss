@@ -509,6 +509,9 @@
   "optionLevelSearchTags": {
     "message": "Search depth level tags"
   },
+  "optionHelpTranslation": {
+    "message": "Help with translation"
+  },
   "enappName": {
       "message": "Slick RSS by users"
   },
@@ -1018,5 +1021,8 @@
   },
   "enoptionLevelSearchTags": {
     "message": "Search depth level tags"
+  },
+  "enoptionHelpTranslation": {
+    "message": "Help with translation"
   }
 }
