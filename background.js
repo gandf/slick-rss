@@ -522,7 +522,7 @@ function CheckForUnread() {
                                     item.url = GetFeedLink(entries[e]);
 
                                     if (options.showfeedcontent) {
-                                        item.content = CleanText2(SearchTag(entries[e], null, ["CONTENT:ENCODED", "CONTENT", "DC:CONTENT"], 0)); // only guessing on just "content"
+                                        item.content = CleanText2(SearchTag(entries[e], null, ["CONTENT:ENCODED", "CONTENT", "DC:CONTENT", "ATOM:CONTENT"], 0)); // only guessing on just "content"
                                     }
 
                                     if ((item.content == "") || (item.content == null)) {
@@ -531,7 +531,7 @@ function CheckForUnread() {
                                     item.content = item.content.replaceAll("U+20AC", '€').replaceAll("&apos;", "'");
                                     item.thumbnail = null;
 
-                                    author = CleanText2(SearchTag(entries[e], null, ["AUTHOR", "DC:CREATOR", "CREATOR"], 0));
+                                    author = CleanText2(SearchTag(entries[e], null, ["AUTHOR", "DC:CREATOR", "CREATOR", "ATOM:CONTRIBUTOR"], 0));
                                     thumbnail = SearchTag(entries[e], null, ["ENCLOSURE", "MEDIA:GROUP"], 0);
                                     if (thumbnail != null) {
                                         keys = Object.keys(thumbnail);
