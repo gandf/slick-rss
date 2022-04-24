@@ -522,7 +522,7 @@ function CheckForUnread() {
                                     item.url = GetFeedLink(entries[e]);
 
                                     if (options.showfeedcontent) {
-                                        item.content = CleanText2(SearchTag(entries[e], null, ["CONTENT:ENCODED", "CONTENT"], 0)); // only guessing on just "content"
+                                        item.content = CleanText2(SearchTag(entries[e], null, ["CONTENT:ENCODED", "CONTENT", "DC:CONTENT"], 0)); // only guessing on just "content"
                                     }
 
                                     if ((item.content == "") || (item.content == null)) {
