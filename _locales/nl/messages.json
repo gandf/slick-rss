@@ -3,205 +3,205 @@
     "message": "Slick RSS by users"
   },
   "appDesc": {
-    "message": "A full featured RSS reader that's fully contained within the browser."
+    "message": "Een volledig uitgeruste RSS-lezer die volledig in de browser is opgenomen."
   },
   "exportTitle": {
-    "message": "Slick RSS : Export Feeds"
+    "message": "Slick RSS : Feeds exporteren"
   },
   "exportMainForm": {
-    "message": "Here is an OPML export of your feed data."
+    "message": "Hier is een OPML-export van uw feedgegevens."
   },
   "manageTitle": {
-    "message": "Slick RSS : Manage Feeds"
+    "message": "Slick RSS : Beheer feeds"
   },
   "manageManageFeeds": {
-    "message": "Manage Feeds"
+    "message": "Beheer feeds"
   },
   "manageAlertTitle": {
-    "message": "A title is required.  Name it something useful like 'My Awesome Gaming News Feed'."
+    "message": "Een titel is vereist. Noem het iets nuttigs zoals 'My Awesome Gaming News Feed'."
   },
   "manageAlertUrl": {
-    "message": "A URL is required. It's the full HTTP path to your feed."
+    "message": "Een URL is vereist. Het is het volledige HTTP-pad naar uw feed."
   },
   "manageAlertMaxItemsEmpty": {
-    "message": "Max items is required. It's the max number of items you want me to show you for this feed."
+    "message": "Max items is vereist. Dit is het maximale aantal items dat ik u voor deze feed moet laten zien."
   },
   "manageAlertMaxItemsZero": {
-    "message": "Ha ha funny person. You need at least 1 max item in order to show you a feed."
+    "message": "Haha grappig persoon. Je hebt minimaal 1 max. item nodig om je een feed te laten zien."
   },
   "manageAlertMaxItemsNotItem1": {
-    "message": "Very funny, you and I both know '"
+    "message": "Heel grappig, jij en ik weten het allebei '"
   },
   "manageAlertMaxItemsNotItem2": {
-    "message": "' isn't a value max item number."
+    "message": "' is geen waarde max. artikelnummer."
   },
   "manageAlertOrder": {
-    "message": "Order is required. It's the order I'll display your feeds in the viewer."
+    "message": "Bestelling is vereist. Het is de volgorde waarin ik uw feeds in de viewer weergeef."
   },
   "manageAlertOrderNotItem1": {
-    "message": "Very funny, you and I both know '"
+    "message": "Heel grappig, jij en ik weten het allebei '"
   },
   "manageAlertOrderNotItem2": {
-    "message": "' isn't a value order."
+    "message": "' is geen waardeorder."
   },
   "manageName": {
-    "message": "Name"
+    "message": "Naam"
   },
   "manageUrl": {
     "message": "URL"
   },
   "manageGroup": {
-    "message": "Group"
+    "message": "Groep"
   },
   "manageMaxItems": {
-    "message": "Max Items"
+    "message": "Max. artikelen"
   },
   "manageOrder": {
-    "message": "Order"
+    "message": "Volgorde"
   },
   "importForm": {
-    "message": "Copy and paste your OPML file contents into the textbox below."
+    "message": "Kopieer en plak de inhoud van uw OPML-bestand in het onderstaande tekstvak."
   },
   "importImportFeeds": {
-    "message": "Import Feeds"
+    "message": "Feeds importeren"
   },
   "importTitle": {
-    "message": "Slick RSS : Import Feeds"
+    "message": "Slick RSS : Feeds importeren"
   },
   "importAlertNothing": {
-    "message": "Nothing to import"
+    "message": "Niets te importeren"
   },
   "importAlertNoOutlineRss": {
-    "message": "No outline nodes of type 'rss' were found to import."
+    "message": "Er zijn geen overzichtsknooppunten van het type 'rss' gevonden om te importeren."
   },
   "importAlertImportedFeeds1": {
-    "message": "Imported "
+    "message": "Geïmporteerd "
   },
   "importAlertImportedFeeds2": {
     "message": " feeds."
   },
   "exportLinkTitle": {
-    "message": "Slick RSS OPML Export"
+    "message": "Slick RSS OPML-export"
   },
   "optionTitle": {
-    "message": "Slick RSS : Options"
+    "message": "Slick RSS : Opties"
   },
   "optionFeedBehavior": {
-    "message": "Feed Behavior Options"
+    "message": "Opties voor feedgedrag"
   },
   "optionFeedManagement": {
-    "message": "Feed management"
+    "message": "Voerbeheer"
   },
   "optionColumns": {
-    "message": "Columns"
+    "message": "Kolommen"
   },
   "optionImportFeeds": {
-    "message": "Import Feeds"
+    "message": "Feeds importeren"
   },
   "optionExportFeeds": {
-    "message": "Export Feeds"
+    "message": "Feeds exporteren"
   },
   "optionDefMaxItems": {
-    "message": "Default max items"
+    "message": "Standaard max. items"
   },
   "optionFeedDisplay": {
-    "message": "Feed Display Options"
+    "message": "Opties voor feedweergave"
   },
   "optionDarkMode": {
-    "message": "Dark mode"
+    "message": "Donkere modus"
   },
   "optionDescription": {
-    "message": "Description"
+    "message": "Beschrijving"
   },
   "optionImages": {
-    "message": "Images"
+    "message": "Afbeeldingen"
   },
   "optionObjects": {
-    "message": "Objects (like movies)"
+    "message": "Objecten (zoals films)"
   },
   "optionIFrames": {
     "message": "IFrames"
   },
   "optionLoadInBack": {
-    "message": "Load links in background"
+    "message": "Laad links op de achtergrond"
   },
   "optionShowAllInOne": {
-    "message": "Show all feeds in one"
+    "message": "Toon alle feeds in één"
   },
   "optionShowOnlySummary": {
-    "message": "Show only summary"
+    "message": "Toon alleen samenvatting"
   },
   "optionShowFeedContent": {
-    "message": "Show feed content (if available)"
+    "message": "Toon feedinhoud (indien beschikbaar)"
   },
   "optionContent": {
-    "message": "Content"
+    "message": "Inhoud"
   },
   "optionDateFormat": {
-    "message": "Date format"
+    "message": "Datumnotatie"
   },
   "optionDone": {
-    "message": "Done"
+    "message": "Klaar"
   },
   "optionGMT": {
-    "message": "Makes the output use GMT. (Otherwise local)"
+    "message": "Zorgt ervoor dat de uitvoer GMT gebruikt. (Anders lokaal)"
   },
   "optionY4": {
-    "message": "4 digit year"
+    "message": "4-cijferig jaartal"
   },
   "optionY2": {
-    "message": "2 digit year"
+    "message": "2-cijferig jaartal"
   },
   "optionMfullText": {
-    "message": "Full text month"
+    "message": "Volledige tekst maand"
   },
   "optionM3Letters": {
-    "message": "3 letter month"
+    "message": "3 letters maand"
   },
   "optionM0": {
-    "message": "Zero padded month"
+    "message": "Nul gewatteerde maand"
   },
   "optionM": {
-    "message": "Month"
+    "message": "Maand"
   },
   "optionDWithSuffix": {
-    "message": "The day with suffix"
+    "message": "De dag met achtervoegsel"
   },
   "optionD0": {
-    "message": "Zero padded day"
+    "message": "Nul gewatteerde dag"
   },
   "optionD": {
-    "message": "Day"
+    "message": "Dag"
   },
   "optionH0": {
-    "message": "Zero padded hours"
+    "message": "Nul gevulde uren"
   },
   "optionH": {
-    "message": "Hours"
+    "message": "Uren"
   },
   "optionH012": {
-    "message": "Hours in zero padded 12 hour format"
+    "message": "Uren in nul-opgevuld 12-uursformaat"
   },
   "optionH12": {
-    "message": "The hour in 12 hour format"
+    "message": "Het uur in 12-uurs formaat"
   },
   "optionMin0": {
-    "message": "Zero padded minutes"
+    "message": "Nul gevulde minuten"
   },
   "optionM": {
-    "message": "Minutes"
+    "message": "Minuten"
   },
   "optionS0": {
-    "message": "Zero padded seconds"
+    "message": "Nul opgevulde seconden"
   },
   "optionS": {
-    "message": "Seconds"
+    "message": "Seconden"
   },
   "optionWFullText": {
-    "message": "Full text weekday"
+    "message": "Volledige tekst weekdag"
   },
   "optionW3": {
-    "message": "3 letter weekday"
+    "message": "3 letters weekdag"
   },
   "optionAM": {
     "message": "AM/PM"
@@ -210,94 +210,94 @@
     "message": "GitHub URL:"
   },
   "optionFeedUnread": {
-    "message": "Feed Unread Options"
+    "message": "Ongelezen opties voor feeds"
   },
   "optionMinutes": {
-    "message": " minutes"
+    "message": " minuten"
   },
   "optionSecondDisabled": {
-    "message": " seconds (0 = disabled)"
+    "message": " seconden (0 = gehandicapt)"
   },
   "optionMarkAllRead": {
-    "message": "Mark all read after"
+    "message": "Markeer alles als gelezen na"
   },
   "optionMarkAllReadTitleClick": {
-    "message": "Mark all read after title click"
+    "message": "Markeer alles als gelezen na het klikken op de titel"
   },
   "optionReadItemDisplay": {
-    "message": "Read item display"
+    "message": "Artikelweergave lezen"
   },
   "optionGray": {
-    "message": "Gray"
+    "message": "Grijs"
   },
   "optionCondensed": {
-    "message": "Condensed"
+    "message": "Gecondenseerd"
   },
   "optionShowTotalUnread": {
-    "message": "Show total unread"
+    "message": "Totaal ongelezen weergeven"
   },
   "optionOnToolbar": {
-    "message": "On toolbar"
+    "message": "Op werkbalk"
   },
   "optionOnTab": {
-    "message": "On tab"
+    "message": "Op tabblad"
   },
   "optionOnToolbarAndTab": {
-    "message": "On toolbar & tab"
+    "message": "Op werkbalk & tabblad"
   },
   "optionShowTotlaFeedList": {
-    "message": "Show totals in feed list"
+    "message": "Toon totalen in feedlijst"
   },
   "optionPlaySound": {
-    "message": "Play notification sound"
+    "message": "Meldingsgeluid afspelen"
   },
   "optionReadLater": {
-    "message": "Read Later Options"
+    "message": "Latere opties lezen"
   },
   "optionReadLaterSupport": {
-    "message": "Read later support"
+    "message": "Lees later ondersteuning"
   },
   "optionRemoveViewed": {
-    "message": "Remove when viewed"
+    "message": "Verwijderen wanneer bekeken"
   },
   "optionAlertMaxItemsInvalid": {
-    "message": "'Max Items' seems invalid.  It's the max number of items in a feed preview and should be > 0"
+    "message": "'Max. items' lijkt ongeldig. Dit is het maximale aantal items in een feedvoorbeeld en zou moeten zijn > 0"
   },
   "optionAlertUpdateIntervalInvalid": {
-    "message": "'Update Interval' seems invalid.  It's the number of minutes between fetching unread counts."
+    "message": "'Update-interval' lijkt ongeldig. Het is het aantal minuten tussen het ophalen van ongelezen tellingen."
   },
   "optionAlertUpdateIntervalSup0": {
-    "message": "'Update Interval' must be > 0."
+    "message": "'Update Interval' moet . zijn > 0."
   },
   "optionAlertMarkFeedReadInvalid": {
-    "message": "'Mark feed read after' seems invalid.  It's the number of seconds after you've viewed a feed before it's marked read."
+    "message": "'Markeer feed als gelezen na' lijkt ongeldig. Dit is het aantal seconden nadat je een feed hebt bekeken voordat deze als gelezen wordt gemarkeerd."
   },
   "optionUpdateInterval": {
-    "message": "Update interval"
+    "message": "Bijwerkingsonderbreking"
   },
   "optionUseThumbnail": {
-    "message": "Show thumbnail in feeds"
+    "message": "Miniatuur weergeven in feeds"
   },
   "optionUnlimited": {
-    "message": "unlimited"
+    "message": "onbeperkt"
   },
   "optionFeedsMaxHeight": {
-    "message": "Max height of feeds"
+    "message": "Maximale hoogte van feeds"
   },
   "optionFeedsMaxHeightUnits": {
-    "message": " px (0 = unlimited)"
+    "message": " px (0 = onbeperkt)"
   },
   "optionStorageUsage": {
-    "message": "Storage usage:"
+    "message": "Opslaggebruik:"
   },
   "optionStorageUsageValue1": {
-    "message": "Using "
+    "message": "Gebruik makend van "
   },
   "optionStorageUsageValue2": {
-    "message": " out of "
+    "message": " uit "
   },
   "optionStorageUsageValue3": {
-    "message": " available"
+    "message": " beschikbaar"
   },
   "Bytes": {
     "message": "Bytes"
@@ -327,112 +327,112 @@
     "message": "YB"
   },
   "backReadLater": {
-    "message": "Read Later"
+    "message": "Lees later"
   },
   "backAllFeeds": {
-    "message": "All Feeds"
+    "message": "Alle feeds"
   },
   "backItemsMarkedReadLater": {
-    "message": "Items you marked to read later"
+    "message": "Items die je hebt gemarkeerd om later te lezen"
   },
   "backAllFeedsShow": {
-    "message": "All Feeds are show here."
+    "message": "Alle feeds worden hier weergegeven."
   },
   "backNoTitle": {
-    "message": "No Title"
+    "message": "Geen titel"
   },
   "backErrorXML": {
-    "message": "The response didn't have a valid responseXML property."
+    "message": "Het antwoord heeft geen geldige responseXML-eigenschap."
   },
   "backError200Part1": {
-    "message": "Status wasn't 200.  It was "
+    "message": "Status was niet 200. Het was "
   },
   "backError200Part2": {
-    "message": " and frankly I don't know how to handle that.  If it helps, the status text was '"
+    "message": " en eerlijk gezegd weet ik niet hoe ik daarmee om moet gaan. Als het helpt, was de statustekst '"
   },
   "backError200Part3": {
     "message": "'."
   },
   "backViewerMarkRead": {
-    "message": "Mark read"
+    "message": "Markeer als gelezen"
   },
   "backViewerMarkUnread": {
-    "message": "Mark unread"
+    "message": "Markeer als ongelezen"
   },
   "openAllFeed": {
-    "message": "Open all unread"
+    "message": "Alles ongelezen openen"
   },
   "backViewerFeedIssue": {
-    "message": "Feed Problems"
+    "message": "Voerproblemen"
   },
   "backViewerRefreshing": {
-    "message": "Refreshing"
+    "message": "Verfrissend"
   },
   "backViewerRefreshAll": {
-    "message": "Refresh All"
+    "message": "Ververs alles"
   },
   "backViewerMarkAllRead": {
-    "message": "Mark All Read"
+    "message": "Markeer alles als gelezen"
   },
   "backViewerManage": {
-    "message": "Manage"
+    "message": "Beheren"
   },
   "backViewerRefresh": {
-    "message": "Refresh"
+    "message": "Vernieuwen"
   },
   "backViewerOptions": {
-    "message": "Options"
+    "message": "Opties"
   },
   "backViewerNoFeed": {
-    "message": "You have no feeds. Now is a great time to add some."
+    "message": "Je hebt geen feeds. Dit is een goed moment om wat toe te voegen."
   },
   "backViewerAddFeeds": {
-    "message": "Add Feeds"
+    "message": "Feeds toevoegen"
   },
   "backViewerFeedSelectedInvalid": {
-    "message": "The feed selected seems to be invalid. Please check the URL."
+    "message": "De geselecteerde feed lijkt ongeldig te zijn. Controleer de URL."
   },
   "backViewerNerdy": {
-    "message": "Nerdy Details"
+    "message": "Nerdy-details"
   },
   "backViewerNoItemInFeed": {
-    "message": "There are no items in this feed."
+    "message": "Er zijn geen items in deze feed."
   },
   "backViewerFeedMe": {
-    "message": "Feed Me"
+    "message": "Voed mij"
   },
   "backViewerLoadingFeed": {
-    "message": "Loading Feed ..."
+    "message": "Feed laden ..."
   },
   "monthJanuary": {
-    "message": "January"
+    "message": "Januari"
   },
   "monthFebruary": {
-    "message": "February"
+    "message": "Februari"
   },
   "monthMarch": {
-    "message": "March"
+    "message": "Maart"
   },
   "monthApril": {
     "message": "April"
   },
   "monthMay": {
-    "message": "May"
+    "message": "Mei"
   },
   "monthJune": {
-    "message": "June"
+    "message": "Juni"
   },
   "monthJuly": {
-    "message": "July"
+    "message": "Juli"
   },
   "monthAugust": {
-    "message": "August"
+    "message": "Augustus"
   },
   "monthSeptember": {
     "message": "September"
   },
   "monthOctober": {
-    "message": "October"
+    "message": "Oktober"
   },
   "monthNovember": {
     "message": "November"
@@ -441,63 +441,63 @@
     "message": "December"
   },
   "daySunday": {
-    "message": "Sunday"
+    "message": "Zondag"
   },
   "dayMonday": {
-    "message": "Monday"
+    "message": "Maandag"
   },
   "dayTuesday": {
-    "message": "Tuesday"
+    "message": "Dinsdag"
   },
   "dayWednesday": {
-    "message": "Wednesday"
+    "message": "Woensdag"
   },
   "dayThursday": {
-    "message": "Thursday"
+    "message": "Donderdag"
   },
   "dayFriday": {
-    "message": "Friday"
+    "message": "Vrijdag"
   },
   "daySaturday": {
-    "message": "Saturday"
+    "message": "zaterdag"
   },
   "daySuffix1": {
-    "message": "st"
+    "message": "e"
   },
   "daySuffix2": {
-    "message": "nd"
+    "message": "e"
   },
   "daySuffix3": {
-    "message": "rd"
+    "message": "e"
   },
   "daySuffix4": {
-    "message": "th"
+    "message": "e"
   },
   "daySuffix5": {
-    "message": "th"
+    "message": "e"
   },
   "optionOff": {
-    "message": "Off"
+    "message": "Uit"
   },
   "optionOn": {
-    "message": "On"
+    "message": "Op"
   },
   "close": {
-    "message": "Close"
+    "message": "Dichtbij"
   },
   "cancel": {
-    "message": "Cancel"
+    "message": "Annuleren"
   },
   "save": {
-    "message": "Save"
+    "message": "Opslaan"
   },
   "add": {
-    "message": "Add"
+    "message": "Toevoegen"
   },
   "import": {
-    "message": "Import"
+    "message": "Importeren"
   },
   "export": {
-    "message": "Export"
+    "message": "Exporteren"
   }
 }
