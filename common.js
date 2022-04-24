@@ -377,17 +377,17 @@ function GetRandomID() {
 }
 
 // helper function for creating new feeds
-function CreateNewFeed(title, url, group, maxitems, order, id) {
+function CreateNewFeed(title, url, group, maxitems, order, excludeUnreadCount, id) {
     // managed feed doesn't have an id yet
     if (id == null) {
         id = GetRandomID();
     }
 
-    return {title: title, url: url, group: group, maxitems: maxitems, order: order, id: id};
+    return {title: title, url: url, group: group, maxitems: maxitems, order: order, excludeUnreadCount: excludeUnreadCount, id: id};
 }
 
 function GetReadLaterFeed() {
-    return CreateNewFeed(GetMessageText("backReadLater"), chrome.runtime.getURL("readlater.html"), "", 99999, -9, readLaterFeedID);
+    return CreateNewFeed(GetMessageText("backReadLater"), chrome.runtime.getURL("readlater.html"), "", 99999, -9, 1, readLaterFeedID);
 }
 
 // updates, shows and hides the badge
@@ -401,7 +401,12 @@ function UpdateUnreadBadge() {
 
     for (var key in unreadInfo) {
         if ((key != readLaterFeedID) && (key != allFeedsID)){
-          total = total + unreadInfo[key].unreadtotal;
+            var filteredfeeds = feeds.find(function (el) {
+                return (el.id == key) && (el.excludeUnreadCount == 1);
+            });
+            if (filteredfeeds == undefined) {
+                total = total + unreadInfo[key].unreadtotal;
+            }
         }
     }
 

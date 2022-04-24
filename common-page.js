@@ -61,6 +61,11 @@ function GetFeedsSimple(callBack) {
 
     store.getItem('feeds').then(function(datafeeds) {
         if (datafeeds != null) {
+            datafeeds.forEach(datafeed => {
+                if (datafeed.excludeUnreadCount == undefined) {
+                    datafeed.excludeUnreadCount = 0;
+                }
+            });
             feeds = datafeeds.sort(function (a, b) {
                 return a.order - b.order;
             });

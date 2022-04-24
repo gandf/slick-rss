@@ -511,5 +511,8 @@
   },
   "optionHelpTranslation": {
     "message": "Aide avec la traduction"
+  },
+  "excludeUnreadCount": {
+    "message": "Exclure du compte des non lus"
   }
 }

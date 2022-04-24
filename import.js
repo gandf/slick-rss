@@ -62,7 +62,14 @@ function ImportFeeds()
 				{
 					group = "";
 				}
-				feeds.push(CreateNewFeed(nodes[i].getAttribute("text"), nodes[i].getAttribute("xmlUrl"), group, options.maxitems, maxOrder));
+
+				var excludeUnreadCount = nodes[i].getAttribute("excludeUnreadCount");
+				if (excludeUnreadCount == null)
+				{
+					excludeUnreadCount = 0;
+				}
+
+				feeds.push(CreateNewFeed(nodes[i].getAttribute("text"), nodes[i].getAttribute("xmlUrl"), group, options.maxitems, maxOrder, excludeUnreadCount));
 				importCount ++;
 			}
 		}

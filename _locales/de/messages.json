@@ -508,5 +508,8 @@
   },
   "optionHelpTranslation": {
     "message": "Hilfe bei der Übersetzung"
+  },
+  "excludeUnreadCount": {
+    "message": "Von der Zählung der ungelesenen Inhalte ausschließen"
   }
 }

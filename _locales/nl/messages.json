@@ -508,5 +508,8 @@
   },
   "optionHelpTranslation": {
     "message": "Hulp bij vertaling"
+  },
+  "excludeUnreadCount": {
+    "message": "Uitsluiten van ongelezen telling"
   }
 }

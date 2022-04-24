@@ -16,6 +16,7 @@ function Add()
 	var group = document.getElementById("newGroup").value;
 	var maxItems = document.getElementById("newMaxItems").value;
 	var order = document.getElementById("newOrder").value;
+	var excludeUnreadCount = document.getElementById("newExcludeUnreadCount").selectedIndex;
 	var key = null;
 	var maxOrder = 0;
 	var itemOrder = 0;
@@ -25,7 +26,7 @@ function Add()
 		return;
 	}
 
-	AddRow(feeds.push(CreateNewFeed(title, url, group, maxItems, order)) - 1);
+	AddRow(feeds.push(CreateNewFeed(title, url, group, maxItems, excludeUnreadCount, order)) - 1);
 
 	for(feedKey in feeds)
 	{
@@ -41,6 +42,7 @@ function Add()
 	document.getElementById("newTitle").value = "";
 	document.getElementById("newUrl").value = "";
 	document.getElementById("newGroup").value = "";
+	document.getElementById("newExcludeUnreadCount").selectedIndex = 0;
 
 }
 
@@ -98,6 +100,8 @@ function AddRow(feedKey)
 	var row = null;
 	var input = null;
 	var button = null;
+	var optionon = null;
+	var optionoff = null;
 
 	grid = document.getElementById("feedGrid");
 	row = grid.insertRow(grid.rows.length);
@@ -138,6 +142,22 @@ function AddRow(feedKey)
 
 	row.insertCell(4).appendChild(input);
 
+	optionoff = document.createElement("option");
+	optionoff.value = 0;
+	optionoff.text = GetMessageText("optionOff");
+
+ 	optionon = document.createElement("option");
+	optionon.value = 1;
+	optionon.text = GetMessageText("optionOn");
+
+	select = document.createElement('select');
+	select.setAttribute("id", "excludeUnreadCount");
+	select.appendChild(optionoff);
+	select.appendChild(optionon);
+	select.selectedIndex = feeds[feedKey].excludeUnreadCount;
+
+	row.insertCell(5).appendChild(select);
+
 	button = document.createElement("img");
 	button.setAttribute("src", "x_gray.png");
 	button.setAttribute("class", "delete");
@@ -150,7 +170,7 @@ function AddRow(feedKey)
 	});
 	//button.setAttribute("onclick", "MarkDelete(this.parentNode.parentNode);");
 	button.setAttribute("title", "Delete feed");
-	row.insertCell(5).appendChild(button);
+	row.insertCell(6).appendChild(button);
 }
 
 function MarkDelete(row)
@@ -178,6 +198,7 @@ function MarkDelete(row)
 	row.childNodes[2].childNodes[0].disabled = !marked; // group
 	row.childNodes[3].childNodes[0].disabled = !marked; // max items
 	row.childNodes[4].childNodes[0].disabled = !marked; // order
+	row.childNodes[5].childNodes[0].disabled = !marked; // excludeUnreadCount
 
 }
 
@@ -189,6 +210,7 @@ function Save()
 	var group;
 	var maxItems;
 	var order;
+	var excludeUnreadCount;
 
 	if(lastBadRow != null && lastBadRow.className != "markDelete")
 	{
@@ -204,6 +226,7 @@ function Save()
 		group = row.childNodes[2].childNodes[0].value;
 		maxItems = row.childNodes[3].childNodes[0].value;
 		order = row.childNodes[4].childNodes[0].value;
+		excludeUnreadCount = row.childNodes[5].childNodes[0].selectedIndex;
 
 		if(row.className != "markDelete" && !IsValid(title, url, group, maxItems, order))
 		{
@@ -217,6 +240,7 @@ function Save()
 		feeds[feedKey].group = group;
 		feeds[feedKey].maxitems = maxItems;
 		feeds[feedKey].order = order;
+		feeds[feedKey].excludeUnreadCount = excludeUnreadCount;
 	}
 
 	// delete feeds that are marked, start from end so indexes don't get screwed up

@@ -97,31 +97,6 @@ function ExternalRequest(request, sender, sendResponse) {
         sendResponse({});
         return;
     }
-    if (request.type == "addfeed") {
-        var maxOrder = 0;
-        var order = 0;
-        var resultPromise = null;
-
-        for (var i = 0; i < feeds.length; i++) {
-            order = parseInt(feeds[i].order, 10);
-
-            if (order > maxOrder) {
-                maxOrder = order;
-            }
-        }
-
-        maxOrder++;
-
-        feeds.push(CreateNewFeed(request.title, request.url, request.group, options.maxitems, maxOrder));
-        resultPromise = store.setItem('feeds', feeds);
-        resultPromise.then(function(){
-            UpdateGroups();
-            ReloadViewer();
-
-            sendResponse({});
-            return;
-        });
-    }
 
     if (request.type == "deletefeed") {
         for (var i = 0; i < feeds.length; i++) {
@@ -280,6 +255,12 @@ function GetFeeds(callBack) {
 
     store.getItem('feeds').then(function(datafeeds) {
         if (datafeeds != null) {
+            datafeeds.forEach(datafeed => {
+                if (datafeed.excludeUnreadCount == undefined) {
+                    datafeed.excludeUnreadCount = 0;
+                }
+            });
+            datafeeds
             feeds = datafeeds.sort(function (a, b) {
                 return a.order - b.order;
             });
@@ -306,6 +287,11 @@ function DoUpgrades() {
 
         listPromise.push(store.getItem('feeds').then(function(datafeeds) {
             if (datafeeds != null) {
+                datafeeds.forEach(datafeed => {
+                    if (datafeed.excludeUnreadCount == undefined) {
+                        datafeed.excludeUnreadCount = 0;
+                    }
+                });
                 keys = Object.keys(datafeeds);
                 var feedsToChange = {};
                 var changed = false;

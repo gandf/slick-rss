@@ -512,6 +512,9 @@
   "optionHelpTranslation": {
     "message": "Help with translation"
   },
+  "excludeUnreadCount": {
+    "message": "Exclude from unread count"
+  },
   "enappName": {
       "message": "Slick RSS by users"
   },
@@ -1024,5 +1027,8 @@
   },
   "enoptionHelpTranslation": {
     "message": "Help with translation"
+  },
+  "enexcludeUnreadCount": {
+    "message": "Exclude from unread count"
   }
 }
