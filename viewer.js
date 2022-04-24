@@ -1022,9 +1022,17 @@ function RenderFeed(type) {
             feedSummary.style.maxHeight = "none";
         }
         if (options.usethumbnail && (item.thumbnail != null)) {
-            feedSummary.innerHTML = item.thumbnail + item.content.replace(/style/g, 'sty&#108;e').replace(/width/g, 'w&#105;dth');
+            if (typeof item.content == 'string') {
+                feedSummary.innerHTML = item.thumbnail + item.content.replace(/style/g, 'sty&#108;e').replace(/width/g, 'w&#105;dth');
+            } else {
+                feedSummary.innerHTML = item.thumbnail + item.content;
+            }
         } else {
-            feedSummary.innerHTML = item.content.replace(/style/g, 'sty&#108;e').replace(/width/g, 'w&#105;dth');
+            if (typeof item.content == 'string') {
+                feedSummary.innerHTML = item.content.replace(/style/g, 'sty&#108;e').replace(/width/g, 'w&#105;dth');
+            } else {
+                feedSummary.innerHTML = item.content;
+            }
         }
 
         feedContainer = document.createElement("div");
