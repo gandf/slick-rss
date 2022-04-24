@@ -437,6 +437,12 @@ function CheckForUnread() {
         }
 
         try {
+            //>>Profiler
+            //console.log('|Feeds | ' + feeds[checkForUnreadCounter].url);
+            //const offsetMs = now.getTimezoneOffset() * 60 * 1000;
+            //var dtfetch = new Date(new Date() - offsetMs);
+            //console.log('|FETCH | ' + dtfetch.toLocaleString() + ' ' + dtfetch.getMilliseconds() + 'ms');
+            //<<Profiler
             fetch(feeds[checkForUnreadCounter].url.replace(/feed:\/\//i, "http://"), {
                 method: 'GET',
                 headers: {
@@ -450,6 +456,11 @@ function CheckForUnread() {
                 }
                 status = response.status;
                 response.arrayBuffer().then(function(data) {
+                    //>>Profiler
+                    //var dt = new Date(new Date() - offsetMs);
+                    //console.log('|Time FETCH | ' + FormatDTWithMs(dt - dtfetch));
+                    //console.log('|Time | ' + dt.toLocaleString() + ' ' + dt.getMilliseconds() + 'ms');
+                    //<<Profiler
                     var decoder = new TextDecoder("UTF-8");
                     var doc = decoder.decode(data);
                     var encodeName = doc.substring(0, 100);
@@ -638,6 +649,12 @@ function CheckForUnread() {
                     doc = null;
 
                     feedInfo[feedID].loading = false;
+
+                    //>>Profiler
+                    //var dt2 = new Date(new Date() - offsetMs);
+                    //console.log('|Time end | ', dt2.toLocaleString() + ' ' + dt2.getMilliseconds() + 'ms');
+                    //console.log('|Interval | ', FormatDTWithMs(dt2 - dt));
+                    //<<Profiler
 
                     waitPromise(promiseCheckForUnread).then(function () {
                         if (viewerPort != null) {
