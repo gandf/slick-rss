@@ -1,40 +1,19 @@
 function CleanText2(text)
 {
-    if ((text == undefined) || (text == null))
-    {
+    try {
+        return text[0][0]["#text"];
+    } catch(e){
         return text;
     }
-    else {
-        if (text[0] != undefined)
-        {
-            if (text[0][0] != undefined)
-            {
-                if (text[0][0]["#text"] != undefined)
-                {
-                    return text[0][0]["#text"];
-                }
-            }
-        }
-    }
-    return text;
 }
 
 function CleanText(text)
 {
-    if ((text == undefined) || (text == null))
-    {
+    try {
+        return text[0]["#text"];
+    } catch(e){
         return text;
     }
-    else {
-        if (text[0] != undefined)
-        {
-            if (text[0]["#text"] != undefined)
-            {
-                return text[0]["#text"];
-            }
-        }
-    }
-    return text;
 }
 
 function GetElementByTagNameJS() {
@@ -82,7 +61,7 @@ function GetElementsByTagNameJS() {
 
 function SearchTag(data, defaultValue, tag, level)
 {
-    if (level == 30)
+    if (level == options.levelSearchTag)
     {
         return defaultValue;
     }
@@ -118,6 +97,7 @@ function SearchTag(data, defaultValue, tag, level)
             var ret = SearchTag(val[i], defaultValue, tag, level + 1);
             if (ret != defaultValue)
             {
+                //console.log('|SearchTag level | ', level + 1);
                 return ret;
             }
         }
@@ -127,7 +107,7 @@ function SearchTag(data, defaultValue, tag, level)
 
 function SearchTags(data, defaultValue, tag, level)
 {
-    if (level == 30)
+    if (level == options.levelSearchTags)
     {
         return defaultValue;
     }
@@ -174,6 +154,7 @@ function SearchTags(data, defaultValue, tag, level)
             var ret = SearchTags(val[i], defaultValue, tag, level + 1);
             if (ret != defaultValue)
             {
+                //console.log('|SearchTags level | ', level + 1);
                 result.push(ret);
                 resultExist = true;
             }

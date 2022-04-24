@@ -499,5 +499,11 @@
   },
   "export": {
     "message": "Export"
+  },
+  "optionLevelSearchTag": {
+    "message": "Suchtiefen-Tag"
+  },
+  "optionLevelSearchTags": {
+    "message": "Suchtiefen-Tags"
   }
 }

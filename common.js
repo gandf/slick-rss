@@ -267,7 +267,9 @@ function GetDefaultOptions() {
         "feedsmaxheight": 200,
         "playSoundNotif": false,
         "darkmode": false,
-        "forcelangen": false
+        "forcelangen": false,
+        "levelSearchTag": 5,
+        "levelSearchTags": 8
     };
 }
 

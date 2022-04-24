@@ -44,6 +44,8 @@ function SetupScreen()
 		document.getElementById("useThumbnail").selectedIndex = options.usethumbnail;
 		document.getElementById("feedsMaxHeight").value = options.feedsmaxheight;
 		document.getElementById("forceLangEn").selectedIndex = options.forcelangen;
+		document.getElementById("levelSearchTag").value = options.levelSearchTag;
+		document.getElementById("levelSearchTags").value = options.levelSearchTags;
 
 		navigator.storage.estimate().then(({usage, quota}) => {
 			document.getElementById("StorageUsageValue").innerHTML = GetMessageText("optionStorageUsageValue1") + formatBytes(usage) + GetMessageText("optionStorageUsageValue2") + formatBytes(quota) + GetMessageText("optionStorageUsageValue3");
@@ -58,6 +60,15 @@ function Save()
 	var maxItems = document.getElementById("maxItems").value;
 	var feedsMaxHeight = document.getElementById("feedsMaxHeight").value;
 	var forceRefreshOptionInWorker;
+	var levelSearchTag = document.getElementById("levelSearchTag").value;
+	var levelSearchTags = document.getElementById("levelSearchTags").value;
+
+	if (levelSearchTag < 4) {
+		levelSearchTag = 4;
+	}
+	if (levelSearchTags < 6) {
+		levelSearchTags = 6;
+	}
 
 	if(!/^\d+$/.test(maxItems) || maxItems == "0")
 	{
@@ -93,6 +104,13 @@ function Save()
 	if (!forceRefreshOptionInWorker) {
 		forceRefreshOptionInWorker = options.showdescriptions != (document.getElementById("showDescriptions").selectedIndex == 1);
 	}
+	if (!forceRefreshOptionInWorker) {
+		forceRefreshOptionInWorker = options.levelSearchTag != levelSearchTag;
+	}
+	if (!forceRefreshOptionInWorker) {
+		forceRefreshOptionInWorker = options.levelSearchTags != levelSearchTags;
+	}
+
 	options.maxitems = parseInt(maxItems, 10);
 	options.darkmode = (document.getElementById("darkMode").selectedIndex == 1);
 	options.showdescriptions = (document.getElementById("showDescriptions").selectedIndex == 1);
@@ -115,6 +133,8 @@ function Save()
 	options.usethumbnail = (document.getElementById("useThumbnail").selectedIndex == 1);
 	options.feedsmaxheight = parseInt(feedsMaxHeight, 10);
 	options.forcelangen = (document.getElementById("forceLangEn").selectedIndex == 1);
+	options.levelSearchTag = parseInt(levelSearchTag, 10);
+	options.levelSearchTags = parseInt(levelSearchTags, 10);
 
 	store.setItem('options', options);
 

@@ -499,5 +499,11 @@
   },
   "export": {
     "message": "Exporteren"
+  },
+  "optionLevelSearchTag": {
+    "message": "Zoekdiepte-tag"
+  },
+  "optionLevelSearchTags": {
+    "message": "Tags voor diepteniveau zoeken"
   }
 }

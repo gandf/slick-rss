@@ -502,5 +502,11 @@
   },
   "export": {
     "message": "Exportar"
+  },
+  "optionLevelSearchTag": {
+    "message": "Etiqueta de nivel de profundidad de búsqueda"
+  },
+  "optionLevelSearchTags": {
+    "message": "Buscar etiquetas de nivel de profundidad"
   }
 }

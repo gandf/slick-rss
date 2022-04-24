@@ -502,5 +502,11 @@
   },
   "optionForceEnglishLang": {
     "message": "Forcer langue Anglaise"
+  },
+  "optionLevelSearchTag": {
+    "message": "Niveau de profondeur de recherche d'une balise"
+  },
+  "optionLevelSearchTags": {
+    "message": "Niveau de profondeur de recherche des balises"
   }
 }

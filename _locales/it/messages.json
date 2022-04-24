@@ -499,5 +499,11 @@
   },
   "export": {
     "message": "Esportare"
+  },
+  "optionLevelSearchTag": {
+    "message": "Tag del livello di profondità di ricerca"
+  },
+  "optionLevelSearchTags": {
+    "message": "Cerca i tag del livello di profondità"
   }
 }

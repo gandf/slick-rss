@@ -503,6 +503,12 @@
   "optionForceEnglishLang": {
     "message": "Force English language"
   },
+  "optionLevelSearchTag": {
+    "message": "Search depth level tag"
+  },
+  "optionLevelSearchTags": {
+    "message": "Search depth level tags"
+  },
   "enappName": {
       "message": "Slick RSS by users"
   },
@@ -1006,5 +1012,11 @@
   },
   "enoptionForceEnglishLang": {
     "message": "Force English language"
+  },
+  "enoptionLevelSearchTag": {
+    "message": "Search depth level tag"
+  },
+  "enoptionLevelSearchTags": {
+    "message": "Search depth level tags"
   }
 }
