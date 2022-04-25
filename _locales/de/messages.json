@@ -511,5 +511,17 @@
   },
   "excludeUnreadCount": {
     "message": "Von der Zählung der ungelesenen Inhalte ausschließen"
+  },
+  "optionFontSize": {
+    "message": "Schriftgröße"
+  },
+  "optionSize1": {
+    "message": "Normal"
+  },
+  "optionSize2": {
+    "message": "Mittel"
+  },
+  "optionSize3": {
+    "message": "Groß"
   }
 }

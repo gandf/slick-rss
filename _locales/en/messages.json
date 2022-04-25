@@ -515,6 +515,18 @@
   "excludeUnreadCount": {
     "message": "Exclude from unread count"
   },
+  "optionFontSize": {
+    "message": "Font size"
+  },
+  "optionSize1": {
+    "message": "Normal"
+  },
+  "optionSize2": {
+    "message": "Medium"
+  },
+  "optionSize3": {
+    "message": "Large"
+  },
   "enappName": {
       "message": "Slick RSS by users"
   },
@@ -1030,5 +1042,17 @@
   },
   "enexcludeUnreadCount": {
     "message": "Exclude from unread count"
+},
+  "enoptionFontSize": {
+    "message": "Font size"
+  },
+  "enoptionSize1": {
+    "message": "Normal"
+  },
+  "enoptionSize2": {
+    "message": "Medium"
+  },
+  "enoptionSize3": {
+    "message": "Large"
   }
 }

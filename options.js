@@ -24,6 +24,7 @@ function SetupScreen()
 
 		document.getElementById("maxItems").value = options.maxitems;
 		document.getElementById("darkMode").selectedIndex = options.darkmode;
+		document.getElementById("fontSize").selectedIndex = options.fontSize - 1;
 		document.getElementById("showDescriptions").selectedIndex = options.showdescriptions;
 		document.getElementById("showFeedImages").selectedIndex = options.showfeedimages;
 		document.getElementById("showFeedObjects").selectedIndex = options.showfeedobjects;
@@ -114,6 +115,7 @@ function Save()
 	options.maxitems = parseInt(maxItems, 10);
 	options.darkmode = (document.getElementById("darkMode").selectedIndex == 1);
 	options.showdescriptions = (document.getElementById("showDescriptions").selectedIndex == 1);
+	options.fontSize = document.getElementById("fontSize").selectedIndex + 1;
 	options.showfeedimages = (document.getElementById("showFeedImages").selectedIndex == 1);
 	options.showfeedobjects = (document.getElementById("showFeedObjects").selectedIndex == 1);
 	options.showfeediframes = (document.getElementById("showFeedIframes").selectedIndex == 1);

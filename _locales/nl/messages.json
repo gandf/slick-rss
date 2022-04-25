@@ -511,5 +511,17 @@
   },
   "excludeUnreadCount": {
     "message": "Uitsluiten van ongelezen telling"
+  },
+  "optionFontSize": {
+    "message": "Lettertypegrootte"
+  },
+  "optionSize1": {
+    "message": "Normaal"
+  },
+  "optionSize2": {
+    "message": "Medium"
+  },
+  "optionSize3": {
+    "message": "Groot"
   }
 }

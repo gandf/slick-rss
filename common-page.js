@@ -1,4 +1,10 @@
+function switchTheme(themesize) {
+  let app = document.getElementById("app");
+  app.setAttribute('themesize', themesize);
+}
+
 function activeDarkMode() {
+    switchTheme('' + options.fontSize);
     var keys = Object.keys(document.getElementsByTagName("link"));
     for (var i = 0; i < keys.length; i++) {
         var oldlink = document.getElementsByTagName("link").item(keys[i]);
@@ -7,6 +13,7 @@ function activeDarkMode() {
 }
 
 function disableDarkMode() {
+    switchTheme('' + options.fontSize);
     var keys = Object.keys(document.getElementsByTagName("link"));
     for (var i = 0; i < keys.length; i++) {
         var oldlink = document.getElementsByTagName("link").item(keys[i]);

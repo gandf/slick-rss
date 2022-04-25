@@ -956,7 +956,7 @@ function RenderFeed(type) {
             });
         }
 
-        feedTitle = document.createElement("h2");
+        feedTitle = document.createElement("div");
         feedTitle.setAttribute("class", "feedPreviewTitle");
         feedTitle.appendChild(feedMarkRead);
 

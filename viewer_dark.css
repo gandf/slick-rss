@@ -1,4 +1,3 @@
-
 body {
 	overflow: hidden;
 }
@@ -21,7 +20,7 @@ body {
 }
 
 #feedHeader {
-	font-size: 15px;
+	font-size: var(--feedHeader-font-size);
 	background-color: #3D4149;
 	color: #aaa;
 	padding-left: 10px;
@@ -29,7 +28,7 @@ body {
 }
 
 #feedHeader a {
-	font-size: 12px;
+	font-size: var(--feedHeader-a-font-size);
 	color: #999FAA;
 	text-decoration: none;
 }
@@ -65,7 +64,7 @@ body {
 	display: none;
 	width: 99%;
 	color: White;
-	font-size: small;
+	font-size: var(--feedsLoading-font-size);
 }
 
 #feedsLoading td + td {
@@ -93,7 +92,7 @@ body {
 }
 
 #feedPreview {
-	font-size: 12px;
+	font-size: var(--feedPreview-font-size);
 	outline: none;
 	width: 100%;
 	table-layout: fixed;
@@ -137,18 +136,20 @@ body {
 	background-color: #659DD8;
 	margin: 0px;
 	padding: 5px;
+	vertical-align: top;
+	font-weight: bold;
 }
 
 .feedPreviewContainerRead .feedPreviewTitle a {
 	text-decoration: none;
 	color: #999FAA;
-	font-size: 12px;
+	font-size: var(--feedPreviewContainerRead-a-font-size);
 }
 
 .feedPreviewTitle a {
 	text-decoration: none;
 	color: #4D5460;
-	font-size: 12px;
+	font-size: var(--feedPreviewTitle-a-font-size);
 }
 
 .feedPreviewTitle a:hover {
@@ -175,7 +176,7 @@ blockquote > blockquote > blockquote > blockquote {
 
 .feedPreviewDate {
 	padding: 5px;
-	font-size: smaller;
+	font-size: var(--feedPreviewDate-font-size);
 	float: left;
 	white-space: nowrap;
 	width: 1%;
@@ -183,7 +184,7 @@ blockquote > blockquote > blockquote > blockquote {
 
 .feedPreviewAuthor {
 	padding: 5px;
-	font-size: smaller;
+	font-size: var(--feedPreviewAuthor-font-size);
 	text-align: right;
 }
 
@@ -225,12 +226,12 @@ blockquote > blockquote > blockquote > blockquote {
 }
 
 #noFeedsManaged {
-	font-size: 12px;
+	font-size: var(--noFeedsManaged-font-size);
 	padding: 5px;
 }
 
 #feedError {
-	font-size: 12px;
+	font-size: var(--feedError-font-size);
 	padding: 5px;
 }
 
@@ -253,5 +254,5 @@ blockquote > blockquote > blockquote > blockquote {
 
 #noItems {
 	padding: 5px;
-	font-size: 12px;
+	font-size: var(--noItems-font-size);
 }

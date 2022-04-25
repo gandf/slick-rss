@@ -267,6 +267,7 @@ function GetDefaultOptions() {
         "feedsmaxheight": 200,
         "playSoundNotif": false,
         "darkmode": false,
+        "fontSize": 1,
         "forcelangen": false,
         "levelSearchTag": 5,
         "levelSearchTags": 8

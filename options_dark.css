@@ -1,4 +1,3 @@
-﻿
 #workArea
 {
 	padding: 5px;
@@ -6,7 +5,7 @@
 
 #maxItems
 {
-	width: 25px;
+	width: var(--maxItems-width);
 }
 
 #dateFormat
@@ -18,7 +17,7 @@
 {
 	background-color: #22252B;
 	position: absolute;
-	font-size: 11px;
+	font-size: var(--dateHelp-font-size);
 }
 
 #dateHelp th
@@ -50,4 +49,24 @@
 #feedsMaxHeight
 {
 	width: 50px;
+}
+
+#levelSearchTag
+{
+	width: var(--levelSearchTag-width);
+}
+
+#levelSearchTags
+{
+	width: var(--levelSearchTag-width);
+}
+
+input
+{
+	font-size: var(--input-font-size);
+}
+
+select
+{
+	font-size: var(--select-font-size);
 }

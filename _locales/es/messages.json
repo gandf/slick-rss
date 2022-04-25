@@ -514,5 +514,17 @@
   },
   "excludeUnreadCount": {
     "message": "Excluir del recuento de no leídos"
+  },
+  "optionFontSize": {
+    "message": "Tamaño de fuente"
+  },
+  "optionSize1": {
+    "message": "Normal"
+  },
+  "optionSize2": {
+    "message": "Medio"
+  },
+  "optionSize3": {
+    "message": "Larga"
   }
 }
