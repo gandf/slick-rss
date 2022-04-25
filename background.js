@@ -403,6 +403,7 @@ function CheckForUnread() {
         if (checkForUnreadCounter >= feeds.length || refreshFeed) {
             CheckForUnreadComplete();
         } else {
+            UpdateLoadingProgress(checkForUnreadCounter, feeds.length);
             CheckForUnread();
         }
     }
@@ -417,10 +418,6 @@ function CheckForUnread() {
         }
 
         feedInfo[feedID] = {title: "", description: "", group: "", loading: true, items: [], error: ""};
-
-        if (viewerPort != null) {
-            viewerPort.postMessage({type: "feedupdatestarted", id: feedID, refreshFeed: refreshFeed, checkForUnreadCounter: checkForUnreadCounter, checkingForUnread: checkingForUnread});
-        }
 
         try {
             //>>Profiler
@@ -449,6 +446,7 @@ function CheckForUnread() {
                     if (checkForUnreadCounter >= feeds.length || refreshFeed) {
                         CheckForUnreadComplete();
                     } else {
+                        UpdateLoadingProgress(checkForUnreadCounter, feeds.length);
                         setTimeout(function() {
                             CheckForUnread();
                         }, 200);
@@ -669,6 +667,7 @@ function CheckForUnread() {
                         if (checkForUnreadCounter >= feeds.length || refreshFeed) {
                             CheckForUnreadComplete();
                         } else {
+                            UpdateLoadingProgress(checkForUnreadCounter, feeds.length);
                             setTimeout(function() {
                                 CheckForUnread();
                             }, 200);
@@ -689,6 +688,7 @@ function CheckForUnread() {
                 if (checkForUnreadCounter >= feeds.length || refreshFeed) {
                     CheckForUnreadComplete();
                 } else {
+                    UpdateLoadingProgress(checkForUnreadCounter, feeds.length);
                     setTimeout(function() {
                         CheckForUnread();
                     }, 200);
@@ -708,6 +708,7 @@ function CheckForUnread() {
             if (checkForUnreadCounter >= feeds.length || refreshFeed) {
                 CheckForUnreadComplete();
             } else {
+                UpdateLoadingProgress(checkForUnreadCounter, feeds.length);
                 setTimeout(function() {
                     CheckForUnread();
                 }, 200);
@@ -899,4 +900,10 @@ function CalcGroupCountUnread(key) {
         }
     }
     return count;
+}
+
+function UpdateLoadingProgress(currentFeeds, currentFeedsCount) {
+    if (viewerPort != null) {
+        viewerPort.postMessage({type: "progressLoading", currentFeeds: currentFeeds, currentFeedsCount: currentFeedsCount});
+    }
 }

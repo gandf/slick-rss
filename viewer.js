@@ -58,7 +58,7 @@ port.onMessage.addListener(function (msg) {
         document.getElementById("feedsLoadingProgress").style.width = "0%";
         var element1 = document.getElementById("feedsLoading").style.display;
         var element2 = document.getElementById("feedsOptions").style.display;
-        element1 = "";
+        element1 = "block";
         element2 = "none";
     }
 
@@ -67,24 +67,6 @@ port.onMessage.addListener(function (msg) {
         var element2 = document.getElementById("feedsOptions").style.display;
         element1 = "none";
         element2 = "";
-    }
-
-    if (msg.type == "feedupdatestarted") {
-        if (!msg.refreshFeed) {
-            UpdateRefreshAllProgress(msg.refreshFeed, msg.checkForUnreadCounter, msg.checkingForUnread);
-        }
-        if (selectedFeedKey != null) {
-            if (selectedFeedKeyIsFeed) {
-                if (msg.id == feeds[selectedFeedKey].id) {
-                    document.getElementById("header").className = "loading";
-                }
-            }
-            else {
-                if (msg.id == groups[selectedFeedKey].id) {
-                    document.getElementById("header").className = "loading";
-                }
-            }
-        }
     }
 
     if (msg.type == "feedupdatecomplete") {
@@ -111,10 +93,21 @@ port.onMessage.addListener(function (msg) {
     if (msg.type == "unreadtotalchanged") {
         UpdateTitle();
     }
+
     if (msg.type == "playSound") {
         var audio = new Audio('Glisten.ogg');
         audio.addEventListener('ended', ReloadViewer);
         audio.play();
+    }
+
+    if (msg.type == "progressLoading") {
+        //Show progress bar if not already visible
+        if ((document.getElementById("feedsLoading").style.display != "") || (document.getElementById("feedsOptions").style.display != "none")) {
+            UpdateSizeProgress(false);
+            document.getElementById("feedsLoading").style.display = "block";
+            document.getElementById("feedsOptions").style.display = "none";
+        }
+        UpdateLoadingProgress(msg.currentFeeds, msg.currentFeedsCount);
     }
 });
 
@@ -156,20 +149,12 @@ function UpdateDataFromWorker(){
     });
 }
 
-function UpdateRefreshAllProgress(refreshFeed, checkForUnreadCounter, checkingForUnread) {
-    if (checkingForUnread) {
-        var element1 = document.getElementById("feedsOptions").style.display;
-        var element2 = document.getElementById("feedsLoading").style.display;
-        element1 = "none";
-        element2 = "block";
-        UpdateSizeProgress(false);
-        var ProgressWidth;
-        ProgressWidth = (refreshFeed) ? 100 : Math.round(((checkForUnreadCounter + 1) / feeds.length) * 100);
+function UpdateLoadingProgress(currentFeeds, currentFeedsCount) {
+        var ProgressWidth = Math.round(((currentFeeds + 1) / currentFeedsCount) * 100);
         if (ProgressWidth > 100) {
             ProgressWidth = 100;
         }
         document.getElementById("feedsLoadingProgress").style.width = ProgressWidth + "%";
-    }
 }
 
 function UpdateTitle() {
@@ -290,7 +275,6 @@ function ShowFeeds() {
                         chrome.runtime.sendMessage({"type": "getRefreshFeed"}).then(function(data){
                             if (data != undefined){
                                 info = GetObjectFromStr(data);
-                                UpdateRefreshAllProgress(info.refreshFeed, info.checkForUnreadCounter, info.checkingForUnread);
                             }
                         });
                     }, 500);
