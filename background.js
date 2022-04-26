@@ -417,7 +417,7 @@ function CheckForUnread() {
             }
         }
 
-        feedInfo[feedID] = {title: "", description: "", group: "", loading: true, items: [], error: ""};
+        feedInfo[feedID] = {title: "", description: "", group: "", loading: true, items: [], error: "", guid:""};
 
         try {
             //>>Profiler
@@ -514,7 +514,21 @@ function CheckForUnread() {
                                 item.date = CleanText2(SearchTag(entries[e], null, ["PUBDATE", "UPDATED", "DC:DATE", "DATE", "PUBLISHED"], 0)); // not sure if date is even needed anymore
                                 item.content = "";
                                 item.idOrigin = feedID;
-                                item.itemID = sha256(item.title + item.date);
+                                item.guid = SearchTag(entries[e], "", ["GUID"], 0);
+                                if (item.guid == "")
+                                {
+                                    item.guid = SearchTag(entries[e], "", ["ID"], 0);
+                                }
+                                if (item.guid == "")
+                                {
+                                    item.guid = null;
+                                }
+                                if (item.guid == undefined) {
+                                    item.itemID = sha256(item.title + item.date);
+                                }
+                                else {
+                                    item.itemID = sha256(item.guid);
+                                }
                                 thumbnailurl = null;
                                 thumbnailtype = null;
 
