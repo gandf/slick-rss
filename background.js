@@ -449,7 +449,7 @@ function CheckForUnread() {
                         UpdateLoadingProgress(checkForUnreadCounter, feeds.length);
                         setTimeout(function() {
                             CheckForUnread();
-                        }, 200);
+                        }, 100);
                     }
                     return;
                 }
@@ -684,7 +684,7 @@ function CheckForUnread() {
                             UpdateLoadingProgress(checkForUnreadCounter, feeds.length);
                             setTimeout(function() {
                                 CheckForUnread();
-                            }, 200);
+                            }, 100);
                         }
                     });
                 });
@@ -705,7 +705,7 @@ function CheckForUnread() {
                     UpdateLoadingProgress(checkForUnreadCounter, feeds.length);
                     setTimeout(function() {
                         CheckForUnread();
-                    }, 200);
+                    }, 100);
                 }
             });
         }
@@ -725,7 +725,7 @@ function CheckForUnread() {
                 UpdateLoadingProgress(checkForUnreadCounter, feeds.length);
                 setTimeout(function() {
                     CheckForUnread();
-                }, 200);
+                }, 100);
             }
         }
     }
