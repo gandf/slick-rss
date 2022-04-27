@@ -453,6 +453,11 @@ function CheckForUnread() {
                     }
                     return;
                 }
+                if (response.redirected) {
+                    feeds[checkForUnreadCounter].urlredirected = response.url;
+                } else {
+                    feeds[checkForUnreadCounter].urlredirected = undefined;
+                }
                 status = response.status;
                 response.arrayBuffer().then(function(data) {
                     //>>Profiler

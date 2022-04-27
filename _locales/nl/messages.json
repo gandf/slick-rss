@@ -523,5 +523,8 @@
   },
   "optionSize3": {
     "message": "Groot"
+  },
+  "backurlRedirected": {
+    "message": "De URL is omgeleid naar het adres "
   }
 }

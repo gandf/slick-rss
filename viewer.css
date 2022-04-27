@@ -250,3 +250,12 @@ blockquote > blockquote > blockquote > blockquote {
 	padding: 5px;
 	font-size: 12px;
 }
+
+#urlRedirected {
+	font-size: var(--feedError-font-size);
+	padding: 5px;
+}
+
+#urlRedirectedUrl {
+	font-weight: bold;
+}

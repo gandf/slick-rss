@@ -527,6 +527,9 @@
   "optionSize3": {
     "message": "Large"
   },
+  "backurlRedirected": {
+    "message": "URL has been redirected to "
+  },
   "enappName": {
       "message": "Slick RSS by users"
   },
@@ -1054,5 +1057,8 @@
   },
   "enoptionSize3": {
     "message": "Large"
+  },
+  "enbackurlRedirected": {
+    "message": "URL has been redirected to "
   }
 }

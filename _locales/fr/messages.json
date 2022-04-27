@@ -526,5 +526,8 @@
   },
   "optionSize3": {
     "message": "Grand"
+  },
+  "backurlRedirected": {
+    "message": "L'URL a été redirigée à l'adresse "
   }
 }

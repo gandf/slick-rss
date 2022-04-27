@@ -523,5 +523,8 @@
   },
   "optionSize3": {
     "message": "Groß"
+  },
+  "backurlRedirected": {
+    "message": "Die URL wurde auf die Adresse umgeleitet "
   }
 }
