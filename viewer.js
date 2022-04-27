@@ -56,17 +56,13 @@ port.onMessage.addListener(function (msg) {
     if (msg.type == "refreshallstarted") {
         UpdateSizeProgress(false);
         document.getElementById("feedsLoadingProgress").style.width = "0%";
-        var element1 = document.getElementById("feedsLoading").style.display;
-        var element2 = document.getElementById("feedsOptions").style.display;
-        element1 = "block";
-        element2 = "none";
+        document.getElementById("feedsLoading").style.display = "block";
+        document.getElementById("feedsOptions").style.display = "none";
     }
 
     if (msg.type == "refreshallcomplete") {
-        var element1 = document.getElementById("feedsLoading").style.display;
-        var element2 = document.getElementById("feedsOptions").style.display;
-        element1 = "none";
-        element2 = "";
+        document.getElementById("feedsLoading").style.display = "none";
+        document.getElementById("feedsOptions").style.display = "";
     }
 
     if (msg.type == "feedupdatecomplete") {
@@ -101,12 +97,6 @@ port.onMessage.addListener(function (msg) {
     }
 
     if (msg.type == "progressLoading") {
-        //Show progress bar if not already visible
-        if ((document.getElementById("feedsLoading").style.display != "") || (document.getElementById("feedsOptions").style.display != "none")) {
-            UpdateSizeProgress(false);
-            document.getElementById("feedsLoading").style.display = "block";
-            document.getElementById("feedsOptions").style.display = "none";
-        }
         UpdateLoadingProgress(msg.currentFeeds, msg.currentFeedsCount);
     }
 });
@@ -153,6 +143,21 @@ function UpdateLoadingProgress(currentFeeds, currentFeedsCount) {
         var ProgressWidth = Math.round(((currentFeeds + 1) / currentFeedsCount) * 100);
         if (ProgressWidth > 100) {
             ProgressWidth = 100;
+        }
+
+        //Show progress bar if not already visible
+        if (ProgressWidth <= 50) {
+            if ((document.getElementById("feedsLoading").style.display != "") || (document.getElementById("feedsOptions").style.display != "none")) {
+                UpdateSizeProgress(false);
+                document.getElementById("feedsLoading").style.display = "block";
+                document.getElementById("feedsOptions").style.display = "none";
+            }
+        } else {
+            if (ProgressWidth == 100) {
+                document.getElementById("feedsLoading").style.display = "none";
+                document.getElementById("feedsOptions").style.display = "";
+                UpdateSizeProgress(false);
+            }
         }
         document.getElementById("feedsLoadingProgress").style.width = ProgressWidth + "%";
 }
