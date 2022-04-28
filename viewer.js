@@ -242,7 +242,13 @@ function ShowFeeds() {
         var showNoFeeds = false;
         showFeedsWork = true;
         if (lastSelectedType != "Group") {
-            if (feeds.length == 0 || (feeds.length == 1 && feedInfo[readLaterFeedID].items.length == 0)) {
+            if ((feeds.length == 0) || ((feeds.length == 1) && (feedInfo[readLaterFeedID] == undefined))) {
+                showNoFeeds = true;
+            }
+            if (!showNoFeeds && (feedInfo[readLaterFeedID] != undefined)) {
+                showNoFeeds = (feeds.length == 1) && (feedInfo[readLaterFeedID].items.length == 0);
+            }
+            if (showNoFeeds) {
                 document.getElementById("feedHeader").style.display = "none";
                 document.getElementById("feedArea").style.display = "none";
                 document.getElementById("refresh").style.display = "none";
