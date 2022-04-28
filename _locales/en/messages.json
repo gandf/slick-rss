@@ -188,7 +188,7 @@
   "optionMin0": {
     "message": "Zero padded minutes"
   },
-  "optionM": {
+  "optionMin": {
     "message": "Minutes"
   },
   "optionS0": {
@@ -728,7 +728,7 @@
   "enoptionMin0": {
       "message": "Zero padded minutes"
   },
-  "enoptionM": {
+  "enoptionMin": {
       "message": "Minutes"
   },
   "enoptionS0": {

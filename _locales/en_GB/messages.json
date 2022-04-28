@@ -188,7 +188,7 @@
   "optionMin0": {
     "message": "Zero padded minutes"
   },
-  "optionM": {
+  "optionMin": {
     "message": "Minutes"
   },
   "optionS0": {
@@ -499,5 +499,44 @@
   },
   "export": {
     "message": "Export"
+  },
+  "optionForceEnglishLang": {
+    "message": "Force English language"
+  },
+  "optionLevelSearchTag": {
+    "message": "Search depth level tag"
+  },
+  "optionLevelSearchTags": {
+    "message": "Search depth level tags"
+  },
+  "optionHelpTranslation": {
+    "message": "Help with translation"
+  },
+  "excludeUnreadCount": {
+    "message": "Exclude from unread count"
+  },
+  "optionFontSize": {
+    "message": "Font size"
+  },
+  "optionSize1": {
+    "message": "Normal"
+  },
+  "optionSize2": {
+    "message": "Medium"
+  },
+  "optionSize3": {
+    "message": "Large"
+  },
+  "backurlRedirected": {
+    "message": "URL has been redirected to "
+  },
+  "optionNotifyWindowType": {
+    "message": "Notification window type"
+  },
+  "optionWindow": {
+    "message": "Window"
+  },
+  "optionTab": {
+    "message": "Tab"
   }
 }
