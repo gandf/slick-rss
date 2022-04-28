@@ -530,6 +530,15 @@
   "backurlRedirected": {
     "message": "URL has been redirected to "
   },
+  "optionNotifyWindowType": {
+    "message": "Notification window type"
+  },
+  "optionWindow": {
+    "message": "Window"
+  },
+  "optionTab": {
+    "message": "Tab"
+  },
   "enappName": {
       "message": "Slick RSS by users"
   },
@@ -1060,5 +1069,14 @@
   },
   "enbackurlRedirected": {
     "message": "URL has been redirected to "
+  },
+  "enoptionNotifyWindowType": {
+    "message": "Notification window type"
+  },
+  "enoptionWindow": {
+    "message": "Window"
+  },
+  "enoptionTab": {
+    "message": "Tab"
   }
 }

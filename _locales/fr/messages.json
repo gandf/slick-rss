@@ -529,5 +529,14 @@
   },
   "backurlRedirected": {
     "message": "L'URL a été redirigée à l'adresse "
+  },
+  "optionNotifyWindowType": {
+    "message": "Type de fenêtre de notification"
+  },
+  "optionWindow": {
+    "message": "Fenêtre"
+  },
+  "optionTab": {
+    "message": "Onglet"
   }
 }

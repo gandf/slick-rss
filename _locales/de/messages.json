@@ -526,5 +526,14 @@
   },
   "backurlRedirected": {
     "message": "Die URL wurde auf die Adresse umgeleitet "
+  },
+  "optionNotifyWindowType": {
+    "message": "Benachrichtigungsfenstertyp"
+  },
+  "optionWindow": {
+    "message": "Fenster"
+  },
+  "optionTab": {
+    "message": "Tab"
   }
 }

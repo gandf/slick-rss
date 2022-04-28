@@ -47,6 +47,7 @@ function SetupScreen()
 		document.getElementById("forceLangEn").selectedIndex = options.forcelangen;
 		document.getElementById("levelSearchTag").value = options.levelSearchTag;
 		document.getElementById("levelSearchTags").value = options.levelSearchTags;
+		document.getElementById("notifyWindowType").selectedIndex = options.typeNotify;
 
 		navigator.storage.estimate().then(({usage, quota}) => {
 			document.getElementById("StorageUsageValue").innerHTML = GetMessageText("optionStorageUsageValue1") + formatBytes(usage) + GetMessageText("optionStorageUsageValue2") + formatBytes(quota) + GetMessageText("optionStorageUsageValue3");
@@ -137,6 +138,7 @@ function Save()
 	options.forcelangen = (document.getElementById("forceLangEn").selectedIndex == 1);
 	options.levelSearchTag = parseInt(levelSearchTag, 10);
 	options.levelSearchTags = parseInt(levelSearchTags, 10);
+	options.typeNotify = document.getElementById("notifyWindowType").selectedIndex;
 
 	store.setItem('options', options);
 

@@ -30,7 +30,9 @@
 {
 	background-color: #22252B;
 	font-weight: bold;
+	border:1px solid #FD7D3C;
 }
+
 #optionTable
 {
 	float: left;

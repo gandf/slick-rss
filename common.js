@@ -270,7 +270,8 @@ function GetDefaultOptions() {
         "fontSize": 1,
         "forcelangen": false,
         "levelSearchTag": 5,
-        "levelSearchTags": 8
+        "levelSearchTags": 8,
+        "typeNotify": 1
     };
 }
 
@@ -442,7 +443,11 @@ function PlayNotificationSound() {
             viewerPort.postMessage({type: "playSound"});
         }
         else {
-          chrome.windows.create({url: chrome.runtime.getURL("notify.html"), width: 10, top: 1, left: 1, height: 1, focused: false, type: "popup"});
+            if (options.typeNotify == 0) {
+                chrome.windows.create({url: chrome.runtime.getURL("notify.html"), width: 10, top: 1, left: 1, height: 1, focused: false, type: "popup"});
+            } else {
+                chrome.tabs.create({url: chrome.runtime.getURL("notify_tab.html"), active: true});
+            }
         }
     }
 }

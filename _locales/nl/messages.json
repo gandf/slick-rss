@@ -526,5 +526,14 @@
   },
   "backurlRedirected": {
     "message": "De URL is omgeleid naar het adres "
+  },
+  "optionNotifyWindowType": {
+    "message": "Type meldingsvenster"
+  },
+  "optionWindow": {
+    "message": "Raam"
+  },
+  "optionTab": {
+    "message": "Tab"
   }
 }
