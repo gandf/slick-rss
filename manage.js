@@ -26,7 +26,7 @@ function Add()
 		return;
 	}
 
-	AddRow(feeds.push(CreateNewFeed(title, url, group, maxItems, excludeUnreadCount, order)) - 1);
+	AddRow(feeds.push(CreateNewFeed(title, url, group, maxItems, order, excludeUnreadCount)) - 1);
 
 	for(feedKey in feeds)
 	{

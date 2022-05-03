@@ -539,6 +539,10 @@ function MarkFeedReadFromGroup(feedID) {
     var groupKey = null;
     var listUnread = [];
 
+    if (unreadInfo[feedID] == undefined) {
+        return;
+    }
+
     if (unreadInfo[feedID].unreadtotal == 0) {
         return;
     }
