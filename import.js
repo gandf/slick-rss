@@ -68,6 +68,12 @@ function ImportFeeds()
 				{
 					excludeUnreadCount = 0;
 				}
+				else {
+					excludeUnreadCount = parseInt(excludeUnreadCount, 10);
+					if (isNaN(excludeUnreadCount)) {
+						excludeUnreadCount = 0;
+					}
+				}
 
 				feeds.push(CreateNewFeed(nodes[i].getAttribute("text"), nodes[i].getAttribute("xmlUrl"), group, options.maxitems, maxOrder, excludeUnreadCount));
 				importCount ++;
