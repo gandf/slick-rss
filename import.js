@@ -87,13 +87,12 @@ function ImportFeeds()
 		}
 
 		//remove ReadLater
-		var resultPromise = store.setItem('feeds', feeds.filter(filterByID)).then(function(data){
+		if (feeds.filter(filterByID).length == 0) {
 			alert(GetMessageText("importAlertImportedFeeds1") + importCount + GetMessageText("importAlertImportedFeeds2"));
-		});
-		resultPromise.then(function(){
-			chrome.runtime.sendMessage({"type": "refreshFeeds"}).then(function(){ });
-		});
-
-		window.close();
+		} else {
+			chrome.runtime.sendMessage({"type": "importFeeds", "data": GetStrFromObject(feeds.filter(filterByID))}).then(function(){
+				window.close();
+			});
+		}
 	});
 }

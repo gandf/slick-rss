@@ -246,6 +246,18 @@ function ExternalRequest(request, sender, sendResponse) {
         sendResponse({});
         return;
     }
+    if (request.type == "importFeeds") {
+        if (request.data != undefined) {
+            feeds = GetObjectFromStr(request.data);
+            store.setItem('feeds', feeds).then(function() {
+                GetFeeds(function () {
+                    CheckForUnreadStart();
+                });
+            });;
+        }
+        sendResponse({});
+        return;
+    }
 }
 
 // gets the feed array for everyone to use
