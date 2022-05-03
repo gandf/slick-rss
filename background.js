@@ -108,9 +108,9 @@ function ExternalRequest(request, sender, sendResponse) {
         resultPromise.then(function(){
             UpdateGroups();
             ReloadViewer();
-            sendResponse({});
-            return;
         });
+        sendResponse({});
+        return;
     }
     if (request.type == "checkForUnread") {
         CheckForUnreadStart();
