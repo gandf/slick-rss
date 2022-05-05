@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "__MSG_appName__",
-    "version": "3.005.1",
+    "version": "3.005.2",
     "author": "__MSG_appAuthor__",
     "homepage_url": "__MSG_appHomepageUrl__",
     "description": "__MSG_appDesc__",
