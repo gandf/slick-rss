@@ -5,6 +5,12 @@
   "appDesc": {
     "message": "Un lettore RSS completo che è completamente contenuto all'interno del browser."
   },
+  "appAuthor": {
+    "message": "gandf"
+  },
+  "appHomepageUrl": {
+    "message": "https://github.com/gandf/slick-rss"
+  },
   "exportTitle": {
     "message": "Slick RSS : Esporta feed"
   },

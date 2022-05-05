@@ -5,6 +5,12 @@
   "appDesc": {
     "message": "Un lector de RSS con todas las funciones que está completamente contenido dentro del navegador."
   },
+  "appAuthor": {
+    "message": "gandf"
+  },
+  "appHomepageUrl": {
+    "message": "https://github.com/gandf/slick-rss"
+  },
   "exportTitle": {
     "message": "Slick RSS : Exportar fuentes"
   },

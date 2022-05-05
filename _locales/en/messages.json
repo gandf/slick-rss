@@ -5,6 +5,12 @@
   "appDesc": {
     "message": "A full featured RSS reader that's fully contained within the browser."
   },
+  "appAuthor": {
+    "message": "gandf"
+  },
+  "appHomepageUrl": {
+    "message": "https://github.com/gandf/slick-rss"
+  },
   "exportTitle": {
     "message": "Slick RSS : Export Feeds"
   },
@@ -538,12 +544,6 @@
   },
   "optionTab": {
     "message": "Tab"
-  },
-  "enappName": {
-      "message": "Slick RSS by users"
-  },
-  "enappDesc": {
-      "message": "A full featured RSS reader that's fully contained within the browser."
   },
   "enexportTitle": {
       "message": "Slick RSS : Export Feeds"
