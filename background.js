@@ -540,16 +540,18 @@ function CheckForUnread() {
                                 {
                                     item.guid = null;
                                 }
-                                if (typeof item.guid == "object") {
-                                    if (item.guid[0] != undefined) {
-                                        if (item.guid[0][0] != undefined) {
-                                            if (item.guid[0][0]["#text"] != undefined) {
-                                                item.guid = item.guid[0][0]["#text"];
+                                if (item.guid != undefined) {
+                                    if (typeof item.guid == "object") {
+                                        if (item.guid[0] != undefined) {
+                                            if (item.guid[0][0] != undefined) {
+                                                if (item.guid[0][0]["#text"] != undefined) {
+                                                    item.guid = item.guid[0][0]["#text"];
+                                                }
                                             }
                                         }
-                                    }
-                                    if (typeof item.guid != "string") {
-                                        item.guid = undefined;
+                                        if (typeof item.guid != "string") {
+                                            item.guid = undefined;
+                                        }
                                     }
                                 }
                                 if (item.guid == undefined) {

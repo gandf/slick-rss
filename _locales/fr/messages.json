@@ -8,9 +8,6 @@
   "appAuthor": {
     "message": "gandf"
   },
-  "appHomepageUrl": {
-    "message": "https://github.com/gandf/slick-rss"
-  },
   "exportTitle": {
     "message": "Slick RSS : Export Flux"
   },

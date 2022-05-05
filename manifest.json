@@ -3,7 +3,7 @@
     "name": "__MSG_appName__",
     "version": "3.005.2",
     "author": "__MSG_appAuthor__",
-    "homepage_url": "__MSG_appHomepageUrl__",
+    "homepage_url": "https://github.com/gandf/slick-rss",
     "description": "__MSG_appDesc__",
     "options_page": "options.html",
     "default_locale": "en",
