@@ -894,7 +894,7 @@ function RenderFeed(type) {
         return;
     }
 
-    document.getElementById("headerMessage").innerText = feedsOrGroupsInfo[feedID].title;
+    document.getElementById("headerMessage").innerHTML = feedsOrGroupsInfo[feedID].title;
 
     if (feedsOrGroupsInfo[feedID].description != "" && options.showdescriptions) {
         document.getElementById("headerMessage").innerHTML += "<span> : " + feedsOrGroupsInfo[feedID].description + "</span>";
