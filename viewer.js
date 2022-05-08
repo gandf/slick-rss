@@ -900,9 +900,16 @@ function RenderFeed(type) {
         document.getElementById("headerMessage").innerHTML += "<span> : " + feedsOrGroupsInfo[feedID].description + "</span>";
     }
 
+    var logoUsed = false;
     if (feedsOrGroupsInfo[feedID].image != undefined) {
-        document.getElementById("headerLogo").style.backgroundImage = "url(" + feedsOrGroupsInfo[feedID].image[0]["url"] + ")";
-    } else {
+        if (feedsOrGroupsInfo[feedID].image[0] != undefined) {
+            if (feedsOrGroupsInfo[feedID].image[0]["url"] != undefined) {
+                document.getElementById("headerLogo").style.backgroundImage = "url(" + feedsOrGroupsInfo[feedID].image[0]["url"] + ")";
+                logoUsed = true;
+            }
+        }
+    }
+    if (!logoUsed) {
         document.getElementById("headerLogo").style.backgroundImage = "url(rss.png)";
     }
 
@@ -1175,7 +1182,10 @@ function ShowFeedError(message, content) {
 
     if ((content != undefined) && (content != "")) {
         document.getElementById("feedErrorContent").innerHTML = content;
+    } else {
+        document.getElementById("feedErrorContent").innerHTML = "";
     }
+    document.getElementById("headerLogo").style.backgroundImage = "url(rss.png)";
 }
 
 // central function to control creation of tabs so we can put them in the background
