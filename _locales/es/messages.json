@@ -359,6 +359,9 @@
   "backError200Part3": {
     "message": "'."
   },
+  "backErrorMessage": {
+    "message": "El contenido del Fuentes no está en un formato reconocido. Contenido:"
+  },
   "backViewerMarkRead": {
     "message": "Marcar como leído"
   },

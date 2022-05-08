@@ -356,6 +356,9 @@
   "backError200Part3": {
     "message": "'."
   },
+  "backErrorMessage": {
+    "message": "Il contenuto del feed non è in un formato riconosciuto. Contenuto:"
+  },
   "backViewerMarkRead": {
     "message": "Segna letto"
   },
@@ -366,7 +369,7 @@
     "message": "Apri tutto non letto"
   },
   "backViewerFeedIssue": {
-    "message": "Problemi di alimentazione"
+    "message": "Problemi di feed"
   },
   "backViewerRefreshing": {
     "message": "Rinfrescante"

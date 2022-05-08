@@ -356,6 +356,9 @@
   "backError200Part3": {
     "message": "'."
   },
+  "backErrorMessage": {
+    "message": "Der Feedinhalt hat kein erkanntes Format. Inhalt:"
+  },
   "backViewerMarkRead": {
     "message": "Als gelesen markieren"
   },

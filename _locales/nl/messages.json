@@ -356,6 +356,9 @@
   "backError200Part3": {
     "message": "'."
   },
+  "backErrorMessage": {
+    "message": "Feedinhoud heeft geen herkende indeling. Inhoud:"
+  },
   "backViewerMarkRead": {
     "message": "Markeer als gelezen"
   },

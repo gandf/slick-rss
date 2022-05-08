@@ -429,7 +429,7 @@ function CheckForUnread() {
             }
         }
 
-        feedInfo[feedID] = {title: "", description: "", group: "", loading: true, items: [], error: "", guid:""};
+        feedInfo[feedID] = {title: "", description: "", group: "", loading: true, items: [], error: "", errorContent: "",guid:""};
 
         try {
             //>>Profiler
@@ -506,7 +506,31 @@ function CheckForUnread() {
                                     feedPresent = true;
                                 }
                             }
+
+                            if ((entries.length == 0) && (rootNode == null)) {
+                                feedInfo[feedID].loading = false;
+                                feedInfo[feedID].error = GetMessageText("backErrorMessage");
+                                feedInfo[feedID].errorContent = doc.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+                                checkForUnreadCounter++;
+                                if (checkForUnreadCounter < feeds.length) {
+                                    if (feeds[checkForUnreadCounter].id === allFeedsID) {
+                                        checkForUnreadCounter++;
+                                    }
+                                }
+                                if (checkForUnreadCounter >= feeds.length || refreshFeed) {
+                                    CheckForUnreadComplete();
+                                } else {
+                                    UpdateLoadingProgress(checkForUnreadCounter, feeds.length);
+                                    setTimeout(function() {
+                                        CheckForUnread();
+                                    }, 20);
+                                }
+                                return;
+                            }
+
                             var author = null;
+                            var authorTemp = null;
                             var name = null;
                             var thumbnail = null;
                             var thumbnailurl = null;
@@ -591,8 +615,11 @@ function CheckForUnread() {
 
                                     author = SearchTag(entries[e], null, ["AUTHOR", "DC:CREATOR", "CREATOR", "ATOM:CONTRIBUTOR"], 0);
                                     if (author != null) {
-                                        if (typeof author == "object") {
-                                            author = SearchTag(author, null, ["NAME"], 0);
+                                        authorTemp = CleanText2(author);
+                                        if (typeof authorTemp != "string") {
+                                            if (typeof author == "object") {
+                                                author = SearchTag(author, null, ["NAME"], 0);
+                                            }
                                         }
                                     }
                                     author = CleanText2(author);
@@ -751,7 +778,8 @@ function CheckForUnread() {
             })
             .catch(function(err) {
                 feedInfo[feedID].loading = false;
-                feedInfo[feedID].error = 'Fetch Error :-S', err.message;
+                feedInfo[feedID].error = 'Fetch Error :';
+                feedInfo[feedID].errorContent = `${err.message}`;
 
                 checkForUnreadCounter++;
                 if (checkForUnreadCounter < feeds.length) {
@@ -771,7 +799,8 @@ function CheckForUnread() {
         }
         catch (err) {
             feedInfo[feedID].loading = false;
-            feedInfo[feedID].error = 'Error :-S ' + err;
+            feedInfo[feedID].error = 'Error :';
+            feedInfo[feedID].errorContent = `${err}`;
 
             checkForUnreadCounter++;
             if (checkForUnreadCounter < feeds.length) {

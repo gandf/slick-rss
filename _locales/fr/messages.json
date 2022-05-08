@@ -356,6 +356,9 @@
   "backError200Part3": {
     "message": "'."
   },
+  "backErrorMessage": {
+    "message": "Le contenu du flux est dans un format non reconnu. Contenu :"
+  },
   "backViewerMarkRead": {
     "message": "Marquer lu"
   },

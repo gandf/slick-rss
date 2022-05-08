@@ -840,7 +840,7 @@ function SelectFeedOrGroup(key, type) {
         // feed loaded, but had an error
         if (feedsOrGroupsInfo[feedsOrGroups[key].id] != null) {
             if (feedsOrGroupsInfo[feedsOrGroups[key].id].error != "") {
-                ShowFeedError(feedsOrGroupsInfo[feedsOrGroups[key].id].error);
+                ShowFeedError(feedsOrGroupsInfo[feedsOrGroups[key].id].error, feedsOrGroupsInfo[feedsOrGroups[key].id].errorContent);
                 return;
             }
             document.getElementById("noItems").style.display = (feedsOrGroupsInfo[feedsOrGroups[key].id].items.length == 0) ? "" : "none";
@@ -1162,10 +1162,14 @@ function RenderFeed(type) {
     }
 }
 
-function ShowFeedError(message) {
+function ShowFeedError(message, content) {
     document.getElementById("feedErrorMessage").innerText = message;
     document.getElementById("headerMessage").innerText = GetMessageText("backViewerFeedIssue");
     document.getElementById("feedError").style.display = "";
+
+    if ((content != undefined) && (content != "")) {
+        document.getElementById("feedErrorContent").innerHTML = content;
+    }
 }
 
 // central function to control creation of tabs so we can put them in the background

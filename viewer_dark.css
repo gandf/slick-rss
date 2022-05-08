@@ -241,6 +241,11 @@ blockquote > blockquote > blockquote > blockquote {
 
 #feedErrorMessage {
 	color: Red;
+	font-weight: bold;
+}
+
+#feedErrorContent {
+	color: Red;
 	font-weight: normal;
 }
 
