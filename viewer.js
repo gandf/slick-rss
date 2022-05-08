@@ -900,6 +900,12 @@ function RenderFeed(type) {
         document.getElementById("headerMessage").innerHTML += "<span> : " + feedsOrGroupsInfo[feedID].description + "</span>";
     }
 
+    if (feedsOrGroupsInfo[feedID].image != undefined) {
+        document.getElementById("headerLogo").style.backgroundImage = "url(" + feedsOrGroupsInfo[feedID].image[0]["url"] + ")";
+    } else {
+        document.getElementById("headerLogo").style.backgroundImage = "url(rss.png)";
+    }
+
     switch (parseInt(options.columns, 10)) {
         case 1:
         colWidth = "100%";

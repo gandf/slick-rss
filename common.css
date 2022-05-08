@@ -111,6 +111,7 @@ body {
 	background-image: url("rss.png");
 	background-repeat: no-repeat;
 	background-position: center;
+	background-size: contain;
 }
 
 #header td + td {
