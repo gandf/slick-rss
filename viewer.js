@@ -463,13 +463,31 @@ function UpdateReadAllIcon(type) {
 
 // marks everything but ReadLater read
 function MarkAllFeedsRead() {
+    var listpromise = [];
     for (var i = 0; i < feeds.length; i++) {
         if ((feeds[i].id != readLaterFeedID) && (feeds[i].id != allFeedsID)) {
-            MarkFeedRead(feeds[i].id);
+            var feedID = feeds[i].id;
+            var listUnread = [];
+
+            for (var j = 0; j < feedInfo[feedID].items.length; j++) {
+                var itemID = feedInfo[feedID].items[j].itemID;
+                if (unreadInfo[feedID].readitems[itemID] == undefined) {
+                    listUnread.push({id: feedID, key: itemID});
+                }
+            }
+            if (listUnread.length > 0) {
+                listpromise.push(SendUnreadInfoToWorker(listUnread, true).then(function(){ }));
+            }
         }
     }
-    // this helps the refresh all progress bar be the right width
-    FixFeedList();
+    if (listpromise.length > 0) {
+        Promise.allSettled(listpromise).then(function(){
+            UpdateUnreadBadge();
+            chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+              chrome.tabs.reload(tabs[0].id);
+            });
+        });
+    }
 }
 
 // marks a feed read.
