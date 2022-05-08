@@ -1,6 +1,8 @@
 function switchTheme(themesize) {
   let app = document.getElementById("app");
-  app.setAttribute('themesize', themesize);
+  if (app != null) {
+      app.setAttribute('themesize', themesize);
+  }
 }
 
 function activeDarkMode() {

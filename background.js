@@ -10,6 +10,7 @@ var getFeedsCallBack = null;
 var refreshFeed = false;
 var viewPortTabID = null;
 var referenceDate = GetDate("Thu, 31 Dec 2019 23:59:59 +0000").getTime();
+var viewerPortTabID = null;
 
 chrome.action.onClicked.addListener(ButtonClicked);
 chrome.runtime.onMessage.addListener(ExternalRequest);
@@ -88,7 +89,14 @@ function ButtonClicked(tab) {
             viewerPortTabID = tab.id;
         });
     } else {
-        chrome.tabs.update(viewerPortTabID, {selected: true});
+        if (viewerPortTabID == null) {
+            chrome.tabs.query({url: chrome.runtime.getURL("viewer.html")}, function (tab) {
+                viewerPortTabID = tab[0].id;
+                chrome.tabs.update(viewerPortTabID, {selected: true});
+            });
+        } else {
+            chrome.tabs.update(viewerPortTabID, {selected: true});
+        }
     }
 }
 
