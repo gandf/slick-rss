@@ -69,24 +69,26 @@ function SearchTag(data, defaultValue, tag, level)
     var val = Object.values(data);
     for (var i = 0 ; i < keys.length ; i++)
     {
-        for (var e = 0; e < tag.length; e++) {
-            if (keys[i].toUpperCase() == tag[e]) {
-                var attrib = [];
-                var attribFound = false;
-                for (var j = 0 ; j < keys.length ; j++)
-                {
-                    if (keys[j] == ":@")
+        if (isNaN(parseInt(keys[i], 10))) { //Tag is not integer : speed up parse
+            for (var e = 0; e < tag.length; e++) {
+                if (keys[i].toUpperCase() == tag[e]) {
+                    var attrib = [];
+                    var attribFound = false;
+                    for (var j = 0 ; j < keys.length ; j++)
                     {
-                        attrib = val[j];
-                        attribFound = true;
+                        if (keys[j] == ":@")
+                        {
+                            attrib = val[j];
+                            attribFound = true;
+                        }
                     }
+                    var result = [val[i]];
+                    if (attribFound)
+                    {
+                        result.push(attrib);
+                    }
+                    return result;
                 }
-                var result = [val[i]];
-                if (attribFound)
-                {
-                    result.push(attrib);
-                }
-                return result;
             }
         }
     }

@@ -484,6 +484,7 @@ function CheckForUnread() {
                         encodeName = encodeName.substring(encodeName.indexOf("encoding=") + ("encoding=").length, encodeName.indexOf("?>"));
                         encodeName = encodeName.replaceAll('\"', '');
                         encodeName = encodeName.replaceAll('"', '');
+                        encodeName = encodeName.replaceAll("'", "");
                         if (encodeName.replaceAll('-', '').toUpperCase() != "UTF8"){
                             decoder = new TextDecoder(encodeName);
                             doc = decoder.decode(data);
@@ -497,7 +498,14 @@ function CheckForUnread() {
                             var entryID = null;
                             var entryIDs = {};
                             var entries = GetElementsByTagNameJS(doc, [], "entry", "item");
-                            var rootNode = GetElementByTagNameJS(doc, null, "feed", "rss", "rdf:RDF");
+                            var feedPresent = false;
+                            var rootNode = GetElementByTagNameJS(doc, null, "rss", "rdf:RDF");
+                            if (rootNode == null) {
+                                rootNode = GetElementByTagNameJS(doc, null, "feed");
+                                if (rootNode != null) {
+                                    feedPresent = true;
+                                }
+                            }
                             var author = null;
                             var name = null;
                             var thumbnail = null;
@@ -508,8 +516,7 @@ function CheckForUnread() {
                             var keys = null
 
                             if (rootNode != null) {
-                                keys = Object.keys(rootNode);
-                                if (keys[0].toUpperCase() == "FEED") {
+                                if (feedPresent) {
                                     feedInfo[feedID].title = SearchTag(rootNode, null, ["TITLE"], 0);
                                     feedInfo[feedID].description = SearchTag(rootNode, null, ["SUBTITLE", "DESCRIPTION"], 0);
                                 } else {
@@ -566,6 +573,9 @@ function CheckForUnread() {
                                 // don't bother storing extra stuff past max.. only title for Mark All Read
                                 if (e <= feeds[checkForUnreadCounter].maxitems) {
                                     item.url = GetFeedLink(entries[e]);
+                                    if (item.url == "") {
+                                        item.url = GetFeedLink2(entries[e]);
+                                    }
 
                                     if (options.showfeedcontent) {
                                         item.content = CleanText2(SearchTag(entries[e], null, ["CONTENT:ENCODED", "CONTENT", "DC:CONTENT", "ATOM:CONTENT"], 0)); // only guessing on just "content"
@@ -579,7 +589,13 @@ function CheckForUnread() {
                                     }
                                     item.thumbnail = null;
 
-                                    author = CleanText2(SearchTag(entries[e], null, ["AUTHOR", "DC:CREATOR", "CREATOR", "ATOM:CONTRIBUTOR"], 0));
+                                    author = SearchTag(entries[e], null, ["AUTHOR", "DC:CREATOR", "CREATOR", "ATOM:CONTRIBUTOR"], 0);
+                                    if (author != null) {
+                                        if (typeof author == "object") {
+                                            author = SearchTag(author, null, ["NAME"], 0);
+                                        }
+                                    }
+                                    author = CleanText2(author);
                                     thumbnail = SearchTag(entries[e], null, ["ENCLOSURE", "MEDIA:GROUP"], 0);
                                     if (thumbnail != null) {
                                         keys = Object.keys(thumbnail);
@@ -627,6 +643,10 @@ function CheckForUnread() {
                                                             break;
                                                         }
                                                     }
+                                                } else {
+                                                    if (keys[j].toUpperCase() == "URL") {
+                                                        item.thumbnail = "<img src=\"" + val[j] + "\" class=\"thumbnail\">";
+                                                    }
                                                 }
                                                 if (thumbnailurl != null) {
                                                     break;
@@ -634,6 +654,15 @@ function CheckForUnread() {
                                             }
                                             if (thumbnailurl != null) {
                                                 break;
+                                            }
+                                        }
+                                    } else {
+                                        thumbnail = SearchTag(entries[e], null, ["MEDIA:THUMBNAIL"], 0);
+                                        if (thumbnail != null) {
+                                            if (thumbnail[1] != null) {
+                                                if (thumbnail[1]["url"] != null) {
+                                                    item.thumbnail = "<img src=\"" + thumbnail[1]["url"] + "\" class=\"thumbnail\">";
+                                                }
                                             }
                                         }
                                     }
@@ -801,6 +830,7 @@ function GetNodeTextValue(node, defaultValue) {
 function GetFeedLink(node) {
     var links = SearchTags(node, "", ["LINK"], 0);
     var lien;
+    var rel;
 
     for (var i = 0 ; i < links.length ; i++)
     {
@@ -828,13 +858,50 @@ function GetFeedLink(node) {
     for (var i = 0; i < links.length; i++) {
         // in atom feeds alternate is the default so if something else is there then skip
         lien = links[i];
-        if (lien[0] != null) {
-            if (lien[1] == undefined) {
-                return lien[0];
+        if (lien != null) {
+            for (var j = 0; j < lien.length; j++) {
+                if (lien[j] != null) {
+                    var keys = Object.keys(lien[j]);
+                    for (var k = 0; k < keys.length; k++) {
+                        if (keys[k].toUpperCase() == "HREF") {
+                            return lien[j][keys[k]];
+                        }
+                    }
+                }
             }
-            else {
-                if ((lien[1]["rel"] == "alternate") || (lien[1]["rel"] == undefined)) {
+            if (lien[0] != null) {
+                if (lien[1] == undefined) {
                     return lien[0];
+                }
+                else {
+                    if ((lien[1]["rel"] == "alternate") || (lien[1]["rel"] == undefined)) {
+                        return lien[0];
+                    }
+                }
+            }
+        }
+    }
+    return ""; // has links, but I can't read them?!
+}
+
+function GetFeedLink2(node) {
+    var links = SearchTags(node, "", ["LINK"], 0);
+    var lien;
+    var rel;
+
+    for (var i = 0 ; i < links.length ; i++)
+    {
+        for (var j = 0 ; j < links[i].length ; j++)
+        {
+            if (typeof links[i][j] == "string") {
+                links[i][j] = CleanText(links[i][j]);
+            } else {
+                rel = SearchTag(links[i][j], null, ["REL"], 0);
+                if (rel == "alternate") {
+                    lien = SearchTag(links[i][j], null, ["HREF"], 0);
+                    if (typeof lien[0] == "string") {
+                        return lien[0];
+                    }
                 }
             }
         }

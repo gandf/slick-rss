@@ -244,7 +244,7 @@ function Save()
 	}
 
 	// delete feeds that are marked, start from end so indexes don't get screwed up
-	for(i = feeds.length - 1;i > 0;i--)
+	for(i = feeds.length - 1;i >= 0;i--)
 	{
 		row = document.getElementById(i);
 

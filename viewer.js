@@ -952,7 +952,9 @@ function RenderFeed(type) {
 
         feedLink = document.createElement("a");
         href = item.url;
-        href.startsWith("/") && !href.startsWith("//") && (href = feedBaseUrl + href);
+        if ((href != null) && (typeof href == "string")) {
+            href.startsWith("/") && !href.startsWith("//") && (href = feedBaseUrl + href);
+        }
         feedLink.setAttribute("href", href);
         feedLink.innerHTML = (i + 1) + ". " + item.title;
 
