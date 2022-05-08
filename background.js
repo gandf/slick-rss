@@ -485,6 +485,9 @@ function CheckForUnread() {
                         encodeName = encodeName.replaceAll('\"', '');
                         encodeName = encodeName.replaceAll('"', '');
                         encodeName = encodeName.replaceAll("'", "");
+                        if (encodeName.indexOf(" ") >= 0) {
+                            encodeName = encodeName.substring(0, encodeName.indexOf(" "));
+                        }
                         if (encodeName.replaceAll('-', '').toUpperCase() != "UTF8"){
                             decoder = new TextDecoder(encodeName);
                             doc = decoder.decode(data);
