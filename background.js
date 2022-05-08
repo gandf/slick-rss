@@ -713,6 +713,17 @@ function CheckForUnread() {
                                                     break;
                                                 }
                                             }
+                                            if (thumbnailurl == null) {
+                                                for (var n1 = 0; n1 < thumbnail.length; n1++) {
+                                                    if ((thumbnail[n1]["url"] != undefined) && (thumbnail[n1]["medium"] != undefined)) {
+                                                        if (thumbnail[n1]["medium"] == "image") {
+                                                            thumbnailurl = thumbnail[n1]["url"];
+                                                            item.thumbnail = "<img src=\"" + thumbnailurl + "\" class=\"thumbnail\">";
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                            }
                                         }
 
                                         thumbnail = SearchTag(entries[e], null, ["MEDIA:THUMBNAIL"], 0);
