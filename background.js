@@ -675,17 +675,52 @@ function CheckForUnread() {
                                                             break;
                                                         }
                                                     }
+                                                    if (thumbnailurl == null) {
+                                                        if (thumbnail[k][":@"] != undefined) {
+                                                            if (thumbnail[k][":@"]["url"] != undefined) {
+                                                                if (item.content == null) {
+                                                                    if (thumbnail[k][":@"]["url"].includes("youtube")) {
+                                                                        if (!thumbnail[k][":@"]["url"].includes("youtube-nocookie")) {
+                                                                        thumbnail[k][":@"]["url"] = thumbnail[k][":@"]["url"].replaceAll('youtube', 'youtube-nocookie');
+                                                                        }
+                                                                        if (thumbnail[k][":@"]["url"].includes("/v/")) {
+                                                                            thumbnail[k][":@"]["url"] = thumbnail[k][":@"]["url"].replaceAll('/v/', '/embed/');
+                                                                        }
+                                                                    }
+                                                                    if (item.content != null) {
+                                                                        item.content = item.content + '<iframe src="' + thumbnail[k][":@"]["url"] + '" title="Video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+                                                                    } else {
+                                                                        item.content = '<iframe src="' + thumbnail[k][":@"]["url"] + '" title="Video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+                                                                    }
+                                                                    break;
+                                                                }
+                                                            }
+                                                        }
+                                                    }
                                                 } else {
                                                     if (keys[j].toUpperCase() == "URL") {
                                                         item.thumbnail = "<img src=\"" + val[j] + "\" class=\"thumbnail\">";
+                                                    }
+                                                    if (keys[j].toUpperCase() == "MEDIA:DESCRIPTION") {
+                                                        if (item.content != null) {
+                                                            item.content = item.content + '<BR/>' + CleanText(thumbnail[k][keys[j]]);
+                                                        } else {
+                                                            item.content = CleanText(thumbnail[k][keys[j]]);
+                                                        }
+                                                    }
+                                                    if (keys[j].toUpperCase() == "MEDIA:THUMBNAIL") {
+                                                        if (thumbnail[k][":@"] != undefined) {
+                                                            if (thumbnail[k][":@"]["url"] != undefined) {
+                                                                thumbnailurl = thumbnail[k][":@"]["url"];
+                                                                item.thumbnail = "<img src=\"" + thumbnailurl + "\" class=\"thumbnail\">";
+                                                                break;
+                                                            }
+                                                        }
                                                     }
                                                 }
                                                 if (thumbnailurl != null) {
                                                     break;
                                                 }
-                                            }
-                                            if (thumbnailurl != null) {
-                                                break;
                                             }
                                         }
                                     } else {
