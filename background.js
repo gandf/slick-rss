@@ -689,6 +689,32 @@ function CheckForUnread() {
                                             }
                                         }
                                     } else {
+                                        thumbnail = SearchTag(entries[e], null, ["MEDIA:CONTENT"], 0);
+                                        if (thumbnail != null) {
+                                            for (var n1 = 0; n1 < thumbnail.length; n1++) {
+                                                if (thumbnail[n1][0] != undefined) {
+                                                    var keys2 = Object.keys(thumbnail[n1][0]);
+                                                    var val2 = Object.values(thumbnail[n1][0]);
+                                                    for (var n2 = 0; n2 < keys2.length; n2++) {
+                                                        if (keys2[n2].toUpperCase() == "MEDIA:THUMBNAIL") {
+                                                            if (thumbnail[n1][0][":@"] != undefined) {
+                                                                if (thumbnail[n1][0][":@"]["url"] != undefined) {
+                                                                    if (thumbnail[n1][0][":@"] != undefined) {
+                                                                        thumbnailurl = thumbnail[n1][0][":@"]["url"];
+                                                                        item.thumbnail = "<img src=\"" + thumbnailurl + "\" class=\"thumbnail\">";
+                                                                        break;
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                if (thumbnailurl != null) {
+                                                    break;
+                                                }
+                                            }
+                                        }
+
                                         thumbnail = SearchTag(entries[e], null, ["MEDIA:THUMBNAIL"], 0);
                                         if (thumbnail != null) {
                                             if (thumbnail[1] != null) {
