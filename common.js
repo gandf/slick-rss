@@ -245,7 +245,7 @@ function GetWeekdayName(dayOfWeek)
 function GetDefaultOptions() {
     return {
         "lastversion": manifest.version,
-        "maxitems": 50,
+        "maxitems": 100,
         "showdescriptions": true,
         "dateformat": "[ww] [dd]/[mm]/[yy] [hh]:[nn]",
         "showfeedimages": true,
@@ -263,7 +263,7 @@ function GetDefaultOptions() {
         "readlaterremovewhenviewed": true,
         "loadlinksinbackground": true,
         "showallfeeds": false,
-        "usethumbnail": false,
+        "usethumbnail": true,
         "feedsmaxheight": 200,
         "playSoundNotif": false,
         "darkmode": false,
