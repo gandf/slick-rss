@@ -11,6 +11,7 @@ var refreshFeed = false;
 var viewPortTabID = null;
 var referenceDate = GetDate("Thu, 31 Dec 2019 23:59:59 +0000").getTime();
 var viewerPortTabID = null;
+var forceRefresh = false;
 
 chrome.action.onClicked.addListener(ButtonClicked);
 chrome.runtime.onMessage.addListener(ExternalRequest);
@@ -89,14 +90,18 @@ function ButtonClicked(tab) {
             viewerPortTabID = tab.id;
         });
     } else {
-        if (viewerPortTabID == null) {
-            chrome.tabs.query({url: chrome.runtime.getURL("viewer.html")}, function (tab) {
-                viewerPortTabID = tab[0].id;
-                chrome.tabs.update(viewerPortTabID, {selected: true});
-            });
-        } else {
+        RefreshViewer();
+    }
+}
+
+function RefreshViewer(){
+    if (viewerPortTabID == null) {
+        chrome.tabs.query({url: chrome.runtime.getURL("viewer.html")}, function (tab) {
+            viewerPortTabID = tab[0].id;
             chrome.tabs.update(viewerPortTabID, {selected: true});
-        }
+        });
+    } else {
+        chrome.tabs.update(viewerPortTabID, {selected: true});
     }
 }
 
@@ -247,6 +252,8 @@ function ExternalRequest(request, sender, sendResponse) {
             if (groupInfo[allFeedsID] != undefined) {
                 groupInfo[allFeedsID].title = GetMessageText("backAllFeeds");
             }
+            forceRefresh = true;
+            RefreshViewer();
             GetFeeds(function () {
                 CheckForUnreadStart();
             });
@@ -909,9 +916,6 @@ function CheckForUnread() {
 function CheckForUnreadComplete() {
     checkingForUnread = false;
     refreshFeed = false;
-    if (viewerPort != null && !refreshFeed) {
-        viewerPort.postMessage({type: "refreshallcomplete"});
-    }
 
     for (var i = 0; i < feeds.length; i++) {
         if (feedInfo[feeds[i].id] != undefined)
@@ -922,6 +926,15 @@ function CheckForUnreadComplete() {
 
     UpdateGroups();
     UpdateUnreadBadge();
+
+    if (forceRefresh) {
+        forceRefresh = false;
+        RefreshViewer();
+    } else {
+        if (viewerPort != null && !refreshFeed) {
+            viewerPort.postMessage({type: "refreshallcomplete"});
+        }
+    }
 }
 
 // to help with master title & description getting

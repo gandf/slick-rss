@@ -153,10 +153,7 @@ function Save()
 	}
 
 	chrome.runtime.sendMessage({"type": requestType}).then(function(){
-		chrome.tabs.query({url: chrome.runtime.getURL("viewer.html")}, function (tab) {
-			chrome.tabs.reload(tab[0].id, { });
-			window.close();
-		});
+		window.close();
 	});
 }
 

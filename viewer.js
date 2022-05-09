@@ -483,9 +483,7 @@ function MarkAllFeedsRead() {
     if (listpromise.length > 0) {
         Promise.allSettled(listpromise).then(function(){
             UpdateUnreadBadge();
-            chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-              chrome.tabs.reload(tabs[0].id);
-            });
+            chrome.tabs.reload();
         });
     }
 }
