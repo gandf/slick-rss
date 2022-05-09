@@ -67,15 +67,13 @@ function SearchTag(data, defaultValue, tag, level)
     }
     var keys = Object.keys(data);
     var val = Object.values(data);
-    for (var i = 0 ; i < keys.length ; i++)
-    {
+    for (var i = 0 ; i < keys.length ; i++) {
         if (isNaN(parseInt(keys[i], 10))) { //Tag is not integer : speed up parse
             for (var e = 0; e < tag.length; e++) {
                 if (keys[i].toUpperCase() == tag[e]) {
                     var attrib = [];
                     var attribFound = false;
-                    for (var j = 0 ; j < keys.length ; j++)
-                    {
+                    for (var j = 0 ; j < keys.length ; j++) {
                         if (keys[j] == ":@")
                         {
                             attrib = val[j];
@@ -92,8 +90,7 @@ function SearchTag(data, defaultValue, tag, level)
             }
         }
     }
-    for (var i = 0 ; i < keys.length ; i++)
-    {
+    for (var i = 0 ; i < keys.length ; i++) {
         if (val[i] != "")
         {
             var ret = SearchTag(val[i], defaultValue, tag, level + 1);
@@ -121,14 +118,12 @@ function SearchTags(data, defaultValue, tag, level)
     var keys = Object.keys(data);
     var val = Object.values(data);
     var resultExist = false;
-    for (var i = 0 ; i < keys.length ; i++)
-    {
+    for (var i = 0 ; i < keys.length ; i++) {
         for (var e = 0; e < tag.length; e++) {
             if (keys[i].toUpperCase() == tag[e]) {
                 var attrib = [];
                 var attribFound = false;
-                for (var j = 0 ; j < keys.length ; j++)
-                {
+                for (var j = 0 ; j < keys.length ; j++) {
                     if (keys[j] == ":@")
                     {
                         attrib = val[j];
@@ -149,8 +144,7 @@ function SearchTags(data, defaultValue, tag, level)
     {
         return result;
     }
-    for (var i = 0 ; i < keys.length ; i++)
-    {
+    for (var i = 0 ; i < keys.length ; i++) {
         if ((val[i] != "") && ((typeof val[i] == "object") || (typeof val[i] == "array")))
         {
             var ret = SearchTags(val[i], defaultValue, tag, level + 1);
@@ -173,4 +167,46 @@ function SearchTags(data, defaultValue, tag, level)
         }
     }
     return defaultValue;
+}
+
+function RemoveTag() {
+    var node = arguments[0];
+    var tag = Array.from(arguments);
+    tag.shift();
+
+    for (var i = 0; i < tag.length; i++) {
+        if (tag[i] != undefined)
+        tag[i] = tag[i].toUpperCase();
+    }
+
+    var keys = Object.keys(node);
+    for (var i = 0 ; i < keys.length ; i++) {
+        for (var e = 0; e < tag.length; e++) {
+            if (keys[i].toUpperCase() == tag[e]) {
+                delete node[keys[i]];
+                return node;
+            } else {
+                var keysL2 = Object.keys(node[keys[i]]);
+                for (var j = 0 ; j < keysL2.length ; j++) {
+                    for (var f = 0; f < tag.length; f++) {
+                        if (keysL2[j].toUpperCase() == tag[f]) {
+                            delete node[keys[i]][keysL2[j]];
+                            return node;
+                        } else {
+                            var keysL3 = Object.keys(node[keys[i]][keysL2[j]]);
+                            for (var k = 0 ; k < keysL3.length ; k++) {
+                                for (var g = 0; g < tag.length; g++) {
+                                    if (keysL3[k].toUpperCase() == tag[g]) {
+                                        delete node[keys[i]][keysL2[j]][keysL3[k]];
+                                        return node;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return node;
 }

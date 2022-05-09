@@ -558,16 +558,17 @@ function CheckForUnread() {
                             var keys = null
 
                             if (rootNode != null) {
+                                rootNode = RemoveTag(rootNode, "entry", "item");
                                 if (feedPresent) {
                                     feedInfo[feedID].title = SearchTag(rootNode, null, ["TITLE"], 0);
-                                    feedInfo[feedID].description = SearchTag(rootNode, null, ["SUBTITLE", "DESCRIPTION"], 0);
+                                    feedInfo[feedID].description = SearchTag(rootNode, '', ["SUBTITLE", "DESCRIPTION"], 0);
                                     feedInfo[feedID].image = SearchTag(rootNode, null, ["IMAGE"], 0);
                                 } else {
                                     var channel = SearchTag(rootNode, null, ["CHANNEL"], 0);
 
                                     if (channel != null) {
                                         feedInfo[feedID].title = SearchTag(channel, null, ["TITLE"], 0);
-                                        feedInfo[feedID].description = SearchTag(channel, null, ["DESCRIPTION", "SUBTITLE"], 0);
+                                        feedInfo[feedID].description = SearchTag(channel, '', ["DESCRIPTION", "SUBTITLE"], 0);
                                         feedInfo[feedID].image = SearchTag(rootNode, null, ["IMAGE"], 0);
                                     }
                                 }

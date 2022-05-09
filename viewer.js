@@ -238,7 +238,7 @@ function ShowFeeds() {
             selectKey = 0;
         }
 
-        document.getElementById("headerMessage").innerHTML = '<div class="headerTitleSize"><p class="headerTitleSizeP">' + GetMessageText("backViewerFeedMe") + '</p></div>';
+        document.getElementById("headerMessage").innerHTML = GetMessageText("backViewerFeedMe");
         var showNoFeeds = false;
         showFeedsWork = true;
         if (lastSelectedType != "Group") {
@@ -828,7 +828,7 @@ function SelectFeedOrGroup(key, type) {
         }
         if (feednotready) {
             document.getElementById("refresh").style.display = "none";
-            document.getElementById("headerMessage").innerHTML = '<div class="headerTitleSize"><p class="headerTitleSizeP">' + GetMessageText("backViewerLoadingFeed") + '</p></div>';
+            document.getElementById("headerMessage").innerHTML = GetMessageText("backViewerLoadingFeed");
             document.getElementById("header").className = "loading";
 
             if (type == "Feed") {
@@ -911,11 +911,10 @@ function RenderFeed(type) {
         return;
     }
 
-    headerMessage = '<div class="headerTitleSize"><p class="headerTitleSizeP">' + feedsOrGroupsInfo[feedID].title;
+    headerMessage = feedsOrGroupsInfo[feedID].title;
     if (feedsOrGroupsInfo[feedID].description != "" && options.showdescriptions) {
         headerMessage += "<span> : " + feedsOrGroupsInfo[feedID].description + "</span>";
     }
-    headerMessage += '</p></div>';
     document.getElementById("headerMessage").innerHTML = headerMessage;
 
     var logoUsed = false;
@@ -1187,7 +1186,7 @@ function RenderFeed(type) {
 
 function ShowFeedError(message, content) {
     document.getElementById("feedErrorMessage").innerText = message;
-    document.getElementById("headerMessage").innerHTML = '<div class="headerTitleSize"><p class="headerTitleSizeP">' + GetMessageText("backViewerFeedIssue") + '</p></div>';
+    document.getElementById("headerMessage").innerHTML = GetMessageText("backViewerFeedIssue");
     document.getElementById("feedError").style.display = "";
 
     if ((content != undefined) && (content != "")) {
