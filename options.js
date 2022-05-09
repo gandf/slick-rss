@@ -61,7 +61,6 @@ function Save()
 {
 	var maxItems = document.getElementById("maxItems").value;
 	var feedsMaxHeight = document.getElementById("feedsMaxHeight").value;
-	var forceRefreshOptionInWorker;
 	var levelSearchTag = document.getElementById("levelSearchTag").value;
 	var levelSearchTags = document.getElementById("levelSearchTags").value;
 
@@ -94,23 +93,6 @@ function Save()
 	{
 		alert(GetMessageText("optionAlertMarkFeedReadInvalid"));
 		return;
-	}
-
-	forceRefreshOptionInWorker = options.forcelangen != (document.getElementById("forceLangEn").selectedIndex == 1);
-	if (!forceRefreshOptionInWorker) {
-		forceRefreshOptionInWorker = options.readlaterenabled != (document.getElementById("readLaterEnabled").selectedIndex == 1);
-	}
-	if (!forceRefreshOptionInWorker) {
-		forceRefreshOptionInWorker = options.maxitems != parseInt(maxItems, 10);
-	}
-	if (!forceRefreshOptionInWorker) {
-		forceRefreshOptionInWorker = options.showdescriptions != (document.getElementById("showDescriptions").selectedIndex == 1);
-	}
-	if (!forceRefreshOptionInWorker) {
-		forceRefreshOptionInWorker = options.levelSearchTag != levelSearchTag;
-	}
-	if (!forceRefreshOptionInWorker) {
-		forceRefreshOptionInWorker = options.levelSearchTags != levelSearchTags;
 	}
 
 	options.maxitems = parseInt(maxItems, 10);
@@ -147,12 +129,7 @@ function Save()
 		store.setItem('readlater', {}); //delete readlater
 	}
 
-	var requestType = "refreshFeeds";
-	if (forceRefreshOptionInWorker) {
-		requestType = "refreshOptionsAndRefreshFeeds";
-	}
-
-	chrome.runtime.sendMessage({"type": requestType}).then(function(){
+	chrome.runtime.sendMessage({"type": "refreshOptionsAndRefreshFeeds"}).then(function(){
 		window.close();
 	});
 }

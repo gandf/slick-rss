@@ -98,10 +98,10 @@ function RefreshViewer(){
     if (viewerPortTabID == null) {
         chrome.tabs.query({url: chrome.runtime.getURL("viewer.html")}, function (tab) {
             viewerPortTabID = tab[0].id;
-            chrome.tabs.update(viewerPortTabID, {selected: true});
+            chrome.tabs.reload(viewerPortTabID, {bypassCache: true});
         });
     } else {
-        chrome.tabs.update(viewerPortTabID, {selected: true});
+        chrome.tabs.reload(viewerPortTabID, {bypassCache: true});
     }
 }
 
