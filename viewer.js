@@ -238,7 +238,7 @@ function ShowFeeds() {
             selectKey = 0;
         }
 
-        document.getElementById("headerMessage").innerText = GetMessageText("backViewerFeedMe");
+        document.getElementById("headerMessage").innerHTML = '<div class="headerTitleSize"><p class="headerTitleSizeP">' + GetMessageText("backViewerFeedMe") + '</p></div>';
         var showNoFeeds = false;
         showFeedsWork = true;
         if (lastSelectedType != "Group") {
@@ -830,7 +830,7 @@ function SelectFeedOrGroup(key, type) {
         }
         if (feednotready) {
             document.getElementById("refresh").style.display = "none";
-            document.getElementById("headerMessage").innerText = GetMessageText("backViewerLoadingFeed");
+            document.getElementById("headerMessage").innerHTML = '<div class="headerTitleSize"><p class="headerTitleSizeP">' + GetMessageText("backViewerLoadingFeed") + '</p></div>';
             document.getElementById("header").className = "loading";
 
             if (type == "Feed") {
@@ -907,16 +907,18 @@ function RenderFeed(type) {
     var colWidth = null;
     var feedTd = null;
     var href = "";
+    var headerMessage = "";
 
     if (feedsOrGroupsInfo[feedID] == null) {
         return;
     }
 
-    document.getElementById("headerMessage").innerHTML = feedsOrGroupsInfo[feedID].title;
-
+    headerMessage = '<div class="headerTitleSize"><p class="headerTitleSizeP">' + feedsOrGroupsInfo[feedID].title;
     if (feedsOrGroupsInfo[feedID].description != "" && options.showdescriptions) {
-        document.getElementById("headerMessage").innerHTML += "<span> : " + feedsOrGroupsInfo[feedID].description + "</span>";
+        headerMessage += "<span> : " + feedsOrGroupsInfo[feedID].description + "</span>";
     }
+    headerMessage += '</p></div>';
+    document.getElementById("headerMessage").innerHTML = headerMessage;
 
     var logoUsed = false;
     if (feedsOrGroupsInfo[feedID].image != undefined) {
@@ -1061,7 +1063,7 @@ function RenderFeed(type) {
             feedSummary.style.maxHeight = "none";
         }
         if (options.usethumbnail && (item.thumbnail != null)) {
-            feedSummary.innerHTML = item.thumbnail + item.content;
+            feedSummary.innerHTML = '<div class="thumbnail">' + item.thumbnail + '</div>' + item.content;
         } else {
             feedSummary.innerHTML = item.content;
         }
@@ -1187,7 +1189,7 @@ function RenderFeed(type) {
 
 function ShowFeedError(message, content) {
     document.getElementById("feedErrorMessage").innerText = message;
-    document.getElementById("headerMessage").innerText = GetMessageText("backViewerFeedIssue");
+    document.getElementById("headerMessage").innerHTML = '<div class="headerTitleSize"><p class="headerTitleSizeP">' + GetMessageText("backViewerFeedIssue") + '</p></div>';
     document.getElementById("feedError").style.display = "";
 
     if ((content != undefined) && (content != "")) {

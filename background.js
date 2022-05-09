@@ -672,7 +672,7 @@ function CheckForUnread() {
                                                                         thumbnailurl = thumbnail[k][":@"]["url"];
                                                                         thumbnailtype = thumbnail[k][":@"]["medium"];
                                                                         if (thumbnailtype == "image") {
-                                                                            item.thumbnail = "<img src=\"" + thumbnailurl + "\" class=\"thumbnail\">";
+                                                                            item.thumbnail = "<img src=\"" + thumbnailurl + "\">";
                                                                             break;
                                                                         }
                                                                     }
@@ -707,7 +707,7 @@ function CheckForUnread() {
                                                     }
                                                 } else {
                                                     if (keys[j].toUpperCase() == "URL") {
-                                                        item.thumbnail = "<img src=\"" + val[j] + "\" class=\"thumbnail\">";
+                                                        item.thumbnail = "<img src=\"" + val[j] + "\">";
                                                     }
                                                     if (keys[j].toUpperCase() == "MEDIA:DESCRIPTION") {
                                                         if (item.content != null) {
@@ -720,7 +720,7 @@ function CheckForUnread() {
                                                         if (thumbnail[k][":@"] != undefined) {
                                                             if (thumbnail[k][":@"]["url"] != undefined) {
                                                                 thumbnailurl = thumbnail[k][":@"]["url"];
-                                                                item.thumbnail = "<img src=\"" + thumbnailurl + "\" class=\"thumbnail\">";
+                                                                item.thumbnail = "<img src=\"" + thumbnailurl + "\">";
                                                                 break;
                                                             }
                                                         }
@@ -744,7 +744,7 @@ function CheckForUnread() {
                                                                 if (thumbnail[n1][0][":@"]["url"] != undefined) {
                                                                     if (thumbnail[n1][0][":@"] != undefined) {
                                                                         thumbnailurl = thumbnail[n1][0][":@"]["url"];
-                                                                        item.thumbnail = "<img src=\"" + thumbnailurl + "\" class=\"thumbnail\">";
+                                                                        item.thumbnail = "<img src=\"" + thumbnailurl + "\">";
                                                                         break;
                                                                     }
                                                                 }
@@ -761,7 +761,7 @@ function CheckForUnread() {
                                                     if ((thumbnail[n1]["url"] != undefined) && (thumbnail[n1]["medium"] != undefined)) {
                                                         if (thumbnail[n1]["medium"] == "image") {
                                                             thumbnailurl = thumbnail[n1]["url"];
-                                                            item.thumbnail = "<img src=\"" + thumbnailurl + "\" class=\"thumbnail\">";
+                                                            item.thumbnail = "<img src=\"" + thumbnailurl + "\">";
                                                             break;
                                                         }
                                                     }
@@ -773,7 +773,7 @@ function CheckForUnread() {
                                         if (thumbnail != null) {
                                             if (thumbnail[1] != null) {
                                                 if (thumbnail[1]["url"] != null) {
-                                                    item.thumbnail = "<img src=\"" + thumbnail[1]["url"] + "\" class=\"thumbnail\">";
+                                                    item.thumbnail = "<img src=\"" + thumbnail[1]["url"] + "\">";
                                                 }
                                             }
                                         }

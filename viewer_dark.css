@@ -103,6 +103,18 @@ body {
 	word-break: break-word;
 }
 
+.headerTitleSize {
+	height: 50px;
+	overflow-y: auto;
+}
+
+.headerTitleSizeP {
+	margin: 0px;
+	margin-block-start: 0px;
+	margin-block-end: 0px;
+    line-height: normal;
+}
+
 .feedPreviewContainerCondensed .feedPreviewSummary, .feedPreviewContainerCondensed .feedPreviewDate, .feedPreviewContainerCondensed .feedPreviewAuthor {
 	display: none;
 }
@@ -221,10 +233,15 @@ blockquote > blockquote > blockquote > blockquote {
 }
 
 .thumbnail {
-  	float: left;
-	width: 50px;
-	height: 50px;
+	float: left;
+  	width: auto;
+  	display: inline-block;
 }
+
+.thumbnail img {
+  	width: 150px;
+  	height: auto;
+}​
 
 #noFeedsManaged {
 	font-size: var(--noFeedsManaged-font-size);
