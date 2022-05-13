@@ -311,50 +311,6 @@ function DoUpgrades() {
     if (options.lastversion != manifest.version) {
         options.lastversion = manifest.version;
         listPromise.push(store.setItem('options', options));
-        //remove old system for readlater
-        store.removeItem('readlater').then(function() {}).catch(function(err) {});
-
-        listPromise.push(store.getItem('feeds').then(function(datafeeds) {
-            if (datafeeds != null) {
-                datafeeds.forEach(datafeed => {
-                    if (datafeed.excludeUnreadCount == undefined) {
-                        datafeed.excludeUnreadCount = 0;
-                    }
-                });
-                keys = Object.keys(datafeeds);
-                var feedsToChange = {};
-                var changed = false;
-                for (var i = 0; i < keys.length; i++) {
-                    if (parseInt(datafeeds[keys[i]].id) < 1000000000) {
-                        feedsToChange.push({key: keys[i], original: datafeeds[keys[i]].id, final: GetRandomID()});
-                    }
-                }
-                for (var i = 0; i < feedsToChange.length; i++) {
-                    datafeeds[keys[i]].id = feedsToChange[i].final;
-                    changed = true;
-                }
-                feeds = datafeeds;
-                if (changed) {
-                    listPromise.push(store.setItem('feeds', feeds));
-                    listPromise.push(store.getItem('unreadinfo').then(function(datareadinfo) {
-                        if (datareadinfo != null) {
-                            changed = false;
-                            for (var i = 0; i < feedsToChange.length; i++) {
-                                if (datareadinfo[feedsToChange[i].original] != undefined) {
-                                    datareadinfo[feedsToChange[i].final] = datareadinfo[feedsToChange[i].original];
-                                    delete datareadinfo[feedsToChange[i].original];
-                                    changed = true;
-                                }
-                            }
-                            if (changed) {
-                                unreadInfo = datareadinfo;
-                                listPromise.push(store.setItem('unreadinfo', unreadInfo));
-                            }
-                        }
-                    }));
-                }
-            }
-        }));
     }
 
     resultPromise = Promise.allSettled(listPromise);
