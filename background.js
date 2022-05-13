@@ -654,7 +654,16 @@ function CheckForUnread() {
                                                     break;
                                                 }
                                             } else {
-                                                delete thumbnail[k];
+                                                if (thumbnail[k]['url'] != undefined) {
+                                                    if (typeof thumbnail[k]['url'] == "string") {
+                                                        thumbnail = thumbnail;
+                                                        break;
+                                                    } else {
+                                                        delete thumbnail[k];
+                                                    }
+                                                } else {
+                                                    delete thumbnail[k];
+                                                }
                                             }
                                         }
 
