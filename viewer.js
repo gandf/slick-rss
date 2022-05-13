@@ -1160,6 +1160,13 @@ function RenderFeed(type) {
             }
         }
 
+        // Remove long space before or after img in style from feed
+        summaryObjects = feedSummary.querySelectorAll('[style]');
+        for (var o = summaryObjects.length - 1; o >= 0; o--) {
+            summaryObjects[o].style.paddingTop = "";
+            summaryObjects[o].style.paddingBottom = "";
+        }
+
         if (columnCount == options.columns) {
             columnCount = 0;
         }
