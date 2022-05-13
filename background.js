@@ -163,11 +163,13 @@ function ExternalRequest(request, sender, sendResponse) {
             var k;
             for (var i = 0; i < keys.length; i++) {
                 k = listUnread[keys[i]].id;
-                unreadInfo[k].readitems[listUnread[keys[i]].key] = new Date().getTime() + 5184000000;
-                if (unreadInfo[k].unreadtotal > 0) {
-                    unreadInfo[k].unreadtotal--;
+                if (unreadInfo[k] != undefined) {
+                    unreadInfo[k].readitems[listUnread[keys[i]].key] = new Date().getTime() + 5184000000;
+                    if (unreadInfo[k].unreadtotal > 0) {
+                        unreadInfo[k].unreadtotal--;
+                    }
+                    updated = true;
                 }
-                updated = true;
             }
             if (updated) {
                 store.setItem('unreadinfo', unreadInfo);
