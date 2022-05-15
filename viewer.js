@@ -317,9 +317,8 @@ function ShowFeed(key) {
 
     if (feeds[key] != undefined) {
         li.innerText = feeds[key].title;
-        li.setAttribute("id", "feedTitle" + feeds[key].id);
-        li.setAttribute("feedType", "feed");
-        span.setAttribute("id", "feedUnread" + feeds[key].id);
+        li.setAttribute("id", "feedTitleFeed" + feeds[key].id);
+        span.setAttribute("id", "feedUnreadFeed" + feeds[key].id);
 
         $(li).click(function () {
             selectedFeedKeyIsFeed = true;
@@ -340,9 +339,8 @@ function ShowGroup(key) {
     var span = document.createElement("span");
 
     li.innerText = groups[key].title;
-    li.setAttribute("id", "feedTitle" + groups[key].id);
-    li.setAttribute("feedType", "group");
-    span.setAttribute("id", "feedUnread" + groups[key].id);
+    li.setAttribute("id", "feedTitleGroup" + groups[key].id);
+    span.setAttribute("id", "feedUnreadGroup" + groups[key].id);
 
     $(li).click(function () {
         selectedFeedKeyIsFeed = false;
@@ -377,18 +375,18 @@ function UpdateFeedUnread(id) {
     }
 
     if (count > 0) {
-        if (document.getElementById("feedTitle" + id) != null) {
-            document.getElementById("feedTitle" + id).style.fontWeight = "bold";
+        if (document.getElementById("feedTitleFeed" + id) != null) {
+            document.getElementById("feedTitleFeed" + id).style.fontWeight = "bold";
         }
-        if (document.getElementById("feedUnread" + id) != null) {
-            document.getElementById("feedUnread" + id).innerText = " (" + count + ")";
+        if (document.getElementById("feedUnreadFeed" + id) != null) {
+            document.getElementById("feedUnreadFeed" + id).innerText = " (" + count + ")";
         }
     } else {
-        if (document.getElementById("feedTitle" + id) != null) {
-            document.getElementById("feedTitle" + id).style.fontWeight = "normal";
+        if (document.getElementById("feedTitleFeed" + id) != null) {
+            document.getElementById("feedTitleFeed" + id).style.fontWeight = "normal";
         }
-        if (document.getElementById("feedUnread" + id) != null) {
-            document.getElementById("feedUnread" + id).innerText = "";
+        if (document.getElementById("feedUnreadFeed" + id) != null) {
+            document.getElementById("feedUnreadFeed" + id).innerText = "";
         }
     }
     if (options.showallfeeds) {
@@ -424,13 +422,13 @@ function UpdateGroupUnread(key) {
     chrome.runtime.sendMessage({"type": "getGroupCountUnread", "data": key}).then(function(data){
         if (data != null) {
             var count = data;
-            if (document.getElementById("feedTitle" + id) != null) {
+            if (document.getElementById("feedTitleGroup" + id) != null) {
                 if (count > 0) {
-                    document.getElementById("feedTitle" + id).style.fontWeight = "bold";
-                    document.getElementById("feedUnread" + id).innerText = " (" + count + ")";
+                    document.getElementById("feedTitleGroup" + id).style.fontWeight = "bold";
+                    document.getElementById("feedUnreadGroup" + id).innerText = " (" + count + ")";
                 } else {
-                    document.getElementById("feedTitle" + id).style.fontWeight = "normal";
-                    document.getElementById("feedUnread" + id).innerText = "";
+                    document.getElementById("feedTitleGroup" + id).style.fontWeight = "normal";
+                    document.getElementById("feedUnreadGroup" + id).innerText = "";
                 }
             }
         }
@@ -798,10 +796,10 @@ function SelectFeedOrGroup(key, type) {
         clearTimeout(feedReadToID);
 
         if (selectedFeedKey != null) {
-            document.getElementById("feedTitle" + selectedFeedsOrGroups[selectedFeedKey].id).setAttribute("class", "");
+            document.getElementById("feedTitle" + lastSelectedFeedType + selectedFeedsOrGroups[selectedFeedKey].id).setAttribute("class", "");
         }
 
-        document.getElementById("feedTitle" + feedsOrGroups[key].id).setAttribute("class", "selectedFeed");
+        document.getElementById("feedTitle" + type + feedsOrGroups[key].id).setAttribute("class", "selectedFeed");
 
         selectedFeedKey = key;
         selectedFeedKeyIsFeed = (type == "Feed");
