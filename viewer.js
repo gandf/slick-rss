@@ -746,6 +746,11 @@ function SelectGroup(key) {
 }
 
 function SelectFeedOrGroup(key, type) {
+    var feediframe = document.getElementById("contentNotFormated");
+    if (feediframe != undefined) {
+        document.getElementById("feedPreviewScroller").removeChild(feediframe);
+    }
+
     var feedsOrGroups, feedsOrGroupsInfo, selectedFeedsOrGroups;
     var lastSelectedFeedID = null;
     var lastSelectedFeedType = null;
@@ -854,7 +859,7 @@ function SelectFeedOrGroup(key, type) {
         // feed loaded, but had an error
         if (feedsOrGroupsInfo[feedsOrGroups[key].id] != null) {
             if (feedsOrGroupsInfo[feedsOrGroups[key].id].error != "") {
-                ShowFeedError(feedsOrGroupsInfo[feedsOrGroups[key].id].error, feedsOrGroupsInfo[feedsOrGroups[key].id].errorContent);
+                ShowFeedError(feedsOrGroupsInfo[feedsOrGroups[key].id].error, feedsOrGroupsInfo[feedsOrGroups[key].id].errorContent, feedsOrGroups[key].url, feedsOrGroups[key].urlredirected);
                 return;
             }
             document.getElementById("noItems").style.display = (feedsOrGroupsInfo[feedsOrGroups[key].id].items.length == 0) ? "" : "none";
@@ -1189,17 +1194,57 @@ function RenderFeed(type) {
     }
 }
 
-function ShowFeedError(message, content) {
+function ShowFeedError(message, content, url, urlredirected) {
     document.getElementById("feedErrorMessage").innerText = message;
     document.getElementById("headerMessage").innerHTML = GetMessageText("backViewerFeedIssue");
     document.getElementById("feedError").style.display = "";
+    document.getElementById("headerLogo").style.backgroundImage = "url(rss.png)";
 
-    if ((content != undefined) && (content != "")) {
+    var showErrorNow = true;
+    if (options.showfeediframes) {
+        if ((typeof content == "string") && ((url != undefined) || (urlredirected != undefined))) {
+            if (content.substring(0, 20).toUpperCase().includes("HTML")) {
+                showErrorNow = false;
+
+                var feedPrev = document.getElementById("feedPreviewScroller");
+                var addiframe = false;
+                var feediframe = document.getElementById("contentNotFormated");
+                if (feediframe == undefined) {
+                    feediframe = document.createElement("div");
+                    feediframe.setAttribute("class", "contentNotFormated");
+                    feediframe.setAttribute("id", "contentNotFormated");
+                    addiframe = true;
+                }
+
+                var heightSize = Math.max(feedPrev.offsetHeight - document.getElementById("feedError").offsetHeight, 50);
+
+                if (urlredirected != undefined) {
+                    feediframe.innerHTML = '<iframe id="ContentIFrame" src="' + urlredirected + '" frameborder="0" height="' + heightSize + '" width="' + feedPrev.style.width + '"></iframe>';
+                } else {
+                    feediframe.innerHTML = '<iframe id="ContentIFrame" src="' + url + '" frameborder="0" height="' + heightSize + '" width="' + feedPrev.style.width + '"></iframe>';
+                }
+
+                feediframe.style.height =feedPrev.style.height;
+                feediframe.style.width = feedPrev.style.width;
+                if (addiframe) {
+                    document.getElementById("feedPreviewScroller").appendChild(feediframe);
+                }
+            }
+        }
+    }
+
+    if (showErrorNow) {
+        var feediframe = document.getElementById("contentNotFormated");
+        if (feediframe != undefined) {
+            document.getElementById("feedPreviewScroller").removeChild(feediframe);
+        }
+    }
+
+    if (showErrorNow && (content != undefined) && (content != "")) {
         document.getElementById("feedErrorContent").innerHTML = content;
     } else {
         document.getElementById("feedErrorContent").innerHTML = "";
     }
-    document.getElementById("headerLogo").style.backgroundImage = "url(rss.png)";
 }
 
 // central function to control creation of tabs so we can put them in the background
