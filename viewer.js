@@ -168,7 +168,7 @@ function UpdateTitle() {
     chrome.runtime.sendMessage({"type": "getUnreadTotal"}).then(function(data){
         if (data != undefined)
         unreadTotal = data;
-        if ((options.unreadtotaldisplay == 2 || options.unreadtotaldisplay == 3) && unreadTotal > 0) {
+        if ((options.unreadtotaldisplay >= 2) && options.unreaditemtotaldisplay && unreadTotal > 0) {
             title += " (" + unreadTotal + ")";
         }
 
@@ -363,7 +363,7 @@ function focusFeed() {
 
 // updates a feed item's unread count
 function UpdateFeedUnread(id) {
-    if (((unreadInfo[id] == null) && (id != readLaterFeedID)) || !options.unreaditemtotaldisplay) {
+    if (((unreadInfo[id] == null) && (id != readLaterFeedID)) || !options.unreaditemtotaldisplay || (options.unreadtotaldisplay < 2)) {
         return;
     }
 
@@ -415,7 +415,7 @@ function UpdateGroupUnread(key) {
     }
     var id = groups[key].id;
 
-    if (!options.unreaditemtotaldisplay) {
+    if (!options.unreaditemtotaldisplay || (options.unreadtotaldisplay < 2)) {
         return;
     }
 
