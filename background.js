@@ -208,8 +208,10 @@ function ExternalRequest(request, sender, sendResponse) {
             var listUnread = GetObjectFromStr(request.data);
             var keys = Object.keys(listUnread);
             var updated = false;
+            var k;
             var currentFeed = {group: "", id: 0};
             for (var i = 0; i < keys.length; i++) {
+                k = listUnread[keys[i]].id;
                 delete unreadInfo[listUnread[keys[i]].id].readitems[listUnread[keys[i]].key];
                 unreadInfo[listUnread[keys[i]].id].unreadtotal++;
                 updated = true;
