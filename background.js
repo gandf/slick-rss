@@ -106,6 +106,7 @@ function RefreshViewer(){
 }
 
 function ExternalRequest(request, sender, sendResponse) {
+    console.log(request.type);
     if (request.type == undefined) {
         sendResponse({});
         return;
@@ -156,11 +157,13 @@ function ExternalRequest(request, sender, sendResponse) {
     }
 
     if (request.type == "setUnreadInfo") {
+        var groupToCalc = [];
         if (request.data != undefined) {
             var listUnread = GetObjectFromStr(request.data);
             var keys = Object.keys(listUnread);
             var updated = false;
             var k;
+            var currentFeed = {group: "", id: 0};
             for (var i = 0; i < keys.length; i++) {
                 k = listUnread[keys[i]].id;
                 if (unreadInfo[k] != undefined) {
@@ -169,6 +172,21 @@ function ExternalRequest(request, sender, sendResponse) {
                         unreadInfo[k].unreadtotal--;
                     }
                     updated = true;
+                    if (currentFeed.id != k) {
+                        currentFeed = feeds.find(function (el) {
+                            return (el.id == k);
+                        });
+                    }
+                    if (currentFeed.group != "") {
+                        for (var i = 0; i < groups.length; i++) {
+                            if (groups[i].group == currentFeed.group) {
+                                if (!groupToCalc.includes(i)) {
+                                    groupToCalc.push(i);
+                                }
+                                break;
+                            }
+                        }
+                    }
                 }
             }
             if (updated) {
@@ -176,24 +194,51 @@ function ExternalRequest(request, sender, sendResponse) {
             }
         }
         sendResponse(JSON.stringify(unreadInfo));
+        if (groupToCalc.length > 0) {
+            for (var i = 0; i < groupToCalc.length; i++) {
+                CalcGroupCountUnread(groupToCalc[i]);
+            }
+        }
         return;
     }
 
     if (request.type == "unsetUnreadInfo") {
+        var groupToCalc = [];
         if (request.data != undefined) {
             var listUnread = GetObjectFromStr(request.data);
             var keys = Object.keys(listUnread);
             var updated = false;
+            var currentFeed = {group: "", id: 0};
             for (var i = 0; i < keys.length; i++) {
                 delete unreadInfo[listUnread[keys[i]].id].readitems[listUnread[keys[i]].key];
                 unreadInfo[listUnread[keys[i]].id].unreadtotal++;
                 updated = true;
+                if (currentFeed.id != k) {
+                    currentFeed = feeds.find(function (el) {
+                        return (el.id == k);
+                    });
+                }
+                if (currentFeed.group != "") {
+                    for (var i = 0; i < groups.length; i++) {
+                        if (groups[i].group == currentFeed.group) {
+                            if (!groupToCalc.includes(i)) {
+                                groupToCalc.push(i);
+                            }
+                            break;
+                        }
+                    }
+                }
             }
             if (updated) {
                 store.setItem('unreadinfo', unreadInfo);
             }
         }
         sendResponse(JSON.stringify(unreadInfo));
+        if (groupToCalc.length > 0) {
+            for (var i = 0; i < groupToCalc.length; i++) {
+                CalcGroupCountUnread(groupToCalc[i]);
+            }
+        }
         return;
     }
 
@@ -222,8 +267,8 @@ function ExternalRequest(request, sender, sendResponse) {
         return;
     }
 
-    if (request.type == "calcGroupCountUnread") {
-        sendResponse(CalcGroupCountUnread(request.data));
+    if (request.type == "getGroupCountUnread") {
+        sendResponse(groups[request.data].unreadCount);
         return;
     }
 
@@ -893,6 +938,12 @@ function CheckForUnreadComplete() {
     }
 
     UpdateGroups();
+    for (var i = 0; i < groups.length; i++) {
+        if (groups[i].id != allFeedsID) {
+            CalcGroupCountUnread(i);
+        }
+    }
+
     UpdateUnreadBadge();
 
     if (forceRefresh) {
@@ -1005,11 +1056,11 @@ function GetFeedLink2(node) {
 }
 
 function GetAllFeedsGroup() {
-    return CreateNewGroup(GetMessageText("backAllFeeds"), "", -8, allFeedsID);
+    return CreateNewGroup(GetMessageText("backAllFeeds"), "", -8, allFeedsID, 0);
 }
 
 // helper function for creating new feeds
-function CreateNewGroup(title, group, order, id) {
+function CreateNewGroup(title, group, order, id, unreadCount) {
     // managed feed doesn't have an id yet
     if (id == null) {
         id = GetRandomID();
@@ -1027,7 +1078,7 @@ function CreateNewGroup(title, group, order, id) {
     url = chrome.runtime.getURL("group.html");
     maxitems = 99999;
 
-    return {title: title, url: url, group: group, maxitems: maxitems, order: order, id: id, items: []};
+    return {title: title, url: url, group: group, maxitems: maxitems, order: order, id: id, unreadCount: unreadCount};
 }
 
 function UpdateGroups() {
@@ -1046,7 +1097,7 @@ function UpdateGroups() {
             if (filteredGroup == null) {
                 oldgroupindex = findWithAttr(oldgroups, 'group', feeds[i].group);
                 if (oldgroupindex == -1) {
-                    groups.push(CreateNewGroup(feeds[i].group, feeds[i].group, null, null));
+                    groups.push(CreateNewGroup(feeds[i].group, feeds[i].group, null, null, 0));
                 } else {
                     groups.push(oldgroups[oldgroupindex]);
                 }
@@ -1106,6 +1157,7 @@ function CalcGroupCountUnread(key) {
             count += unreadInfo[filteredFeeds[i].id].unreadtotal;
         }
     }
+    groups[key].unreadCount = count;
     return count;
 }
 

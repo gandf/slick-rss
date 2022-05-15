@@ -421,7 +421,7 @@ function UpdateGroupUnread(key) {
         return;
     }
 
-    chrome.runtime.sendMessage({"type": "calcGroupCountUnread", "data": key}).then(function(data){
+    chrome.runtime.sendMessage({"type": "getGroupCountUnread", "data": key}).then(function(data){
         if (data != null) {
             var count = data;
             if (document.getElementById("feedTitle" + id) != null) {
@@ -450,7 +450,7 @@ function UpdateReadAllIcon(type) {
                 document.getElementById("openAllFeed").style.display = (count > 0) ? "" : "none";
             }
         } else {
-            chrome.runtime.sendMessage({"type": "calcGroupCountUnread", "data": selectedFeedKey}).then(function(data){
+            chrome.runtime.sendMessage({"type": "getGroupCountUnread", "data": selectedFeedKey}).then(function(data){
                 if (data != null) {
                     count = data;
                     document.getElementById("markFeedRead").style.display = (count > 0) ? "" : "none";
