@@ -544,5 +544,11 @@
   },
   "optionTab": {
     "message": "Onglet"
+  },
+  "apiTitle": {
+    "message": "Slick RSS : API ajout flux"
+  },
+  "apiAddFeeds": {
+    "message": "Ajout flux"
   }
 }

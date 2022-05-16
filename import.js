@@ -25,11 +25,6 @@ function Import()
 	ImportFeeds();
 }
 
-//remove ReadLater
-function filterByID(obj) {
-	return (obj.id != readLaterFeedID);
-}
-
 // imports opml -> feed list
 function ImportFeeds()
 {
@@ -87,11 +82,14 @@ function ImportFeeds()
 		}
 
 		//remove ReadLater
-		if (feeds.filter(filterByID).length == 0) {
-			alert(GetMessageText("importAlertImportedFeeds1") + importCount + GetMessageText("importAlertImportedFeeds2"));
-		} else {
-			chrome.runtime.sendMessage({"type": "importFeeds", "data": GetStrFromObject(feeds.filter(filterByID))}).then(function(){
-				window.close();
+		if (feeds.filter(filterByID).length > 0) {
+			var resultPromise = store.setItem('feeds', feeds.filter(filterByID)).then(function(data){
+				alert(GetMessageText("importAlertImportedFeeds1") + importCount + GetMessageText("importAlertImportedFeeds2"));
+			});
+			resultPromise.then(function(){
+				chrome.runtime.sendMessage({"type": "checkForUnread"}).then(function(){
+					window.close();
+			 	});
 			});
 		}
 	});

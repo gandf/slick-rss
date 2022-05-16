@@ -544,5 +544,11 @@
   },
   "optionTab": {
     "message": "Pestaña"
+  },
+  "apiTitle": {
+    "message": "Slick RSS : API añadir fuentes"
+  },
+  "apiAddFeeds": {
+    "message": "Añadir fuentes"
   }
 }

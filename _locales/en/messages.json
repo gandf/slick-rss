@@ -545,6 +545,12 @@
   "optionTab": {
     "message": "Tab"
   },
+  "apiTitle": {
+    "message": "Slick RSS : API add feed"
+  },
+  "apiAddFeeds": {
+    "message": "Add Feeds"
+  },
   "enexportTitle": {
       "message": "Slick RSS : Export Feeds"
   },
@@ -1057,7 +1063,7 @@
   },
   "enexcludeUnreadCount": {
     "message": "Exclude from unread count"
-},
+  },
   "enoptionFontSize": {
     "message": "Font size"
   },
@@ -1081,5 +1087,11 @@
   },
   "enoptionTab": {
     "message": "Tab"
+  },
+  "enapiTitle": {
+      "message": "Slick RSS : API add feed"
+  },
+  "apiAddFeeds": {
+      "message": "Add Feeds"
   }
 }

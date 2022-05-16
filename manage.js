@@ -1,4 +1,3 @@
-
 var lastBadRow = null;
 
 $(document).ready(function()
@@ -21,19 +20,16 @@ function Add()
 	var maxOrder = 0;
 	var itemOrder = 0;
 
-	if(!IsValid(title, url, group, maxItems, order))
-	{
+	if(!IsValid(title, url, group, maxItems, order)) {
 		return;
 	}
 
 	AddRow(feeds.push(CreateNewFeed(title, url, group, maxItems, order, excludeUnreadCount)) - 1);
 
-	for(feedKey in feeds)
-	{
+	for(feedKey in feeds) {
 		itemOrder = parseInt(feeds[feedKey].order, 10);
 
-		if(itemOrder > maxOrder)
-		{
+		if(itemOrder > maxOrder) {
 			maxOrder = itemOrder;
 		}
 	}
@@ -42,51 +38,44 @@ function Add()
 	document.getElementById("newTitle").value = "";
 	document.getElementById("newUrl").value = "";
 	document.getElementById("newGroup").value = "";
+	document.getElementById("newMaxItems").value = options.maxitems;
 	document.getElementById("newExcludeUnreadCount").selectedIndex = 0;
 
 }
 
 function IsValid(title, url, group, maxItems, order)
 {
-
-	if(title == "")
-	{
+	if(title == "") {
 		alert(GetMessageText("manageAlertTitle"));
 		return false;
 	}
 
-	if(url == "")
-	{
+	if(url == "") {
 		alert(GetMessageText("manageAlertUrl"));
 		return false;
 	}
 
-	if(maxItems == "")
-	{
+	if(maxItems == "") {
 		alert(GetMessageText("manageAlertMaxItemsEmpty"));
 		return false;
 	}
 
-	if(maxItems == "0")
-	{
+	if(maxItems == "0") {
 		alert(GetMessageText("manageAlertMaxItemsZero"));
 		return false;
 	}
 
-	if(!/^\d+$/.test(maxItems))
-	{
+	if(!/^\d+$/.test(maxItems)) {
 		alert(GetMessageText("manageAlertMaxItemsNotItem1") + maxItems + GetMessageText("manageAlertMaxItemsNotItem2"));
 		return false;
 	}
 
-	if(order == "")
-	{
+	if(order == "") {
 		alert(GetMessageText("manageAlertOrder"));
 		return false;
 	}
 
-	if(!/^\d+$/.test(order))
-	{
+	if(!/^\d+$/.test(order)) {
 		alert(GetMessageText("manageAlertOrderNotItem1") + order + GetMessageText("manageAlertOrderNotItem2"));
 		return false;
 	}
@@ -164,8 +153,7 @@ function AddRow(feedKey)
 
 	//var tmp = this.parentNode.parentNode;
 
-	$(button).click({id:feedKey}, function(event)
-	{
+	$(button).click({id:feedKey}, function(event) {
 		MarkDelete($('#' + event.data.id).get(0));
 	});
 	//button.setAttribute("onclick", "MarkDelete(this.parentNode.parentNode);");
@@ -177,18 +165,12 @@ function MarkDelete(row)
 {
 	var marked = (row.className == "markDelete");
 
-	if(!marked)
-	{
+	if(!marked)	{
 		row.setAttribute("class", "markDelete");
-	}
-	else
-	{
-		if(row != lastBadRow)
-		{
+	} else {
+		if(row != lastBadRow) {
 			row.setAttribute("class", "");
-		}
-		else
-		{
+		} else {
 			row.setAttribute("class", "badRow");
 		}
 	}
@@ -212,49 +194,47 @@ function Save()
 	var order;
 	var excludeUnreadCount;
 
-	if(lastBadRow != null && lastBadRow.className != "markDelete")
-	{
+	if (lastBadRow != null && lastBadRow.className != "markDelete") {
 		lastBadRow.className = "";
 	}
 
-	for(feedKey in feeds)
-	{
-		row = document.getElementById(feedKey);
+	for(feedKey in feeds) {
+		if (feeds[feedKey].id != readLaterFeedID) {
+			row = document.getElementById(feedKey);
 
-		title = row.childNodes[0].childNodes[0].value;
-		url = row.childNodes[1].childNodes[0].value;
-		group = row.childNodes[2].childNodes[0].value;
-		maxItems = row.childNodes[3].childNodes[0].value;
-		order = row.childNodes[4].childNodes[0].value;
-		excludeUnreadCount = row.childNodes[5].childNodes[0].selectedIndex;
+			title = row.childNodes[0].childNodes[0].value;
+			url = row.childNodes[1].childNodes[0].value;
+			group = row.childNodes[2].childNodes[0].value;
+			maxItems = row.childNodes[3].childNodes[0].value;
+			order = row.childNodes[4].childNodes[0].value;
+			excludeUnreadCount = row.childNodes[5].childNodes[0].selectedIndex;
 
-		if(row.className != "markDelete" && !IsValid(title, url, group, maxItems, order))
-		{
-			row.className = "badRow";
-			lastBadRow = row;
-			return;
+			if(row.className != "markDelete" && !IsValid(title, url, group, maxItems, order)) {
+				row.className = "badRow";
+				lastBadRow = row;
+				return;
+			}
+
+			feeds[feedKey].title = title;
+			feeds[feedKey].url = url;
+			feeds[feedKey].group = group;
+			feeds[feedKey].maxitems = maxItems;
+			feeds[feedKey].order = order;
+			feeds[feedKey].excludeUnreadCount = excludeUnreadCount;
 		}
-
-		feeds[feedKey].title = title;
-		feeds[feedKey].url = url;
-		feeds[feedKey].group = group;
-		feeds[feedKey].maxitems = maxItems;
-		feeds[feedKey].order = order;
-		feeds[feedKey].excludeUnreadCount = excludeUnreadCount;
 	}
 
 	// delete feeds that are marked, start from end so indexes don't get screwed up
-	for(i = feeds.length - 1;i >= 0;i--)
-	{
+	for(var i = feeds.length - 1; i >= 0; i--) {
 		row = document.getElementById(i);
-
-		if(row.className == "markDelete")
-		{
-			feeds.splice(i, 1);
+		if (row != undefined) {
+			if(row.className == "markDelete") {
+				feeds.splice(i, 1);
+			}
 		}
 	}
 
-	var resultPromise = store.setItem('feeds', feeds).then(function(data){
+	var resultPromise = store.setItem('feeds', feeds.filter(filterByID)).then(function(data){
 		GetUnreadCounts();
 		CleanUpUnreadOrphans();
 	});
@@ -271,18 +251,14 @@ function ShowFeeds()
 	var maxOrder = 0;
 	var itemOrder = 0;
 
-	GetFeedsSimple(function(feeds)
-	{
-		for(feedKey in feeds)
-		{
+	GetFeedsSimple(function(feeds) {
+		for(feedKey in feeds) {
 			// skip read later feed
-			if (feeds[feedKey].id != readLaterFeedID)
-			{
+			if (feeds[feedKey].id != readLaterFeedID) {
 				AddRow(feedKey);
 				itemOrder = parseInt(feeds[feedKey].order, 10);
 
-				if(itemOrder > maxOrder)
-				{
+				if(itemOrder > maxOrder) {
 					maxOrder = itemOrder;
 				}
 			}

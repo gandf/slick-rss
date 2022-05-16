@@ -544,5 +544,11 @@
   },
   "optionTab": {
     "message": "Tab"
+  },
+  "apiTitle": {
+    "message": "Slick RSS : API add feed"
+  },
+  "apiAddFeeds": {
+    "message": "Add Feeds"
   }
 }

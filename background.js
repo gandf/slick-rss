@@ -11,12 +11,16 @@ var refreshFeed = false;
 var viewPortTabID = null;
 var referenceDate = GetDate("Thu, 31 Dec 2019 23:59:59 +0000").getTime();
 var viewerPortTabID = null;
+var apiaddurlTabID = null;
 var forceRefresh = false;
+var spamProtect = [];
+var listApiUrlToAdd = [];
 
 chrome.action.onClicked.addListener(ButtonClicked);
 chrome.runtime.onMessage.addListener(ExternalRequest);
 chrome.runtime.onConnect.addListener(InternalConnection);
 chrome.alarms.onAlarm.addListener(AlarmRing);
+chrome.runtime.onMessageExternal.addListener(ApiRequest);
 
 waitOptionReady().then(function () {
     promiseUpgrade = DoUpgrades();
@@ -97,8 +101,10 @@ function ButtonClicked(tab) {
 function RefreshViewer(){
     if (viewerPortTabID == null) {
         chrome.tabs.query({url: chrome.runtime.getURL("viewer.html")}, function (tab) {
-            viewerPortTabID = tab[0].id;
-            chrome.tabs.reload(viewerPortTabID, {bypassCache: true});
+            if (tab.length > 0) {
+                viewerPortTabID = tab[0].id;
+                chrome.tabs.reload(viewerPortTabID, {bypassCache: true});
+            }
         });
     } else {
         chrome.tabs.reload(viewerPortTabID, {bypassCache: true});
@@ -118,7 +124,7 @@ function ExternalRequest(request, sender, sendResponse) {
                 feeds.splice(i, 1);
             }
         }
-        resultPromise = store.setItem('feeds', feeds);
+        resultPromise = store.setItem('feeds', feeds.filter(filterByID));
         resultPromise.then(function(){
             UpdateGroups();
             ReloadViewer();
@@ -310,18 +316,113 @@ function ExternalRequest(request, sender, sendResponse) {
         sendResponse({});
         return;
     }
+
     if (request.type == "importFeeds") {
         if (request.data != undefined) {
             feeds = GetObjectFromStr(request.data);
-            store.setItem('feeds', feeds).then(function() {
+            store.setItem('feeds', feeds.filter(filterByID)).then(function() {
                 GetFeeds(function () {
                     CheckForUnreadStart();
                 });
-            });;
+            });
         }
         sendResponse({});
         return;
     }
+
+    if (request.type == "getApiUrlToAdd") {
+        sendResponse(GetStrFromObject(listApiUrlToAdd));
+        //listApiUrlToAdd = [];
+        return;
+    }
+
+    if (request.type == "addFeed") {
+        sendResponse();
+
+        if (request.feedData != undefined) {
+            var maxOrderFeed = 1;
+            var itemOrder;
+
+            for(feedKey in feeds) {
+                itemOrder = parseInt(feeds[feedKey].order, 10);
+
+                if(itemOrder > maxOrderFeed) {
+                    maxOrderFeed = itemOrder;
+                }
+            }
+            maxOrderFeed++;
+            feeds.push(CreateNewFeed(request.feedData.title, request.feedData.url, request.feedData.group, request.feedData.maxItems, maxOrderFeed, request.feedData.excludeUnreadCount, null));
+            store.setItem('feeds', feeds.filter(filterByID)).then(function() {
+                GetFeeds(function () {
+                    CheckForUnreadStart();
+                });
+            });
+        }
+        return;
+    }
+
+}
+
+function ApiRequest(request, sender, sendResponse) {
+    if (spamProtect[sender.id] == undefined) {
+        spamProtect[sender.id] = new Date();
+    } else {
+
+        if ((new Date()) - spamProtect[sender.id] < 1000) {
+            sendResponse({status: "refused"});
+            return;
+        }
+    }
+
+    if (request.feedUrl != undefined) {
+        var existingFeed = feeds.find(function (el) {
+            return (el.url == request.feedUrl);
+        });
+        if (existingFeed != undefined) {
+            sendResponse({status: "already exists"});
+            return;
+        }
+
+        var feedurl = request.feedUrl;
+        var feedTitle = request.feedTitle;
+        var feedGroup = request.feedGroup;
+        if (typeof feedurl != "string") {
+            sendResponse({status: "bad request"});
+            return;
+        }
+        if ((typeof feedTitle != "string") && (feedTitle != undefined)) {
+            sendResponse({status: "bad request"});
+            return;
+        }
+        if ((typeof feedGroup != "string") && (feedTitle != undefined)) {
+            sendResponse({status: "bad request"});
+            return;
+        }
+
+        sendResponse({status: "ok"});
+
+        listApiUrlToAdd.push({Url: feedUrl, Title: feedTitle, Group: feedGroup});
+
+        if (apiaddurlTabID != null) {
+            apiaddurlTabID = null;
+            chrome.tabs.query({url: chrome.runtime.getURL("apiaddurl.html")}, function (tab) {
+                if (tab.length > 0) {
+                    apiaddurlTabID = tab[0].id;
+                    chrome.tabs.reload(apiaddurlTabID, {bypassCache: true});
+                } else {
+                    chrome.tabs.create({url: chrome.runtime.getURL("apiaddurl.html")}, function (tab) {
+                        apiaddurlTabID = tab.id;
+                    });
+                }
+            });
+        } else {
+            chrome.tabs.create({url: chrome.runtime.getURL("apiaddurl.html")}, function (tab) {
+                apiaddurlTabID = tab.id;
+            });
+        }
+        return;
+    }
+    sendResponse({status: "nothing"});
 }
 
 // gets the feed array for everyone to use
@@ -336,7 +437,7 @@ function GetFeeds(callBack) {
                     datafeed.excludeUnreadCount = 0;
                 }
             });
-            datafeeds
+
             feeds = datafeeds.sort(function (a, b) {
                 return a.order - b.order;
             });
@@ -361,6 +462,15 @@ function DoUpgrades() {
     }
 
     resultPromise = Promise.allSettled(listPromise);
+
+    chrome.tabs.query({url: chrome.runtime.getURL("apiaddurl.html")}, function (tab) {
+        if (tab.length > 0) {
+            apiaddurlTabID = tab[0].id;
+        } else {
+            apiaddurlTabID = null;
+        }
+    });
+
     return resultPromise;
 }
 

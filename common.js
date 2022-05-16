@@ -528,3 +528,8 @@ function FormatDTWithMs(mseconds) {
     returntext += ' ' + mseconds + 'ms';
     return returntext.trim();
 }
+
+//remove ReadLater
+function filterByID(obj) {
+	return ((obj.id != readLaterFeedID) && (obj.id != allFeedsID));
+}

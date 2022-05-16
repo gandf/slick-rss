@@ -1,13 +1,13 @@
 // to prevent XSS :(
 $(document).ready(function () {
     $('#refreshAll').click(function () {
-        chrome.runtime.sendMessage({"type": "checkForUnread"}).then(function(){ });
+        chrome.runtime.sendMessage({type: "checkForUnread"}).then(function(){ });
     });
     $('#markAllRead').click(function () {
         MarkAllFeedsRead();
     });
     $('#refreshButton').click(function () {
-        chrome.runtime.sendMessage({"type": "checkForUnreadOnSelectedFeed", "selectedFeedKey": selectedFeedKey}).then(function(){ });
+        chrome.runtime.sendMessage({type: "checkForUnreadOnSelectedFeed", selectedFeedKey: selectedFeedKey}).then(function(){ });
     });
     $('#markFeedReadButton').click(function () {
         MarkFeedRead((selectedFeedKeyIsFeed ? feeds[selectedFeedKey].id : groups[selectedFeedKey].id));

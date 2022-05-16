@@ -15,6 +15,16 @@ If you are web developer, refresh UI would be good to start.
 
 #### I'm not web developper. I refactor and add some functions. It will take time before having a clean code.
 
+### API to send suggested url from other extension:
+Request : {feedUrl: "url", feedTitle: "", feedGroup: ""}
+feedUrl is mandatory.
+Return can be :
+- "refused"
+- "already exists"
+- "bad request"
+- "nothing"
+- "ok"
+
 Original and actual license is MIT License.
 http://opensource.org/licenses/MIT
 
