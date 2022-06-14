@@ -62,7 +62,9 @@ function AlarmRing(alarm){
         try {
             CheckForUnreadStart();
         } catch(e){
-            console.log(e);
+            if (options.log) {
+                console.log(e);
+            }
         }
     }
 }
@@ -112,7 +114,12 @@ function RefreshViewer(){
 }
 
 function ExternalRequest(request, sender, sendResponse) {
-    console.log(request.type);
+    var now;
+    if (options.log) {
+        now = new Date();
+        console.log(request.type);
+    }
+
     if (request.type == undefined) {
         sendResponse({});
         return;
@@ -135,11 +142,17 @@ function ExternalRequest(request, sender, sendResponse) {
     if (request.type == "checkForUnread") {
         CheckForUnreadStart();
         sendResponse({});
+        if (options.log) {
+            console.log('|checkForUnread | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
+        }
         return;
     }
     if (request.type == "checkForUnreadOnSelectedFeed") {
         CheckForUnreadStart(request.selectedFeedKey);
         sendResponse({});
+        if (options.log) {
+            console.log('|checkForUnreadOnSelectedFeed | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
+        }
         return;
     }
 
@@ -159,6 +172,9 @@ function ExternalRequest(request, sender, sendResponse) {
             }
         }
         sendResponse({});
+        if (options.log) {
+            console.log('|checkForUnreadOnSelectedFeedCompleted | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
+        }
         return;
     }
 
@@ -205,6 +221,11 @@ function ExternalRequest(request, sender, sendResponse) {
                 CalcGroupCountUnread(groupToCalc[i]);
             }
         }
+
+        if (options.log) {
+            console.log('|setUnreadInfo | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
+        }
+
         return;
     }
 
@@ -247,46 +268,75 @@ function ExternalRequest(request, sender, sendResponse) {
                 CalcGroupCountUnread(groupToCalc[i]);
             }
         }
+
+        if (options.log) {
+            console.log('|unsetUnreadInfo | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
+        }
+
         return;
     }
 
     if (request.type == "getFeeds") {
         sendResponse(GetStrFromObject(feeds));
+        if (options.log) {
+            console.log('|getFeeds | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
+        }
         return;
     }
 
     if (request.type == "getFeedInfo") {
         sendResponse(GetStrFromObject(feedInfo));
+        if (options.log) {
+            console.log('|getFeedInfo | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
+        }
         return;
     }
 
     if (request.type == "getGroups") {
         sendResponse(GetStrFromObject(groups));
+        if (options.log) {
+            console.log('|getGroups | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
+        }
         return;
     }
 
     if (request.type == "getGroupInfo") {
         sendResponse(GetStrFromObject(groupInfo));
+        if (options.log) {
+            console.log('|getGroupInfo | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
+        }
         return;
     }
 
     if (request.type == "getFeedsAndGroupsInfo") {
         sendResponse(JSON.stringify({"feeds": GetStrFromObject(feeds), "feedInfo": GetStrFromObject(feedInfo), "groups": GetStrFromObject(groups), "groupInfo": GetStrFromObject(groupInfo), "unreadInfo": GetStrFromObject(unreadInfo)}));
+        if (options.log) {
+            console.log('|getFeedsAndGroupsInfo | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
+        }
         return;
     }
 
     if (request.type == "getGroupCountUnread") {
         sendResponse(groups[request.data].unreadCount);
+        if (options.log) {
+            console.log('|getGroupCountUnread | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
+        }
         return;
     }
 
     if (request.type == "getUnreadTotal") {
         sendResponse(unreadTotal);
+        if (options.log) {
+            console.log('|getUnreadTotal | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
+        }
         return;
     }
 
     if (request.type == "getRefreshFeed") {
         sendResponse(GetStrFromObject({"refreshFeed": refreshFeed, "checkForUnreadCounter": checkForUnreadCounter, "checkingForUnread": checkingForUnread}));
+        if (options.log) {
+            console.log('|getRefreshFeed | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
+        }
         return;
     }
 
@@ -295,6 +345,9 @@ function ExternalRequest(request, sender, sendResponse) {
             CheckForUnreadStart();
         });
         sendResponse({});
+        if (options.log) {
+            console.log('|refreshFeeds | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
+        }
         return;
     }
 
@@ -314,6 +367,9 @@ function ExternalRequest(request, sender, sendResponse) {
             });
         });
         sendResponse({});
+        if (options.log) {
+            console.log('|refreshOptionsAndRefreshFeeds | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
+        }
         return;
     }
 
@@ -327,12 +383,18 @@ function ExternalRequest(request, sender, sendResponse) {
             });
         }
         sendResponse({});
+        if (options.log) {
+            console.log('|importFeeds | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
+        }
         return;
     }
 
     if (request.type == "getApiUrlToAdd") {
         sendResponse(GetStrFromObject(listApiUrlToAdd));
         //listApiUrlToAdd = [];
+        if (options.log) {
+            console.log('|getApiUrlToAdd | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
+        }
         return;
     }
 
@@ -357,6 +419,9 @@ function ExternalRequest(request, sender, sendResponse) {
                     CheckForUnreadStart();
                 });
             });
+        }
+        if (options.log) {
+            console.log('|addFeed | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
         }
         return;
     }
@@ -521,6 +586,7 @@ function CheckForUnreadStart(key) {
 function CheckForUnread() {
     var feedID = feeds[checkForUnreadCounter].id;
     var now = new Date();
+    const offsetMs = now.getTimezoneOffset() * 60 * 1000;
     var promiseCheckForUnread = [];
     var status;
 
@@ -562,12 +628,11 @@ function CheckForUnread() {
         feedInfo[feedID] = {title: "", description: "", group: "", loading: true, items: [], error: "", errorContent: "", guid:"", image:""};
 
         try {
-            //>>Profiler
-            //console.log('|Feeds | ' + feeds[checkForUnreadCounter].url);
-            //const offsetMs = now.getTimezoneOffset() * 60 * 1000;
-            //var dtfetch = new Date(new Date() - offsetMs);
-            //console.log('|FETCH | ' + dtfetch.toLocaleString() + ' ' + dtfetch.getMilliseconds() + 'ms');
-            //<<Profiler
+            if (options.log) {
+                //>>Profiler
+                console.log('|Feeds | ' + feeds[checkForUnreadCounter].url);
+                //<<Profiler
+            }
             fetch(feeds[checkForUnreadCounter].url.replace(/feed:\/\//i, "http://"), {
                 method: 'GET',
                 headers: {
@@ -575,6 +640,13 @@ function CheckForUnread() {
                     'Accept-Charset': 'utf-8'
                 },
             }).then(function(response) {
+                if (options.log) {
+                    //>>Profiler
+                    var dtfetch = new Date(new Date() - offsetMs);
+                    console.log('|FETCH | ' + dtfetch.toLocaleString() + ' ' + dtfetch.getMilliseconds() + 'ms');
+                    //<<Profiler
+                }
+
                 if (!response.ok) {
                     feedInfo[feedID].loading = false;
                     feedInfo[feedID].error = 'Looks like there was a problem. Status Code: ' + response.status;
@@ -602,11 +674,13 @@ function CheckForUnread() {
                 }
                 status = response.status;
                 response.arrayBuffer().then(function(data) {
-                    //>>Profiler
-                    //var dt = new Date(new Date() - offsetMs);
-                    //console.log('|Time FETCH | ' + FormatDTWithMs(dt - dtfetch));
-                    //console.log('|Time | ' + dt.toLocaleString() + ' ' + dt.getMilliseconds() + 'ms');
-                    //<<Profiler
+                    if (options.log) {
+                        //>>Profiler
+                        var dt = new Date(new Date() - offsetMs);
+                        console.log('|Time FETCH | ' + FormatDTWithMs(dt - dtfetch));
+                        console.log('|Time | ' + dt.toLocaleString() + ' ' + dt.getMilliseconds() + 'ms');
+                        //<<Profiler
+                    }
                     var decoder = new TextDecoder("UTF-8");
                     var doc = decoder.decode(data);
                     var encodeName = doc.substring(0, 100);
@@ -971,11 +1045,13 @@ function CheckForUnread() {
 
                     feedInfo[feedID].loading = false;
 
-                    //>>Profiler
-                    //var dt2 = new Date(new Date() - offsetMs);
-                    //console.log('|Time end | ', dt2.toLocaleString() + ' ' + dt2.getMilliseconds() + 'ms');
-                    //console.log('|Interval | ', FormatDTWithMs(dt2 - dt));
-                    //<<Profiler
+                    if (options.log) {
+                        //>>Profiler
+                        var dt2 = new Date(new Date() - offsetMs);
+                        console.log('|Time end | ', dt2.toLocaleString() + ' ' + dt2.getMilliseconds() + 'ms');
+                        console.log('|Interval | ', FormatDTWithMs(dt2 - dt));
+                        //<<Profiler
+                    }
 
                     waitPromise(promiseCheckForUnread).then(function () {
                         if (viewerPort != null) {

@@ -547,5 +547,8 @@
   },
   "apiAddFeeds": {
     "message": "Aggiungi feed"
+  },
+  "optionLog": {
+    "message": "Console di accesso attiva"
   }
 }

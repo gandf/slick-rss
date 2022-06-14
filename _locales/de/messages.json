@@ -547,5 +547,8 @@
   },
   "apiAddFeeds": {
     "message": "Feeds hinzufügen"
+  },
+  "optionLog": {
+    "message": "Aktive Anmeldekonsole"
   }
 }

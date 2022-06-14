@@ -846,7 +846,9 @@ function SelectFeedOrGroup(key, type) {
                             try {
                                 MarkFeedRead(feedsOrGroups[key].id)
                             } catch(e){
-                                console.log(e);
+                                if (options.log) {
+                                    console.log(e);
+                                }
                             }
                         }, options.markreadafter * 1000);
                     }
@@ -874,7 +876,9 @@ function SelectFeedOrGroup(key, type) {
                 try {
                     MarkFeedRead(feedsOrGroups[key].id)
                 } catch(e){
-                    console.log(e);
+                    if (options.log) {
+                        console.log(e);
+                    }
                 }
             }, options.markreadafter * 1000);
         }

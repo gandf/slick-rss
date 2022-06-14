@@ -550,5 +550,8 @@
   },
   "apiAddFeeds": {
     "message": "Add Feeds"
+  },
+  "optionLog": {
+    "message": "Active log in console"
   }
 }

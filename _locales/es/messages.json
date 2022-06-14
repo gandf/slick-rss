@@ -550,5 +550,8 @@
   },
   "apiAddFeeds": {
     "message": "Añadir fuentes"
+  },
+  "optionLog": {
+    "message": "Inicio de sesión activo en la consola"
   }
 }

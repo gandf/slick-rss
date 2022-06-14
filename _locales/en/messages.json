@@ -551,6 +551,9 @@
   "apiAddFeeds": {
     "message": "Add Feeds"
   },
+  "optionLog": {
+    "message": "Active log in console"
+  },
   "enexportTitle": {
       "message": "Slick RSS : Export Feeds"
   },
@@ -1091,7 +1094,10 @@
   "enapiTitle": {
       "message": "Slick RSS : API add feed"
   },
-  "apiAddFeeds": {
+  "enapiAddFeeds": {
       "message": "Add Feeds"
+  },
+  "enoptionLog": {
+    "message": "Active log in console"
   }
 }

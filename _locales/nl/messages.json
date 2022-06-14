@@ -547,5 +547,8 @@
   },
   "apiAddFeeds": {
     "message": "Feeds toevoegen"
+  },
+  "optionLog": {
+    "message": "Actieve inlogconsole"
   }
 }

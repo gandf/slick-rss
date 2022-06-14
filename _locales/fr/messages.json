@@ -550,5 +550,8 @@
   },
   "apiAddFeeds": {
     "message": "Ajout flux"
+  },
+  "optionLog": {
+    "message": "Activer log dans la console"
   }
 }

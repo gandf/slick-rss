@@ -271,7 +271,8 @@ function GetDefaultOptions() {
         "forcelangen": false,
         "levelSearchTag": 5,
         "levelSearchTags": 8,
-        "typeNotify": 1
+        "typeNotify": 1,
+        "log": false
     };
 }
 
