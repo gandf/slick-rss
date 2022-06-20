@@ -642,8 +642,9 @@ function CheckForUnread() {
             }).then(function(response) {
                 if (options.log) {
                     //>>Profiler
-                    var dtfetch = new Date(new Date() - offsetMs);
-                    console.log('|FETCH | ' + dtfetch.toLocaleString() + ' ' + dtfetch.getMilliseconds() + 'ms');
+                    var dtfetch = new Date();
+                    console.log('| |FETCH | ' + dtfetch.toLocaleString() + ' ' + dtfetch.getMilliseconds() + 'ms');
+                    console.log('|x|Gap | ' + FormatDTWithMs(dtfetch.getTime() - now.getTime()));
                     //<<Profiler
                 }
 
@@ -676,9 +677,8 @@ function CheckForUnread() {
                 response.arrayBuffer().then(function(data) {
                     if (options.log) {
                         //>>Profiler
-                        var dt = new Date(new Date() - offsetMs);
-                        console.log('|Time FETCH | ' + FormatDTWithMs(dt - dtfetch));
-                        console.log('|Time | ' + dt.toLocaleString() + ' ' + dt.getMilliseconds() + 'ms');
+                        var dt = new Date();
+                        console.log('|x|Time FETCH | ' + FormatDTWithMs(dt - dtfetch));
                         //<<Profiler
                     }
                     var decoder = new TextDecoder("UTF-8");
@@ -1047,9 +1047,8 @@ function CheckForUnread() {
 
                     if (options.log) {
                         //>>Profiler
-                        var dt2 = new Date(new Date() - offsetMs);
-                        console.log('|Time end | ', dt2.toLocaleString() + ' ' + dt2.getMilliseconds() + 'ms');
-                        console.log('|Interval | ', FormatDTWithMs(dt2 - dt));
+                        var dt2 = new Date();
+                        console.log('|x|End | ', FormatDTWithMs(dt2 - dt));
                         //<<Profiler
                     }
 
