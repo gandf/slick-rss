@@ -276,23 +276,6 @@ function ShowFeeds() {
             }
         }
 
-        // in the middle of refresh all, show progress but wait a little so feed content pushes the feed list to the right size
-        // this is only here to show progress on load when current loading feed is slow, otherwise the next feed will update the progress
-        chrome.runtime.sendMessage({"type": "getRefreshFeed"}).then(function(bgdata){
-            if (bgdata != undefined){
-                var info = GetObjectFromStr(bgdata);
-                if (info.checkingForUnread && !info.refreshFeed) {
-                    setTimeout(function() {
-                        chrome.runtime.sendMessage({"type": "getRefreshFeed"}).then(function(data){
-                            if (data != undefined){
-                                info = GetObjectFromStr(data);
-                            }
-                        });
-                    }, 500);
-                }
-            }
-        });
-
         focusFeed();
         UpdateSizeProgress(true);
     });

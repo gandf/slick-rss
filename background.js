@@ -6,6 +6,7 @@ var checkingForUnread = false;
 var checkForUnreadTimerID = null;
 var checkForUnreadCounter = 0;
 var allFeedsUnreadCounter = -1;
+var checkForUnreadFeeds = [];
 var getFeedsCallBack = null;
 var refreshFeed = false;
 var viewPortTabID = null;
@@ -332,14 +333,6 @@ function ExternalRequest(request, sender, sendResponse) {
         return;
     }
 
-    if (request.type == "getRefreshFeed") {
-        sendResponse(GetStrFromObject({"refreshFeed": refreshFeed, "checkForUnreadCounter": checkForUnreadCounter, "checkingForUnread": checkingForUnread}));
-        if (options.log) {
-            console.log('|getRefreshFeed | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
-        }
-        return;
-    }
-
     if (request.type == "refreshFeeds") {
         GetFeeds(function () {
             CheckForUnreadStart();
@@ -551,8 +544,10 @@ function CheckForUnreadStart(key) {
     checkingForUnread = true;
 
     if (key == null) {
+        checkForUnreadFeeds = [];
         if (checkForUnreadCounter < feeds.length) {
             while ((checkForUnreadCounter < feeds.length) && (feeds[checkForUnreadCounter].id == allFeedsID)) {
+                checkForUnreadFeeds[checkForUnreadCounter] = true;
                 checkForUnreadCounter++;
             }
         }
@@ -579,12 +574,12 @@ function CheckForUnreadStart(key) {
         refreshFeed = true;
     }
 
-    CheckForUnread();
+    CheckForUnread(checkForUnreadCounter);
 }
 
 // goes through each feed and gets how many you haven't read since last time you were there
-function CheckForUnread() {
-    var feedID = feeds[checkForUnreadCounter].id;
+function CheckForUnread(checkForUnreadCounterID) {
+    var feedID = feeds[checkForUnreadCounterID].id;
     var now = new Date();
     const offsetMs = now.getTimezoneOffset() * 60 * 1000;
     var promiseCheckForUnread = [];
@@ -601,19 +596,7 @@ function CheckForUnread() {
     unreadInfo[feedID].unreadtotal = 0;
 
     if (feedID == readLaterFeedID) {
-        checkForUnreadCounter++;
-        if (checkForUnreadCounter < feeds.length) {
-            if (feeds[checkForUnreadCounter].id === allFeedsID) {
-                checkForUnreadCounter++;
-            }
-        }
-
-        if (checkForUnreadCounter >= feeds.length || refreshFeed) {
-            CheckForUnreadComplete();
-        } else {
-            UpdateLoadingProgress(checkForUnreadCounter, feeds.length);
-            CheckForUnread();
-        }
+        CheckNextRead();
     }
     else {
         var oldFeedInfoItems = [];
@@ -630,10 +613,10 @@ function CheckForUnread() {
         try {
             if (options.log) {
                 //>>Profiler
-                console.log('|Feeds | ' + feeds[checkForUnreadCounter].url);
+                console.log('|Feeds | ' + feeds[checkForUnreadCounterID].url);
                 //<<Profiler
             }
-            fetch(feeds[checkForUnreadCounter].url.replace(/feed:\/\//i, "http://"), {
+            fetch(feeds[checkForUnreadCounterID].url.replace(/feed:\/\//i, "http://"), {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'text/xml',
@@ -644,41 +627,27 @@ function CheckForUnread() {
                     //>>Profiler
                     var dtfetch = new Date();
                     console.log('| |FETCH | ' + dtfetch.toLocaleString() + ' ' + dtfetch.getMilliseconds() + 'ms');
-                    console.log('|x|Gap | ' + FormatDTWithMs(dtfetch.getTime() - now.getTime()));
+                    console.log('|x|Time FETCH | ' + FormatDTWithMs(dtfetch.getTime() - now.getTime()));
                     //<<Profiler
                 }
 
                 if (!response.ok) {
                     feedInfo[feedID].loading = false;
                     feedInfo[feedID].error = 'Looks like there was a problem. Status Code: ' + response.status;
-
-                    checkForUnreadCounter++;
-                    if (checkForUnreadCounter < feeds.length) {
-                        if (feeds[checkForUnreadCounter].id === allFeedsID) {
-                            checkForUnreadCounter++;
-                        }
-                    }
-                    if (checkForUnreadCounter >= feeds.length || refreshFeed) {
-                        CheckForUnreadComplete();
-                    } else {
-                        UpdateLoadingProgress(checkForUnreadCounter, feeds.length);
-                        setTimeout(function() {
-                            CheckForUnread();
-                        }, 20);
-                    }
+                    CheckReadFinish();
                     return;
                 }
                 if (response.redirected) {
-                    feeds[checkForUnreadCounter].urlredirected = response.url;
+                    feeds[checkForUnreadCounterID].urlredirected = response.url;
                 } else {
-                    feeds[checkForUnreadCounter].urlredirected = undefined;
+                    feeds[checkForUnreadCounterID].urlredirected = undefined;
                 }
                 status = response.status;
                 response.arrayBuffer().then(function(data) {
                     if (options.log) {
                         //>>Profiler
                         var dt = new Date();
-                        console.log('|x|Time FETCH | ' + FormatDTWithMs(dt - dtfetch));
+                        console.log('|x|Response to buffer | ' + FormatDTWithMs(dt - dtfetch));
                         //<<Profiler
                     }
                     var decoder = new TextDecoder("UTF-8");
@@ -718,21 +687,7 @@ function CheckForUnread() {
                                 feedInfo[feedID].loading = false;
                                 feedInfo[feedID].error = GetMessageText("backErrorMessage");
                                 feedInfo[feedID].errorContent = doc.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
-                                checkForUnreadCounter++;
-                                if (checkForUnreadCounter < feeds.length) {
-                                    if (feeds[checkForUnreadCounter].id === allFeedsID) {
-                                        checkForUnreadCounter++;
-                                    }
-                                }
-                                if (checkForUnreadCounter >= feeds.length || refreshFeed) {
-                                    CheckForUnreadComplete();
-                                } else {
-                                    UpdateLoadingProgress(checkForUnreadCounter, feeds.length);
-                                    setTimeout(function() {
-                                        CheckForUnread();
-                                    }, 20);
-                                }
+                                CheckReadFinish();
                                 return;
                             }
 
@@ -805,7 +760,7 @@ function CheckForUnread() {
                                 thumbnailtype = null;
 
                                 // don't bother storing extra stuff past max.. only title for Mark All Read
-                                if (e <= feeds[checkForUnreadCounter].maxitems) {
+                                if (e <= feeds[checkForUnreadCounterID].maxitems) {
                                     item.url = GetFeedLink(entries[e]);
                                     if (item.url == "") {
                                         item.url = GetFeedLink2(entries[e]);
@@ -1034,13 +989,6 @@ function CheckForUnread() {
                         }
                     }
 
-                    checkForUnreadCounter++;
-                    if (checkForUnreadCounter < feeds.length) {
-                        if (feeds[checkForUnreadCounter].id === allFeedsID) {
-                            checkForUnreadCounter++;
-                        }
-                    }
-
                     doc = null;
 
                     feedInfo[feedID].loading = false;
@@ -1056,15 +1004,7 @@ function CheckForUnread() {
                         if (viewerPort != null) {
                             viewerPort.postMessage({type: "feedupdatecomplete", id: feedID});
                         }
-
-                        if (checkForUnreadCounter >= feeds.length || refreshFeed) {
-                            CheckForUnreadComplete();
-                        } else {
-                            UpdateLoadingProgress(checkForUnreadCounter, feeds.length);
-                            setTimeout(function() {
-                                CheckForUnread();
-                            }, 20);
-                        }
+                        CheckReadFinish();
                     });
                 });
             })
@@ -1072,42 +1012,45 @@ function CheckForUnread() {
                 feedInfo[feedID].loading = false;
                 feedInfo[feedID].error = 'Fetch Error :';
                 feedInfo[feedID].errorContent = `${err.message}`;
-
-                checkForUnreadCounter++;
-                if (checkForUnreadCounter < feeds.length) {
-                    if (feeds[checkForUnreadCounter].id === allFeedsID) {
-                        checkForUnreadCounter++;
-                    }
-                }
-                if (checkForUnreadCounter >= feeds.length || refreshFeed) {
-                    CheckForUnreadComplete();
-                } else {
-                    UpdateLoadingProgress(checkForUnreadCounter, feeds.length);
-                    setTimeout(function() {
-                        CheckForUnread();
-                    }, 20);
-                }
+                CheckReadFinish();
             });
         }
         catch (err) {
             feedInfo[feedID].loading = false;
             feedInfo[feedID].error = 'Error :';
             feedInfo[feedID].errorContent = `${err}`;
+        }
+        CheckNextRead();
+    }
+}
 
+function CheckNextRead() {
+    checkForUnreadCounter++;
+    if (checkForUnreadCounter < feeds.length) {
+        if (feeds[checkForUnreadCounter].id === allFeedsID) {
+            checkForUnreadFeeds[checkForUnreadCounter] = true;
             checkForUnreadCounter++;
-            if (checkForUnreadCounter < feeds.length) {
-                if (feeds[checkForUnreadCounter].id === allFeedsID) {
-                    checkForUnreadCounter++;
-                }
-            }
-            if (checkForUnreadCounter >= feeds.length || refreshFeed) {
+        }
+    }
+    if (checkForUnreadCounter < feeds.length && !refreshFeed) {
+        setTimeout(function() {
+            CheckForUnread(checkForUnreadCounter);
+        }, 20);
+    }
+}
+
+function CheckReadFinish() {
+    if (refreshFeed) {
+        CheckForUnreadComplete();
+    } else {
+        if (checkForUnreadCounter >= feeds.length) {
+            if (checkForUnreadFeeds.find(el => el == false) == undefined) {
                 CheckForUnreadComplete();
             } else {
-                UpdateLoadingProgress(checkForUnreadCounter, feeds.length);
-                setTimeout(function() {
-                    CheckForUnread();
-                }, 20);
+                UpdateLoadingProgress(checkForUnreadFeeds.filter(function(el){return el == true;}).length, feeds.length);
             }
+        } else {
+            UpdateLoadingProgress(checkForUnreadFeeds.filter(function(el){return el == true;}).length, feeds.length);
         }
     }
 }
