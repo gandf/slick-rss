@@ -544,10 +544,15 @@ function CheckForUnreadStart(key) {
     checkingForUnread = true;
 
     if (key == null) {
-        checkForUnreadFeeds = [];
+        checkForUnreadFeeds = Array(feeds.length).fill(false);
+        for (var i = 0; i < feeds.length; i++) {
+            if ((feeds[i].id == readLaterFeedID) || (feeds[i].id == allFeedsID)) {
+                checkForUnreadFeeds[i] = true;
+            }
+        }
+
         if (checkForUnreadCounter < feeds.length) {
             while ((checkForUnreadCounter < feeds.length) && (feeds[checkForUnreadCounter].id == allFeedsID)) {
-                checkForUnreadFeeds[checkForUnreadCounter] = true;
                 checkForUnreadCounter++;
             }
         }
@@ -634,7 +639,7 @@ function CheckForUnread(checkForUnreadCounterID) {
                 if (!response.ok) {
                     feedInfo[feedID].loading = false;
                     feedInfo[feedID].error = 'Looks like there was a problem. Status Code: ' + response.status;
-                    CheckReadFinish();
+                    CheckReadFinish(checkForUnreadCounterID);
                     return;
                 }
                 if (response.redirected) {
@@ -687,7 +692,7 @@ function CheckForUnread(checkForUnreadCounterID) {
                                 feedInfo[feedID].loading = false;
                                 feedInfo[feedID].error = GetMessageText("backErrorMessage");
                                 feedInfo[feedID].errorContent = doc.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                                CheckReadFinish();
+                                CheckReadFinish(checkForUnreadCounterID);
                                 return;
                             }
 
@@ -1004,7 +1009,7 @@ function CheckForUnread(checkForUnreadCounterID) {
                         if (viewerPort != null) {
                             viewerPort.postMessage({type: "feedupdatecomplete", id: feedID});
                         }
-                        CheckReadFinish();
+                        CheckReadFinish(checkForUnreadCounterID);
                     });
                 });
             })
@@ -1012,13 +1017,14 @@ function CheckForUnread(checkForUnreadCounterID) {
                 feedInfo[feedID].loading = false;
                 feedInfo[feedID].error = 'Fetch Error :';
                 feedInfo[feedID].errorContent = `${err.message}`;
-                CheckReadFinish();
+                CheckReadFinish(checkForUnreadCounterID);
             });
         }
         catch (err) {
             feedInfo[feedID].loading = false;
             feedInfo[feedID].error = 'Error :';
             feedInfo[feedID].errorContent = `${err}`;
+            CheckReadFinish(checkForUnreadCounterID);
         }
         CheckNextRead();
     }
@@ -1039,7 +1045,8 @@ function CheckNextRead() {
     }
 }
 
-function CheckReadFinish() {
+function CheckReadFinish(checkForUnreadCounterID) {
+    checkForUnreadFeeds[checkForUnreadCounterID] = true;
     if (refreshFeed) {
         CheckForUnreadComplete();
     } else {
