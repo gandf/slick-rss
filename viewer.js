@@ -99,6 +99,14 @@ port.onMessage.addListener(function (msg) {
     if (msg.type == "progressLoading") {
         UpdateLoadingProgress(msg.currentFeeds, msg.currentFeedsCount);
     }
+
+    if (msg.type == "unreadInfo") {
+        store.getItem('unreadinfo').then(function(data){
+            if (data != null) {
+                unreadInfo = data;
+            }
+        });
+    }
 });
 
 function ReloadViewer() {
@@ -581,14 +589,11 @@ function MarkItemRead(itemID) {
     }
     //group
     //Get feed to find group name
-    var currentFeed = feeds.find(function (el) {
-        return (el.id == feedID);
-    });
+    var currentFeed = feeds.find(el => el.id == feedID);
+
     if (currentFeed != null) {
         //search group by name
-        var currentGroup = groups.find(function (el) {
-            return (el.title == currentFeed.group);
-        });
+        var currentGroup = groups.find(el => el.title == currentFeed.group);
         if (currentGroup != null) {
             element = document.getElementById("item_" + currentGroup.id + "_" + itemID);
             if (element != null) {
@@ -1400,16 +1405,8 @@ function OpenAllFeedButtonFromGroup(feedID) {
 
 function SendUnreadInfoToWorker(listUnread, setunset) {
     if (setunset) {
-        return chrome.runtime.sendMessage({"type": "setUnreadInfo", "data": GetStrFromObject(listUnread)}).then(function(data){
-            if (data != undefined) {
-                unreadInfo = JSON.parse(data);
-            }
-        });
+        return chrome.runtime.sendMessage({"type": "setUnreadInfo", "data": GetStrFromObject(listUnread)});
     } else {
-        return chrome.runtime.sendMessage({"type": "unsetUnreadInfo", "data": GetStrFromObject(listUnread)}).then(function(data){
-            if (data != undefined) {
-                unreadInfo = JSON.parse(data);
-            }
-        });
+        return chrome.runtime.sendMessage({"type": "unsetUnreadInfo", "data": GetStrFromObject(listUnread)});
     }
 }

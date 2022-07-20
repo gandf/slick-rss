@@ -216,7 +216,7 @@ function ExternalRequest(request, sender, sendResponse) {
                 store.setItem('unreadinfo', unreadInfo);
             }
         }
-        sendResponse(JSON.stringify(unreadInfo));
+        sendResponse({});
         if (groupToCalc.length > 0) {
             for (var i = 0; i < groupToCalc.length; i++) {
                 CalcGroupCountUnread(groupToCalc[i]);
@@ -225,6 +225,10 @@ function ExternalRequest(request, sender, sendResponse) {
 
         if (options.log) {
             console.log('|setUnreadInfo | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
+        }
+
+        if (viewerPort != null) {
+            viewerPort.postMessage({type: "unreadInfo"});
         }
 
         return;
@@ -263,7 +267,7 @@ function ExternalRequest(request, sender, sendResponse) {
                 store.setItem('unreadinfo', unreadInfo);
             }
         }
-        sendResponse(JSON.stringify(unreadInfo));
+        sendResponse({});
         if (groupToCalc.length > 0) {
             for (var i = 0; i < groupToCalc.length; i++) {
                 CalcGroupCountUnread(groupToCalc[i]);
@@ -272,6 +276,10 @@ function ExternalRequest(request, sender, sendResponse) {
 
         if (options.log) {
             console.log('|unsetUnreadInfo | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
+        }
+
+        if (viewerPort != null) {
+            viewerPort.postMessage({type: "unreadInfo"});
         }
 
         return;

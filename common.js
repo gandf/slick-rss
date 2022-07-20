@@ -35,20 +35,24 @@ function GetObjectFromStr(dataStr){
   var result = JSON.parse(dataStr);
 
   var keys = Object.keys(result);
-  var removed;
+  var removed, j, k0, k1, keys2;
   for (var i = 0 ; i < keys.length ; i++)
   {
+    j = keys[i];
     removed = false;
-    if ((result[i][0] != undefined) && (result[i][1] != undefined)) {
-      if (result[i][0] != i) {
-        result[result[i][0]] = result[i][1];
-        delete result[i];
+    keys2 =  Object.keys(result[j]);
+    k0 = keys2[0];
+    k1 = keys2[1];
+    if ((result[j][k0] != undefined) && (result[j][k1] != undefined)) {
+      if (result[j][k0] != i) {
+        result[result[j][k0]] = result[j][k1];
+        delete result[j];
         removed = true;
       }
     }
     if (!removed) {
-      if (result[i][1] != undefined) {
-        result[i] = result[i][1];
+      if (result[j][k1] != undefined) {
+        result[j] = result[j][k1];
       }
     }
   }
