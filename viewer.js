@@ -63,6 +63,12 @@ port.onMessage.addListener(function (msg) {
     if (msg.type == "refreshallcomplete") {
         document.getElementById("feedsLoading").style.display = "none";
         document.getElementById("feedsOptions").style.display = "";
+
+        for (key in feeds) {
+            if (key != 0) {
+                UpdateFeedUnread(feeds[key].id);
+            }
+        }
     }
 
     if (msg.type == "feedupdatecomplete") {
@@ -104,6 +110,14 @@ port.onMessage.addListener(function (msg) {
         store.getItem('unreadinfo').then(function(data){
             if (data != null) {
                 unreadInfo = data;
+                if (options.log) {
+                    console.log('unreadinfo');
+                }
+                for (key in feeds) {
+                    if (key != 0) {
+                        UpdateFeedUnread(feeds[key].id);
+                    }
+                }
             }
         });
     }
