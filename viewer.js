@@ -61,6 +61,10 @@ port.onMessage.addListener(function (msg) {
     }
 
     if (msg.type == "refreshallcomplete") {
+        if (options.log) {
+            console.log('refreshallcomplete');
+        }
+
         document.getElementById("feedsLoading").style.display = "none";
         document.getElementById("feedsOptions").style.display = "";
 
@@ -72,6 +76,10 @@ port.onMessage.addListener(function (msg) {
     }
 
     if (msg.type == "feedupdatecomplete") {
+        if (options.log) {
+            console.log('feedupdatecomplete');
+        }
+
         UpdateDataFromWorker();
         UpdateFeedUnread(msg.id);
 
@@ -148,9 +156,6 @@ function UpdateDataFromWorker(){
             }
             if (localData.groupInfo != undefined) {
                 groupInfo = GetObjectFromStr(localData.groupInfo);
-            }
-            if (localData.unreadInfo != undefined) {
-                unreadInfo = GetObjectFromStr(localData.unreadInfo);
             }
             readingFeeds = false;
             if (showingFeeds) {
@@ -487,7 +492,6 @@ function MarkAllFeedsRead() {
     }
     if (listpromise.length > 0) {
         Promise.allSettled(listpromise).then(function(){
-            UpdateUnreadBadge();
             chrome.tabs.reload();
         });
     }
@@ -525,7 +529,6 @@ function MarkFeedRead(feedID) {
         SendUnreadInfoToWorker(listUnread, true).then(function(){
             UpdateFeedUnread(feedID);
             UpdateReadAllIcon("Feed");
-            UpdateUnreadBadge();
         });
     } else {
         groupKey = GetGroupKeyByID(feedID);
@@ -629,7 +632,6 @@ function MarkItemRead(itemID) {
     SendUnreadInfoToWorker(listUnread, true).then(function(){
         UpdateFeedUnread(feedID);
         UpdateReadAllIcon((selectedFeedKeyIsFeed) ? "Feed" : "Group");
-        UpdateUnreadBadge();
     });
 }
 
@@ -688,7 +690,6 @@ function MarkItemUnread(itemID) {
             UpdateFeedUnread(readLaterFeedID);
             UpdateFeedUnread(feedID);
             UpdateReadAllIcon((selectedFeedKeyIsFeed) ? "Feed" : "Group");
-            UpdateUnreadBadge();
         });
     }
 }
@@ -1355,7 +1356,6 @@ function OpenAllFeedButton(feedID) {
             SendUnreadInfoToWorker(listUnread, true).then(function(){
                 UpdateFeedUnread(feedID);
                 UpdateReadAllIcon("Feed");
-                UpdateUnreadBadge();
             });
         }
 

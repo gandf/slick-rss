@@ -222,6 +222,7 @@ function ExternalRequest(request, sender, sendResponse) {
                 CalcGroupCountUnread(groupToCalc[i]);
             }
         }
+        UpdateUnreadBadge();
 
         if (options.log) {
             console.log('|setUnreadInfo | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
@@ -273,6 +274,7 @@ function ExternalRequest(request, sender, sendResponse) {
                 CalcGroupCountUnread(groupToCalc[i]);
             }
         }
+        UpdateUnreadBadge();
 
         if (options.log) {
             console.log('|unsetUnreadInfo | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
@@ -318,7 +320,7 @@ function ExternalRequest(request, sender, sendResponse) {
     }
 
     if (request.type == "getFeedsAndGroupsInfo") {
-        sendResponse(JSON.stringify({"feeds": GetStrFromObject(feeds), "feedInfo": GetStrFromObject(feedInfo), "groups": GetStrFromObject(groups), "groupInfo": GetStrFromObject(groupInfo), "unreadInfo": GetStrFromObject(unreadInfo)}));
+        sendResponse(JSON.stringify({"feeds": GetStrFromObject(feeds), "feedInfo": GetStrFromObject(feedInfo), "groups": GetStrFromObject(groups), "groupInfo": GetStrFromObject(groupInfo)}));
         if (options.log) {
             console.log('|getFeedsAndGroupsInfo | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
         }
