@@ -307,20 +307,21 @@ function ShowFeed(key) {
     var span = document.createElement("span");
 
     if (feeds[key] != undefined) {
-        li.innerText = feeds[key].title;
-        li.setAttribute("id", "feedTitleFeed" + feeds[key].id);
-        span.setAttribute("id", "feedUnreadFeed" + feeds[key].id);
+        if (document.getElementById("feedTitleFeed" + feeds[key].id) == null) {
+            li.innerText = feeds[key].title;
+            li.setAttribute("id", "feedTitleFeed" + feeds[key].id);
+            span.setAttribute("id", "feedUnreadFeed" + feeds[key].id);
 
-        $(li).click(function () {
-            selectedFeedKeyIsFeed = true;
-            SelectFeed(key);
-            return false;
-        });
+            $(li).click(function () {
+                selectedFeedKeyIsFeed = true;
+                SelectFeed(key);
+                return false;
+            });
 
-        li.appendChild(span);
+            li.appendChild(span);
 
-        document.getElementById("feedList").appendChild(li);
-
+            document.getElementById("feedList").appendChild(li);
+        }
         UpdateFeedUnread(feeds[key].id);
     }
 }
@@ -329,20 +330,21 @@ function ShowGroup(key) {
     var li = document.createElement("li");
     var span = document.createElement("span");
 
-    li.innerText = groups[key].title;
-    li.setAttribute("id", "feedTitleGroup" + groups[key].id);
-    span.setAttribute("id", "feedUnreadGroup" + groups[key].id);
+    if (document.getElementById("feedTitleGroup" + groups[key].id) == null) {
+        li.innerText = groups[key].title;
+        li.setAttribute("id", "feedTitleGroup" + groups[key].id);
+        span.setAttribute("id", "feedUnreadGroup" + groups[key].id);
 
-    $(li).click(function () {
-        selectedFeedKeyIsFeed = false;
-        SelectGroup(key);
-        return false;
-    });
+        $(li).click(function () {
+            selectedFeedKeyIsFeed = false;
+            SelectGroup(key);
+            return false;
+        });
 
-    li.appendChild(span);
+        li.appendChild(span);
 
-    document.getElementById("feedList").appendChild(li);
-
+        document.getElementById("feedList").appendChild(li);
+    }
     UpdateGroupUnread(key);
     FixFeedList();
 }
