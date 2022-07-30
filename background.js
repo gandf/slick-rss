@@ -715,6 +715,8 @@ function CheckForUnread(checkForUnreadCounterID) {
                             var thumbnailNode = null;
                             var dummyDate = null;
                             var keys = null
+                            var useDateInID = true;
+                            var getDummyDate = true;
 
                             if (rootNode != null) {
                                 rootNode = RemoveTag(rootNode, "entry", "item");
@@ -722,6 +724,7 @@ function CheckForUnread(checkForUnreadCounterID) {
                                     feedInfo[feedID].title = SearchTag(rootNode, null, ["TITLE"], 0);
                                     feedInfo[feedID].description = SearchTag(rootNode, '', ["SUBTITLE", "DESCRIPTION"], 0);
                                     feedInfo[feedID].image = SearchTag(rootNode, null, ["IMAGE"], 0);
+                                    feedInfo[feedID].date = SearchTag(rootNode, null, ["PUBDATE", "UPDATED", "DC:DATE", "DATE", "PUBLISHED"], 0);
                                 } else {
                                     var channel = SearchTag(rootNode, null, ["CHANNEL"], 0);
 
@@ -729,17 +732,51 @@ function CheckForUnread(checkForUnreadCounterID) {
                                         feedInfo[feedID].title = SearchTag(channel, null, ["TITLE"], 0);
                                         feedInfo[feedID].description = SearchTag(channel, '', ["DESCRIPTION", "SUBTITLE"], 0);
                                         feedInfo[feedID].image = SearchTag(rootNode, null, ["IMAGE"], 0);
+                                        feedInfo[feedID].date = SearchTag(rootNode, null, ["PUBDATE", "UPDATED", "DC:DATE", "DATE", "PUBLISHED"], 0);
                                     }
+                                }
+                                if (feedInfo[feedID].date != undefined) {
+                                    if (typeof(feedInfo[feedID].date)  != "string") {
+                                        keys = Object.keys(feedInfo[feedID].date);
+                                        for (var k = 0; k < keys.length; k++) {
+                                            if (typeof(feedInfo[feedID].date[keys[k]]) == "string") {
+                                                try {
+                                                    feedInfo[feedID].date = new Date(feedInfo[feedID].date[keys[k]]);
+                                                }
+                                                catch {
+                                                    feedInfo[feedID].date = feedInfo[feedID].date[keys[k]];
+                                                }
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                                else {
+                                    feedInfo[feedID].date = Date.now();
                                 }
                             }
 
                             for (var e = 0; e < entries.length; e++) {
+                                useDateInID = true;
+                                getDummyDate = true;
                                 item = {};
                                 item.title = CleanText2(SearchTag(entries[e], GetMessageText("backNoTitle"), ["TITLE"], 0));
                                 if (typeof item.title == 'string') {
                                     item.title = item.title.replaceAll("U+20AC", '€').replaceAll("&apos;", "'");
                                 }
-                                item.date = CleanText2(SearchTag(entries[e], null, ["PUBDATE", "UPDATED", "DC:DATE", "DATE", "PUBLISHED"], 0)); // not sure if date is even needed anymore
+                                item.date = CleanText2(SearchTag(entries[e], null, ["PUBDATE", "UPDATED", "DC:DATE", "DATE", "PUBLISHED"], 0));
+                                if (item.date == undefined) {
+                                    try {
+                                        item.date = new Date(feedInfo[feedID].date - e);
+                                        dummyDate = item.date;
+                                        getDummyDate = false;
+                                    }
+                                    catch {
+                                        item.date = undefined;
+                                    }
+                                    useDateInID = false;
+                                }
+
                                 item.content = "";
                                 item.idOrigin = feedID;
                                 item.guid = SearchTag(entries[e], "", ["GUID"], 0);
@@ -766,7 +803,11 @@ function CheckForUnread(checkForUnreadCounterID) {
                                     }
                                 }
                                 if (item.guid == undefined) {
-                                    item.itemID = sha256(item.title + item.date);
+                                    if (useDateInID) {
+                                        item.itemID = sha256(item.title + item.date);
+                                    } else {
+                                        item.itemID = sha256(item.title);
+                                    }
                                 }
                                 else {
                                     item.itemID = sha256(item.guid);
@@ -961,7 +1002,9 @@ function CheckForUnread(checkForUnreadCounterID) {
                                         item.author = '\u00a0';
                                     }
                                 }
-                                dummyDate = GetDate(item.date);
+                                if (getDummyDate) {
+                                    dummyDate = GetDate(item.date);
+                                }
                                 if(dummyDate != null) {
                                     item.order = dummyDate.getTime() - referenceDate;
                                 }
