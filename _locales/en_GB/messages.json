@@ -553,5 +553,14 @@
   },
   "optionLog": {
     "message": "Active log in console"
+  },
+  "optionVersion": {
+    "message": "Version:"
+  },
+  "optionAppName": {
+    "message": "Name:"
+  },
+  "optionAppDescription": {
+    "message": "Description:"
   }
 }

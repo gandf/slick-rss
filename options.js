@@ -50,6 +50,11 @@ function SetupScreen()
 		document.getElementById("notifyWindowType").selectedIndex = options.typeNotify;
 		document.getElementById("optionLogInConsole").selectedIndex = options.log;
 
+		var manifestData = chrome.runtime.getManifest();
+		document.getElementById("NoVersion").innerHTML = manifestData.version + " " + manifestData.current_locale;
+		document.getElementById("appName").innerHTML = manifestData.name;
+		document.getElementById("appDescription").innerHTML = manifestData.description;
+
 		navigator.storage.estimate().then(({usage, quota}) => {
 			document.getElementById("StorageUsageValue").innerHTML = GetMessageText("optionStorageUsageValue1") + formatBytes(usage) + GetMessageText("optionStorageUsageValue2") + formatBytes(quota) + GetMessageText("optionStorageUsageValue3");
 		});

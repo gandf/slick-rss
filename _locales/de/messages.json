@@ -550,5 +550,14 @@
   },
   "optionLog": {
     "message": "Aktive Anmeldekonsole"
+  },
+  "optionVersion": {
+    "message": "Ausführung:"
+  },
+  "optionAppName": {
+    "message": "Name:"
+  },
+  "optionAppDescription": {
+    "message": "Beschreibung:"
   }
 }

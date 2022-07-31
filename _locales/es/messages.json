@@ -553,5 +553,14 @@
   },
   "optionLog": {
     "message": "Inicio de sesión activo en la consola"
+  },
+  "optionVersion": {
+    "message": "Versión:"
+  },
+  "optionAppName": {
+    "message": "Nombre:"
+  },
+  "optionAppDescription": {
+    "message": "Descripción:"
   }
 }

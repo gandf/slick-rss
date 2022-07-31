@@ -550,5 +550,14 @@
   },
   "optionLog": {
     "message": "Actieve inlogconsole"
+  },
+  "optionVersion": {
+    "message": "Versie:"
+  },
+  "optionAppName": {
+    "message": "Naam:"
+  },
+  "optionAppDescription": {
+    "message": "Beschrijving:"
   }
 }

@@ -550,5 +550,14 @@
   },
   "optionLog": {
     "message": "Console di accesso attiva"
+  },
+  "optionVersion": {
+    "message": "Versione:"
+  },
+  "optionAppName": {
+    "message": "Nome:"
+  },
+  "optionAppDescription": {
+    "message": "Descrizione:"
   }
 }

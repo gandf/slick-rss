@@ -553,5 +553,14 @@
   },
   "optionLog": {
     "message": "Activer log dans la console"
+  },
+  "optionVersion": {
+    "message": "Version :"
+  },
+  "optionAppName": {
+    "message": "Nom :"
+  },
+  "optionAppDescription": {
+    "message": "Description :"
   }
 }
