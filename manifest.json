@@ -18,7 +18,7 @@
     "background": {
         "service_worker": "background-worker.js"
     },
-    "permissions": ["tabs","activeTab","alarms"],
+    "permissions": ["tabs","alarms"],
     "host_permissions": ["http://*/","https://*/"],
     "content_security_policy": {
         "extension_pages": "script-src 'self'; object-src 'self'"
