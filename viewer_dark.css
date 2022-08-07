@@ -103,7 +103,7 @@ body {
 	word-break: break-word;
 }
 
-.feedPreviewContainerCondensed .feedPreviewSummary, .feedPreviewContainerCondensed .feedPreviewDate, .feedPreviewContainerCondensed .feedPreviewAuthor {
+.feedPreviewContainerCondensed .feedPreviewSummaryContent .feedPreviewSummary, .feedPreviewContainerCondensed .feedPreviewDate, .feedPreviewContainerCondensed .feedPreviewAuthor {
 	display: none;
 }
 
@@ -115,7 +115,7 @@ body {
 	background-color: #1C1E23;
 }
 
-.feedPreviewContainerRead .feedPreviewMarkRead, .feedPreviewContainerRead .feedPreviewReadLater {
+.feedPreviewContainerRead .feedPreviewMarkRead, .feedPreviewContainerRead .feedPreviewReadLater .feedPreviewSummaryImg {
 	display: none;
 }
 
@@ -125,6 +125,8 @@ body {
 
 .feedPreviewContainer {
 	border: 1px solid #659DD8;
+	display: block;
+	min-height: 140px;	
 }
 
 /* And the king decreed, let there be wrapping for all */
@@ -156,17 +158,17 @@ body {
 	text-decoration: underline;
 }
 
-.feedPreviewSummary {
+.feedPreviewSummaryContent .feedPreviewSummary {
 	padding: 5px;
 	max-height: 200px;
 	overflow: auto;
 }
 
-.feedPreviewSummary table {
+.feedPreviewSummaryContent .feedPreviewSummary table {
 	width: auto;
 }
 
-.feedPreviewSummary img {
+.feedPreviewSummaryContent .feedPreviewSummary img {
   filter: brightness(.8) contrast(1.2);
 }
 
@@ -197,6 +199,24 @@ blockquote > blockquote > blockquote > blockquote {
 }
 
 .feedPreviewReadLater {
+	float: right;
+	margin-top: -1px;
+	margin-right: 7px;
+	cursor: pointer;
+	width: 16px;
+	height: 16px;
+}
+
+.feedPreviewSummaryImg {
+	float: right;
+	margin-top: -1px;
+	margin-right: 7px;
+	cursor: pointer;
+	width: 16px;
+	height: 16px;
+}
+
+.feedPreviewSummaryImg2 {
 	float: right;
 	margin-top: -1px;
 	margin-right: 7px;

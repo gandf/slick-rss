@@ -778,6 +778,7 @@ function CheckForUnread(checkForUnreadCounterID) {
                                 }
 
                                 item.content = "";
+                                item.summary = "";
                                 item.idOrigin = feedID;
                                 item.guid = SearchTag(entries[e], "", ["GUID"], 0);
                                 if (item.guid == "")
@@ -824,6 +825,12 @@ function CheckForUnread(checkForUnreadCounterID) {
 
                                     if (options.showfeedcontent) {
                                         item.content = CleanText2(SearchTag(entries[e], null, ["CONTENT:ENCODED", "CONTENT", "DC:CONTENT", "ATOM:CONTENT"], 0)); // only guessing on just "content"
+                                        if (options.showfeedcontentsummary < 2) {
+                                            item.summary = CleanText2(SearchTag(entries[e], null, ["DESCRIPTION", "SUMMARY"], 0));
+                                            if (typeof item.summary == 'string') {
+                                                item.summary = item.summary.replaceAll("U+20AC", '€').replaceAll("&apos;", "'");
+                                            }
+                                        }
                                     }
 
                                     if ((item.content == "") || (item.content == null)) {
@@ -832,6 +839,7 @@ function CheckForUnread(checkForUnreadCounterID) {
                                     if (typeof item.content == 'string') {
                                         item.content = item.content.replaceAll("U+20AC", '€').replaceAll("&apos;", "'");
                                     }
+
                                     item.thumbnail = null;
 
                                     author = SearchTag(entries[e], null, ["AUTHOR", "DC:CREATOR", "CREATOR", "ATOM:CONTRIBUTOR"], 0);
@@ -994,6 +1002,10 @@ function CheckForUnread(checkForUnreadCounterID) {
                                                 }
                                             }
                                         }
+                                    }
+
+                                    if (!item.summary) {
+                                        item.summary = item.content;
                                     }
 
                                     if (author != null) {
@@ -1324,7 +1336,7 @@ function GetGroupItems(groupIndex, id, title, description) {
             if (feedInfo[filteredFeeds[i].id] != null) {
                 info = feedInfo[filteredFeeds[i].id].items;
                 for (var j = 0; j < info.length; j++) {
-                    item = GetNewItem(info[j].title, info[j].date, info[j].order, info[j].content, info[j].idOrigin, info[j].itemID, info[j].url, info[j].author, info[j].thumbnail);
+                    item = GetNewItem(info[j].title, info[j].date, info[j].order, info[j].content, info[j].idOrigin, info[j].itemID, info[j].url, info[j].author, info[j].thumbnail, info[j].summary);
                     groupInfo[id].items.push(item);
                     if ((options.showallfeeds == true) && (id != allFeedsID)) {
                         groupInfo[allFeedsID].items.push(item);
@@ -1335,8 +1347,8 @@ function GetGroupItems(groupIndex, id, title, description) {
     }
 }
 
-function GetNewItem(title, date, order, content, idOrigin, itemID, url, author, thumbnail) {
-    return {title: title, date: date, order: order, content: content, idOrigin: idOrigin, itemID: itemID, url: url, author: author, thumbnail: thumbnail};
+function GetNewItem(title, date, order, content, idOrigin, itemID, url, author, thumbnail, summary) {
+    return {title: title, date: date, order: order, content: content, idOrigin: idOrigin, itemID: itemID, url: url, author: author, thumbnail: thumbnail, summary: summary};
 }
 
 function CalcGroupCountUnread(key) {

@@ -30,6 +30,7 @@ function SetupScreen()
 		document.getElementById("showFeedObjects").selectedIndex = options.showfeedobjects;
 		document.getElementById("showFeedIframes").selectedIndex = options.showfeediframes;
 		document.getElementById("showFeedContent").selectedIndex = options.showfeedcontent;
+		document.getElementById("showFeedContentSummary").selectedIndex = options.showfeedcontentsummary;
 		document.getElementById("checkInterval").value = options.checkinterval;
 		document.getElementById("markReadAfter").value = options.markreadafter;
 		document.getElementById("markReadOnClick").selectedIndex = options.markreadonclick;
@@ -109,6 +110,7 @@ function Save()
 	options.showfeedobjects = (document.getElementById("showFeedObjects").selectedIndex == 1);
 	options.showfeediframes = (document.getElementById("showFeedIframes").selectedIndex == 1);
 	options.showfeedcontent = (document.getElementById("showFeedContent").selectedIndex == 1);
+	options.showfeedcontentsummary = document.getElementById("showFeedContentSummary").selectedIndex;
 	options.checkinterval = document.getElementById("checkInterval").value;
 	options.markreadonclick = (document.getElementById("markReadOnClick").selectedIndex == 1);
 	options.markreadafter = document.getElementById("markReadAfter").value;

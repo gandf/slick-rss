@@ -562,5 +562,23 @@
   },
   "optionAppDescription": {
     "message": "Descripción:"
+  },
+  "optionContentSummary": {
+    "message": "Resumen de contenido:"
+  },
+  "optionShowSummaryFullContent": {
+    "message": "Mostrar contenido completo por defecto"
+  },
+  "optionShowSummaryEnable": {
+    "message": "Mostrar resumen por defecto"
+  },
+  "optionShowSummaryDontShow": {
+    "message": "No mostrar resumen"
+  },
+  "backSummaryShow": {
+      "message": "Mostrar contenido completo"
+  },
+  "backSummaryHide": {
+      "message": "Mostrar resumen"
   }
 }

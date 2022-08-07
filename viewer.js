@@ -694,6 +694,27 @@ function MarkItemUnread(itemID) {
     }
 }
 
+function ShowContent(numImg, containerId, feedID, itemIndex, sens) {
+    var container = document.getElementById(containerId);
+    var currentImg = container.querySelector('.feedPreviewSummaryImg' + numImg);
+    var otherImg = container.querySelector('.feedPreviewSummaryImg' + (numImg == "" ? "2" : ""));
+    var feedPreviewSummaryContent = container.querySelector('.feedPreviewSummaryContent');
+    var feedPreviewSummary = container.querySelector('.feedPreviewSummary');
+
+    currentImg.style.display = "none";
+    otherImg.style.display = "";
+
+    var currentItem = GetFeedInfoItem(feedID, itemIndex);
+
+    if (sens) {
+        feedPreviewSummaryContent.style.display = "";
+        feedPreviewSummary.style.display = "none";
+    } else {
+        feedPreviewSummaryContent.style.display = "none";
+        feedPreviewSummary.style.display = "";
+    }
+}
+
 function MarkItemReadLater(feedID, itemIndex) {
     var currentItem = GetFeedInfoItem(feedID, itemIndex);
     var itemID = currentItem.itemID;
@@ -901,6 +922,7 @@ function RenderFeed(type) {
     var feedContainer = null;
     var feedPublished = null;
     var feedMarkRead = null;
+    var feedSummaryContent = null;
     var feedSummary = null;
     var feedAuthor = null;
     var dateTime = null;
@@ -970,6 +992,8 @@ function RenderFeed(type) {
     for (var i = 0; i < feedsOrGroupsInfo[feedID].items.length && i < feedsOrGroups[selectedFeedKey].maxitems; i++) {
         item = feedsOrGroupsInfo[feedID].items[i];
         itemID = item.itemID;
+
+        var containerId = "item_" + feedID + "_" + itemID;
 
         feedMarkRead = null;
         feedMarkRead = document.createElement("img");
@@ -1054,6 +1078,47 @@ function RenderFeed(type) {
             feedTitle.appendChild(feedUnread);
         }
 
+        if (options.showfeedcontentsummary < 2) {
+            var sens = false;
+            feedSummaryImg = document.createElement("img");
+            feedSummaryImg2 = document.createElement("img");
+
+            if (options.showfeedcontentsummary == 0) {
+                feedSummaryImg.setAttribute("src", "up.png");
+                feedSummaryImg.setAttribute("title", GetMessageText("backSummaryHide"));
+            } else {
+                feedSummaryImg.setAttribute("src", "down.png");
+                feedSummaryImg.setAttribute("title", GetMessageText("backSummaryShow"));
+                sens = true;
+            }
+            feedSummaryImg.setAttribute("class", "feedPreviewSummaryImg");
+            feedSummaryImg.addEventListener("mouseover", onmouseover);
+            feedSummaryImg.addEventListener("mouseout", onmouseout);
+            $(feedSummaryImg).click({containerId : containerId, feedID: feedID, i: i, sens: sens}, function (event) {
+                ShowContent("", event.data.containerId, event.data.feedID, event.data.i, event.data.sens);
+                return false;
+            });
+            feedTitle.appendChild(feedSummaryImg);
+
+            if (options.showfeedcontentsummary == 0) {
+                feedSummaryImg2.setAttribute("src", "down.png");
+                feedSummaryImg2.setAttribute("title", GetMessageText("backSummaryShow"));
+                sens = true;
+            } else {
+                feedSummaryImg2.setAttribute("src", "up.png");
+                feedSummaryImg2.setAttribute("title", GetMessageText("backSummaryHide"));
+            }
+            feedSummaryImg2.setAttribute("class", "feedPreviewSummaryImg2");
+            feedSummaryImg2.addEventListener("mouseover", onmouseover);
+            feedSummaryImg2.addEventListener("mouseout", onmouseout);
+            feedSummaryImg2.style.display = "none";
+            $(feedSummaryImg2).click({containerId : containerId, feedID: feedID, i: i, sens: !sens}, function (event) {
+                ShowContent("2", event.data.containerId, event.data.feedID, event.data.i, event.data.sens);
+                return false;
+            });
+            feedTitle.appendChild(feedSummaryImg2);
+        }
+
         feedTitle.appendChild(feedLink);
 
         feedPublished = document.createElement("div");
@@ -1064,21 +1129,28 @@ function RenderFeed(type) {
         feedAuthor.setAttribute("class", "feedPreviewAuthor");
         feedAuthor.innerText = item.author;
 
-        feedSummary = document.createElement("div");
-        feedSummary.setAttribute("class", "feedPreviewSummary");
+        feedSummaryContent = document.createElement("div");
+        feedSummaryContent.setAttribute("class", "feedPreviewSummaryContent");
         if ((options.feedsmaxheight != null) && (options.feedsmaxheight != 0)) {
-            feedSummary.style.maxHeight = options.feedsmaxheight + "px";
+            feedSummaryContent.style.maxHeight = options.feedsmaxheight + "px";
         } else {
-            feedSummary.style.maxHeight = "none";
+            feedSummaryContent.style.maxHeight = "none";
         }
-        if (options.usethumbnail && (item.thumbnail != null)) {
-            feedSummary.innerHTML = '<div class="thumbnail">' + item.thumbnail + '</div>' + item.content;
+
+        if (options.showfeedcontentsummary == 1) {
+            feedSummaryContent.style.display = "none";
         } else {
-            feedSummary.innerHTML = item.content;
+            feedSummaryContent.style.display = "";
+        }
+
+        if (options.usethumbnail && (item.thumbnail != null)) {
+            feedSummaryContent.innerHTML = '<div class="thumbnail">' + item.thumbnail + '</div>' + item.content;
+        } else {
+            feedSummaryContent.innerHTML = item.content;
         }
 
         feedContainer = document.createElement("div");
-        feedContainer.setAttribute("id", "item_" + feedID + "_" + itemID);
+        feedContainer.setAttribute("id", containerId);
 
         if (ItemIsRead((feedID != readLaterFeedID) ? feedsOrGroupsInfo[feedID].items[i].idOrigin : readLaterFeedID, itemID)) {
             if (options.readitemdisplay == 0) {
@@ -1091,7 +1163,7 @@ function RenderFeed(type) {
         }
 
         // make all summary links open a new tab
-        summaryLinks = feedSummary.getElementsByTagName("a");
+        summaryLinks = feedSummaryContent.getElementsByTagName("a");
         for (var l = 0; l < summaryLinks.length; l++) {
             href = summaryLinks[l].getAttribute("href");
 
@@ -1116,7 +1188,7 @@ function RenderFeed(type) {
         }
 
         // show snug images, or nuke them
-        summaryImages = feedSummary.getElementsByTagName("img");
+        summaryImages = feedSummaryContent.getElementsByTagName("img");
         for (var q = summaryImages.length - 1; q >= 0; q--) {
             if (options.showfeedimages) {
                 summaryImages[q].style.maxWidth = "95%";
@@ -1130,7 +1202,7 @@ function RenderFeed(type) {
         }
 
         // show snug objects, or nuke them
-        summaryObjects = feedSummary.getElementsByTagName("object");
+        summaryObjects = feedSummaryContent.getElementsByTagName("object");
         for (var o = summaryObjects.length - 1; o >= 0; o--) {
             if (!options.showfeedobjects) {
                 summaryObjects[o].parentNode.removeChild(summaryObjects[o]);
@@ -1144,7 +1216,7 @@ function RenderFeed(type) {
         }
 
         // show snug objects, or nuke them
-        summaryObjects = feedSummary.getElementsByTagName("embed");
+        summaryObjects = feedSummaryContent.getElementsByTagName("embed");
         for (var o = summaryObjects.length - 1; o >= 0; o--) {
             if (!options.showfeedobjects) {
                 summaryObjects[o].parentNode.removeChild(summaryObjects[o]);
@@ -1157,9 +1229,8 @@ function RenderFeed(type) {
             }
         }
 
-
         // show snug iframes, or nuke them
-        summaryObjects = feedSummary.getElementsByTagName("iframe");
+        summaryObjects = feedSummaryContent.getElementsByTagName("iframe");
         for (var o = summaryObjects.length - 1; o >= 0; o--) {
             if (!options.showfeediframes) {
                 summaryObjects[o].parentNode.removeChild(summaryObjects[o]);
@@ -1173,7 +1244,7 @@ function RenderFeed(type) {
         }
 
         // Remove long space before or after img in style from feed
-        summaryObjects = feedSummary.querySelectorAll('[style]');
+        summaryObjects = feedSummaryContent.querySelectorAll('[style]');
         for (var o = summaryObjects.length - 1; o >= 0; o--) {
             summaryObjects[o].style.paddingTop = "";
             summaryObjects[o].style.paddingBottom = "";
@@ -1188,8 +1259,23 @@ function RenderFeed(type) {
             document.getElementById("feedPreview").appendChild(currentTr);
         }
 
+        feedSummary = document.createElement("div");
+        feedSummary.setAttribute("class", "feedPreviewSummary");
+        feedSummary.style.maxHeight = "none";
+        if (options.usethumbnail && (item.thumbnail != null)) {
+            feedSummary.innerHTML = '<div class="thumbnail">' + item.thumbnail + '</div>' + item.summary;
+        } else {
+            feedSummary.innerHTML = item.summary;
+        }
+
+        if (options.showfeedcontentsummary == 1) {
+            feedSummary.style.display = "";
+        } else {
+            feedSummary.style.display = "none";
+        }
 
         feedContainer.appendChild(feedTitle);
+        feedContainer.appendChild(feedSummaryContent);
         feedContainer.appendChild(feedSummary);
         feedContainer.appendChild(feedPublished);
         feedContainer.appendChild(feedAuthor);

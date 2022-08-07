@@ -559,5 +559,23 @@
   },
   "optionAppDescription": {
     "message": "Descrizione:"
+  },
+  "optionContentSummary": {
+    "message": "Riepilogo dei contenuti:"
+  },
+  "optionShowSummaryFullContent": {
+    "message": "Mostra il contenuto completo per impostazione predefinita"
+  },
+  "optionShowSummaryEnable": {
+    "message": "Mostra riepilogo per impostazione predefinita"
+  },
+  "optionShowSummaryDontShow": {
+    "message": "Non mostrare il riepilogo"
+  },
+  "backSummaryShow": {
+      "message": "Mostra contenuto completo"
+  },
+  "backSummaryHide": {
+      "message": "Mostra riepilogo"
   }
 }

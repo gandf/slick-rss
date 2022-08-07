@@ -559,5 +559,23 @@
   },
   "optionAppDescription": {
     "message": "Beschrijving:"
+  },
+  "optionContentSummary": {
+    "message": "Inhoudsoverzicht:"
+  },
+  "optionShowSummaryFullContent": {
+    "message": "Standaard volledige inhoud weergeven"
+  },
+  "optionShowSummaryEnable": {
+    "message": "Standaard samenvatting weergeven"
+  },
+  "optionShowSummaryDontShow": {
+    "message": "Geen samenvatting weergeven"
+  },
+  "backSummaryShow": {
+      "message": "Volledige inhoud weergeven"
+  },
+  "backSummaryHide": {
+      "message": "Toon samenvatting"
   }
 }

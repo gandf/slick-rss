@@ -562,5 +562,23 @@
   },
   "optionAppDescription": {
     "message": "Description:"
+  },
+  "optionContentSummary": {
+    "message": "Content summary:"
+  },
+  "optionShowSummaryFullContent": {
+    "message": "Show full content by default"
+  },
+  "optionShowSummaryEnable": {
+    "message": "Show summary by default"
+  },
+  "optionShowSummaryDontShow": {
+    "message": "Don't show summary"
+  },
+  "backSummaryShow": {
+      "message": "Show full content"
+  },
+  "backSummaryHide": {
+      "message": "Show summary"
   }
 }

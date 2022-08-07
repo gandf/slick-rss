@@ -256,6 +256,7 @@ function GetDefaultOptions() {
         "showfeedobjects": true,
         "showfeediframes": false,
         "showfeedcontent": true,
+        "showfeedcontentsummary": 0,
         "checkinterval": 60,
         "markreadonclick": false,
         "markreadafter": 0,

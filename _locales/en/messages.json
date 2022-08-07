@@ -563,6 +563,24 @@
   "optionAppDescription": {
     "message": "Description:"
   },
+  "optionContentSummary": {
+    "message": "Content summary:"
+  },
+  "optionShowSummaryFullContent": {
+    "message": "Show full content by default"
+  },
+  "optionShowSummaryEnable": {
+    "message": "Show summary by default"
+  },
+  "optionShowSummaryDontShow": {
+    "message": "Don't show summary"
+  },
+  "backSummaryShow": {
+      "message": "Show full content"
+  },
+  "backSummaryHide": {
+      "message": "Show summary"
+  },
   "enexportTitle": {
       "message": "Slick RSS : Export Feeds"
   },
@@ -1112,10 +1130,28 @@
   "enoptionVersion": {
     "message": "Version:"
   },
-  "optionAppName": {
+  "enoptionAppName": {
     "message": "Name:"
   },
-  "optionAppDescription": {
+  "enoptionAppDescription": {
     "message": "Description:"
+  },
+  "enoptionContentSummary": {
+    "message": "Content summary:"
+  },
+  "enoptionShowSummaryFullContent": {
+    "message": "Show full content by default"
+  },
+  "enoptionShowSummaryEnable": {
+    "message": "Show summary by default"
+  },
+  "enoptionShowSummaryDontShow": {
+    "message": "Don't show summary"
+  },
+    "enbackSummaryShow": {
+    "message": "Show full content"
+  },
+    "enbackSummaryHide": {
+    "message": "Show summary"
   }
 }
