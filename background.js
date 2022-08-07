@@ -717,6 +717,7 @@ function CheckForUnread(checkForUnreadCounterID) {
                             var keys = null
                             var useDateInID = true;
                             var getDummyDate = true;
+                            var previousToCheck = new Array();
 
                             if (rootNode != null) {
                                 rootNode = RemoveTag(rootNode, "entry", "item");
@@ -780,6 +781,7 @@ function CheckForUnread(checkForUnreadCounterID) {
                                 item.content = "";
                                 item.summary = "";
                                 item.idOrigin = feedID;
+                                item.updated = false;
                                 item.guid = SearchTag(entries[e], "", ["GUID"], 0);
                                 if (item.guid == "")
                                 {
@@ -1022,6 +1024,24 @@ function CheckForUnread(checkForUnreadCounterID) {
                                 }
                                 else {
                                     item.order = referenceDate;
+                                }
+
+                                //check previous item unread
+                                if ((unreadInfo[feedID] != undefined) || (unreadInfo[feedID] != null)) {
+                                    if (unreadInfo[feedID].readitems[item.itemID]) {
+                                        //Next to check
+                                        previousToCheck.push(item.itemID);
+                                    } else {
+                                        for (var key in previousToCheck) {
+                                            var result = feedInfo[feedID].items.find(obj => {
+                                              return obj.itemID === previousToCheck[key]
+                                            })
+                                            if (result != undefined) {
+                                                result.updated = true;
+                                            }
+                                        }
+                                        previousToCheck = new Array();
+                                    }
                                 }
 
                                 feedInfo[feedID].items.push(item);
@@ -1336,7 +1356,7 @@ function GetGroupItems(groupIndex, id, title, description) {
             if (feedInfo[filteredFeeds[i].id] != null) {
                 info = feedInfo[filteredFeeds[i].id].items;
                 for (var j = 0; j < info.length; j++) {
-                    item = GetNewItem(info[j].title, info[j].date, info[j].order, info[j].content, info[j].idOrigin, info[j].itemID, info[j].url, info[j].author, info[j].thumbnail, info[j].summary);
+                    item = GetNewItem(info[j].title, info[j].date, info[j].order, info[j].content, info[j].idOrigin, info[j].itemID, info[j].url, info[j].author, info[j].thumbnail, info[j].summary, info[j].updated);
                     groupInfo[id].items.push(item);
                     if ((options.showallfeeds == true) && (id != allFeedsID)) {
                         groupInfo[allFeedsID].items.push(item);
@@ -1347,8 +1367,8 @@ function GetGroupItems(groupIndex, id, title, description) {
     }
 }
 
-function GetNewItem(title, date, order, content, idOrigin, itemID, url, author, thumbnail, summary) {
-    return {title: title, date: date, order: order, content: content, idOrigin: idOrigin, itemID: itemID, url: url, author: author, thumbnail: thumbnail, summary: summary};
+function GetNewItem(title, date, order, content, idOrigin, itemID, url, author, thumbnail, summary, updated) {
+    return {title: title, date: date, order: order, content: content, idOrigin: idOrigin, itemID: itemID, url: url, author: author, thumbnail: thumbnail, summary: summary, updated: updated};
 }
 
 function CalcGroupCountUnread(key) {

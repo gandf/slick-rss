@@ -577,5 +577,8 @@
   },
   "backSummaryHide": {
       "message": "Zusammenfassung anzeigen"
+  },
+  "bell": {
+      "message": "Artikel bereits gelesen aktualisiert"
   }
 }

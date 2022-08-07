@@ -580,5 +580,8 @@
   },
   "backSummaryHide": {
       "message": "Show summary"
+  },
+  "bell": {
+      "message": "Fead already read updated"
   }
 }

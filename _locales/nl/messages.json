@@ -577,5 +577,8 @@
   },
   "backSummaryHide": {
       "message": "Toon samenvatting"
+  },
+  "bell": {
+      "message": "Artikel al gelezen bijgewerkt"
   }
 }

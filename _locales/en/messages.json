@@ -581,6 +581,9 @@
   "backSummaryHide": {
       "message": "Show summary"
   },
+  "bell": {
+      "message": "Fead already read updated"
+  },
   "enexportTitle": {
       "message": "Slick RSS : Export Feeds"
   },
@@ -1153,5 +1156,8 @@
   },
     "enbackSummaryHide": {
     "message": "Show summary"
+  },
+  "enbell": {
+      "message": "Fead already read updated"
   }
 }

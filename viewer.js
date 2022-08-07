@@ -701,6 +701,8 @@ function ShowContent(numImg, containerId, feedID, itemIndex, sens) {
     var feedPreviewSummaryContent = container.querySelector('.feedPreviewSummaryContent');
     var feedPreviewSummary = container.querySelector('.feedPreviewSummary');
 
+    //currentImg.setAttribute("display", "none");
+    //otherImg.setAttribute("display", "");
     currentImg.style.display = "none";
     otherImg.style.display = "";
 
@@ -1079,13 +1081,14 @@ function RenderFeed(type) {
         }
 
         if (options.showfeedcontentsummary < 2) {
-            var sens = false;
+            var sens;
             feedSummaryImg = document.createElement("img");
             feedSummaryImg2 = document.createElement("img");
 
             if (options.showfeedcontentsummary == 0) {
                 feedSummaryImg.setAttribute("src", "up.png");
                 feedSummaryImg.setAttribute("title", GetMessageText("backSummaryHide"));
+                sens = false;
             } else {
                 feedSummaryImg.setAttribute("src", "down.png");
                 feedSummaryImg.setAttribute("title", GetMessageText("backSummaryShow"));
@@ -1094,10 +1097,17 @@ function RenderFeed(type) {
             feedSummaryImg.setAttribute("class", "feedPreviewSummaryImg");
             feedSummaryImg.addEventListener("mouseover", onmouseover);
             feedSummaryImg.addEventListener("mouseout", onmouseout);
-            $(feedSummaryImg).click({containerId : containerId, feedID: feedID, i: i, sens: sens}, function (event) {
-                ShowContent("", event.data.containerId, event.data.feedID, event.data.i, event.data.sens);
-                return false;
-            });
+            if (sens) {
+                $(feedSummaryImg).click({containerId : containerId, feedID: feedID, i: i}, function (event) {
+                    ShowContent("", event.data.containerId, event.data.feedID, event.data.i, true);
+                    return false;
+                });
+            } else {
+                $(feedSummaryImg).click({containerId : containerId, feedID: feedID, i: i}, function (event) {
+                    ShowContent("", event.data.containerId, event.data.feedID, event.data.i, false);
+                    return false;
+                });
+            }
             feedTitle.appendChild(feedSummaryImg);
 
             if (options.showfeedcontentsummary == 0) {
@@ -1107,16 +1117,32 @@ function RenderFeed(type) {
             } else {
                 feedSummaryImg2.setAttribute("src", "up.png");
                 feedSummaryImg2.setAttribute("title", GetMessageText("backSummaryHide"));
+                sens = false;
             }
             feedSummaryImg2.setAttribute("class", "feedPreviewSummaryImg2");
             feedSummaryImg2.addEventListener("mouseover", onmouseover);
             feedSummaryImg2.addEventListener("mouseout", onmouseout);
             feedSummaryImg2.style.display = "none";
-            $(feedSummaryImg2).click({containerId : containerId, feedID: feedID, i: i, sens: !sens}, function (event) {
-                ShowContent("2", event.data.containerId, event.data.feedID, event.data.i, event.data.sens);
-                return false;
-            });
+            if (sens) {
+                $(feedSummaryImg2).click({containerId : containerId, feedID: feedID, i: i}, function (event) {
+                    ShowContent("2", event.data.containerId, event.data.feedID, event.data.i, true);
+                    return false;
+                });
+            } else {
+                $(feedSummaryImg2).click({containerId : containerId, feedID: feedID, i: i}, function (event) {
+                    ShowContent("2", event.data.containerId, event.data.feedID, event.data.i, false);
+                    return false;
+                });
+            }
             feedTitle.appendChild(feedSummaryImg2);
+        }
+
+        if (item.updated) {
+            feedreadUpdated = document.createElement("img");
+            feedreadUpdated.setAttribute("src", "bell.png");
+            feedreadUpdated.setAttribute("title", GetMessageText("bell"));
+            feedreadUpdated.setAttribute("class", "feedreadUpdated");
+            feedTitle.appendChild(feedreadUpdated);
         }
 
         feedTitle.appendChild(feedLink);

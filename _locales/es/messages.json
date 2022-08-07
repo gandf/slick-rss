@@ -580,5 +580,8 @@
   },
   "backSummaryHide": {
       "message": "Mostrar resumen"
+  },
+  "bell": {
+      "message": "Artículo ya leído actualizado"
   }
 }
