@@ -179,21 +179,43 @@ function ExternalRequest(request, sender, sendResponse) {
         return;
     }
 
-    if (request.type == "setUnreadInfo") {
+    if ((request.type == "setUnreadInfo") || (request.type == "unsetUnreadInfo")) {
         var groupToCalc = [];
         var updated = false;
         if (request.data != undefined) {
             var listUnread = GetObjectFromStr(request.data);
             var keys = Object.keys(listUnread);
             var k;
+            var typeReq = (request.type == "setUnreadInfo");
             var currentFeed = {group: "", id: 0};
             for (var i = 0; i < keys.length; i++) {
                 k = listUnread[keys[i]].id;
-                if (unreadInfo[k] != undefined) {
-                    unreadInfo[k].readitems[listUnread[keys[i]].key] = new Date().getTime() + 5184000000;
-                    if (unreadInfo[k].unreadtotal > 0) {
-                        unreadInfo[k].unreadtotal--;
+                if (typeReq) {
+                    if (unreadInfo[k] != undefined) {
+                        unreadInfo[k].readitems[listUnread[keys[i]].key] = new Date().getTime() + 5184000000;
+                        if (unreadInfo[k].unreadtotal > 0) {
+                            unreadInfo[k].unreadtotal--;
+                        }
+                        updated = true;
+                        if (currentFeed.id != k) {
+                            currentFeed = feeds.find(function (el) {
+                                return (el.id == k);
+                            });
+                        }
+                        if (currentFeed.group != "") {
+                            for (var j = 0; j < groups.length; j++) {
+                                if (groups[j].group == currentFeed.group) {
+                                    if (!groupToCalc.includes(j)) {
+                                        groupToCalc.push(j);
+                                    }
+                                    break;
+                                }
+                            }
+                        }
                     }
+                } else {
+                    delete unreadInfo[listUnread[keys[i]].id].readitems[listUnread[keys[i]].key];
+                    unreadInfo[listUnread[keys[i]].id].unreadtotal++;
                     updated = true;
                     if (currentFeed.id != k) {
                         currentFeed = feeds.find(function (el) {
@@ -213,41 +235,27 @@ function ExternalRequest(request, sender, sendResponse) {
                 }
             }
         }
-        finishSetUnsetUnreadInfo(groupToCalc, 'setUnreadInfo', updated);
-        return;
-    }
 
-    if (request.type == "unsetUnreadInfo") {
-        var groupToCalc = [];
-        var updated = false;
-        if (request.data != undefined) {
-            var listUnread = GetObjectFromStr(request.data);
-            var keys = Object.keys(listUnread);
-            var k;
-            var currentFeed = {group: "", id: 0};
-            for (var i = 0; i < keys.length; i++) {
-                k = listUnread[keys[i]].id;
-                delete unreadInfo[listUnread[keys[i]].id].readitems[listUnread[keys[i]].key];
-                unreadInfo[listUnread[keys[i]].id].unreadtotal++;
-                updated = true;
-                if (currentFeed.id != k) {
-                    currentFeed = feeds.find(function (el) {
-                        return (el.id == k);
-                    });
-                }
-                if (currentFeed.group != "") {
-                    for (var j = 0; j < groups.length; j++) {
-                        if (groups[j].group == currentFeed.group) {
-                            if (!groupToCalc.includes(j)) {
-                                groupToCalc.push(j);
-                            }
-                            break;
-                        }
-                    }
-                }
+        if (updated) {
+            store.setItem('unreadinfo', unreadInfo);
+        }
+
+        sendResponse({});
+        if (groupToCalc.length > 0) {
+            for (var i = 0; i < groupToCalc.length; i++) {
+                CalcGroupCountUnread(groupToCalc[i]);
             }
         }
-        finishSetUnsetUnreadInfo(groupToCalc, 'unsetUnreadInfo', updated);
+        UpdateUnreadBadge();
+
+        if (options.log) {
+            console.log('|' + request.type + ' | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
+        }
+
+        if (viewerPort != null) {
+            viewerPort.postMessage({type: "unreadInfo"});
+        }
+
         return;
     }
 
@@ -393,28 +401,6 @@ function ExternalRequest(request, sender, sendResponse) {
         return;
     }
 
-}
-
-function finishSetUnsetUnreadInfo(groupToCalc, textLog, updated) {
-    if (updated) {
-        store.setItem('unreadinfo', unreadInfo);
-    }
-
-    sendResponse({});
-    if (groupToCalc.length > 0) {
-        for (var i = 0; i < groupToCalc.length; i++) {
-            CalcGroupCountUnread(groupToCalc[i]);
-        }
-    }
-    UpdateUnreadBadge();
-
-    if (options.log) {
-        console.log('|' + textLog + ' | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
-    }
-
-    if (viewerPort != null) {
-        viewerPort.postMessage({type: "unreadInfo"});
-    }
 }
 
 function ApiRequest(request, sender, sendResponse) {
