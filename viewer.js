@@ -1431,7 +1431,7 @@ function OpenAllFeedButton(feedID) {
     var itemID = null;
     var className = (options.readitemdisplay == 0) ? " feedPreviewContainerRead" : " feedPreviewContainerRead feedPreviewContainerCondensed";
     var groupKey = null;
-    var listUnread = [];
+    var listUnread = new Array();
 
     if (selectedFeedKeyIsFeed) {
         if (unreadInfo[feedID].unreadtotal == 0) {

@@ -181,10 +181,10 @@ function ExternalRequest(request, sender, sendResponse) {
 
     if (request.type == "setUnreadInfo") {
         var groupToCalc = [];
+        var updated = false;
         if (request.data != undefined) {
             var listUnread = GetObjectFromStr(request.data);
             var keys = Object.keys(listUnread);
-            var updated = false;
             var k;
             var currentFeed = {group: "", id: 0};
             for (var i = 0; i < keys.length; i++) {
@@ -201,10 +201,10 @@ function ExternalRequest(request, sender, sendResponse) {
                         });
                     }
                     if (currentFeed.group != "") {
-                        for (var i = 0; i < groups.length; i++) {
-                            if (groups[i].group == currentFeed.group) {
-                                if (!groupToCalc.includes(i)) {
-                                    groupToCalc.push(i);
+                        for (var j = 0; j < groups.length; j++) {
+                            if (groups[j].group == currentFeed.group) {
+                                if (!groupToCalc.includes(j)) {
+                                    groupToCalc.push(j);
                                 }
                                 break;
                             }
@@ -212,35 +212,17 @@ function ExternalRequest(request, sender, sendResponse) {
                     }
                 }
             }
-            if (updated) {
-                store.setItem('unreadinfo', unreadInfo);
-            }
         }
-        sendResponse({});
-        if (groupToCalc.length > 0) {
-            for (var i = 0; i < groupToCalc.length; i++) {
-                CalcGroupCountUnread(groupToCalc[i]);
-            }
-        }
-        UpdateUnreadBadge();
-
-        if (options.log) {
-            console.log('|setUnreadInfo | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
-        }
-
-        if (viewerPort != null) {
-            viewerPort.postMessage({type: "unreadInfo"});
-        }
-
+        finishSetUnsetUnreadInfo(groupToCalc, 'setUnreadInfo', updated);
         return;
     }
 
     if (request.type == "unsetUnreadInfo") {
         var groupToCalc = [];
+        var updated = false;
         if (request.data != undefined) {
             var listUnread = GetObjectFromStr(request.data);
             var keys = Object.keys(listUnread);
-            var updated = false;
             var k;
             var currentFeed = {group: "", id: 0};
             for (var i = 0; i < keys.length; i++) {
@@ -254,36 +236,18 @@ function ExternalRequest(request, sender, sendResponse) {
                     });
                 }
                 if (currentFeed.group != "") {
-                    for (var i = 0; i < groups.length; i++) {
-                        if (groups[i].group == currentFeed.group) {
-                            if (!groupToCalc.includes(i)) {
-                                groupToCalc.push(i);
+                    for (var j = 0; j < groups.length; j++) {
+                        if (groups[j].group == currentFeed.group) {
+                            if (!groupToCalc.includes(j)) {
+                                groupToCalc.push(j);
                             }
                             break;
                         }
                     }
                 }
             }
-            if (updated) {
-                store.setItem('unreadinfo', unreadInfo);
-            }
         }
-        sendResponse({});
-        if (groupToCalc.length > 0) {
-            for (var i = 0; i < groupToCalc.length; i++) {
-                CalcGroupCountUnread(groupToCalc[i]);
-            }
-        }
-        UpdateUnreadBadge();
-
-        if (options.log) {
-            console.log('|unsetUnreadInfo | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
-        }
-
-        if (viewerPort != null) {
-            viewerPort.postMessage({type: "unreadInfo"});
-        }
-
+        finishSetUnsetUnreadInfo(groupToCalc, 'unsetUnreadInfo', updated);
         return;
     }
 
@@ -429,6 +393,28 @@ function ExternalRequest(request, sender, sendResponse) {
         return;
     }
 
+}
+
+function finishSetUnsetUnreadInfo(groupToCalc, textLog, updated) {
+    if (updated) {
+        store.setItem('unreadinfo', unreadInfo);
+    }
+
+    sendResponse({});
+    if (groupToCalc.length > 0) {
+        for (var i = 0; i < groupToCalc.length; i++) {
+            CalcGroupCountUnread(groupToCalc[i]);
+        }
+    }
+    UpdateUnreadBadge();
+
+    if (options.log) {
+        console.log('|' + textLog + ' | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
+    }
+
+    if (viewerPort != null) {
+        viewerPort.postMessage({type: "unreadInfo"});
+    }
 }
 
 function ApiRequest(request, sender, sendResponse) {
