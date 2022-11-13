@@ -94,7 +94,9 @@ function ReloadViewer() {
 function ButtonClicked(tab) {
     if (viewerPort == null) {
         chrome.tabs.create({url: chrome.runtime.getURL("viewer.html")}, function (tab) {
-            viewerPortTabID = tab.id;
+            if (tab != null) {
+                viewerPortTabID = tab.id;
+            }
         });
     } else {
         RefreshViewer();
@@ -102,16 +104,23 @@ function ButtonClicked(tab) {
 }
 
 function RefreshViewer(){
-    if (viewerPortTabID == null) {
-        chrome.tabs.query({url: chrome.runtime.getURL("viewer.html")}, function (tab) {
-            if (tab.length > 0) {
-                viewerPortTabID = tab[0].id;
-                chrome.tabs.reload(viewerPortTabID, {bypassCache: true});
+    chrome.tabs.query({url: chrome.runtime.getURL("viewer.html")}, function (tabs) {
+        if (tabs != null) {
+            if (tabs.length > 0) {
+                if (viewerPortTabID == null) {
+                    viewerPortTabID = tabs[0].id;
+                    chrome.tabs.reload(viewerPortTabID, {bypassCache: true});
+                } else {
+                    for(tab in tabs) {
+                        if (tab.id == viewerPortTabID) {
+                            chrome.tabs.reload(viewerPortTabID, {bypassCache: true});
+                            break;
+                        }
+                    }
+                }
             }
-        });
-    } else {
-        chrome.tabs.reload(viewerPortTabID, {bypassCache: true});
-    }
+        }
+    });
 }
 
 function ExternalRequest(request, sender, sendResponse) {
@@ -300,7 +309,18 @@ function ExternalRequest(request, sender, sendResponse) {
     }
 
     if (request.type == "getGroupCountUnread") {
-        sendResponse(groups[request.data].unreadCount);
+        var found = false;
+        if (request.data != null) {
+            if (groups[request.data] != undefined) {
+                if (groups[request.data].unreadCount != undefined) {
+                    sendResponse(groups[request.data].unreadCount);
+                    found = true;
+                }
+            }
+        }
+        if (!found) {
+            sendResponse(0);
+        }
         if (options.log) {
             console.log('|getGroupCountUnread | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
         }
@@ -566,6 +586,10 @@ function CheckForUnreadStart(key) {
 
 // goes through each feed and gets how many you haven't read since last time you were there
 function CheckForUnread(checkForUnreadCounterID) {
+    if (feeds[checkForUnreadCounterID] == undefined) {
+        CheckNextRead();
+        return;
+    }
     var feedID = feeds[checkForUnreadCounterID].id;
     var now = new Date();
     const offsetMs = now.getTimezoneOffset() * 60 * 1000;
@@ -595,7 +619,7 @@ function CheckForUnread(checkForUnreadCounterID) {
             }
         }
 
-        feedInfo[feedID] = {title: "", description: "", group: "", loading: true, items: [], error: "", errorContent: "", guid:"", image:""};
+        feedInfo[feedID] = {title: "", description: "", group: "", loading: true, items: [], error: "", errorContent: "", showErrorContent: false,guid:"", image:""};
 
         try {
             if (options.log) {
@@ -619,9 +643,14 @@ function CheckForUnread(checkForUnreadCounterID) {
                 }
 
                 if (!response.ok) {
-                    feedInfo[feedID].loading = false;
-                    feedInfo[feedID].error = 'Looks like there was a problem. Status Code: ' + response.status;
-                    CheckReadFinish(checkForUnreadCounterID);
+                    response.arrayBuffer().then(function(data) {
+                        feedInfo[feedID].loading = false;
+                        feedInfo[feedID].error = 'Looks like there was a problem. Status Code: ' + response.status;
+                        var doc = DecodeText(data);
+                        feedInfo[feedID].errorContent = doc;
+                        feedInfo[feedID].showErrorContent = true;
+                        CheckReadFinish(checkForUnreadCounterID);
+                    });
                     return;
                 }
                 if (response.redirected) {
@@ -637,24 +666,9 @@ function CheckForUnread(checkForUnreadCounterID) {
                         console.log('|x|Response to buffer | ' + FormatDTWithMs(dt - dtfetch));
                         //<<Profiler
                     }
-                    var decoder = new TextDecoder("UTF-8");
-                    var doc = decoder.decode(data);
-                    var encodeName = doc.substring(0, 100);
-                    if (encodeName.indexOf("encoding=") >= 0) {
-                        encodeName = encodeName.substring(encodeName.indexOf("encoding=") + ("encoding=").length, encodeName.indexOf("?>"));
-                        encodeName = encodeName.replaceAll('\"', '');
-                        encodeName = encodeName.replaceAll('"', '');
-                        encodeName = encodeName.replaceAll("'", "");
-                        if (encodeName.indexOf(" ") >= 0) {
-                            encodeName = encodeName.substring(0, encodeName.indexOf(" "));
-                        }
-                        if (encodeName.replaceAll('-', '').toUpperCase() != "UTF8"){
-                            decoder = new TextDecoder(encodeName);
-                            doc = decoder.decode(data);
-                        }
-                    }
+                    var doc = DecodeText(data);
 
-                    if (status == 200) {
+                    if ((status >= 200) && (status <= 299)) {
                         if (doc) {
                             var readItemCount = 0;
                             var item = null;
@@ -673,7 +687,8 @@ function CheckForUnread(checkForUnreadCounterID) {
                             if ((entries.length == 0) && (rootNode == null)) {
                                 feedInfo[feedID].loading = false;
                                 feedInfo[feedID].error = GetMessageText("backErrorMessage");
-                                feedInfo[feedID].errorContent = doc.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                                feedInfo[feedID].errorContent = doc;
+                                feedInfo[feedID].showErrorContent = true;
                                 CheckReadFinish(checkForUnreadCounterID);
                                 return;
                             }
@@ -1359,4 +1374,32 @@ function UpdateLoadingProgress(currentFeeds, currentFeedsCount) {
     if (viewerPort != null) {
         viewerPort.postMessage({type: "progressLoading", currentFeeds: currentFeeds, currentFeedsCount: currentFeedsCount});
     }
+}
+
+function DecodeText(data) {
+    var decoder = new TextDecoder("UTF-8");
+    var doc = decoder.decode(data);
+    var encodeName = doc.substring(0, 400);
+    var textEnc = "encoding=";
+    var indexEnc = encodeName.indexOf(textEnc);
+
+    if (indexEnc < 0) {
+        textEnc = "charset=";
+        indexEnc = encodeName.indexOf(textEnc);
+        if (indexEnc < 0) {
+            return doc;
+        }
+    }
+
+    encodeName = encodeName.substring(indexEnc + (textEnc).length);
+    encodeName = encodeName.substring(0, encodeName.indexOf(">"));
+    encodeName = encodeName.replaceAll('?', '').replaceAll('\"', '').replaceAll('"', '').replaceAll("'", "");
+    if (encodeName.indexOf(" ") >= 0) {
+        encodeName = encodeName.substring(0, encodeName.indexOf(" "));
+    }
+    if (encodeName.replaceAll('-', '').toUpperCase() != "UTF8"){
+        decoder = new TextDecoder(encodeName);
+        doc = decoder.decode(data);
+    }
+    return doc;
 }

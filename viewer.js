@@ -889,7 +889,7 @@ function SelectFeedOrGroup(key, type) {
         // feed loaded, but had an error
         if (feedsOrGroupsInfo[feedsOrGroups[key].id] != null) {
             if (feedsOrGroupsInfo[feedsOrGroups[key].id].error != "") {
-                ShowFeedError(feedsOrGroupsInfo[feedsOrGroups[key].id].error, feedsOrGroupsInfo[feedsOrGroups[key].id].errorContent, feedsOrGroups[key].url, feedsOrGroups[key].urlredirected);
+                ShowFeedError(feedsOrGroupsInfo[feedsOrGroups[key].id].error, feedsOrGroupsInfo[feedsOrGroups[key].id].errorContent, feedsOrGroupsInfo[feedsOrGroups[key].id].showErrorContent, feedsOrGroups[key].url, feedsOrGroups[key].urlredirected);
                 return;
             }
             document.getElementById("noItems").style.display = (feedsOrGroupsInfo[feedsOrGroups[key].id].items.length == 0) ? "" : "none";
@@ -1315,7 +1315,7 @@ function RenderFeed(type) {
     }
 }
 
-function ShowFeedError(message, content, url, urlredirected) {
+function ShowFeedError(message, content, showErrorContent, url, urlredirected) {
     document.getElementById("feedErrorMessage").innerText = message;
     document.getElementById("headerMessage").innerHTML = GetMessageText("backViewerFeedIssue");
     document.getElementById("feedError").style.display = "";
@@ -1339,16 +1339,27 @@ function ShowFeedError(message, content, url, urlredirected) {
 
                 var heightSize = Math.max(feedPrev.offsetHeight - document.getElementById("feedError").offsetHeight, 50);
 
-                if (urlredirected != undefined) {
-                    feediframe.innerHTML = '<iframe id="ContentIFrame" src="' + urlredirected + '" frameborder="0" height="' + heightSize + '" width="' + feedPrev.style.width + '"></iframe>';
-                } else {
-                    feediframe.innerHTML = '<iframe id="ContentIFrame" src="' + url + '" frameborder="0" height="' + heightSize + '" width="' + feedPrev.style.width + '"></iframe>';
-                }
+                if (showErrorContent) {
+                    feediframe.innerHTML = '<iframe id="ContentIFrame" srcdoc="" frameborder="0" height="' + heightSize + '" width="' + feedPrev.style.width + '"></iframe>';
 
-                feediframe.style.height =feedPrev.style.height;
-                feediframe.style.width = feedPrev.style.width;
-                if (addiframe) {
-                    document.getElementById("feedPreviewScroller").appendChild(feediframe);
+                    feediframe.style.height =feedPrev.style.height;
+                    feediframe.style.width = feedPrev.style.width;
+                    if (addiframe) {
+                        document.getElementById("feedPreviewScroller").appendChild(feediframe);
+                    }
+                    var contentfeediframe = document.getElementById("ContentIFrame");
+                    contentfeediframe.srcdoc = content;
+                } else {
+                    if (urlredirected != undefined) {
+                        feediframe.innerHTML = '<iframe id="ContentIFrame" src="' + urlredirected + '" frameborder="0" height="' + heightSize + '" width="' + feedPrev.style.width + '"></iframe>';
+                    } else {
+                        feediframe.innerHTML = '<iframe id="ContentIFrame" src="' + url + '" frameborder="0" height="' + heightSize + '" width="' + feedPrev.style.width + '"></iframe>';
+                    }
+                    feediframe.style.height =feedPrev.style.height;
+                    feediframe.style.width = feedPrev.style.width;
+                    if (addiframe) {
+                        document.getElementById("feedPreviewScroller").appendChild(feediframe);
+                    }
                 }
             }
         }

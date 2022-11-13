@@ -86,6 +86,7 @@ body {
 
 #app {
 	font-size: var(--body-font-size);
+	height: 100vh;
 }
 
 #header {

@@ -12,11 +12,13 @@ body {
 	overflow-x: hidden;
 	background-color: #1C1E23;
 	border-right: 1px solid #4D5361;
+	height: 100%;
 }
 
 #feedPreviewScroller {
 	overflow: auto;
 	width: 100% !important;
+	height: 100%;
 }
 
 #feedHeader {
@@ -101,6 +103,15 @@ body {
 #feedPreview td {
 	vertical-align: top;
 	word-break: break-word;
+}
+
+#contentNotFormated {
+	height: 99%;
+}
+
+#ContentIFrame {
+		height: 100%;
+		width: 100%;
 }
 
 .feedPreviewContainerCondensed .feedPreviewSummaryContent, .feedPreviewContainerCondensed .feedPreviewSummary, .feedPreviewContainerCondensed .feedPreviewDate, .feedPreviewContainerCondensed .feedPreviewAuthor {
