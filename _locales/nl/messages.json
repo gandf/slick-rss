@@ -63,7 +63,7 @@
     "message": "Volgorde"
   },
   "importForm": {
-    "message": "Kopieer en plak de inhoud van uw OPML-bestand in het onderstaande tekstvak."
+    "message": "Plak de inhoud van uw OPML-bestand in het onderstaande tekstvak."
   },
   "importImportFeeds": {
     "message": "Feeds importeren"
@@ -580,5 +580,38 @@
   },
   "bell": {
       "message": "Artikel al gelezen bijgewerkt"
+  },
+  "optionOptionsManagement": {
+    "message": "Beheer van opties"
+  },
+  "optionImportOptions": {
+    "message": "Importopties"
+  },
+  "optionExportOptions": {
+    "message": "Exportopties"
+  },
+  "exportOptionsTitle": {
+    "message": "Slick RSS : Exportopties"
+  },
+  "exportOptionsForm": {
+    "message": "Kopieer de inhoud van uw json Options-bestand in het onderstaande tekstvak."
+  },
+  "importOptionsTitle": {
+    "message": "Slick RSS : Importopties"
+  },
+  "importOptions": {
+    "message": "Importopties"
+  },
+  "importOptionsForm": {
+    "message": "Plak de inhoud van uw json Options-bestand in het onderstaande tekstvak."
+  },
+  "exportFeeds": {
+    "message": "Export Feeds"
+  },
+  "exportForm": {
+    "message": "Kopieer de inhoud van uw OPML-bestand in het onderstaande tekstvak."
+  },
+  "importAlertError": {
+    "message": "Fout tijdens import : "
   }
 }

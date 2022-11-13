@@ -63,7 +63,7 @@
     "message": "Order"
   },
   "importForm": {
-    "message": "Copy and paste your OPML file contents into the textbox below."
+    "message": "Paste your OPML file contents into the textbox below."
   },
   "importImportFeeds": {
     "message": "Import Feeds"
@@ -584,6 +584,39 @@
   "bell": {
       "message": "Fead already read updated"
   },
+  "optionOptionsManagement": {
+    "message": "Options management"
+  },
+  "optionImportOptions": {
+    "message": "Import Options"
+  },
+  "optionExportOptions": {
+    "message": "Export Options"
+  },
+  "exportOptionsTitle": {
+    "message": "Slick RSS : Export Options"
+  },
+  "exportOptionsForm": {
+    "message": "Copy your json Options file contents into the textbox below."
+  },
+  "importOptionsTitle": {
+    "message": "Slick RSS : Import Options"
+  },
+  "importOptions": {
+    "message": "Import Options"
+  },
+  "importOptionsForm": {
+    "message": "Paste your json Options file contents into the textbox below."
+  },
+  "exportFeeds": {
+    "message": "Export Feeds"
+  },
+  "exportForm": {
+    "message": "Copy your OPML file contents into the textbox below."
+  },
+  "importAlertError": {
+    "message": "Error during import : "
+  },
   "enexportTitle": {
       "message": "Slick RSS : Export Feeds"
   },
@@ -639,7 +672,7 @@
       "message": "Order"
   },
   "enimportForm": {
-      "message": "Copy and paste your OPML file contents into the textbox below."
+      "message": "Paste your OPML file contents into the textbox below."
   },
   "enimportImportFeeds": {
       "message": "Import Feeds"
@@ -1159,5 +1192,38 @@
   },
   "enbell": {
       "message": "Fead already read updated"
+  },
+  "enoptionOptionsManagement": {
+    "message": "Options management"
+  },
+  "enoptionImportOptions": {
+    "message": "Import Options"
+  },
+  "enoptionExportOptions": {
+    "message": "Export Options"
+  },
+  "enexportOptionsTitle": {
+    "message": "Slick RSS : Export Options"
+  },
+  "enexportOptionsForm": {
+    "message": "Copy your json Options file contents into the textbox below."
+  },
+  "enimportOptionsTitle": {
+    "message": "Slick RSS : Import Options"
+  },
+  "enimportOptions": {
+    "message": "Import Options"
+  },
+  "enimportOptionsForm": {
+    "message": "Paste your json Options file contents into the textbox below."
+  },
+  "enexportFeeds": {
+    "message": "Export Feeds"
+  },
+  "enexportForm": {
+    "message": "Copy your OPML file contents into the textbox below."
+  },
+  "enimportAlertError": {
+    "message": "Error during import : "
   }
 }

@@ -63,7 +63,7 @@
     "message": "Order"
   },
   "importForm": {
-    "message": "Copy and paste your OPML file contents into the textbox below."
+    "message": "Paste your OPML file contents into the textbox below."
   },
   "importImportFeeds": {
     "message": "Import Feeds"
@@ -583,5 +583,38 @@
   },
   "bell": {
       "message": "Fead already read updated"
+  },
+  "optionOptionsManagement": {
+    "message": "Options management"
+  },
+  "optionImportOptions": {
+    "message": "Import Options"
+  },
+  "optionExportOptions": {
+    "message": "Export Options"
+  },
+  "exportOptionsTitle": {
+    "message": "Slick RSS : Export Options"
+  },
+  "exportOptionsForm": {
+    "message": "Copy your json Options file contents into the textbox below."
+  },
+  "importOptionsTitle": {
+    "message": "Slick RSS : Import Options"
+  },
+  "importOptions": {
+    "message": "Import Options"
+  },
+  "importOptionsForm": {
+    "message": "Paste your json Options file contents into the textbox below."
+  },
+  "exportFeeds": {
+    "message": "Export Feeds"
+  },
+  "exportForm": {
+    "message": "Copy your OPML file contents into the textbox below."
+  },
+  "importAlertError": {
+    "message": "Error during import : "
   }
 }

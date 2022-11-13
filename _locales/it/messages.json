@@ -63,7 +63,7 @@
     "message": "Ordinare"
   },
   "importForm": {
-    "message": "Copia e incolla il contenuto del tuo file OPML nella casella di testo sottostante."
+    "message": "Incollare il contenuto del file OPML nella casella di testo sottostante."
   },
   "importImportFeeds": {
     "message": "Importa feed"
@@ -580,5 +580,38 @@
   },
   "bell": {
       "message": "Articolo già letto aggiornato"
+  },
+  "optionOptionsManagement": {
+    "message": "Gestione delle opzioni"
+  },
+  "optionImportOptions": {
+    "message": "Opzioni di importazione"
+  },
+  "optionExportOptions": {
+    "message": "Opzioni di esportazione"
+  },
+  "exportOptionsTitle": {
+    "message": "Slick RSS : Opzioni di esportazione"
+  },
+  "exportOptionsForm": {
+    "message": "Copiare il contenuto del file json Options nella casella di testo sottostante."
+  },
+  "importOptionsTitle": {
+    "message": "Slick RSS : Opzioni di importazione"
+  },
+  "importOptions": {
+    "message": "Opzioni di importazione"
+  },
+  "importOptionsForm": {
+    "message": "Incollare il contenuto del file json Options nella casella di testo sottostante."
+  },
+  "exportFeeds": {
+    "message": "Esportazione dei feed"
+  },
+  "exportForm": {
+    "message": "Copiare il contenuto del file OPML nella casella di testo sottostante."
+  },
+  "importAlertError": {
+    "message": "Errore durante l'importazione : "
   }
 }

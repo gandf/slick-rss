@@ -6,6 +6,11 @@ $(document).ready(function()
 	$('#cancel').click(function(){window.close();});
 	$('#importFeeds').click(function(){window.open(chrome.runtime.getURL("import.html"), 'height=250,width=550');});
 	$('#exportFeeds').click(function(){window.open(chrome.runtime.getURL("export.html"), 'height=250,width=550');});
+	$('#importOptions').click(function(){
+		var w = window.open(chrome.runtime.getURL("importoptions.html"), 'height=250,width=550');
+		w.addEventListener('load', window.close(), true);
+	});
+	$('#exportOptions').click(function(){window.open(chrome.runtime.getURL("exportoptions.html"), 'height=250,width=550');});
 	$('#dateDone').click(function(){ShowDateSample(true);});
 	$('#dateFormat').focus(function(){EditDateFormat();});
 
