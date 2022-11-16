@@ -68,6 +68,7 @@ port.onMessage.addListener(function (msg) {
         document.getElementById("feedsLoading").style.display = "none";
         document.getElementById("feedsOptions").style.display = "";
 
+        UpdateDataFromWorker();
         for (key in feeds) {
             if (key != 0) {
                 UpdateFeedUnread(feeds[key].id);
