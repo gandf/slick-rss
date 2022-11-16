@@ -1320,8 +1320,12 @@ function UpdateGroups() {
     }
 
     for (var i = 0; i < groups.length; i++) {
-        groupInfo[groups[i].id].loading = false;
-        SortByDate(groupInfo[groups[i].id].items);
+        if (groups[i].id != allFeedsID) {
+            if (groupInfo[groups[i].id] != undefined) {
+                groupInfo[groups[i].id].loading = false;
+                SortByDate(groupInfo[groups[i].id].items);
+            }
+        }
     }
 }
 
