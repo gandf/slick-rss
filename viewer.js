@@ -1382,7 +1382,7 @@ function ShowFeedError(message, content, showErrorContent, url, urlredirected) {
 
 // central function to control creation of tabs so we can put them in the background
 function LinkProxy(uRL) {
-    chrome.tabs.create({url: uRL, selected: !options.loadlinksinbackground});
+    chrome.tabs.create({url: uRL, active:!options.loadlinksinbackground,selected: !options.loadlinksinbackground});
 }
 
 function hover(element) {
