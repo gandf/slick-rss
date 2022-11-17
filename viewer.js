@@ -1027,20 +1027,22 @@ function RenderFeed(type) {
         feedLink.setAttribute("href", href);
         feedLink.innerHTML = (i + 1) + ". " + item.title;
 
-        $(feedLink).click({url: href}, function (event) {
-            LinkProxy(event.data.url);
-            return false;
-        });
-
         if (feedID == readLaterFeedID) {
             if (options.readlaterremovewhenviewed) {
-                $(feedLink).click({i: i}, function (event) {
+                $(feedLink).click({url: href, i: i}, function (event) {
+                    LinkProxy(event.data.url);
                     UnMarkItemReadLater(event.data.i);
+                    return false;
+                });
+            } else {
+                $(feedLink).click({url: href}, function (event) {
+                    LinkProxy(event.data.url);
                     return false;
                 });
             }
         } else {
-            $(feedLink).click({feedID: feedID, itemID: itemID}, function (event) {
+            $(feedLink).click({url: href, feedID: feedID, itemID: itemID}, function (event) {
+                LinkProxy(event.data.url);
                 MarkItemRead(event.data.itemID);
                 if (options.markreadonclick) {
                     MarkFeedRead(event.data.feedID);
