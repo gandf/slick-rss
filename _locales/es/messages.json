@@ -616,5 +616,8 @@
   },
   "importAlertError": {
     "message": "Error durante la importación : "
+  },
+  "optionshowsavethisfeed": {
+    "message": "Mostrar botón para guardar una alimentación"
   }
 }

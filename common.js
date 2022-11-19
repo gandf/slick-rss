@@ -277,7 +277,8 @@ function GetDefaultOptions() {
         "levelSearchTag": 5,
         "levelSearchTags": 8,
         "typeNotify": 1,
-        "log": false
+        "log": false,
+        "showsavethisfeed": true
     };
 }
 

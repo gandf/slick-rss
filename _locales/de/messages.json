@@ -613,5 +613,8 @@
   },
   "importAlertError": {
     "message": "Fehler beim Import : "
+  },
+  "optionshowsavethisfeed": {
+    "message": "Schaltfläche zum Speichern eines Feeds anzeigen"
   }
 }

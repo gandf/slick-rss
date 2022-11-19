@@ -616,5 +616,8 @@
   },
   "importAlertError": {
     "message": "Error during import : "
+  },
+  "optionshowsavethisfeed": {
+    "message": "Show button to save one feed"
   }
 }

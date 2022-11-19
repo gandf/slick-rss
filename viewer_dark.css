@@ -240,6 +240,15 @@ blockquote > blockquote > blockquote > blockquote {
 	display: none;
 }
 
+.onefeed {
+	float: right;
+	border: 1px solid transparent;
+	cursor: pointer;
+	width: 16px;
+	height: 16px;
+	display: block;
+}
+
 .selectedFeed {
 	background-color: #66A6F9;
 	border: 1px solid #9EC6F7 !important;

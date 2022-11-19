@@ -45,8 +45,11 @@ var sizeFeedsLoadingTxt = null;
 var sizeProgressboxLoading = '50px';
 var showingFeeds = false;
 var readingFeeds = false;
+var listonefeed = {};
 
 var port = chrome.runtime.connect({name: "viewerPort"});
+
+chrome.runtime.onConnect.addListener(InternalConnection);
 
 port.onMessage.addListener(function (msg) {
     if (msg.type == "feedschanged") {
@@ -1140,8 +1143,27 @@ function RenderFeed(type) {
             feedTitle.appendChild(feedSummaryImg2);
         }
 
+        if (options.showsavethisfeed) {
+            var onefeed = document.createElement("img");
+            onefeed.setAttribute("src", "pdf.png");
+            onefeed.setAttribute("class", "onefeed");
+            $(onefeed).click({containerId : containerId}, function (event) {
+                var refdoc = document.getElementById(event.data.containerId);
+                var docTitle = refdoc.querySelector('.feedPreviewTitle');
+                var docContent = refdoc.querySelector('.feedPreviewSummaryContent');
+
+                listonefeed[event.data.containerId] = {title: docTitle.innerHTML, content: docContent.innerHTML};
+
+                chrome.tabs.create({url: "showonefeed.html#" + event.data.containerId});
+                return false;
+            });
+            onefeed.addEventListener("mouseover", onmouseover);
+            onefeed.addEventListener("mouseout", onmouseout);
+            feedTitle.appendChild(onefeed);
+        }
+
         if (item.updated) {
-            feedreadUpdated = document.createElement("img");
+            var feedreadUpdated = document.createElement("img");
             feedreadUpdated.setAttribute("src", "bell.png");
             feedreadUpdated.setAttribute("title", GetMessageText("bell"));
             feedreadUpdated.setAttribute("class", "feedreadUpdated");
@@ -1550,5 +1572,16 @@ function SendUnreadInfoToWorker(listUnread, setunset) {
         return chrome.runtime.sendMessage({"type": "setUnreadInfo", "data": GetStrFromObject(listUnread)});
     } else {
         return chrome.runtime.sendMessage({"type": "unsetUnreadInfo", "data": GetStrFromObject(listUnread)});
+    }
+}
+
+function InternalConnection(port) {
+    if (port != null) {
+        for (var key in listonefeed) {
+            if (port.name == key) {
+                port.postMessage(listonefeed[key]);
+                //delete listonefeed[key];
+            }
+        }
     }
 }

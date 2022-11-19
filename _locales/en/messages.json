@@ -617,6 +617,9 @@
   "importAlertError": {
     "message": "Error during import : "
   },
+  "optionshowsavethisfeed": {
+    "message": "Show button to save one feed"
+  },
   "enexportTitle": {
       "message": "Slick RSS : Export Feeds"
   },
@@ -1225,5 +1228,8 @@
   },
   "enimportAlertError": {
     "message": "Error during import : "
+  },
+  "enoptionshowsavethisfeed": {
+    "message": "Show button to save one feed"
   }
 }
