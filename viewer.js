@@ -1145,7 +1145,7 @@ function RenderFeed(type) {
 
         if (options.showsavethisfeed) {
             var onefeed = document.createElement("img");
-            onefeed.setAttribute("src", "pdf.png");
+            onefeed.setAttribute("src", "download.png");
             onefeed.setAttribute("class", "onefeed");
             $(onefeed).click({containerId : containerId}, function (event) {
                 var refdoc = document.getElementById(event.data.containerId);

@@ -1,11 +1,6 @@
 // to prevent XSS :(
 $(document).ready(function () {
     waitOptionReady().then(function () {
-        if (options.darkmode) {
-            activeDarkMode();
-        } else {
-            disableDarkMode();
-        }
         var port = chrome.runtime.connect({name: $(location).attr('hash').replaceAll("#", "")});
 
         port.onMessage.addListener(function (msg) {
@@ -36,6 +31,11 @@ function SetData(Title, Document) {
             removeImg("feedPreviewSummaryImg2");
             removeImg("onefeed");
             removeImg("feedPreviewMarkRead");
+            var txt = "";
+            if (feedTitle.childNodes[0] != null) {
+                txt = feedTitle.childNodes[0].innerText;
+                feedTitle.childNodes[0].innerText = txt.substring(txt.indexOf(". ") + 2);
+            }
         }
     }
 

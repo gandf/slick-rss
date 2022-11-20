@@ -55,6 +55,7 @@ function SetupScreen()
 		document.getElementById("levelSearchTags").value = options.levelSearchTags;
 		document.getElementById("notifyWindowType").selectedIndex = options.typeNotify;
 		document.getElementById("optionLogInConsole").selectedIndex = options.log;
+		document.getElementById("showsavethisfeed").selectedIndex = options.showsavethisfeed;
 
 		var manifestData = chrome.runtime.getManifest();
 		document.getElementById("NoVersion").innerHTML = manifestData.version + " " + manifestData.current_locale;
@@ -135,6 +136,7 @@ function Save()
 	options.levelSearchTags = parseInt(levelSearchTags, 10);
 	options.typeNotify = document.getElementById("notifyWindowType").selectedIndex;
 	options.log = (document.getElementById("optionLogInConsole").selectedIndex == 1);
+	options.showsavethisfeed = (document.getElementById("showsavethisfeed").selectedIndex == 1);
 
 	store.setItem('options', options);
 
