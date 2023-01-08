@@ -616,5 +616,11 @@
   },
   "optionshowsavethisfeed": {
     "message": "Toon knop om een feed op te slaan"
+  },
+  "showOneFeedTitle": {
+    "message": "Slick RSS : Toon één feed"
+  },
+  "lang": {
+    "message": "nl"
   }
 }

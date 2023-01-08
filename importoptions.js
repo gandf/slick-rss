@@ -5,6 +5,8 @@ $(document).ready(function()
 	$('#cancel').click(function(){window.close();});
 });
 
+document.documentElement.setAttribute('lang', GetMessageText('lang'));
+
 waitOptionReady().then(function () {
 	if (options.darkmode) {
 		activeDarkMode();
@@ -27,7 +29,7 @@ function Import()
 
 function ImportOptions()
 {
-	var value = document.getElementById("opml").value;
+	let value = document.getElementById("opml").value;
 
 	if (value === null) {
 		alert(GetMessageText("importAlertNothing"));
@@ -39,7 +41,7 @@ function ImportOptions()
     }
 
 	try {
-		var optionsToImport = JSON.parse(value);
+		let optionsToImport = JSON.parse(value);
 
 		GetOptions().then(function() {
 			if (optionsToImport.lastversion != undefined) {

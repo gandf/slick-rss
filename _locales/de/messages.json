@@ -616,5 +616,11 @@
   },
   "optionshowsavethisfeed": {
     "message": "Schaltfläche zum Speichern eines Feeds anzeigen"
+  },
+  "showOneFeedTitle": {
+    "message": "Slick RSS : Einen Feed anzeigen"
+  },
+  "lang": {
+    "message": "de"
   }
 }

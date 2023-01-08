@@ -17,46 +17,38 @@ function CleanText(text)
 }
 
 function GetElementByTagNameJS() {
-    var node = arguments[0];
-    var defaultValue = arguments[1];
-    var tag = Array.from(arguments);
+    let node = arguments[0];
+    let defaultValue = arguments[1];
+    let multiplesElements = arguments[2];
+    let tag = Array.from(arguments);
+    tag.shift();
     tag.shift();
     tag.shift();
 
-    for (var i = 0; i < tag.length; i++) {
+    for (let i = 0; i < tag.length; i++) {
         if (tag[i] != undefined)
-        tag[i] = tag[i].toUpperCase();
+            tag[i] = tag[i].toUpperCase();
     }
 
-    const parser = new fxparser.XMLParser();
-    var datajson = parser.parse(node);
-    return SearchTag(datajson, defaultValue, tag, 0);
-}
-
-function GetElementsByTagNameJS() {
-    var node = arguments[0];
-    var defaultValue = arguments[1];
-    var tag = Array.from(arguments);
-    tag.shift();
-    tag.shift();
-
-    for (var i = 0; i < tag.length; i++) {
-        if (tag[i] != undefined)
-        tag[i] = tag[i].toUpperCase();
+    if (!multiplesElements) {
+        const parser = new fxparser.XMLParser();
+        let datajson = parser.parse(node);
+        return SearchTag(datajson, defaultValue, tag, 0);
     }
-
-    const optionsParser = {
-        ignoreAttributes : false,
-        attributeNamePrefix : "",
-        allowBooleanAttributes: true,
-        preserveOrder: true
-        //attributesGroupName : "@_",
-        //preserveOrder: true,
-        //trimValues: false
-    };
-    const parser = new fxparser.XMLParser(optionsParser);
-    var datajson = parser.parse(node);
-    return SearchTags(datajson, defaultValue, tag, 0);
+    else {
+        const optionsParser = {
+            ignoreAttributes : false,
+            attributeNamePrefix : "",
+            allowBooleanAttributes: true,
+            preserveOrder: true
+            //attributesGroupName : "@_",
+            //preserveOrder: true,
+            //trimValues: false
+        };
+        const parser = new fxparser.XMLParser(optionsParser);
+        let datajson = parser.parse(node);
+        return SearchTags(datajson, defaultValue, tag, 0);
+    }
 }
 
 function SearchTag(data, defaultValue, tag, level)
@@ -65,22 +57,22 @@ function SearchTag(data, defaultValue, tag, level)
     {
         return defaultValue;
     }
-    var keys = Object.keys(data);
-    var val = Object.values(data);
-    for (var i = 0 ; i < keys.length ; i++) {
+    let keys = Object.keys(data);
+    let val = Object.values(data);
+    for (let i = 0 ; i < keys.length ; i++) {
         if (isNaN(parseInt(keys[i], 10))) { //Tag is not integer : speed up parse
-            for (var e = 0; e < tag.length; e++) {
+            for (let e = 0; e < tag.length; e++) {
                 if (keys[i].toUpperCase() == tag[e]) {
-                    var attrib = [];
-                    var attribFound = false;
-                    for (var j = 0 ; j < keys.length ; j++) {
+                    let attrib = [];
+                    let attribFound = false;
+                    for (let j = 0 ; j < keys.length ; j++) {
                         if (keys[j] == ":@")
                         {
                             attrib = val[j];
                             attribFound = true;
                         }
                     }
-                    var result = [val[i]];
+                    let result = [val[i]];
                     if (attribFound)
                     {
                         result.push(attrib);
@@ -90,10 +82,10 @@ function SearchTag(data, defaultValue, tag, level)
             }
         }
     }
-    for (var i = 0 ; i < keys.length ; i++) {
+    for (let i = 0 ; i < keys.length ; i++) {
         if (val[i] != "")
         {
-            var ret = SearchTag(val[i], defaultValue, tag, level + 1);
+            let ret = SearchTag(val[i], defaultValue, tag, level + 1);
             if (ret != defaultValue)
             {
                 //console.log('|SearchTag level | ', level + 1);
@@ -110,27 +102,27 @@ function SearchTags(data, defaultValue, tag, level)
     {
         return defaultValue;
     }
-    if ((typeof data != "object") && (typeof data != "array"))
+    if ((typeof data != "object") && (data.constructor === Array))
     {
         return defaultValue;
     }
-    var result = [];
-    var keys = Object.keys(data);
-    var val = Object.values(data);
-    var resultExist = false;
-    for (var i = 0 ; i < keys.length ; i++) {
-        for (var e = 0; e < tag.length; e++) {
+    let result = [];
+    let keys = Object.keys(data);
+    let val = Object.values(data);
+    let resultExist = false;
+    for (let i = 0 ; i < keys.length ; i++) {
+        for (let e = 0; e < tag.length; e++) {
             if (keys[i].toUpperCase() == tag[e]) {
-                var attrib = [];
-                var attribFound = false;
-                for (var j = 0 ; j < keys.length ; j++) {
+                let attrib = [];
+                let attribFound = false;
+                for (let j = 0 ; j < keys.length ; j++) {
                     if (keys[j] == ":@")
                     {
                         attrib = val[j];
                         attribFound = true;
                     }
                 }
-                var intermediateResult = [val[i]];
+                let intermediateResult = [val[i]];
                 if (attribFound)
                 {
                     intermediateResult.push(attrib);
@@ -144,10 +136,10 @@ function SearchTags(data, defaultValue, tag, level)
     {
         return result;
     }
-    for (var i = 0 ; i < keys.length ; i++) {
-        if ((val[i] != "") && ((typeof val[i] == "object") || (typeof val[i] == "array")))
+    for (let i = 0 ; i < keys.length ; i++) {
+        if ((val[i] != "") && ((typeof val[i] == "object") || (val[i].constructor === Array)))
         {
-            var ret = SearchTags(val[i], defaultValue, tag, level + 1);
+            let ret = SearchTags(val[i], defaultValue, tag, level + 1);
             if (ret != defaultValue)
             {
                 //console.log('|SearchTags level | ', level + 1);
@@ -170,32 +162,32 @@ function SearchTags(data, defaultValue, tag, level)
 }
 
 function RemoveTag() {
-    var node = arguments[0];
-    var tag = Array.from(arguments);
+    let node = arguments[0];
+    let tag = Array.from(arguments);
     tag.shift();
 
-    for (var i = 0; i < tag.length; i++) {
+    for (let i = 0; i < tag.length; i++) {
         if (tag[i] != undefined)
         tag[i] = tag[i].toUpperCase();
     }
 
-    var keys = Object.keys(node);
-    for (var i = 0 ; i < keys.length ; i++) {
-        for (var e = 0; e < tag.length; e++) {
+    let keys = Object.keys(node);
+    for (let i = 0 ; i < keys.length ; i++) {
+        for (let e = 0; e < tag.length; e++) {
             if (keys[i].toUpperCase() == tag[e]) {
                 delete node[keys[i]];
                 return node;
             } else {
-                var keysL2 = Object.keys(node[keys[i]]);
-                for (var j = 0 ; j < keysL2.length ; j++) {
-                    for (var f = 0; f < tag.length; f++) {
+                let keysL2 = Object.keys(node[keys[i]]);
+                for (let j = 0 ; j < keysL2.length ; j++) {
+                    for (let f = 0; f < tag.length; f++) {
                         if (keysL2[j].toUpperCase() == tag[f]) {
                             delete node[keys[i]][keysL2[j]];
                             return node;
                         } else {
-                            var keysL3 = Object.keys(node[keys[i]][keysL2[j]]);
-                            for (var k = 0 ; k < keysL3.length ; k++) {
-                                for (var g = 0; g < tag.length; g++) {
+                            let keysL3 = Object.keys(node[keys[i]][keysL2[j]]);
+                            for (let k = 0 ; k < keysL3.length ; k++) {
+                                for (let g = 0; g < tag.length; g++) {
                                     if (keysL3[k].toUpperCase() == tag[g]) {
                                         delete node[keys[i]][keysL2[j]][keysL3[k]];
                                         return node;

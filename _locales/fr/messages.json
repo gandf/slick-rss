@@ -619,5 +619,11 @@
   },
   "optionshowsavethisfeed": {
     "message": "Afficher bouton de sauvegarde d'un flux"
+  },
+  "showOneFeedTitle": {
+    "message": "Slick RSS : Afficher un flux"
+  },
+  "lang": {
+    "message": "fr"
   }
 }

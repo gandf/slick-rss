@@ -5,6 +5,8 @@ $(document).ready(function()
 	$('#cancel').click(function(){window.close();});
 });
 
+document.documentElement.setAttribute('lang', GetMessageText('lang'));
+
 waitOptionReady().then(function () {
 	if (options.darkmode) {
 		activeDarkMode();
@@ -28,18 +30,18 @@ function Import()
 // imports opml -> feed list
 function ImportFeeds()
 {
-	var nodes = null;
-	var importCount = 0;
-	var maxOrder = 0;
-	var xmldata = document.getElementById("opml").value;
-	var opml = JXON.stringToXml(xmldata);
+	let nodes = null;
+	let importCount = 0;
+	let maxOrder = 0;
+	let xmldata = document.getElementById("opml").value;
+	let opml = JXON.stringToXml(xmldata);
 
 	nodes = opml.getElementsByTagName("outline");
 
 	GetFeedsSimple(function(feeds)
 	{
 		// get max order
-		for(var i = 0;i < feeds.length; i++)
+		for(let i = 0;i < feeds.length; i++)
 		{
 			if(feeds[i].order > maxOrder)
 			{
@@ -47,18 +49,18 @@ function ImportFeeds()
 			}
 		}
 
-		for(var i = 0;i < nodes.length; i++)
+		for(let i = 0;i < nodes.length; i++)
 		{
 			if(nodes[i].getAttribute("type") == "rss")
 			{
 				maxOrder ++;
-				var group = nodes[i].getAttribute("group");
+				let group = nodes[i].getAttribute("group");
 				if (group == null)
 				{
 					group = "";
 				}
 
-				var excludeUnreadCount = nodes[i].getAttribute("excludeUnreadCount");
+				let excludeUnreadCount = nodes[i].getAttribute("excludeUnreadCount");
 				if (excludeUnreadCount == null)
 				{
 					excludeUnreadCount = 0;
@@ -83,7 +85,7 @@ function ImportFeeds()
 
 		//remove ReadLater
 		if (feeds.filter(filterByID).length > 0) {
-			var resultPromise = store.setItem('feeds', feeds.filter(filterByID)).then(function(data){
+			let resultPromise = store.setItem('feeds', feeds.filter(filterByID)).then(function(data){
 				alert(GetMessageText("importAlertImportedFeeds1") + importCount + GetMessageText("importAlertImportedFeeds2"));
 			});
 			resultPromise.then(function(){

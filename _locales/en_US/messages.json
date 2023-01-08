@@ -619,5 +619,11 @@
   },
   "optionshowsavethisfeed": {
     "message": "Show button to save one feed"
+  },
+  "showOneFeedTitle": {
+    "message": "Slick RSS : Show one feed"
+  },
+  "lang": {
+    "message": "en"
   }
 }

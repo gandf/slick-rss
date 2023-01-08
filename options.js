@@ -17,7 +17,7 @@ $(document).ready(function()
 });
 
 window.onload = SetupScreen;
-
+document.documentElement.setAttribute('lang', GetMessageText('lang'));
 function SetupScreen()
 {
 	waitOptionReady().then(function () {
@@ -57,7 +57,7 @@ function SetupScreen()
 		document.getElementById("optionLogInConsole").selectedIndex = options.log;
 		document.getElementById("showsavethisfeed").selectedIndex = options.showsavethisfeed;
 
-		var manifestData = chrome.runtime.getManifest();
+		let manifestData = chrome.runtime.getManifest();
 		document.getElementById("NoVersion").innerHTML = manifestData.version + " " + manifestData.current_locale;
 		document.getElementById("appName").innerHTML = manifestData.name;
 		document.getElementById("appDescription").innerHTML = manifestData.description;
@@ -72,10 +72,10 @@ function SetupScreen()
 
 function Save()
 {
-	var maxItems = document.getElementById("maxItems").value;
-	var feedsMaxHeight = document.getElementById("feedsMaxHeight").value;
-	var levelSearchTag = document.getElementById("levelSearchTag").value;
-	var levelSearchTags = document.getElementById("levelSearchTags").value;
+	let maxItems = document.getElementById("maxItems").value;
+	let feedsMaxHeight = document.getElementById("feedsMaxHeight").value;
+	let levelSearchTag = document.getElementById("levelSearchTag").value;
+	let levelSearchTags = document.getElementById("levelSearchTags").value;
 
 	if (levelSearchTag < 4) {
 		levelSearchTag = 4;

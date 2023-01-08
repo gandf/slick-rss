@@ -1,7 +1,7 @@
-var objects = document.getElementsByTagName('html');
-for (var j = 0; j < objects.length; j++)
+let objects = document.getElementsByTagName('html');
+for (let j = 0; j < objects.length; j++)
 {
-    var obj = objects[j];
+    let obj = objects[j];
 
     waitOptionReady().then(function () {
         obj.querySelectorAll('[data-locale]').forEach(elem => {

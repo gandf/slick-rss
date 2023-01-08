@@ -1,122 +1,37 @@
-
-body {
-	overflow: hidden;
-}
-
-#containerArea {
-	width: 100%;
-	height: 100%;
-}
+@import "viewer-general.css";
 
 #feedScroller {
-	overflow-y: auto;
-	overflow-x: hidden;
 	background-color: whitesmoke;
 	border-right: 1px solid #dedede;
-	height: 100%;
-}
-
-#feedPreviewScroller {
-	overflow: auto;
-	width: 100% !important;
-	height: 100%;
 }
 
 #feedHeader {
-	font-size: var(--feedHeader-font-size);
 	background-color: #666d7c;
 	color: #aaa;
-	padding-left: 10px;
-	padding-right: 10px;
 }
 
 #feedHeader a {
-	font-size: var(--feedHeader-a-font-size);
 	color: white;
-	text-decoration: none;
-}
-
-#feedHeader a:hover {
-	text-decoration: underline;
-}
-
-#feedList {
-	list-style-type: none;
-	margin: 0px;
-	padding: 10px;
 }
 
 #feedList li {
-	padding: 3px;
-	white-space: nowrap;
-	cursor: pointer;
 	border: 1px solid whitesmoke;
-	margin-bottom: 1px;
 }
 
 #feedList li:hover {
 	border: 1px solid #d8d8d8;
 }
 
-#feedArea, #workArea {
-	vertical-align: top;
-	height: 99%; /* keeps headers on top when there isn't enough content since master table is 100% height */
-}
-
 #feedsLoading {
-	display: none;
-	width: 99%;
 	color: White;
-	font-size: var(--feedsLoading-font-size);
-}
-
-#feedsLoading td + td {
-	width: 99%;
-	padding: 10px;
 }
 
 #feedsLoadingProgressBox {
 	border: 1px solid #aaa;
-	width: 100%;
 }
 
 #feedsLoadingProgress {
-	width: 0%;
-	height: 5px;
 	background-color: #eee;
-}
-
-#feedsOptions {
-	white-space: nowrap;
-}
-
-.loading tr > td:first-child {
-	background-image: url("loading.gif") !important;
-}
-
-#feedPreview {
-	font-size: var(--feedPreview-font-size);
-	outline: none;
-	width: 100%;
-	table-layout: fixed;
-}
-
-#feedPreview td {
-	vertical-align: top;
-	word-break: break-word;
-}
-
-#contentNotFormated {
-	height: 99%;
-}
-
-#ContentIFrame {
-		height: 100%;
-		width: 100%;
-}
-
-.feedPreviewContainerCondensed .feedPreviewSummaryContent, .feedPreviewContainerCondensed .feedPreviewSummary, .feedPreviewContainerCondensed .feedPreviewDate, .feedPreviewContainerCondensed .feedPreviewAuthor {
-	display: none;
 }
 
 .feedPreviewContainerRead {
@@ -127,120 +42,16 @@ body {
 	background-color: #efefef;
 }
 
-.feedPreviewContainerRead .feedPreviewMarkRead, .feedPreviewContainerRead .feedPreviewReadLater, .feedPreviewContainerRead .feedPreviewSummaryImg, .feedPreviewContainerRead .feedPreviewSummaryImg2 {
-	display: none;
-}
-
-.feedPreviewContainerRead .feedPreviewUnread {
-	display: block;
-}
-
 .feedPreviewContainer {
 	border: 1px solid #96b6df;
-	display: block;
-	min-height: 140px;
-}
-
-.feedPreviewContainerRead, .feedPreviewContainerCondensed {
-	min-height: 0px;
-}
-
-/* And the king decreed, let there be wrapping for all */
-.feedPreviewContainer * {
-	white-space: normal;
 }
 
 .feedPreviewTitle {
 	background-color: #d7e6f8;
-	margin: 0px;
-	padding: 5px;
 }
 
 .feedPreviewContainerRead .feedPreviewTitle a {
-	text-decoration: none;
 	color: Black;
-	font-size: var(--feedPreviewContainerRead-a-font-size);
-}
-
-.feedPreviewTitle a {
-	text-decoration: none;
-	font-size: var(--feedPreviewTitle-a-font-size);
-}
-
-.feedPreviewTitle a:hover {
-	text-decoration: underline;
-}
-
-.feedPreviewSummaryContent, .feedPreviewSummary {
-	padding: 5px;
-	max-height: 200px;
-	overflow: auto;
-}
-
-.feedPreviewSummaryContent, .feedPreviewSummary table {
-	width: auto;
-}
-
-blockquote > blockquote > blockquote > blockquote {
-	display: none;
-}
-
-.feedPreviewDate {
-	padding: 5px;
-	font-size: var(--feedPreviewDate-font-size);
-	float: left;
-	white-space: nowrap;
-	width: 1%;
-}
-
-.feedPreviewAuthor {
-	padding: 5px;
-	font-size: var(--feedPreviewAuthor-font-size);
-	text-align: right;
-}
-
-.feedPreviewMarkRead {
-	float: right;
-	border: 1px solid transparent;
-	cursor: pointer;
-	width: 12px;
-	height: 12px;
-}
-
-.feedPreviewReadLater {
-	float: right;
-	margin-top: -1px;
-	margin-right: 7px;
-	cursor: pointer;
-	width: 16px;
-	height: 16px;
-}
-
-.feedPreviewSummaryImg, .feedPreviewSummaryImg2, .feedreadUpdated {
-	float: right;
-	margin-top: -1px;
-	margin-right: 7px;
-	cursor: pointer;
-	width: 16px;
-	height: 16px;
-}
-
-.feedPreviewUnread {
-	float: right;
-	border: 1px solid transparent;
-	cursor: pointer;
-	width: 16px;
-	height: 16px;
-	display: none;
-}
-
-.onefeed {
-	float: right;
-	border: 1px solid transparent;
-	cursor: pointer;
-	width: 16px;
-	height: 16px;
-	display: block;
 }
 
 .selectedFeed {
@@ -249,39 +60,12 @@ blockquote > blockquote > blockquote > blockquote {
 	color: #285491;
 }
 
-.thumbnail {
-	float: left;
-  	width: auto;
-  	display: inline-block;
-}
-
-.thumbnail img {
-  	width: 150px;
-  	height: auto;
-}​
-
-#noFeedsManaged {
-	font-size: var(--noFeedsManaged-font-size);
-	padding: 5px;
-}
-
-#feedError {
-	font-size: var(--feedError-font-size);
-	padding: 5px;
-}
-
-#feedErrorDetail {
-	font-weight: bold;
-}
-
 #feedErrorMessage {
 	color: Red;
-	font-weight: bold;
 }
 
 #feedErrorContent {
 	color: Red;
-	font-weight: normal;
 }
 
 #feedTitle9999999999 {
@@ -290,18 +74,4 @@ blockquote > blockquote > blockquote > blockquote {
 
 #feedTitle9999999999[class=selectedFeed] {
 	border-bottom: 1px solid #a9caf8 !important;
-}
-
-#noItems {
-	padding: 5px;
-	font-size: 12px;
-}
-
-#urlRedirected {
-	font-size: var(--feedError-font-size);
-	padding: 5px;
-}
-
-#urlRedirectedUrl {
-	font-weight: bold;
 }

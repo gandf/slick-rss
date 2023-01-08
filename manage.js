@@ -6,19 +6,20 @@ $(document).ready(function()
 	$('#add').click(function(){Add();});
 });
 
+document.documentElement.setAttribute('lang', GetMessageText('lang'));
+
 window.onload = ShowFeeds;
 
 function Add()
 {
-	var title = document.getElementById("newTitle").value;
-	var url = document.getElementById("newUrl").value;
-	var group = document.getElementById("newGroup").value;
-	var maxItems = document.getElementById("newMaxItems").value;
-	var order = document.getElementById("newOrder").value;
-	var excludeUnreadCount = document.getElementById("newExcludeUnreadCount").selectedIndex;
-	var key = null;
-	var maxOrder = 0;
-	var itemOrder = 0;
+	let title = document.getElementById("newTitle").value;
+	let url = document.getElementById("newUrl").value;
+	let group = document.getElementById("newGroup").value;
+	let maxItems = document.getElementById("newMaxItems").value;
+	let order = document.getElementById("newOrder").value;
+	let excludeUnreadCount = document.getElementById("newExcludeUnreadCount").selectedIndex;
+	let maxOrder = 0;
+	let itemOrder = 0;
 
 	if(!IsValid(title, url, group, maxItems, order)) {
 		return;
@@ -26,7 +27,7 @@ function Add()
 
 	AddRow(feeds.push(CreateNewFeed(title, url, group, maxItems, order, excludeUnreadCount)) - 1);
 
-	for(feedKey in feeds) {
+	for(let feedKey in feeds) {
 		itemOrder = parseInt(feeds[feedKey].order, 10);
 
 		if(itemOrder > maxOrder) {
@@ -70,7 +71,11 @@ function IsValid(title, url, group, maxItems, order)
 		return false;
 	}
 
-	if(order == "") {
+	if (order == null) {
+		return true;
+	}
+
+	if (order == "") {
 		alert(GetMessageText("manageAlertOrder"));
 		return false;
 	}
@@ -85,12 +90,12 @@ function IsValid(title, url, group, maxItems, order)
 
 function AddRow(feedKey)
 {
-	var grid = null;
-	var row = null;
-	var input = null;
-	var button = null;
-	var optionon = null;
-	var optionoff = null;
+	let grid;
+	let row;
+	let input;
+	let button;
+	let optionon;
+	let optionoff;
 
 	grid = document.getElementById("feedGrid");
 	row = grid.insertRow(grid.rows.length);

@@ -52,7 +52,7 @@ function ItemIsRead(feedID, itemID) {
 }
 
 function GetFeedInfoItem(feedID, itemIndex) {
-    var feedGroupInfo = feedInfo[feedID];
+    let feedGroupInfo = feedInfo[feedID];
 
     if (feedGroupInfo == null) {
         feedGroupInfo = feedInfo[groupInfo[feedID].items[itemIndex].idOrigin].items.find(function (el) {

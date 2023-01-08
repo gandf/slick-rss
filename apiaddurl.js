@@ -3,46 +3,19 @@ $(document).ready(function()
 	$('#close').click(function(){window.close();});
 });
 
+document.documentElement.setAttribute('lang', GetMessageText('lang'));
+
 window.onload = ShowFeeds;
-
-function IsValid(title, url, group, maxItems)
-{
-	if(title == "")	{
-		alert(GetMessageText("manageAlertTitle"));
-		return false;
-	}
-
-	if(url == "")	{
-		alert(GetMessageText("manageAlertUrl"));
-		return false;
-	}
-
-	if(maxItems == "")	{
-		alert(GetMessageText("manageAlertMaxItemsEmpty"));
-		return false;
-	}
-
-	if(maxItems == "0")	{
-		alert(GetMessageText("manageAlertMaxItemsZero"));
-		return false;
-	}
-
-	if(!/^\d+$/.test(maxItems))	{
-		alert(GetMessageText("manageAlertMaxItemsNotItem1") + maxItems + GetMessageText("manageAlertMaxItemsNotItem2"));
-		return false;
-	}
-
-	return true;
-}
 
 function AddRow(feedKey)
 {
-	var grid = null;
-	var row = null;
-	var input = null;
-	var button = null;
-	var optionon = null;
-	var optionoff = null;
+	let grid;
+	let row;
+	let input;
+	let button;
+	let optionon;
+	let optionoff;
+	let select;
 
 	grid = document.getElementById("feedGrid");
 	row = grid.insertRow(grid.rows.length);
@@ -106,7 +79,7 @@ function AddRow(feedKey)
 	$(button).click({id:feedKey}, function(event)
 	{
 		this.style.display = "none";
-		var rowData = document.getElementById("title" + feedKey);
+		let rowData = document.getElementById("title" + feedKey);
 		feeds[feedKey].title = rowData.value;
 		rowData = document.getElementById("url" + feedKey);
 		feeds[feedKey].url = rowData.value;
@@ -117,7 +90,7 @@ function AddRow(feedKey)
 		rowData = document.getElementById("excludeUnreadCount" + feedKey);
 		feeds[feedKey].excludeUnreadCount = rowData.selectedIndex;
 
-		if (IsValid(feeds[feedKey].title, feeds[feedKey].url, feeds[feedKey].group, feeds[feedKey].maxitems)) {
+		if (IsValid(feeds[feedKey].title, feeds[feedKey].url, feeds[feedKey].group, feeds[feedKey].maxitems, null)) {
 			chrome.runtime.sendMessage({type: "addFeed",  feedData: {title: feeds[feedKey].title, url: feeds[feedKey].url, group: feeds[feedKey].group, maxItems: feeds[feedKey].maxitems, excludeUnreadCount: feeds[feedKey].excludeUnreadCount}}).then(function(){
 
 			});
@@ -134,15 +107,15 @@ function ShowFeeds()
 		} else {
 			disableDarkMode();
 		}
-		var idCount = 0;
+		let idCount = 0;
 		chrome.runtime.sendMessage({"type": "getApiUrlToAdd" }).then(function(data){
 			if (data != undefined) {
-				var feedsToLoad = GetObjectFromStr(data);
+				let feedsToLoad = GetObjectFromStr(data);
 				feedsToLoad.forEach(feedToLoad => {
 					feeds.push(CreateNewFeed((feedToLoad.Title == undefined) ? "" : feedToLoad.Title, feedToLoad.Url, (feedToLoad.Group == undefined) ? "" : feedToLoad.Group, options.maxitems, 0, 0, idCount));
 					idCount++;
 				});
-				for(feedKey in feeds)
+				for(let feedKey in feeds)
 				{
 					AddRow(feedKey);
 				}

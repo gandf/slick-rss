@@ -1,15 +1,11 @@
 var promiseUpgrade = null;
 var promiseGetUnreadCounts = null;
-var promiseGetReadLaterItems = null;
-var promiseExternalRequest = null;
 var checkingForUnread = false;
-var checkForUnreadTimerID = null;
 var checkForUnreadCounter = 0;
 var allFeedsUnreadCounter = -1;
 var checkForUnreadFeeds = [];
 var getFeedsCallBack = null;
 var refreshFeed = false;
-var viewPortTabID = null;
 var referenceDate = GetDate("Thu, 31 Dec 2019 23:59:59 +0000").getTime();
 var viewerPortTabID = null;
 var apiaddurlTabID = null;
@@ -29,8 +25,7 @@ waitOptionReady().then(function () {
         promiseGetUnreadCounts = GetUnreadCounts();
         waitGetUnreadCounts().then(function () {
             GetFeeds(function () {
-                var promiseCleanUpUnreadOrphans = CleanUpUnreadOrphans();
-                promiseCleanUpUnreadOrphans.then(function(){
+                CleanUpUnreadOrphans().then(function () {
                     CheckForUnreadStart();
                 });
             });
@@ -39,30 +34,22 @@ waitOptionReady().then(function () {
 });
 
 async function waitUpgrade() {
-    return start = await Promise.allSettled([promiseUpgrade]);
+    return await Promise.allSettled([promiseUpgrade]);
 }
 
 async function waitGetUnreadCounts() {
-    return start = await Promise.allSettled([promiseGetUnreadCounts]);
-}
-
-async function waitGetReadLaterItems() {
-    return start = await Promise.allSettled([promiseGetReadLaterItems]);
+    return await Promise.allSettled([promiseGetUnreadCounts]);
 }
 
 async function waitPromise(listPromiseToWait) {
-    return start = await Promise.allSettled([listPromiseToWait]);
+    return await Promise.allSettled([listPromiseToWait]);
 }
 
-async function waitExternalRequest() {
-    return start = await Promise.allSettled([promiseExternalRequest]);
-}
-
-function AlarmRing(alarm){
+function AlarmRing(alarm) {
     if (alarm.name == 'CheckForUnread') {
         try {
             CheckForUnreadStart();
-        } catch(e){
+        } catch (e) {
             if (options.log) {
                 console.log(e);
             }
@@ -82,8 +69,7 @@ function InternalConnection(port) {
 
 // tells viewer to reload, a feed changed
 function ReloadViewer() {
-    var promiseCleanUpUnreadOrphans = CleanUpUnreadOrphans();
-    promiseCleanUpUnreadOrphans.then(function() {
+    CleanUpUnreadOrphans().then(function () {
         if (viewerPort != null) {
             viewerPort.postMessage({type: "feedschanged"});
         }
@@ -103,7 +89,7 @@ function ButtonClicked(tab) {
     }
 }
 
-function RefreshViewer(){
+function RefreshViewer() {
     chrome.tabs.query({url: chrome.runtime.getURL("viewer.html")}, function (tabs) {
         if (tabs != null) {
             if (tabs.length > 0) {
@@ -111,7 +97,7 @@ function RefreshViewer(){
                     viewerPortTabID = tabs[0].id;
                     chrome.tabs.reload(viewerPortTabID, {bypassCache: true});
                 } else {
-                    for(tab in tabs) {
+                    for (tab in tabs) {
                         if (tab.id == viewerPortTabID) {
                             chrome.tabs.reload(viewerPortTabID, {bypassCache: true});
                             break;
@@ -124,7 +110,7 @@ function RefreshViewer(){
 }
 
 function ExternalRequest(request, sender, sendResponse) {
-    var now;
+    let now;
     if (options.log) {
         now = new Date();
         console.log(request.type);
@@ -136,13 +122,12 @@ function ExternalRequest(request, sender, sendResponse) {
     }
 
     if (request.type == "deletefeed") {
-        for (var i = 0; i < feeds.length; i++) {
+        for (let i = 0; i < feeds.length; i++) {
             if (feeds[i].url == request.url) {
                 feeds.splice(i, 1);
             }
         }
-        resultPromise = store.setItem('feeds', feeds.filter(filterByID));
-        resultPromise.then(function(){
+        store.setItem('feeds', feeds.filter(filterByID)).then(function () {
             UpdateGroups();
             ReloadViewer();
         });
@@ -175,8 +160,7 @@ function ExternalRequest(request, sender, sendResponse) {
                     }
                 }
             }
-        }
-        else {
+        } else {
             if (viewerPort != null) {
                 viewerPort.postMessage({type: "feedupdatecomplete", id: feeds[request.selectedFeedKey].id});
             }
@@ -189,15 +173,15 @@ function ExternalRequest(request, sender, sendResponse) {
     }
 
     if ((request.type == "setUnreadInfo") || (request.type == "unsetUnreadInfo")) {
-        var groupToCalc = [];
-        var updated = false;
+        let groupToCalc = [];
+        let updated = false;
         if (request.data != undefined) {
-            var listUnread = GetObjectFromStr(request.data);
-            var keys = Object.keys(listUnread);
-            var k;
-            var typeReq = (request.type == "setUnreadInfo");
-            var currentFeed = {group: "", id: 0};
-            for (var i = 0; i < keys.length; i++) {
+            let listUnread = GetObjectFromStr(request.data);
+            let keys = Object.keys(listUnread);
+            let k;
+            let typeReq = (request.type == "setUnreadInfo");
+            let currentFeed = {group: "", id: 0};
+            for (let i = 0; i < keys.length; i++) {
                 k = listUnread[keys[i]].id;
                 if (typeReq) {
                     if (unreadInfo[k] != undefined) {
@@ -212,7 +196,7 @@ function ExternalRequest(request, sender, sendResponse) {
                             });
                         }
                         if (currentFeed.group != "") {
-                            for (var j = 0; j < groups.length; j++) {
+                            for (let j = 0; j < groups.length; j++) {
                                 if (groups[j].group == currentFeed.group) {
                                     if (!groupToCalc.includes(j)) {
                                         groupToCalc.push(j);
@@ -232,7 +216,7 @@ function ExternalRequest(request, sender, sendResponse) {
                         });
                     }
                     if (currentFeed.group != "") {
-                        for (var j = 0; j < groups.length; j++) {
+                        for (let j = 0; j < groups.length; j++) {
                             if (groups[j].group == currentFeed.group) {
                                 if (!groupToCalc.includes(j)) {
                                     groupToCalc.push(j);
@@ -251,7 +235,7 @@ function ExternalRequest(request, sender, sendResponse) {
 
         sendResponse({});
         if (groupToCalc.length > 0) {
-            for (var i = 0; i < groupToCalc.length; i++) {
+            for (let i = 0; i < groupToCalc.length; i++) {
                 CalcGroupCountUnread(groupToCalc[i]);
             }
         }
@@ -301,7 +285,12 @@ function ExternalRequest(request, sender, sendResponse) {
     }
 
     if (request.type == "getFeedsAndGroupsInfo") {
-        sendResponse(JSON.stringify({"feeds": GetStrFromObject(feeds), "feedInfo": GetStrFromObject(feedInfo), "groups": GetStrFromObject(groups), "groupInfo": GetStrFromObject(groupInfo)}));
+        sendResponse(JSON.stringify({
+            "feeds": GetStrFromObject(feeds),
+            "feedInfo": GetStrFromObject(feedInfo),
+            "groups": GetStrFromObject(groups),
+            "groupInfo": GetStrFromObject(groupInfo)
+        }));
         if (options.log) {
             console.log('|getFeedsAndGroupsInfo | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
         }
@@ -309,7 +298,7 @@ function ExternalRequest(request, sender, sendResponse) {
     }
 
     if (request.type == "getGroupCountUnread") {
-        var found = false;
+        let found = false;
         if (request.data != null) {
             if (groups[request.data] != undefined) {
                 if (groups[request.data].unreadCount != undefined) {
@@ -347,7 +336,7 @@ function ExternalRequest(request, sender, sendResponse) {
     }
 
     if (request.type == "refreshOptionsAndRefreshFeeds") {
-        GetOptions().then(function() {
+        GetOptions().then(function () {
             if (readlaterInfo[readLaterFeedID] != undefined) {
                 readlaterInfo[readLaterFeedID].title = GetMessageText("backReadLater");
                 readlaterInfo[readLaterFeedID].description = GetMessageText("backItemsMarkedReadLater");
@@ -371,7 +360,7 @@ function ExternalRequest(request, sender, sendResponse) {
     if (request.type == "importFeeds") {
         if (request.data != undefined) {
             feeds = GetObjectFromStr(request.data);
-            store.setItem('feeds', feeds.filter(filterByID)).then(function() {
+            store.setItem('feeds', feeds.filter(filterByID)).then(function () {
                 GetFeeds(function () {
                     CheckForUnreadStart();
                 });
@@ -397,19 +386,19 @@ function ExternalRequest(request, sender, sendResponse) {
         sendResponse();
 
         if (request.feedData != undefined) {
-            var maxOrderFeed = 1;
-            var itemOrder;
+            let maxOrderFeed = 1;
+            let itemOrder;
 
-            for(feedKey in feeds) {
+            for (feedKey in feeds) {
                 itemOrder = parseInt(feeds[feedKey].order, 10);
 
-                if(itemOrder > maxOrderFeed) {
+                if (itemOrder > maxOrderFeed) {
                     maxOrderFeed = itemOrder;
                 }
             }
             maxOrderFeed++;
             feeds.push(CreateNewFeed(request.feedData.title, request.feedData.url, request.feedData.group, request.feedData.maxItems, maxOrderFeed, request.feedData.excludeUnreadCount, null));
-            store.setItem('feeds', feeds.filter(filterByID)).then(function() {
+            store.setItem('feeds', feeds.filter(filterByID)).then(function () {
                 GetFeeds(function () {
                     CheckForUnreadStart();
                 });
@@ -418,9 +407,7 @@ function ExternalRequest(request, sender, sendResponse) {
         if (options.log) {
             console.log('|addFeed | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
         }
-        return;
     }
-
 }
 
 function ApiRequest(request, sender, sendResponse) {
@@ -435,7 +422,7 @@ function ApiRequest(request, sender, sendResponse) {
     }
 
     if (request.feedUrl != undefined) {
-        var existingFeed = feeds.find(function (el) {
+        let existingFeed = feeds.find(function (el) {
             return (el.url == request.feedUrl);
         });
         if (existingFeed != undefined) {
@@ -443,9 +430,9 @@ function ApiRequest(request, sender, sendResponse) {
             return;
         }
 
-        var feedurl = request.feedUrl;
-        var feedTitle = request.feedTitle;
-        var feedGroup = request.feedGroup;
+        let feedurl = request.feedUrl;
+        let feedTitle = request.feedTitle;
+        let feedGroup = request.feedGroup;
         if (typeof feedurl != "string") {
             sendResponse({status: "bad request"});
             return;
@@ -490,7 +477,7 @@ function GetFeeds(callBack) {
     feeds = [];
     getFeedsCallBack = callBack;
 
-    store.getItem('feeds').then(function(datafeeds) {
+    store.getItem('feeds').then(function (datafeeds) {
         if (datafeeds != null) {
             datafeeds.forEach(datafeed => {
                 if (datafeed.excludeUnreadCount == undefined) {
@@ -511,9 +498,8 @@ function GetFeeds(callBack) {
 
 // as this project gets larger there will be upgrades to storage items this will help
 function DoUpgrades() {
-    var lastVersion = parseFloat(options.lastversion);
-    var listPromise = [];
-    var resultPromise = null;
+    let lastVersion = parseFloat(options.lastversion);
+    let listPromise = [];
 
     // update the last version to now
     if (options.lastversion != manifest.version) {
@@ -521,7 +507,7 @@ function DoUpgrades() {
         listPromise.push(store.setItem('options', options));
     }
 
-    resultPromise = Promise.allSettled(listPromise);
+    let resultPromise = Promise.allSettled(listPromise);
 
     chrome.tabs.query({url: chrome.runtime.getURL("apiaddurl.html")}, function (tab) {
         if (tab.length > 0) {
@@ -547,7 +533,7 @@ function CheckForUnreadStart(key) {
 
     if (key == null) {
         checkForUnreadFeeds = Array(feeds.length).fill(false);
-        for (var i = 0; i < feeds.length; i++) {
+        for (let i = 0; i < feeds.length; i++) {
             if ((feeds[i].id == readLaterFeedID) || (feeds[i].id == allFeedsID)) {
                 checkForUnreadFeeds[i] = true;
             }
@@ -562,7 +548,7 @@ function CheckForUnreadStart(key) {
 
     // keep timer going on "refresh"
     if (key == null) {
-        chrome.alarms.get('CheckForUnread', function(alarm) {
+        chrome.alarms.get('CheckForUnread', function (alarm) {
             if (typeof alarm === 'undefined' || alarm.name !== 'CheckForUnread') {
                 if ((options.checkinterval == 0) || (options.checkinterval == null)) {
                     options.checkinterval = 60;
@@ -598,7 +584,7 @@ function CheckForUnread(checkForUnreadCounterID) {
 
     // initialize unread object if not setup yet
     if (unreadInfo == undefined) {
-        unreadInfo = { };
+        unreadInfo = {};
     }
     if (unreadInfo[feedID] == undefined) {
         unreadInfo[feedID] = {unreadtotal: 0, readitems: {}};
@@ -608,18 +594,28 @@ function CheckForUnread(checkForUnreadCounterID) {
 
     if (feedID == readLaterFeedID) {
         CheckNextRead();
-    }
-    else {
-        var oldFeedInfoItems = [];
+    } else {
+        let oldFeedInfoItems = [];
         if (feedInfo[feedID] != undefined) {
             if (feedInfo[feedID].items != undefined) {
-                for (var i = 0; i < feedInfo[feedID].items.length; i++) {
+                for (let i = 0; i < feedInfo[feedID].items.length; i++) {
                     oldFeedInfoItems.push(feedInfo[feedID].items[i].itemID);
                 }
             }
         }
 
-        feedInfo[feedID] = {title: "", description: "", group: "", loading: true, items: [], error: "", errorContent: "", showErrorContent: false,guid:"", image:""};
+        feedInfo[feedID] = {
+            title: "",
+            description: "",
+            group: "",
+            loading: true,
+            items: [],
+            error: "",
+            errorContent: "",
+            showErrorContent: false,
+            guid: "",
+            image: ""
+        };
 
         try {
             if (options.log) {
@@ -633,21 +629,21 @@ function CheckForUnread(checkForUnreadCounterID) {
                     'Content-Type': 'text/xml',
                     'Accept-Charset': 'utf-8'
                 },
-            }).then(function(response) {
+            }).then(function (response) {
+                let dtfetch;
                 if (options.log) {
                     //>>Profiler
-                    var dtfetch = new Date();
+                    dtfetch = new Date();
                     console.log('| |FETCH | ' + dtfetch.toLocaleString() + ' ' + dtfetch.getMilliseconds() + 'ms');
                     console.log('|x|Time FETCH | ' + FormatDTWithMs(dtfetch.getTime() - now.getTime()));
                     //<<Profiler
                 }
 
                 if (!response.ok) {
-                    response.arrayBuffer().then(function(data) {
+                    response.arrayBuffer().then(function (data) {
                         feedInfo[feedID].loading = false;
                         feedInfo[feedID].error = 'Looks like there was a problem. Status Code: ' + response.status;
-                        var doc = DecodeText(data);
-                        feedInfo[feedID].errorContent = doc;
+                        feedInfo[feedID].errorContent = DecodeText(data);
                         feedInfo[feedID].showErrorContent = true;
                         CheckReadFinish(checkForUnreadCounterID);
                     });
@@ -659,26 +655,26 @@ function CheckForUnread(checkForUnreadCounterID) {
                     feeds[checkForUnreadCounterID].urlredirected = undefined;
                 }
                 status = response.status;
-                response.arrayBuffer().then(function(data) {
+                response.arrayBuffer().then(function (data) {
+                    let dt;
                     if (options.log) {
                         //>>Profiler
-                        var dt = new Date();
+                        dt = new Date();
                         console.log('|x|Response to buffer | ' + FormatDTWithMs(dt - dtfetch));
                         //<<Profiler
                     }
-                    var doc = DecodeText(data);
+                    let doc = DecodeText(data);
 
                     if ((status >= 200) && (status <= 299)) {
                         if (doc) {
-                            var readItemCount = 0;
+                            let readItemCount = 0;
                             var item = null;
-                            var entryID = null;
                             var entryIDs = {};
-                            var entries = GetElementsByTagNameJS(doc, [], "entry", "item");
-                            var feedPresent = false;
-                            var rootNode = GetElementByTagNameJS(doc, null, "rss", "rdf:RDF");
+                            var entries = GetElementByTagNameJS(doc, [], true, "entry", "item");
+                            let feedPresent = false;
+                            let rootNode = GetElementByTagNameJS(doc, null, false, "rss", "rdf:RDF");
                             if (rootNode == null) {
-                                rootNode = GetElementByTagNameJS(doc, null, "feed");
+                                rootNode = GetElementByTagNameJS(doc, null, false, "feed");
                                 if (rootNode != null) {
                                     feedPresent = true;
                                 }
@@ -693,18 +689,16 @@ function CheckForUnread(checkForUnreadCounterID) {
                                 return;
                             }
 
-                            var author = null;
-                            var authorTemp = null;
-                            var name = null;
-                            var thumbnail = null;
-                            var thumbnailurl = null;
-                            var thumbnailtype = null;
-                            var thumbnailNode = null;
-                            var dummyDate = null;
+                            let author = null;
+                            let authorTemp = null;
+                            let thumbnail = null;
+                            let thumbnailurl = null;
+                            let thumbnailtype = null;
+                            let dummyDate = null;
                             var keys = null
-                            var useDateInID = true;
-                            var getDummyDate = true;
-                            var previousToCheck = new Array();
+                            let useDateInID = true;
+                            let getDummyDate = true;
+                            var previousToCheck = [];
 
                             if (rootNode != null) {
                                 rootNode = RemoveTag(rootNode, "entry", "item");
@@ -714,7 +708,7 @@ function CheckForUnread(checkForUnreadCounterID) {
                                     feedInfo[feedID].image = SearchTag(rootNode, null, ["IMAGE"], 0);
                                     feedInfo[feedID].date = SearchTag(rootNode, null, ["PUBDATE", "UPDATED", "DC:DATE", "DATE", "PUBLISHED"], 0);
                                 } else {
-                                    var channel = SearchTag(rootNode, null, ["CHANNEL"], 0);
+                                    let channel = SearchTag(rootNode, null, ["CHANNEL"], 0);
 
                                     if (channel != null) {
                                         feedInfo[feedID].title = SearchTag(channel, null, ["TITLE"], 0);
@@ -724,27 +718,25 @@ function CheckForUnread(checkForUnreadCounterID) {
                                     }
                                 }
                                 if (feedInfo[feedID].date != undefined) {
-                                    if (typeof(feedInfo[feedID].date)  != "string") {
+                                    if (typeof (feedInfo[feedID].date) != "string") {
                                         keys = Object.keys(feedInfo[feedID].date);
-                                        for (var k = 0; k < keys.length; k++) {
-                                            if (typeof(feedInfo[feedID].date[keys[k]]) == "string") {
+                                        for (let k = 0; k < keys.length; k++) {
+                                            if (typeof (feedInfo[feedID].date[keys[k]]) == "string") {
                                                 try {
                                                     feedInfo[feedID].date = new Date(feedInfo[feedID].date[keys[k]]);
-                                                }
-                                                catch {
+                                                } catch {
                                                     feedInfo[feedID].date = feedInfo[feedID].date[keys[k]];
                                                 }
                                                 break;
                                             }
                                         }
                                     }
-                                }
-                                else {
+                                } else {
                                     feedInfo[feedID].date = Date.now();
                                 }
                             }
 
-                            for (var e = 0; e < entries.length; e++) {
+                            for (let e = 0; e < entries.length; e++) {
                                 useDateInID = true;
                                 getDummyDate = true;
                                 item = {};
@@ -758,8 +750,7 @@ function CheckForUnread(checkForUnreadCounterID) {
                                         item.date = new Date(feedInfo[feedID].date - e);
                                         dummyDate = item.date;
                                         getDummyDate = false;
-                                    }
-                                    catch {
+                                    } catch {
                                         item.date = undefined;
                                     }
                                     useDateInID = false;
@@ -770,12 +761,10 @@ function CheckForUnread(checkForUnreadCounterID) {
                                 item.idOrigin = feedID;
                                 item.updated = false;
                                 item.guid = SearchTag(entries[e], "", ["GUID"], 0);
-                                if (item.guid == "")
-                                {
+                                if (item.guid == "") {
                                     item.guid = SearchTag(entries[e], "", ["ID"], 0);
                                 }
-                                if (item.guid == "")
-                                {
+                                if (item.guid == "") {
                                     item.guid = null;
                                 }
                                 if (item.guid != undefined) {
@@ -798,8 +787,7 @@ function CheckForUnread(checkForUnreadCounterID) {
                                     } else {
                                         item.itemID = sha256(item.title);
                                     }
-                                }
-                                else {
+                                } else {
                                     item.itemID = sha256(item.guid);
                                 }
                                 thumbnailurl = null;
@@ -844,7 +832,7 @@ function CheckForUnread(checkForUnreadCounterID) {
                                     thumbnail = SearchTag(entries[e], null, ["ENCLOSURE", "MEDIA:GROUP"], 0);
                                     if (thumbnail != null) {
                                         keys = Object.keys(thumbnail);
-                                        for (var k = 0; k < thumbnail.length; k++) {
+                                        for (let k = 0; k < thumbnail.length; k++) {
                                             if (thumbnail[k].length > 0) {
                                                 if (thumbnail[k].constructor === Array) {
                                                     thumbnail = thumbnail[k];
@@ -853,7 +841,7 @@ function CheckForUnread(checkForUnreadCounterID) {
                                             } else {
                                                 if (thumbnail[k]['url'] != undefined) {
                                                     if (typeof thumbnail[k]['url'] == "string") {
-                                                        thumbnail = thumbnail;
+                                                        thumbnail = thumbnail[k]['url'];
                                                         break;
                                                     } else {
                                                         delete thumbnail[k];
@@ -865,21 +853,21 @@ function CheckForUnread(checkForUnreadCounterID) {
                                         }
 
                                         keys = Object.keys(thumbnail);
-                                        var thumbtemp = [];
-                                        for (var k = 0; k < keys.length; k++) {
+                                        let thumbtemp = [];
+                                        for (let k = 0; k < keys.length; k++) {
                                             thumbtemp[k] = thumbnail[keys[k]];
                                         }
                                         thumbnail = thumbtemp;
 
-                                        for (var k = 0; k < thumbnail.length; k++) {
+                                        for (let k = 0; k < thumbnail.length; k++) {
                                             keys = Object.keys(thumbnail[k]);
-                                            var val = Object.values(thumbnail[k]);
-                                            for (var j = 0; j < keys.length; j++) {
+                                            let val = Object.values(thumbnail[k]);
+                                            for (let j = 0; j < keys.length; j++) {
                                                 if (keys[j].toUpperCase() == "MEDIA:CONTENT") {
-                                                    for (var n1 = 0; n1 < val[j].length; n1++) {
-                                                        var keys2 = Object.keys(val[j][n1]);
-                                                        var val2 = Object.values(val[j][n1]);
-                                                        for (var n2 = 0; n2 < keys2.length; n2++) {
+                                                    for (let n1 = 0; n1 < val[j].length; n1++) {
+                                                        let keys2 = Object.keys(val[j][n1]);
+                                                        let val2 = Object.values(val[j][n1]);
+                                                        for (let n2 = 0; n2 < keys2.length; n2++) {
                                                             if (keys2[n2].toUpperCase() == "MEDIA:DESCRIPTION") {
                                                                 if (CleanText(val2[n2]).includes("thumbnail")) {
                                                                     if (thumbnail[k][":@"] != undefined) {
@@ -903,16 +891,16 @@ function CheckForUnread(checkForUnreadCounterID) {
                                                                 if (item.content == null) {
                                                                     if (thumbnail[k][":@"]["url"].includes("youtube")) {
                                                                         if (!thumbnail[k][":@"]["url"].includes("youtube-nocookie")) {
-                                                                        thumbnail[k][":@"]["url"] = thumbnail[k][":@"]["url"].replaceAll('youtube', 'youtube-nocookie');
+                                                                            thumbnail[k][":@"]["url"] = thumbnail[k][":@"]["url"].replaceAll('youtube', 'youtube-nocookie');
                                                                         }
                                                                         if (thumbnail[k][":@"]["url"].includes("/v/")) {
                                                                             thumbnail[k][":@"]["url"] = thumbnail[k][":@"]["url"].replaceAll('/v/', '/embed/');
                                                                         }
                                                                     }
                                                                     if (item.content != null) {
-                                                                        item.content = item.content + '<iframe src="' + thumbnail[k][":@"]["url"] + '" title="Video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+                                                                        item.content = item.content + '<iframe src="' + thumbnail[k][":@"]["url"] + '" title="Video player" frameborder="0" style="border: 0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
                                                                     } else {
-                                                                        item.content = '<iframe src="' + thumbnail[k][":@"]["url"] + '" title="Video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+                                                                        item.content = '<iframe src="' + thumbnail[k][":@"]["url"] + '" title="Video player" frameborder="0" style="border: 0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
                                                                     }
                                                                     break;
                                                                 }
@@ -948,11 +936,10 @@ function CheckForUnread(checkForUnreadCounterID) {
                                     } else {
                                         thumbnail = SearchTag(entries[e], null, ["MEDIA:CONTENT"], 0);
                                         if (thumbnail != null) {
-                                            for (var n1 = 0; n1 < thumbnail.length; n1++) {
+                                            for (let n1 = 0; n1 < thumbnail.length; n1++) {
                                                 if (thumbnail[n1][0] != undefined) {
-                                                    var keys2 = Object.keys(thumbnail[n1][0]);
-                                                    var val2 = Object.values(thumbnail[n1][0]);
-                                                    for (var n2 = 0; n2 < keys2.length; n2++) {
+                                                    let keys2 = Object.keys(thumbnail[n1][0]);
+                                                    for (let n2 = 0; n2 < keys2.length; n2++) {
                                                         if (keys2[n2].toUpperCase() == "MEDIA:THUMBNAIL") {
                                                             if (thumbnail[n1][0][":@"] != undefined) {
                                                                 if (thumbnail[n1][0][":@"]["url"] != undefined) {
@@ -971,7 +958,7 @@ function CheckForUnread(checkForUnreadCounterID) {
                                                 }
                                             }
                                             if (thumbnailurl == null) {
-                                                for (var n1 = 0; n1 < thumbnail.length; n1++) {
+                                                for (let n1 = 0; n1 < thumbnail.length; n1++) {
                                                     if ((thumbnail[n1]["url"] != undefined) && (thumbnail[n1]["medium"] != undefined)) {
                                                         if (thumbnail[n1]["medium"] == "image") {
                                                             thumbnailurl = thumbnail[n1]["url"];
@@ -1006,10 +993,9 @@ function CheckForUnread(checkForUnreadCounterID) {
                                 if (getDummyDate) {
                                     dummyDate = GetDate(item.date);
                                 }
-                                if(dummyDate != null) {
+                                if (dummyDate != null) {
                                     item.order = dummyDate.getTime() - referenceDate;
-                                }
-                                else {
+                                } else {
                                     item.order = referenceDate;
                                 }
 
@@ -1019,15 +1005,18 @@ function CheckForUnread(checkForUnreadCounterID) {
                                         //Next to check
                                         previousToCheck.push(item.itemID);
                                     } else {
-                                        for (var key in previousToCheck) {
-                                            var result = feedInfo[feedID].items.find(obj => {
-                                              return obj.itemID === previousToCheck[key]
-                                            })
-                                            if (result != undefined) {
-                                                result.updated = true;
-                                            }
+                                        for (let key in previousToCheck) {
+                                            (function () {
+                                                let keyp = key;
+                                                let result = feedInfo[feedID].items.find(obj => {
+                                                    return obj.itemID === previousToCheck[keyp]
+                                                })
+                                                if (result != undefined) {
+                                                    result.updated = true;
+                                                }
+                                            })();
                                         }
-                                        previousToCheck = new Array();
+                                        previousToCheck = [];
                                     }
                                 }
 
@@ -1039,7 +1028,7 @@ function CheckForUnread(checkForUnreadCounterID) {
                             if ((unreadInfo[feedID] == undefined) || (unreadInfo[feedID] == null)) {
                                 unreadInfo[feedID] = {unreadtotal: 0, readitems: {}};
                             } else {
-                                for (var key in unreadInfo[feedID].readitems) {
+                                for (let key in unreadInfo[feedID].readitems) {
                                     if (entryIDs[key] == null) {
                                         // if the read item isn't in the current feed and it's past it's expiration date, nuke it
                                         if (now > new Date(unreadInfo[feedID].readitems[key])) {
@@ -1059,7 +1048,7 @@ function CheckForUnread(checkForUnreadCounterID) {
                     }
                     promiseCheckForUnread.push(store.setItem('unreadinfo', unreadInfo));
 
-                    for (var i = 0; i < feedInfo[feedID].items.length; i++) {
+                    for (let i = 0; i < feedInfo[feedID].items.length; i++) {
                         if (!oldFeedInfoItems.includes(feedInfo[feedID].items[i].itemID)) {
                             newNotif = true;
                             break;
@@ -1072,7 +1061,7 @@ function CheckForUnread(checkForUnreadCounterID) {
 
                     if (options.log) {
                         //>>Profiler
-                        var dt2 = new Date();
+                        let dt2 = new Date();
                         console.log('|x|End | ', FormatDTWithMs(dt2 - dt));
                         //<<Profiler
                     }
@@ -1085,14 +1074,13 @@ function CheckForUnread(checkForUnreadCounterID) {
                     });
                 });
             })
-            .catch(function(err) {
-                feedInfo[feedID].loading = false;
-                feedInfo[feedID].error = 'Fetch Error :';
-                feedInfo[feedID].errorContent = `${err.message}`;
-                CheckReadFinish(checkForUnreadCounterID);
-            });
-        }
-        catch (err) {
+                .catch(function (err) {
+                    feedInfo[feedID].loading = false;
+                    feedInfo[feedID].error = 'Fetch Error :';
+                    feedInfo[feedID].errorContent = `${err.message}`;
+                    CheckReadFinish(checkForUnreadCounterID);
+                });
+        } catch (err) {
             feedInfo[feedID].loading = false;
             feedInfo[feedID].error = 'Error :';
             feedInfo[feedID].errorContent = `${err}`;
@@ -1111,7 +1099,7 @@ function CheckNextRead() {
         }
     }
     if (checkForUnreadCounter < feeds.length && !refreshFeed) {
-        setTimeout(function() {
+        setTimeout(function () {
             CheckForUnread(checkForUnreadCounter);
         }, 20);
     }
@@ -1126,10 +1114,14 @@ function CheckReadFinish(checkForUnreadCounterID) {
             if (checkForUnreadFeeds.find(el => el == false) == undefined) {
                 CheckForUnreadComplete();
             } else {
-                UpdateLoadingProgress(checkForUnreadFeeds.filter(function(el){return el == true;}).length, feeds.length);
+                UpdateLoadingProgress(checkForUnreadFeeds.filter(function (el) {
+                    return el == true;
+                }).length, feeds.length);
             }
         } else {
-            UpdateLoadingProgress(checkForUnreadFeeds.filter(function(el){return el == true;}).length, feeds.length);
+            UpdateLoadingProgress(checkForUnreadFeeds.filter(function (el) {
+                return el == true;
+            }).length, feeds.length);
         }
     }
 }
@@ -1139,15 +1131,14 @@ function CheckForUnreadComplete() {
     checkingForUnread = false;
     refreshFeed = false;
 
-    for (var i = 0; i < feeds.length; i++) {
-        if (feedInfo[feeds[i].id] != undefined)
-        {
+    for (let i = 0; i < feeds.length; i++) {
+        if (feedInfo[feeds[i].id] != undefined) {
             SortByDate(feedInfo[feeds[i].id].items);
         }
     }
 
     UpdateGroups();
-    for (var i = 0; i < groups.length; i++) {
+    for (let i = 0; i < groups.length; i++) {
         if (groups[i].id != allFeedsID) {
             CalcGroupCountUnread(i);
         }
@@ -1165,44 +1156,24 @@ function CheckForUnreadComplete() {
     }
 }
 
-// to help with master title & description getting
-function GetNodeTextValue(node, defaultValue) {
-    if (node == null || node.childNodes.length == 0) {
-        return (defaultValue == null) ? "" : defaultValue;
-    }
-
-    var str = "";
-
-    for (var i = 0; i < node.childNodes.length; i++) {
-        if (node.childNodes[i].nodeValue != null) {
-            str += node.childNodes[i].nodeValue;
-        }
-    }
-
-    return str;
-}
-
 function GetFeedLink(node) {
-    var links = SearchTags(node, "", ["LINK"], 0);
-    var lien;
-    var rel;
+    let links = SearchTags(node, "", ["LINK"], 0);
+    let lien;
 
-    for (var i = 0 ; i < links.length ; i++)
-    {
+    for (let i = 0; i < links.length; i++) {
         links[i][0] = CleanText(links[i][0]);
     }
 
     if (links.length == 0) {
         //<guid ispermalink="true(default)"></guid> is yet another way of saying link
-        var guids = SearchTag(node, "", ["GUID"], 0);
+        let guids = SearchTag(node, "", ["GUID"], 0);
 
         if (guids.length == 0) {
             return "";
         }
         guids[0] = CleanText(guids[0]);
         lien = guids[0];
-        if ((guids.length > 1) && (lien.length > 0))
-        {
+        if ((guids.length > 1) && (lien.length > 0)) {
             if ((guids[1]["isPermaLink"] == "false") && (lien.substring(0, 8) != "https://") && (lien.substring(0, 7) != "http://")) {
                 return "";
             }
@@ -1210,14 +1181,14 @@ function GetFeedLink(node) {
         return lien;
     }
 
-    for (var i = 0; i < links.length; i++) {
+    for (let i = 0; i < links.length; i++) {
         // in atom feeds alternate is the default so if something else is there then skip
         lien = links[i];
         if (lien != null) {
-            for (var j = 0; j < lien.length; j++) {
+            for (let j = 0; j < lien.length; j++) {
                 if (lien[j] != null) {
-                    var keys = Object.keys(lien[j]);
-                    for (var k = 0; k < keys.length; k++) {
+                    let keys = Object.keys(lien[j]);
+                    for (let k = 0; k < keys.length; k++) {
                         if (keys[k].toUpperCase() == "HREF") {
                             return lien[j][keys[k]];
                         }
@@ -1227,8 +1198,7 @@ function GetFeedLink(node) {
             if (lien[0] != null) {
                 if (lien[1] == undefined) {
                     return lien[0];
-                }
-                else {
+                } else {
                     if ((lien[1]["rel"] == "alternate") || (lien[1]["rel"] == undefined)) {
                         return lien[0];
                     }
@@ -1240,14 +1210,12 @@ function GetFeedLink(node) {
 }
 
 function GetFeedLink2(node) {
-    var links = SearchTags(node, "", ["LINK"], 0);
-    var lien;
-    var rel;
+    let links = SearchTags(node, "", ["LINK"], 0);
+    let lien;
+    let rel;
 
-    for (var i = 0 ; i < links.length ; i++)
-    {
-        for (var j = 0 ; j < links[i].length ; j++)
-        {
+    for (let i = 0; i < links.length; i++) {
+        for (let j = 0; j < links[i].length; j++) {
             if (typeof links[i][j] == "string") {
                 links[i][j] = CleanText(links[i][j]);
             } else {
@@ -1278,29 +1246,29 @@ function CreateNewGroup(title, group, order, id, unreadCount) {
         if (groups.length == 0) {
             order = 1;
         } else {
-            order = Math.max.apply(Math, groups.map(function(o) { return o.order; })) + 1;
+            order = Math.max.apply(Math, groups.map(function (o) {
+                return o.order;
+            })) + 1;
         }
         if (order < 1) {
             order = 1;
         }
     }
-    url = chrome.runtime.getURL("group.html");
-    maxitems = 99999;
 
-    return {title: title, url: url, group: group, maxitems: maxitems, order: order, id: id, unreadCount: unreadCount};
+    return {title: title, url: chrome.runtime.getURL("group.html"), group: group, maxitems: 99999, order: order, id: id, unreadCount: unreadCount};
 }
 
 function UpdateGroups() {
-    var oldgroups = groups;
-    var oldgroupindex;
+    let oldgroups = groups;
+    let oldgroupindex;
     groups = [];
     groupInfo = [];
     if (options.showallfeeds == true) {
         groups.push(GetAllFeedsGroup());
     }
-    for (var i = 0; i < feeds.length; i++) {
+    for (let i = 0; i < feeds.length; i++) {
         if ((feeds[i].id != readLaterFeedID) && (feeds[i].group != "")) {
-            var filteredGroup = groups.find(function (el) {
+            let filteredGroup = groups.find(function (el) {
                 return el.group == feeds[i].group;
             });
             if (filteredGroup == null) {
@@ -1313,13 +1281,13 @@ function UpdateGroups() {
             }
         }
     }
-    for (var i = 0; i < groups.length; i++) {
+    for (let i = 0; i < groups.length; i++) {
         if (groups[i].id != allFeedsID) {
             GetGroupItems(i, groups[i].id, groups[i].title, groups[i].title);
         }
     }
 
-    for (var i = 0; i < groups.length; i++) {
+    for (let i = 0; i < groups.length; i++) {
         if (groups[i].id != allFeedsID) {
             if (groupInfo[groups[i].id] != undefined) {
                 groupInfo[groups[i].id].loading = false;
@@ -1330,8 +1298,8 @@ function UpdateGroups() {
 }
 
 function GetGroupItems(groupIndex, id, title, description) {
-    var info, item;
-    var filteredFeeds = feeds.filter(function (el) {
+    let info, item;
+    let filteredFeeds = feeds.filter(function (el) {
         return (el.group == groups[groupIndex].group) && (el.id != readLaterFeedID);
     });
     if (filteredFeeds != null) {
@@ -1340,13 +1308,20 @@ function GetGroupItems(groupIndex, id, title, description) {
         }
         if ((options.showallfeeds == true) && (id != allFeedsID)) {
             if (groupInfo[allFeedsID] == null) {
-                groupInfo[allFeedsID] = {title: GetMessageText("backAllFeeds"), description: GetMessageText("backAllFeeds"), group: "", loading: true, items: [], error: ""};
+                groupInfo[allFeedsID] = {
+                    title: GetMessageText("backAllFeeds"),
+                    description: GetMessageText("backAllFeeds"),
+                    group: "",
+                    loading: true,
+                    items: [],
+                    error: ""
+                };
             }
         }
-        for (var i = 0; i < filteredFeeds.length; i++) {
+        for (let i = 0; i < filteredFeeds.length; i++) {
             if (feedInfo[filteredFeeds[i].id] != null) {
                 info = feedInfo[filteredFeeds[i].id].items;
-                for (var j = 0; j < info.length; j++) {
+                for (let j = 0; j < info.length; j++) {
                     item = GetNewItem(info[j].title, info[j].date, info[j].order, info[j].content, info[j].idOrigin, info[j].itemID, info[j].url, info[j].author, info[j].thumbnail, info[j].summary, info[j].updated);
                     groupInfo[id].items.push(item);
                     if ((options.showallfeeds == true) && (id != allFeedsID)) {
@@ -1359,13 +1334,25 @@ function GetGroupItems(groupIndex, id, title, description) {
 }
 
 function GetNewItem(title, date, order, content, idOrigin, itemID, url, author, thumbnail, summary, updated) {
-    return {title: title, date: date, order: order, content: content, idOrigin: idOrigin, itemID: itemID, url: url, author: author, thumbnail: thumbnail, summary: summary, updated: updated};
+    return {
+        title: title,
+        date: date,
+        order: order,
+        content: content,
+        idOrigin: idOrigin,
+        itemID: itemID,
+        url: url,
+        author: author,
+        thumbnail: thumbnail,
+        summary: summary,
+        updated: updated
+    };
 }
 
 function CalcGroupCountUnread(key) {
-    var filteredFeeds = GetFeedsFilterByGroup(key);
-    var count = 0;
-    for (var i = 0; i < filteredFeeds.length; i++) {
+    let filteredFeeds = GetFeedsFilterByGroup(key);
+    let count = 0;
+    for (let i = 0; i < filteredFeeds.length; i++) {
         if (unreadInfo[filteredFeeds[i].id] != null) {
             count += unreadInfo[filteredFeeds[i].id].unreadtotal;
         }
@@ -1376,16 +1363,20 @@ function CalcGroupCountUnread(key) {
 
 function UpdateLoadingProgress(currentFeeds, currentFeedsCount) {
     if (viewerPort != null) {
-        viewerPort.postMessage({type: "progressLoading", currentFeeds: currentFeeds, currentFeedsCount: currentFeedsCount});
+        viewerPort.postMessage({
+            type: "progressLoading",
+            currentFeeds: currentFeeds,
+            currentFeedsCount: currentFeedsCount
+        });
     }
 }
 
 function DecodeText(data) {
-    var decoder = new TextDecoder("UTF-8");
-    var doc = decoder.decode(data);
-    var encodeName = doc.substring(0, 400);
-    var textEnc = "encoding=";
-    var indexEnc = encodeName.indexOf(textEnc);
+    let decoder = new TextDecoder("UTF-8");
+    let doc = decoder.decode(data);
+    let encodeName = doc.substring(0, 400);
+    let textEnc = "encoding=";
+    let indexEnc = encodeName.indexOf(textEnc);
 
     if (indexEnc < 0) {
         textEnc = "charset=";
@@ -1401,7 +1392,7 @@ function DecodeText(data) {
     if (encodeName.indexOf(" ") >= 0) {
         encodeName = encodeName.substring(0, encodeName.indexOf(" "));
     }
-    if (encodeName.replaceAll('-', '').toUpperCase() != "UTF8"){
+    if (encodeName.replaceAll('-', '').toUpperCase() != "UTF8") {
         decoder = new TextDecoder(encodeName);
         doc = decoder.decode(data);
     }

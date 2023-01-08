@@ -1,143 +1,22 @@
-[themesize="1"] {
-	--body-font-size: 11px;
-	--header-font-size: 20px;
-	--headerMessage-font-size: smaller;
-	--header-td-td-td-font-size: 14px;
-	--header-a-font-size: 12px;
-	--feedHeader-font-size: 11px;
-	--feedHeader-a-font-size: 12px;
-	--feedsLoading-font-size: small;
-	--feedPreview-font-size: 14px;
-	--feedPreviewContainerRead-a-font-size: 12px;
-	--feedPreviewTitle-a-font-size: 12px;
-	--feedPreviewDate-font-size: smaller;
-	--feedPreviewAuthor-font-size: smaller;
-	--noFeedsManaged-font-size: 12px;
-	--feedError-font-size: 12px;
-	--noItems-font-size: 12px;
-	--dateHelp-font-size: 11px;
-	--input-font-size: 11px;
-	--select-font-size: 11px;
-	--maxItems-width: 25px;
-	--levelSearchTag-width: 20px;
-}
-
-[themesize="2"] {
-	--body-font-size: 15px;
-	--header-font-size: 24px;
-	--headerMessage-font-size: smaller;
-	--header-td-td-td-font-size: 18px;
-	--header-a-font-size: 16px;
-	--feedHeader-font-size: 15px;
-	--feedHeader-a-font-size: 16px;
-	--feedsLoading-font-size: small;
-	--feedPreview-font-size: 19px;
-	--feedPreviewContainerRead-a-font-size: 16px;
-	--feedPreviewTitle-a-font-size: 16px;
-	--feedPreviewDate-font-size: smaller;
-	--feedPreviewAuthor-font-size: smaller;
-	--noFeedsManaged-font-size: 16px;
-	--feedError-font-size: 16px;
-	--noItems-font-size: 16px;
-	--dateHelp-font-size: 15px;
-	--input-font-size: 15px;
-	--select-font-size: 15px;
-	--maxItems-width: 30px;
-	--levelSearchTag-width: 25px;
-}
-
-[themesize="3"] {
-	--body-font-size: 18px;
-	--header-font-size: 27px;
-	--headerMessage-font-size: larger;
-	--header-td-td-td-font-size: 21px;
-	--header-a-font-size: 19px;
-	--feedHeader-font-size: 18px;
-	--feedHeader-a-font-size: 19px;
-	--feedsLoading-font-size: larger;
-	--feedPreview-font-size: 21px;
-	--feedPreviewContainerRead-a-font-size: 19px;
-	--feedPreviewTitle-a-font-size: 19px;
-	--feedPreviewDate-font-size: larger;
-	--feedPreviewAuthor-font-size: larger;
-	--noFeedsManaged-font-size: 19px;
-	--feedError-font-size: 19px;
-	--noItems-font-size: 19px;
-	--dateHelp-font-size: 18px;
-	--input-font-size: 18px;
-	--select-font-size: 18px;
-	--maxItems-width: 36px;
-	--levelSearchTag-width: 30px;
-}
-
-html {
-	height: 100%;
-}
+@import "common-general.css";
 
 body {
-	margin: 0px;
-	padding: 0px;
 	font-family: sans-serif;
 	color: #999FAA;
 	background-color: #292C33;
-	width: 100%;
-	height: 100%;
-}
-
-#app {
-	font-size: var(--body-font-size);
-	height: 100vh;
 }
 
 #header {
-	font-size: var(--header-font-size);
-	/*border-bottom: 1px solid #DEDEDE;*/
 	background-color: #454d5e;
 	color: #999FAA;
 }
 
-#headerMessage span {
-	font-size: var(--headerMessage-font-size);
-}
-
-#header td {
-	width: 1%;
-	vertical-align: middle;
-}
-
-#header tr > td:first-child {
-	min-width: 26px;
-	height: 26px;
-	background-image: url("rss.png");
-	background-repeat: no-repeat;
-	background-position: center;
-	background-size: contain;
-}
-
-#header td + td {
-	width: 98%;
-}
-
 #header td + td + td {
-	text-align: right;
-	white-space: nowrap;
-	font-size: var(--header-td-td-td-font-size);
 	color: #aaa;
-	padding-right: 10px;
 }
 
 #header a {
-	font-size: var(--header-a-font-size);
 	color: #999FAA;
-	text-decoration: none;
-}
-
-#header a:hover {
-	text-decoration: underline;
-}
-
-.center {
-	text-align: center;
 }
 
 button {

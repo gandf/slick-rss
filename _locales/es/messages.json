@@ -619,5 +619,11 @@
   },
   "optionshowsavethisfeed": {
     "message": "Mostrar botón para guardar una alimentación"
+  },
+  "showOneFeedTitle": {
+    "message": "Slick RSS : Mostrar un feed"
+  },
+  "lang": {
+    "message": "es"
   }
 }

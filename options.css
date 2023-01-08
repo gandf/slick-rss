@@ -1,72 +1,17 @@
-﻿#workArea
-{
-	padding: 5px;
-}
-
-#maxItems
-{
-	width: var(--maxItems-width);
-}
-
-#dateFormat
-{
-	width: 300px;
-}
+﻿@import "options-general.css";
 
 #dateHelp
 {
 	background-color: #EEEEEE;
-	position: absolute;
-	font-size: var(--dateHelp-font-size);
 }
 
 #dateHelp th
 {
-	text-align: left;
 	background-color: #DDDDDD;
 }
 
 .optionHeader
 {
 	background-color: #EEEEEE;
-	font-weight: bold;
-}
-#optionTable
-{
-	float: left;
-}
-
-.bold
-{
-	font-weight: bold;
-}
-
-#checkInterval, #markReadAfter
-{
-	width: 30px;
-}
-
-#feedsMaxHeight
-{
-	width: 50px;
-}
-
-#levelSearchTag
-{
-	width: var(--levelSearchTag-width);
-}
-
-#levelSearchTags
-{
-	width: var(--levelSearchTag-width);
-}
-
-input
-{
-	font-size: var(--input-font-size);
-}
-
-select
-{
-	font-size: var(--select-font-size);
+	border:1px solid;
 }

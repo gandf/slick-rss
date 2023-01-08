@@ -8,6 +8,8 @@ $(document).ready(function()
 	});
 });
 
+document.documentElement.setAttribute('lang', GetMessageText('lang'));
+
 waitOptionReady().then(function () {
 	if (options.darkmode) {
 		activeDarkMode();

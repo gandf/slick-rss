@@ -3,7 +3,7 @@ var defaultOptions = GetDefaultOptions();
 var options = defaultOptions;
 var readLaterFeedID = 9999999999;
 var allFeedsID = 9999999998;
-var unreadInfo = { };
+var unreadInfo = {};
 var newNotif = false;
 var viewerPort = null;
 var feedInfo = [];
@@ -22,45 +22,44 @@ readlaterInfo[readLaterFeedID] = {
 };
 
 var promiseOptionBegin = GetOptions();
+
 async function waitOptionReady() {
-    return start = await Promise.allSettled([promiseOptionBegin]);
+    return await Promise.allSettled([promiseOptionBegin]);
 }
 
-function GetStrFromObject(obj){
-  var dataArray = Object.keys(obj).map((key) => [Number(key), obj[key]]);
-  return JSON.stringify(dataArray);
+function GetStrFromObject(obj) {
+    let dataArray = Object.keys(obj).map((key) => [Number(key), obj[key]]);
+    return JSON.stringify(dataArray);
 }
 
-function GetObjectFromStr(dataStr){
-  var result = JSON.parse(dataStr);
+function GetObjectFromStr(dataStr) {
+    let result = JSON.parse(dataStr);
 
-  var keys = Object.keys(result);
-  var removed, j, k0, k1, keys2;
-  for (var i = 0 ; i < keys.length ; i++)
-  {
-    j = keys[i];
-    removed = false;
-    keys2 =  Object.keys(result[j]);
-    k0 = keys2[0];
-    k1 = keys2[1];
-    if ((result[j][k0] != undefined) && (result[j][k1] != undefined)) {
-      if (result[j][k0] != i) {
-        result[result[j][k0]] = result[j][k1];
-        delete result[j];
-        removed = true;
-      }
+    let keys = Object.keys(result);
+    let removed, j, k0, k1, keys2;
+    for (let i = 0; i < keys.length; i++) {
+        j = keys[i];
+        removed = false;
+        keys2 = Object.keys(result[j]);
+        k0 = keys2[0];
+        k1 = keys2[1];
+        if ((result[j][k0] != undefined) && (result[j][k1] != undefined)) {
+            if (result[j][k0] != i) {
+                result[result[j][k0]] = result[j][k1];
+                delete result[j];
+                removed = true;
+            }
+        }
+        if (!removed) {
+            if (result[j][k1] != undefined) {
+                result[j] = result[j][k1];
+            }
+        }
     }
-    if (!removed) {
-      if (result[j][k1] != undefined) {
-        result[j] = result[j][k1];
-      }
-    }
-  }
-  return result
+    return result
 }
 
-function GetMessageText(value)
-{
+function GetMessageText(value) {
     if (options.forcelangen) {
         return chrome.i18n.getMessage('en' + value);
     } else {
@@ -70,7 +69,7 @@ function GetMessageText(value)
 
 // converts the text date into a formatted one if possible
 function GetFormattedDate(txtDate) {
-    var myDate = GetDate(txtDate);
+    let myDate = GetDate(txtDate);
 
     if (myDate == null) {
         return txtDate;
@@ -80,169 +79,176 @@ function GetFormattedDate(txtDate) {
 }
 
 // takes a text date and tries to convert it to a date object
-function GetDate(txtDate)
-{
-  var myDate = new Date(txtDate);
+function GetDate(txtDate) {
+    let myDate = new Date(txtDate);
 
-  if(isNaN(myDate.getTime()))
-  {
-    myDate = new Date(ConvertAtomDateString(txtDate));
+    if (isNaN(myDate.getTime())) {
+        myDate = new Date(ConvertAtomDateString(txtDate));
 
-    if(isNaN(myDate.getTime()))
-    {
-        return null;
+        if (isNaN(myDate.getTime())) {
+            return null;
+        }
     }
-  }
 
-  return myDate;
+    return myDate;
 }
 
 // formats dates using a custom format
-function FormatDate(dt, format)
-{
-  var isLocal = true;
+function FormatDate(dt, format) {
+    let isLocal = true;
 
-  if(format.lastIndexOf("[u]") != -1)
-  {
-      isLocal = false;
-      format = format.replace("[u]", "");
-  }
+    if (format.lastIndexOf("[u]") != -1) {
+        isLocal = false;
+        format = format.replace("[u]", "");
+    }
 
-  if (format.includes("[yyyy]")) {
-    format = format.replace("[yyyy]", (isLocal) ? dt.getFullYear() : dt.getUTCFullYear());
-  }
-  if (format.includes("[yy]")) {
-    format = format.replace("[yy]", (isLocal) ? (dt.getFullYear() + "").substr(2,2) : (dt.getUTCFullYear() + "").substr(2,2));
-  }
+    if (format.includes("[yyyy]")) {
+        format = format.replace("[yyyy]", (isLocal) ? dt.getFullYear() : dt.getUTCFullYear());
+    }
+    if (format.includes("[yy]")) {
+        format = format.replace("[yy]", (isLocal) ? (dt.getFullYear() + "").substring(2, 2) : (dt.getUTCFullYear() + "").substring(2, 2));
+    }
 
-  if (format.includes("[mm]")) {
-    format = format.replace("[mm]", (isLocal) ? PadZero(dt.getMonth() + 1) : PadZero(dt.getUTCMonth() + 1));
-  }
-  if (format.includes("[m]")) {
-    format = format.replace("[m]", (isLocal) ? dt.getMonth() + 1 : dt.getUTCMonth() + 1);
-  }
+    if (format.includes("[mm]")) {
+        format = format.replace("[mm]", (isLocal) ? PadZero(dt.getMonth() + 1) : PadZero(dt.getUTCMonth() + 1));
+    }
+    if (format.includes("[m]")) {
+        format = format.replace("[m]", (isLocal) ? dt.getMonth() + 1 : dt.getUTCMonth() + 1);
+    }
 
-  if (format.includes("[ddd]")) {
-    format = format.replace("[ddd]", (isLocal) ? GetDaySuffix(dt.getDate()) : GetDaySuffix(dt.getUTCDate()));
-  }
-  if (format.includes("[dd]")) {
-    format = format.replace("[dd]", (isLocal) ? PadZero(dt.getDate()) : PadZero(dt.getUTCDate()));
-  }
-  if (format.includes("[d]")) {
-    format = format.replace("[d]", (isLocal) ? dt.getDate() : dt.getUTCDate());
-  }
+    if (format.includes("[ddd]")) {
+        format = format.replace("[ddd]", (isLocal) ? GetDaySuffix(dt.getDate()) : GetDaySuffix(dt.getUTCDate()));
+    }
+    if (format.includes("[dd]")) {
+        format = format.replace("[dd]", (isLocal) ? PadZero(dt.getDate()) : PadZero(dt.getUTCDate()));
+    }
+    if (format.includes("[d]")) {
+        format = format.replace("[d]", (isLocal) ? dt.getDate() : dt.getUTCDate());
+    }
 
-  if (format.includes("[hh]")) {
-    format = format.replace("[hh]", (isLocal) ? PadZero(dt.getHours()) : PadZero(dt.getUTCHours()));
-  }
-  if (format.includes("[h]")) {
-    format = format.replace("[h]", (isLocal) ? dt.getHours() : dt.getUTCHours());
-  }
+    if (format.includes("[hh]")) {
+        format = format.replace("[hh]", (isLocal) ? PadZero(dt.getHours()) : PadZero(dt.getUTCHours()));
+    }
+    if (format.includes("[h]")) {
+        format = format.replace("[h]", (isLocal) ? dt.getHours() : dt.getUTCHours());
+    }
 
-  if (format.includes("[12hh]")) {
-    format = format.replace("[12hh]", (isLocal) ? PadZero(Get12Hour(dt.getHours())) : PadZero(Get12Hour(dt.getUTCHours())));
-  }
-  if (format.includes("[12h]")) {
-    format = format.replace("[12h]", (isLocal) ? Get12Hour(dt.getHours()) : Get12Hour(dt.getUTCHours()));
-  }
+    if (format.includes("[12hh]")) {
+        format = format.replace("[12hh]", (isLocal) ? PadZero(Get12Hour(dt.getHours())) : PadZero(Get12Hour(dt.getUTCHours())));
+    }
+    if (format.includes("[12h]")) {
+        format = format.replace("[12h]", (isLocal) ? Get12Hour(dt.getHours()) : Get12Hour(dt.getUTCHours()));
+    }
 
-  if (format.includes("[nn]")) {
-    format = format.replace("[nn]", (isLocal) ? PadZero(dt.getMinutes()) : PadZero(dt.getUTCMinutes()));
-  }
-  if (format.includes("[n]")) {
-    format = format.replace("[n]", (isLocal) ? dt.getMinutes() : dt.getUTCMinutes());
-  }
+    if (format.includes("[nn]")) {
+        format = format.replace("[nn]", (isLocal) ? PadZero(dt.getMinutes()) : PadZero(dt.getUTCMinutes()));
+    }
+    if (format.includes("[n]")) {
+        format = format.replace("[n]", (isLocal) ? dt.getMinutes() : dt.getUTCMinutes());
+    }
 
-  if (format.includes("[ss]")) {
-    format = format.replace("[ss]", (isLocal) ? PadZero(dt.getSeconds()) : PadZero(dt.getUTCSeconds()));
-  }
-  if (format.includes("[s]")) {
-    format = format.replace("[s]", (isLocal) ? dt.getSeconds() : dt.getUTCSeconds());
-  }
+    if (format.includes("[ss]")) {
+        format = format.replace("[ss]", (isLocal) ? PadZero(dt.getSeconds()) : PadZero(dt.getUTCSeconds()));
+    }
+    if (format.includes("[s]")) {
+        format = format.replace("[s]", (isLocal) ? dt.getSeconds() : dt.getUTCSeconds());
+    }
 
-  if (format.includes("[mmmm]")) {
-    format = format.replace("[mmmm]", (isLocal) ? GetMonthName(dt.getMonth()) : GetMonthName(dt.getUTCMonth()));
-  }
-  if (format.includes("[mmm]")) {
-    format = format.replace("[mmm]", (isLocal) ? GetMonthName(dt.getMonth()).substr(0,3) : GetMonthName(dt.getUTCMonth()).substr(0,3));
-  }
+    if (format.includes("[mmmm]")) {
+        format = format.replace("[mmmm]", (isLocal) ? GetMonthName(dt.getMonth()) : GetMonthName(dt.getUTCMonth()));
+    }
+    if (format.includes("[mmm]")) {
+        format = format.replace("[mmm]", (isLocal) ? GetMonthName(dt.getMonth()).substring(0, 3) : GetMonthName(dt.getUTCMonth()).substring(0, 3));
+    }
 
-  if (format.includes("[ww]")) {
-    format = format.replace("[ww]", (isLocal) ? GetWeekdayName(dt.getDay()) : GetWeekdayName(dt.getUTCDay()));
-  }
-  if (format.includes("[w]")) {
-    format = format.replace("[w]", (isLocal) ? GetWeekdayName(dt.getDay()).substr(0,3) : GetWeekdayName(dt.getUTCDay()).substr(0,3));
-  }
+    if (format.includes("[ww]")) {
+        format = format.replace("[ww]", (isLocal) ? GetWeekdayName(dt.getDay()) : GetWeekdayName(dt.getUTCDay()));
+    }
+    if (format.includes("[w]")) {
+        format = format.replace("[w]", (isLocal) ? GetWeekdayName(dt.getDay()).substring(0, 3) : GetWeekdayName(dt.getUTCDay()).substring(0, 3));
+    }
 
-  if (format.includes("[a]")) {
-    format = format.replace("[a]", (isLocal) ? (dt.getHours() > 12 ? "PM" : "AM") : (dt.getUTCHours() > 12 ? "PM" : "AM"));
-  }
+    if (format.includes("[a]")) {
+        format = format.replace("[a]", (isLocal) ? (dt.getHours() > 12 ? "PM" : "AM") : (dt.getUTCHours() > 12 ? "PM" : "AM"));
+    }
 
-  return format;
+    return format;
 }
 
 // adds 0 to a number if it's < 10
-function PadZero(num)
-{
-  if(num < 10)
-  {
-      return "0" + num;
-  }
+function PadZero(num) {
+    if (num < 10) {
+        return "0" + num;
+    }
 
-  return num + "";
+    return num + "";
 }
 
-// converts 24 hour clock into 12
-function Get12Hour(hour)
-{
-  if(hour > 12)
-  {
-      return hour - 12;
-  }
+// converts 24 hours clock into 12
+function Get12Hour(hour) {
+    if (hour > 12) {
+        return hour - 12;
+    }
 
-  if(hour == 0)
-  {
-      return 12;
-  }
+    if (hour == 0) {
+        return 12;
+    }
 
-  return hour;
+    return hour;
 }
 
 // gets the name of a month (0-11)
-function GetMonthName(month)
-{
-  switch(month)
-  {
-      case 0: return GetMessageText("monthJanuary");
-      case 1: return GetMessageText("monthFebruary");
-      case 2: return GetMessageText("monthMarch");
-      case 3: return GetMessageText("monthApril");
-      case 4: return GetMessageText("monthMay");
-      case 5: return GetMessageText("monthJune");
-      case 6: return GetMessageText("monthJuly");
-      case 7: return GetMessageText("monthAugust");
-      case 8: return GetMessageText("monthSeptember");
-      case 9: return GetMessageText("monthOctober");
-      case 10: return GetMessageText("monthNovember");
-      case 11: return GetMessageText("monthDecember");
-      default: return "";
-  }
+function GetMonthName(month) {
+    switch (month) {
+        case 0:
+            return GetMessageText("monthJanuary");
+        case 1:
+            return GetMessageText("monthFebruary");
+        case 2:
+            return GetMessageText("monthMarch");
+        case 3:
+            return GetMessageText("monthApril");
+        case 4:
+            return GetMessageText("monthMay");
+        case 5:
+            return GetMessageText("monthJune");
+        case 6:
+            return GetMessageText("monthJuly");
+        case 7:
+            return GetMessageText("monthAugust");
+        case 8:
+            return GetMessageText("monthSeptember");
+        case 9:
+            return GetMessageText("monthOctober");
+        case 10:
+            return GetMessageText("monthNovember");
+        case 11:
+            return GetMessageText("monthDecember");
+        default:
+            return "";
+    }
 }
 
 // gets a weekday name (0-6 = Sunday-Saturday)
-function GetWeekdayName(dayOfWeek)
-{
-  switch(dayOfWeek)
-  {
-      case 0: return GetMessageText("daySunday");
-      case 1: return GetMessageText("dayMonday");
-      case 2: return GetMessageText("dayTuesday");
-      case 3: return GetMessageText("dayWednesday");
-      case 4: return GetMessageText("dayThursday");
-      case 5: return GetMessageText("dayFriday");
-      case 6: return GetMessageText("daySaturday");
-      default: return "";
-  }
+function GetWeekdayName(dayOfWeek) {
+    switch (dayOfWeek) {
+        case 0:
+            return GetMessageText("daySunday");
+        case 1:
+            return GetMessageText("dayMonday");
+        case 2:
+            return GetMessageText("dayTuesday");
+        case 3:
+            return GetMessageText("dayWednesday");
+        case 4:
+            return GetMessageText("dayThursday");
+        case 5:
+            return GetMessageText("dayFriday");
+        case 6:
+            return GetMessageText("daySaturday");
+        default:
+            return "";
+    }
 }
 
 // used to get defaults to help fill in missing pieces as I add more options
@@ -284,100 +290,99 @@ function GetDefaultOptions() {
 
 // gets all or some options, filling in defaults when needed
 function GetOptions() {
-  var promiseGetOption = store.getItem('options').then(function(data) {
-      if (data != null) {
-          options = data;
+    return store.getItem('options').then(function (data) {
+        if (data != null) {
+            options = data;
 
-          // fill in defaults for new options
-          for (key in GetDefaultOptions()) {
-              if (options[key] == undefined) {
-                  options[key] = defaultOptions[key];
-              }
-          }
-      }
+            // fill in defaults for new options
+            for (let key in GetDefaultOptions()) {
+                if (options[key] == undefined) {
+                    options[key] = defaultOptions[key];
+                }
+            }
+        }
     });
-    return promiseGetOption;
 }
 
 //convert an Atom-formatted date string to a javascript-compatible date string
-function ConvertAtomDateString(str)
-{
-  //YYYY-MM-DDThh:mm:ss[.f*](Z|-hh:mm|+hh:mm)
-  var atomFormat = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d*)?(Z|[+-]\d{2}:\d{2})$/i;
-  if(!atomFormat.test(str)) return "";  //invalid format
+function ConvertAtomDateString(str) {
+    //YYYY-MM-DDThh:mm:ss[.f*](Z|-hh:mm|+hh:mm)
+    let atomFormat = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d*)?(Z|[+-]\d{2}:\d{2})$/i;
+    if (!atomFormat.test(str)) return "";  //invalid format
 
-  var months = new Array("","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec");
+    let months = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-  var year, month, date, hour, minute, second, offset;
-  year = str.slice(0,4);
-  month = months[1*str.slice(5,7)];    //Jan-Dec
-  date = str.slice(8,10);    //01-31
-  hour = str.slice(11,13);  //00-23
-  minute = str.slice(14,16);  //00-59
-  second = str.slice(17,19);  //00-59
-  offset = "GMT";
-  if(str.indexOf("Z") == -1)  //time zone offset specified
-  {
-    var x = str.lastIndexOf(":");
-    offset += str.slice(x-3,x) + str.slice(x+1);
-  }
+    let year, month, date, hour, minute, second, offset;
+    year = str.slice(0, 4);
+    month = months[1 * str.slice(5, 7)];    //Jan-Dec
+    date = str.slice(8, 10);    //01-31
+    hour = str.slice(11, 13);  //00-23
+    minute = str.slice(14, 16);  //00-59
+    second = str.slice(17, 19);  //00-59
+    offset = "GMT";
+    if (str.indexOf("Z") == -1)  //time zone offset specified
+    {
+        let x = str.lastIndexOf(":");
+        offset += str.slice(x - 3, x) + str.slice(x + 1);
+    }
 
-  //DD MMM YYYY hh:mm:ss GMT[(+|-)hhmm]
-  return date+" "+month+" "+year+" "+hour+":"+minute+":"+second+" "+offset;
+    //DD MMM YYYY hh:mm:ss GMT[(+|-)hhmm]
+    return date + " " + month + " " + year + " " + hour + ":" + minute + ":" + second + " " + offset;
 }
 
 // gets a day suffix like st, th, nd
-function GetDaySuffix(number)
-{
-  if((number > 3 && number < 21) || (number > 24 && number < 31))
-  {
-      return number + GetMessageText("daySuffix5");
-  }
+function GetDaySuffix(number) {
+    if ((number > 3 && number < 21) || (number > 24 && number < 31)) {
+        return number + GetMessageText("daySuffix5");
+    }
 
-  number = number + "";
+    number = number + "";
 
-  switch(number.substr(number.length - 1, 1))
-  {
-      case "1" : return number + GetMessageText("daySuffix1");
-      case "2" : return number + GetMessageText("daySuffix2");
-      case "3" : return number + GetMessageText("daySuffix3");
-      case "4" : return number + GetMessageText("daySuffix4");
-  }
+    switch (number.substring(number.length - 1, 1)) {
+        case "1" :
+            return number + GetMessageText("daySuffix1");
+        case "2" :
+            return number + GetMessageText("daySuffix2");
+        case "3" :
+            return number + GetMessageText("daySuffix3");
+        case "4" :
+            return number + GetMessageText("daySuffix4");
+    }
 }
 
 function findWithAttr(array, attr, value) {
-  for(var i = 0; i < array.length; i += 1) {
-      if(array[i][attr] === value) {
-          return i;
-      }
-  }
-  return -1;
+    for (let i = 0; i < array.length; i += 1) {
+        if (array[i][attr] === value) {
+            return i;
+        }
+    }
+    return -1;
 }
 
 function SortByDate(items) {
-  if (items == null) {
-    return items;
-  }
-  if (items.length == 0) {
-    return items;
-  }
-  return items.sort(function(a, b) {
-    return (parseInt(b["order"], 10) - parseInt(a["order"], 10));
+    if (items == null) {
+        return items;
+    }
+    if (items.length == 0) {
+        return items;
+    }
+    return items.sort(function (a, b) {
+        return (parseInt(b["order"], 10) - parseInt(a["order"], 10));
     });
 }
 
 // gets random numbers for managed feed ids
 function GetRandomID() {
-    var chars = "0123456789";
-    var str = "";
-    var rnum;
+    let chars = "0123456789";
+    let str = "";
+    let rnum;
 
-    for (var i = 0; i < 10; i++) {
+    for (let i = 0; i < 10; i++) {
         rnum = Math.floor(Math.random() * chars.length);
-        if ((i == 0) && (rnum == 0)){
-          while (rnum == 0) {
-            rnum = Math.floor(Math.random() * chars.length);
-          }
+        if ((i == 0) && (rnum == 0)) {
+            while (rnum == 0) {
+                rnum = Math.floor(Math.random() * chars.length);
+            }
         }
         str += chars.charAt(rnum);
     }
@@ -392,7 +397,15 @@ function CreateNewFeed(title, url, group, maxitems, order, excludeUnreadCount, i
         id = GetRandomID();
     }
 
-    return {title: title, url: url, group: group, maxitems: maxitems, order: order, excludeUnreadCount: excludeUnreadCount, id: id};
+    return {
+        title: title,
+        url: url,
+        group: group,
+        maxitems: maxitems,
+        order: order,
+        excludeUnreadCount: excludeUnreadCount,
+        id: id
+    };
 }
 
 function GetReadLaterFeed() {
@@ -405,12 +418,12 @@ function UpdateUnreadBadge() {
         return;
     }
 
-    var total = 0;
-    var str = "";
+    let total = 0;
+    let str = "";
 
-    for (var key in unreadInfo) {
-        if ((key != readLaterFeedID) && (key != allFeedsID)){
-            var filteredfeeds = feeds.find(function (el) {
+    for (let key in unreadInfo) {
+        if ((key != readLaterFeedID) && (key != allFeedsID)) {
+            let filteredfeeds = feeds.find(function (el) {
                 return (el.id == key) && (el.excludeUnreadCount == 1);
             });
             if (filteredfeeds == undefined) {
@@ -429,8 +442,8 @@ function UpdateUnreadBadge() {
     }
 
     if (newNotif) {
-      PlayNotificationSound();
-      newNotif = false;
+        PlayNotificationSound();
+        newNotif = false;
     }
 
     unreadTotal = total;
@@ -448,10 +461,17 @@ function PlayNotificationSound() {
     if (options.playSoundNotif) {
         if (viewerPort != null) {
             viewerPort.postMessage({type: "playSound"});
-        }
-        else {
+        } else {
             if (options.typeNotify == 0) {
-                chrome.windows.create({url: chrome.runtime.getURL("notify.html"), width: 10, top: 1, left: 1, height: 1, focused: false, type: "popup"});
+                chrome.windows.create({
+                    url: chrome.runtime.getURL("notify.html"),
+                    width: 10,
+                    top: 1,
+                    left: 1,
+                    height: 1,
+                    focused: false,
+                    type: "popup"
+                });
             } else {
                 chrome.tabs.create({url: chrome.runtime.getURL("notify_tab.html"), active: true});
             }
@@ -461,18 +481,18 @@ function PlayNotificationSound() {
 
 // since the key for unread is the feed id, it's possible that you removed some, as such we should update and clean house
 function CleanUpUnreadOrphans() {
-    var feedIDs = {};
+    let feedIDs = {};
 
-    for (var key in feeds) {
+    for (let key in feeds) {
         feedIDs[feeds[key].id] = 1;
     }
 
-    for (var key in unreadInfo) {
+    for (let key in unreadInfo) {
         if (feedIDs[key] == null) {
             delete unreadInfo[key];
         }
     }
-    var promiseCleanUpUnreadOrphans = store.setItem('unreadinfo', unreadInfo);
+    let promiseCleanUpUnreadOrphans = store.setItem('unreadinfo', unreadInfo);
 
     UpdateUnreadBadge();
 
@@ -482,61 +502,58 @@ function CleanUpUnreadOrphans() {
 // returns a dictionary of unread counts {feedsid} = unreadtotal, readitems{}
 // may need a way to clean this if they delete feeds
 function GetUnreadCounts() {
-  var resultPromise = store.getItem('unreadinfo').then(function(data) {
-      if (data != null) {
-          unreadInfo = data;
-      } else {
-        unreadInfo = { };
-        store.setItem('unreadinfo', { });
-      }
-    },function(dataError) {
-        unreadInfo = { };
-        store.setItem('unreadinfo', { });
+    return store.getItem('unreadinfo').then(function (data) {
+        if (data != null) {
+            unreadInfo = data;
+        } else {
+            unreadInfo = {};
+            store.setItem('unreadinfo', {});
+        }
+    }, function (dataError) {
+        unreadInfo = {};
+        store.setItem('unreadinfo', {});
     });
-
-    return resultPromise;
 }
 
 function GetFeedsFilterByGroup(key) {
-    var filteredFeeds = [];
+    let filteredFeeds;
     if (groups[key].id == allFeedsID) {
-      filteredFeeds = feeds.filter(function (el) {
-        return (el.id != readLaterFeedID);
-      });
+        filteredFeeds = feeds.filter(function (el) {
+            return (el.id != readLaterFeedID);
+        });
     } else {
-      filteredFeeds = feeds.filter(function (el) {
-        return (el.group == groups[key].group) && (el.id != readLaterFeedID);
-      });
+        filteredFeeds = feeds.filter(function (el) {
+            return (el.group == groups[key].group) && (el.id != readLaterFeedID);
+        });
     }
 
     return filteredFeeds;
 }
 
 function saveReadlaterInfo() {
-  return store.setItem('readlaterinfo', readlaterInfo);
+    return store.setItem('readlaterinfo', readlaterInfo);
 }
 
 function FormatDTWithMs(mseconds) {
-    var seconds = Math.floor(mseconds / 1000);
+    let seconds = Math.floor(mseconds / 1000);
     mseconds = mseconds - (seconds * 1000);
-    var levels = [
+    let levels = [
         [Math.floor(seconds / 31536000), 'years'],
         [Math.floor((seconds % 31536000) / 86400), 'days'],
         [Math.floor(((seconds % 31536000) % 86400) / 3600), 'hours'],
         [Math.floor((((seconds % 31536000) % 86400) % 3600) / 60), 'minutes'],
         [(((seconds % 31536000) % 86400) % 3600) % 60, 'seconds'],
     ];
-    var returntext = '';
+    let returntext = '';
 
-    for (var i = 0, max = levels.length; i < max; i++) {
-        if ( levels[i][0] === 0 ) continue;
-        returntext += ' ' + levels[i][0] + ' ' + (levels[i][0] === 1 ? levels[i][1].substr(0, levels[i][1].length-1): levels[i][1]);
-    };
-    returntext += ' ' + mseconds + 'ms';
-    return returntext.trim();
+    for (let i = 0, max = levels.length; i < max; i++) {
+        if (levels[i][0] === 0) continue;
+        returntext += ' ' + levels[i][0] + ' ' + (levels[i][0] === 1 ? levels[i][1].substring(0, levels[i][1].length - 1) : levels[i][1]);
+    }
+    return (returntext + ' ' + mseconds + 'ms').trim();
 }
 
 //remove ReadLater
 function filterByID(obj) {
-	return ((obj.id != readLaterFeedID) && (obj.id != allFeedsID));
+    return ((obj.id != readLaterFeedID) && (obj.id != allFeedsID));
 }
