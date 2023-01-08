@@ -7,18 +7,18 @@ function switchTheme(themesize) {
 
 function activeDarkMode() {
     switchTheme('' + options.fontSize);
-    var keys = Object.keys(document.getElementsByTagName("link"));
-    for (var i = 0; i < keys.length; i++) {
-        var oldlink = document.getElementsByTagName("link").item(keys[i]);
+    let keys = Object.keys(document.getElementsByTagName("link"));
+    for (let i = 0; i < keys.length; i++) {
+        let oldlink = document.getElementsByTagName("link").item(keys[i]);
         oldlink.setAttribute("href", oldlink.getAttribute("href").replace(".", "_dark."));
     }
 }
 
 function disableDarkMode() {
     switchTheme('' + options.fontSize);
-    var keys = Object.keys(document.getElementsByTagName("link"));
-    for (var i = 0; i < keys.length; i++) {
-        var oldlink = document.getElementsByTagName("link").item(keys[i]);
+    let keys = Object.keys(document.getElementsByTagName("link"));
+    for (let i = 0; i < keys.length; i++) {
+        let oldlink = document.getElementsByTagName("link").item(keys[i]);
         oldlink.setAttribute("href", oldlink.getAttribute("href").replace("_dark.", "."));
     }
 }
@@ -27,7 +27,7 @@ function GetGroupKeyByID(id) {
     if (groups == null) {
         return null;
     }
-    for (var i = 0; i < groups.length; i++) {
+    for (let i = 0; i < groups.length; i++) {
         if (groups[i].id == id) {
             return i;
         }
@@ -35,7 +35,7 @@ function GetGroupKeyByID(id) {
 }
 
 function ItemIsRead(feedID, itemID) {
-    var currentFeed = feeds.find(function (el) {
+    let currentFeed = feeds.find(function (el) {
         return (el.id == feedID);
     });
     if (currentFeed == readLaterFeedID) {
@@ -83,7 +83,7 @@ function GetFeedsSimple(callBack) {
     });
 }
 
-function formatBytes(a,b=2){var textBytes=GetMessageText("Bytes");var textKB=GetMessageText("KB");var textMB=GetMessageText("MB");var textGB=GetMessageText("GB");var textTB=GetMessageText("TB");var textPB=GetMessageText("PB");var textEB=GetMessageText("EB");var textZB=GetMessageText("ZB");var textYB=GetMessageText("YB");if(0===a)return`0 ${textBytes}`;const c=0>b?0:b,d=Math.floor(Math.log(a)/Math.log(1024));return parseFloat((a/Math.pow(1024,d)).toFixed(c))+" "+[`${textBytes}`,`${textKB}`,`${textMB}`,`${textGB}`,`${textTB}`,`${textPB}`,`${textEB}`,`${textZB}`,`${textYB}`][d]}
+function formatBytes(a,b=2){let textBytes=GetMessageText("Bytes");let textKB=GetMessageText("KB");let textMB=GetMessageText("MB");let textGB=GetMessageText("GB");let textTB=GetMessageText("TB");let textPB=GetMessageText("PB");let textEB=GetMessageText("EB");let textZB=GetMessageText("ZB");let textYB=GetMessageText("YB");if(0===a)return`0 ${textBytes}`;const c=0>b?0:b,d=Math.floor(Math.log(a)/Math.log(1024));return parseFloat((a/Math.pow(1024,d)).toFixed(c))+" "+[`${textBytes}`,`${textKB}`,`${textMB}`,`${textGB}`,`${textTB}`,`${textPB}`,`${textEB}`,`${textZB}`,`${textYB}`][d]}
 
 function loadReadlaterInfo() {
     return store.getItem('readlaterinfo').then(function(data) {
@@ -96,7 +96,7 @@ function loadReadlaterInfo() {
 }
 
 function GetUnreadCount(feedID){
-    var count = 0;
+    let count = 0;
     if (unreadInfo[feedID] != undefined) {
         count = unreadInfo[feedID].unreadtotal;
     }
@@ -118,4 +118,5 @@ function GetUnreadCount(feedID){
             }
         }
     }
+    return count;
 }

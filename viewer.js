@@ -201,7 +201,7 @@ function UpdateLoadingProgress(currentFeeds, currentFeedsCount) {
 }
 
 function UpdateTitle() {
-    var title = "Slick RSS" + (selectedFeedKeyIsFeed ? (feeds[selectedFeedKey] ? " [" + feeds[selectedFeedKey].title + "]" : "") : (groups[selectedFeedKey] ? " [" + groups[selectedFeedKey].title + "]" : ""));
+    let title = "Slick RSS" + (selectedFeedKeyIsFeed ? (feeds[selectedFeedKey] ? " [" + feeds[selectedFeedKey].title + "]" : "") : (groups[selectedFeedKey] ? " [" + groups[selectedFeedKey].title + "]" : ""));
 
     chrome.runtime.sendMessage({"type": "getUnreadTotal"}).then(function (data) {
         if (data != undefined)
@@ -220,20 +220,16 @@ function ShowFeeds() {
         showingFeeds = true;
         return;
     }
-    var selectKey = null;
-    var lastSelectedID = null;
-    var lastSelectedType = null;
-    var listPromise = [];
 
-    var promiselastSelectedFeed = store.getItem('lastSelectedFeed').then(function (data) {
+    store.getItem('lastSelectedFeed').then(function (data) {
+        let selectKey = null;
+        let lastSelectedID = null;
+        let lastSelectedType = null;
         if (data != null) {
             lastSelectedID = data.lastSelectedFeedID;
             lastSelectedType = data.lastSelectedFeedType;
         }
-    });
-    listPromise.push(promiselastSelectedFeed);
 
-    Promise.allSettled(listPromise).then(function () {
         UpdateTitle();
         document.getElementById("manage").style.display = "";
 
@@ -462,7 +458,7 @@ function UpdateReadAllIcon(type) {
             if (unreadInfo[feeds[selectedFeedKey].id] != null) {
                 count = unreadInfo[feeds[selectedFeedKey].id].unreadtotal;
                 if (count == 0) {
-                    GetUnreadCount(selectedFeedKey);
+                    count = GetUnreadCount(selectedFeedKey);
                 }
                 document.getElementById("markFeedRead").style.display = (count > 0) ? "" : "none";
                 document.getElementById("openAllFeed").style.display = (count > 0) ? "" : "none";
