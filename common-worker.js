@@ -30,24 +30,29 @@ function GetElementByTagNameJS() {
             tag[i] = tag[i].toUpperCase();
     }
 
-    if (!multiplesElements) {
-        const parser = new fxparser.XMLParser();
-        let datajson = parser.parse(node);
-        return SearchTag(datajson, defaultValue, tag, 0);
+    try {
+        if (!multiplesElements) {
+            const parser = new fxparser.XMLParser();
+            let datajson = parser.parse(node);
+            return SearchTag(datajson, defaultValue, tag, 0);
+        }
+        else {
+            const optionsParser = {
+                ignoreAttributes : false,
+                attributeNamePrefix : "",
+                allowBooleanAttributes: true,
+                preserveOrder: true
+                //attributesGroupName : "@_",
+                //preserveOrder: true,
+                //trimValues: false
+            };
+            const parser = new fxparser.XMLParser(optionsParser);
+            let datajson = parser.parse(node);
+            return SearchTags(datajson, defaultValue, tag, 0);
+        }
     }
-    else {
-        const optionsParser = {
-            ignoreAttributes : false,
-            attributeNamePrefix : "",
-            allowBooleanAttributes: true,
-            preserveOrder: true
-            //attributesGroupName : "@_",
-            //preserveOrder: true,
-            //trimValues: false
-        };
-        const parser = new fxparser.XMLParser(optionsParser);
-        let datajson = parser.parse(node);
-        return SearchTags(datajson, defaultValue, tag, 0);
+    catch (e) {
+        return defaultValue;
     }
 }
 

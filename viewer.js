@@ -974,7 +974,8 @@ function RenderFeed(type) {
         document.getElementById("urlRedirected").style.display = "none";
     }
 
-    for (let i = 0; i < feedsOrGroupsInfo[feedID].items.length && i < feedsOrGroups[selectedFeedKey].maxitems; i++) {
+    let nbItem = Math.min(feedsOrGroupsInfo[feedID].items.length, feedsOrGroups[selectedFeedKey].maxitems);
+    for (let i = 0; i < nbItem; i++) {
         item = feedsOrGroupsInfo[feedID].items[i];
         itemID = item.itemID;
 
