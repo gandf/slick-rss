@@ -663,9 +663,9 @@ function CheckForUnread(checkForUnreadCounterID) {
                         console.log('|x|Response to buffer | ' + FormatDTWithMs(dt - dtfetch));
                         //<<Profiler
                     }
-                    let doc = DecodeText(data);
 
                     if ((status >= 200) && (status <= 299)) {
+                        let doc = DecodeText(data);
                         if (doc) {
                             let readItemCount = 0;
                             var item = null;
@@ -1054,8 +1054,6 @@ function CheckForUnread(checkForUnreadCounterID) {
                             break;
                         }
                     }
-
-                    doc = null;
 
                     feedInfo[feedID].loading = false;
 
