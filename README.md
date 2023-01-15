@@ -31,3 +31,8 @@ http://opensource.org/licenses/MIT
 Glisten.ogg :
 Author : https://github.com/akx/Notifications
 License : http://creativecommons.org/publicdomain/mark/1.0/
+
+Using :
+https://github.com/NaturalIntelligence/fast-xml-parser
+https://github.com/localForage/localForage
+https://jquery.com
