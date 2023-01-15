@@ -1,7 +1,7 @@
 try {
   importScripts("sha256.js");
   importScripts("localforage.min.js");
-  importScripts("fxparser.js");
+  importScripts("fxparser.min.js");
   importScripts("datamanager.js");
   importScripts("common-worker.js");
   importScripts("common.js");

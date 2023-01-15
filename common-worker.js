@@ -46,7 +46,7 @@ function GetElementByTagNameJS() {
                 //preserveOrder: true,
                 //trimValues: false
             };
-            const parser = new fxparser.XMLParser(optionsParser);
+            const parser = new XMLParser(optionsParser);
             let datajson = parser.parse(node);
             return SearchTags(datajson, defaultValue, tag, 0);
         }
