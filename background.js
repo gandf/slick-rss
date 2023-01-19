@@ -411,6 +411,13 @@ function ExternalRequest(request, sender, sendResponse) {
 }
 
 function ApiRequest(request, sender, sendResponse) {
+    if (request == undefined) {
+        return;
+    }
+    if (request.recipient != "Slick RSS") {
+        return;
+    }
+
     if (spamProtect[sender.id] == undefined) {
         spamProtect[sender.id] = new Date();
     } else {
@@ -430,10 +437,10 @@ function ApiRequest(request, sender, sendResponse) {
             return;
         }
 
-        let feedurl = request.feedUrl;
+        let feedUrl = request.feedUrl;
         let feedTitle = request.feedTitle;
         let feedGroup = request.feedGroup;
-        if (typeof feedurl != "string") {
+        if (typeof feedUrl != "string") {
             sendResponse({status: "bad request"});
             return;
         }
