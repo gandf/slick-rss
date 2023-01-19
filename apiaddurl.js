@@ -123,3 +123,47 @@ function ShowFeeds()
 		});
 	});
 }
+
+function IsValid(title, url, group, maxItems, order)
+{
+	if(title == "") {
+		alert(GetMessageText("manageAlertTitle"));
+		return false;
+	}
+
+	if(url == "") {
+		alert(GetMessageText("manageAlertUrl"));
+		return false;
+	}
+
+	if(maxItems == "") {
+		alert(GetMessageText("manageAlertMaxItemsEmpty"));
+		return false;
+	}
+
+	if(maxItems == "0") {
+		alert(GetMessageText("manageAlertMaxItemsZero"));
+		return false;
+	}
+
+	if(!/^\d+$/.test(maxItems)) {
+		alert(GetMessageText("manageAlertMaxItemsNotItem1") + maxItems + GetMessageText("manageAlertMaxItemsNotItem2"));
+		return false;
+	}
+
+	if (order == null) {
+		return true;
+	}
+
+	if (order == "") {
+		alert(GetMessageText("manageAlertOrder"));
+		return false;
+	}
+
+	if(!/^\d+$/.test(order)) {
+		alert(GetMessageText("manageAlertOrderNotItem1") + order + GetMessageText("manageAlertOrderNotItem2"));
+		return false;
+	}
+
+	return true;
+}
