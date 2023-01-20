@@ -622,5 +622,8 @@
   },
   "lang": {
     "message": "nl"
+  },
+  "optionDontReadOnTitleClick": {
+    "message": "Markeer niet gelezen nadat u op de link in de titel van een artikel hebt geklikt"
   }
 }

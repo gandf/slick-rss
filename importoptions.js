@@ -134,6 +134,9 @@ function ImportOptions()
 			if (optionsToImport.log != undefined) {
 				options.log = optionsToImport.log;
 			}
+			if (optionsToImport.dontreadontitleclick != undefined) {
+				options.dontreadontitleclick = optionsToImport.dontreadontitleclick;
+			}
 
 			store.setItem('options', options).then(function() {
 				chrome.runtime.sendMessage({"type": "refreshOptionsAndRefreshFeeds"}).then(function(){

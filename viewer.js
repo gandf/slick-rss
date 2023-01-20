@@ -1026,7 +1026,9 @@ function RenderFeed(type) {
         } else {
             $(feedLink).click({url: href, feedID: feedID, itemID: itemID}, function (event) {
                 LinkProxy(event.data.url);
-                MarkItemRead(event.data.itemID);
+                if (!options.dontreadontitleclick) {
+                    MarkItemRead(event.data.itemID);
+                }
                 if (options.markreadonclick) {
                     MarkFeedRead(event.data.feedID);
                 }

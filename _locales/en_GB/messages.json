@@ -625,5 +625,8 @@
   },
   "lang": {
     "message": "en"
+  },
+  "optionDontReadOnTitleClick": {
+    "message": "Don't mark item read on click on title link"
   }
 }

@@ -622,5 +622,8 @@
   },
   "lang": {
     "message": "it"
+  },
+  "optionDontReadOnTitleClick": {
+    "message": "Non contrassegnare la lettura dopo aver cliccato sul link nel titolo di un articolo"
   }
 }

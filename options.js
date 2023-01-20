@@ -56,6 +56,7 @@ function SetupScreen()
 		document.getElementById("notifyWindowType").selectedIndex = options.typeNotify;
 		document.getElementById("optionLogInConsole").selectedIndex = options.log;
 		document.getElementById("showsavethisfeed").selectedIndex = options.showsavethisfeed;
+		document.getElementById("dontReadOnTitleClick").selectedIndex = options.dontreadontitleclick;
 
 		let manifestData = chrome.runtime.getManifest();
 		document.getElementById("NoVersion").innerHTML = manifestData.version + " " + manifestData.current_locale;
@@ -137,6 +138,7 @@ function Save()
 	options.typeNotify = document.getElementById("notifyWindowType").selectedIndex;
 	options.log = (document.getElementById("optionLogInConsole").selectedIndex == 1);
 	options.showsavethisfeed = (document.getElementById("showsavethisfeed").selectedIndex == 1);
+	options.dontreadontitleclick = (document.getElementById("dontReadOnTitleClick").selectedIndex == 1);
 
 	store.setItem('options', options);
 

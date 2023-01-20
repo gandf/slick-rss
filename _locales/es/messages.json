@@ -625,5 +625,8 @@
   },
   "lang": {
     "message": "es"
+  },
+  "optionDontReadOnTitleClick": {
+    "message": "No marque leído después de hacer clic en el enlace del título de un artículo"
   }
 }

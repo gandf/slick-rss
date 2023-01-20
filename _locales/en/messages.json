@@ -626,6 +626,9 @@
   "lang": {
     "message": "en"
   },
+  "optionDontReadOnTitleClick": {
+    "message": "Don't mark item read on click on title link"
+  },
   "enexportTitle": {
       "message": "Slick RSS : Export Feeds"
   },
@@ -1243,5 +1246,8 @@
   },
   "enlang": {
     "message": "en"
+  },
+  "enoptionDontReadOnTitleClick": {
+    "message": "Don't mark item read on click on title link"
   }
 }
