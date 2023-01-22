@@ -625,5 +625,8 @@
   },
   "optionDontReadOnTitleClick": {
     "message": "Nicht als gelesen markieren, nachdem man auf den Link im Titel eines Artikels geklickt hat"
+  },
+  "optionForceEnglishLang": {
+    "message": "Englische Sprache erzwingen"
   }
 }

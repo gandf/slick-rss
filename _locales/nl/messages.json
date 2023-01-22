@@ -625,5 +625,8 @@
   },
   "optionDontReadOnTitleClick": {
     "message": "Markeer niet gelezen nadat u op de link in de titel van een artikel hebt geklikt"
+  },
+  "optionForceEnglishLang": {
+    "message": "Forceer Engelse taal"
   }
 }
