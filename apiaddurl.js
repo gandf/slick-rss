@@ -1,11 +1,49 @@
 $(document).ready(function()
 {
-	$('#close').click(function(){window.close();});
+	$('#close').click(function(){
+		window.close();
+	});
 });
+feeds = [];
 
 document.documentElement.setAttribute('lang', GetMessageText('lang'));
 
 window.onload = ShowFeeds;
+
+var port = chrome.runtime.connect({name: "apiaddurlPort"});
+
+port.onMessage.addListener(function (msg) {
+	if (msg.type == "refresh") {
+		chrome.runtime.sendMessage({"type": "getApiUrlToAdd" }).then(function(data){
+			if (data != undefined) {
+				let idCount = 0;
+				if (feeds.length > 0) {
+					idCount = feeds[feeds.length - 1].id + 1;
+				}
+				let startId = -1;
+				if (feeds.length > 0) {
+					let keys = Object.keys(feeds);
+					startId = feeds[keys[keys.length - 1]].id;
+				}
+
+				let feedsToLoad = GetObjectFromStr(data);
+				feedsToLoad.forEach(feedToLoad => {
+
+					if (!feeds.find(function (el) {return (el.url == feedToLoad.Url);})) {
+						feeds.push(CreateNewFeed((feedToLoad.Title == undefined) ? "" : feedToLoad.Title, feedToLoad.Url, (feedToLoad.Group == undefined) ? "" : feedToLoad.Group, options.maxitems, 0, 0, idCount));
+						idCount++;
+					}
+				});
+				let keys = Object.keys(feeds);
+				for (let i = 0; i < keys.length; i++) {
+					if (feeds[keys[i]].id > startId) {
+						AddRow(keys[i]);
+					}
+				}
+			}
+		});
+	}
+});
 
 function AddRow(feedKey)
 {
@@ -107,9 +145,9 @@ function ShowFeeds()
 		} else {
 			disableDarkMode();
 		}
-		let idCount = 0;
 		chrome.runtime.sendMessage({"type": "getApiUrlToAdd" }).then(function(data){
 			if (data != undefined) {
+				let idCount = 0;
 				let feedsToLoad = GetObjectFromStr(data);
 				feedsToLoad.forEach(feedToLoad => {
 					feeds.push(CreateNewFeed((feedToLoad.Title == undefined) ? "" : feedToLoad.Title, feedToLoad.Url, (feedToLoad.Group == undefined) ? "" : feedToLoad.Group, options.maxitems, 0, 0, idCount));

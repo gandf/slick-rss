@@ -17,6 +17,7 @@ If you are web developer, refresh UI would be good to start.
 
 ### API to send suggested url from other extension:
 Request : {recipient: "Slick RSS", feedUrl: "url", feedTitle: "", feedGroup: ""}
+Request : {recipient: "Slick RSS", feedList: [{feedUrl: "url", feedTitle: "", feedGroup: ""},{feedUrl: "url", feedTitle: "", feedGroup: ""}]}
 feedUrl is mandatory.
 Return can be :
 - "refused"
@@ -24,6 +25,7 @@ Return can be :
 - "bad request"
 - "nothing"
 - "ok"
+- "ok:  Reading..."
 
 Original and actual license is MIT License.
 http://opensource.org/licenses/MIT

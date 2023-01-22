@@ -8,6 +8,7 @@ var getFeedsCallBack = null;
 var refreshFeed = false;
 var referenceDate = GetDate("Thu, 31 Dec 2019 23:59:59 +0000").getTime();
 var viewerPortTabID = null;
+var apiaddurlPort = null;
 var apiaddurlTabID = null;
 var forceRefresh = false;
 var spamProtect = [];
@@ -63,6 +64,14 @@ function InternalConnection(port) {
         viewerPort = port;
         port.onDisconnect.addListener(function (port) {
             viewerPort = null;
+        });
+    }
+    if (port.name == "apiaddurlPort") {
+        apiaddurlPort = port;
+        port.onDisconnect.addListener(function (port) {
+            apiaddurlPort = null;
+            listApiUrlToAdd = [];
+            apiaddurlTabID = null;
         });
     }
 }
@@ -375,10 +384,10 @@ function ExternalRequest(request, sender, sendResponse) {
 
     if (request.type == "getApiUrlToAdd") {
         sendResponse(GetStrFromObject(listApiUrlToAdd));
-        //listApiUrlToAdd = [];
         if (options.log) {
             console.log('|getApiUrlToAdd | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
         }
+        listApiUrlToAdd = [];
         return;
     }
 
@@ -407,6 +416,13 @@ function ExternalRequest(request, sender, sendResponse) {
         if (options.log) {
             console.log('|addFeed | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
         }
+        return;
+    }
+
+    if (request.type == "cleanListApiUrlToAdd") {
+        listApiUrlToAdd = [];
+        sendResponse();
+        return;
     }
 }
 
@@ -414,6 +430,7 @@ function ApiRequest(request, sender, sendResponse) {
     if (request == undefined) {
         return;
     }
+
     if (request.recipient != "Slick RSS") {
         return;
     }
@@ -429,54 +446,60 @@ function ApiRequest(request, sender, sendResponse) {
     }
 
     if (request.feedUrl != undefined) {
-        let existingFeed = feeds.find(function (el) {
-            return (el.url == request.feedUrl);
-        });
-        if (existingFeed != undefined) {
-            sendResponse({status: "already exists"});
-            return;
-        }
-
-        let feedUrl = request.feedUrl;
-        let feedTitle = request.feedTitle;
-        let feedGroup = request.feedGroup;
-        if (typeof feedUrl != "string") {
-            sendResponse({status: "bad request"});
-            return;
-        }
-        if ((typeof feedTitle != "string") && (feedTitle != undefined)) {
-            sendResponse({status: "bad request"});
-            return;
-        }
-        if ((typeof feedGroup != "string") && (feedTitle != undefined)) {
-            sendResponse({status: "bad request"});
-            return;
-        }
-
-        sendResponse({status: "ok"});
-
-        listApiUrlToAdd.push({Url: feedUrl, Title: feedTitle, Group: feedGroup});
-
-        if (apiaddurlTabID != null) {
-            apiaddurlTabID = null;
-            chrome.tabs.query({url: chrome.runtime.getURL("apiaddurl.html")}, function (tab) {
-                if (tab.length > 0) {
-                    apiaddurlTabID = tab[0].id;
-                    chrome.tabs.reload(apiaddurlTabID, {bypassCache: true});
-                } else {
-                    chrome.tabs.create({url: chrome.runtime.getURL("apiaddurl.html")}, function (tab) {
-                        apiaddurlTabID = tab.id;
-                    });
-                }
-            });
-        } else {
-            chrome.tabs.create({url: chrome.runtime.getURL("apiaddurl.html")}, function (tab) {
-                apiaddurlTabID = tab.id;
-            });
-        }
+        sendResponse({status: addFeedFromApi(request.feedUrl, request.feedTitle, request.feedGroup)});
+        openApiUrlPage();
         return;
     }
+
+    if (request.feedList != undefined) {
+        sendResponse({status: "ok:  Reading..."});
+        let fdl = request.feedList;
+        for (let i = 0; i < fdl.length; i++) {
+            addFeedFromApi(fdl[i].url, fdl[i].tabTitle, fdl[i].feedGroup);
+        }
+        openApiUrlPage();
+        return;
+    }
+
     sendResponse({status: "nothing"});
+}
+function addFeedFromApi(feedUrl, feedTitle, feedGroup) {
+    let existingFeed = feeds.find(function (el) {
+        return (el.url == feedUrl);
+    });
+
+    if (!existingFeed) {
+        existingFeed = listApiUrlToAdd.find(function (el) {
+            return (el.Url == feedUrl);
+        });
+    }
+
+    if (existingFeed != undefined) {
+        return "already exists";
+    }
+
+    if (typeof feedUrl != "string") {
+        return "bad request";
+    }
+    if ((typeof feedTitle != "string") && (feedTitle != undefined)) {
+        return "bad request";
+    }
+    if ((typeof feedGroup != "string") && (feedTitle != undefined)) {
+        return "bad request";
+    }
+
+    listApiUrlToAdd.push({Url: feedUrl, Title: feedTitle, Group: feedGroup});
+    return "ok";
+}
+
+function openApiUrlPage() {
+    if (apiaddurlPort != null) {
+        apiaddurlPort.postMessage({type: "refresh"});
+    } else {
+        chrome.tabs.create({url: chrome.runtime.getURL("apiaddurl.html")}, function (tab) {
+            apiaddurlTabID = tab.id;
+        });
+    }
 }
 
 // gets the feed array for everyone to use
@@ -1398,8 +1421,13 @@ function DecodeText(data) {
         encodeName = encodeName.substring(0, encodeName.indexOf(" "));
     }
     if (encodeName.replaceAll('-', '').toUpperCase() != "UTF8") {
-        decoder = new TextDecoder(encodeName);
-        doc = decoder.decode(data);
+        try {
+            decoder = new TextDecoder(encodeName);
+            doc = decoder.decode(data);
+        } catch (_) {
+            decoder = new TextDecoder("UTF-8");
+            doc = decoder.decode(data);
+        }
     }
     return doc;
 }
