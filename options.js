@@ -140,15 +140,17 @@ function Save()
 	options.showsavethisfeed = (document.getElementById("showsavethisfeed").selectedIndex == 1);
 	options.dontreadontitleclick = (document.getElementById("dontReadOnTitleClick").selectedIndex == 1);
 
-	store.setItem('options', options);
+	var promiseCheckForUnread = [];
+	promiseCheckForUnread.push(store.setItem('options', options));
 
 	if(!options.readlaterenabled)
 	{
-		store.setItem('readlater', {}); //delete readlater
+		promiseCheckForUnread.push(store.setItem('readlater', {}));  //delete readlater
 	}
-
-	chrome.runtime.sendMessage({"type": "refreshOptionsAndRefreshFeeds"}).then(function(){
-		window.close();
+	Promise.allSettled([promiseCheckForUnread]).then(function() {
+		chrome.runtime.sendMessage({"type": "refreshOptionsAndRefreshFeeds"}).then(function(){
+			window.close();
+		});
 	});
 }
 
