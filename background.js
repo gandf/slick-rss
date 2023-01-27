@@ -21,8 +21,7 @@ chrome.alarms.onAlarm.addListener(AlarmRing);
 chrome.runtime.onMessageExternal.addListener(ApiRequest);
 
 waitOptionReady().then(function () {
-    promiseUpgrade = DoUpgrades();
-    waitUpgrade().then(function () {
+    DoUpgrades().then(function() {
         promiseGetUnreadCounts = GetUnreadCounts();
         waitGetUnreadCounts().then(function () {
             GetFeeds(function () {
@@ -33,10 +32,6 @@ waitOptionReady().then(function () {
         });
     });
 });
-
-async function waitUpgrade() {
-    return await Promise.allSettled([promiseUpgrade]);
-}
 
 async function waitGetUnreadCounts() {
     return await Promise.allSettled([promiseGetUnreadCounts]);
