@@ -481,7 +481,7 @@ function MarkAllFeedsRead() {
     for (let i = 0; i < feeds.length; i++) {
         if ((feeds[i].id != readLaterFeedID) && (feeds[i].id != allFeedsID)) {
             let feedID = feeds[i].id;
-            let listUnread = [];
+            var listUnread = [];
 
             for (let j = 0; j < feedInfo[feedID].items.length; j++) {
                 let itemID = feedInfo[feedID].items[j].itemID;
@@ -1434,7 +1434,7 @@ function OpenAllFeedButton(feedID) {
     let itemID = null;
     let className = (options.readitemdisplay == 0) ? " feedPreviewContainerRead" : " feedPreviewContainerRead feedPreviewContainerCondensed";
     let groupKey = null;
-    let listUnread = [];
+    var listUnread = [];
 
     if (selectedFeedKeyIsFeed) {
         if (unreadInfo[feedID].unreadtotal == 0) {
@@ -1451,7 +1451,7 @@ function OpenAllFeedButton(feedID) {
             saveReadlaterInfo();
             SelectFeed(0);
         } else {
-            let listUnread = OpenAllFeedFromButton(feedID, container, itemID, className);
+            OpenAllFeedFromButton(feedID, container, itemID, className, listUnread);
         }
 
         if (listUnread.length > 0) {
@@ -1460,7 +1460,6 @@ function OpenAllFeedButton(feedID) {
                 UpdateReadAllIcon("Feed");
             });
         }
-
     } else {
         groupKey = GetGroupKeyByID(feedID);
         if (groupKey != null) {
@@ -1475,18 +1474,22 @@ function OpenAllFeedButton(feedID) {
                 }
                 if (feedFilteredList.length > 0) {
                     feedFilteredList.forEach((item) => {
-                        OpenAllFeedButtonFromGroup(item.id);
+                        OpenAllFeedButtonFromGroup(item.id, listUnread);
                     });
-
-                    UpdateReadAllIcon("Group");
-                    UpdateUnreadBadge();
+                    if (listUnread.length > 0) {
+                        SendUnreadInfoToWorker(listUnread, true).then(function () {
+                            UpdateFeedUnread(feedID);
+                            UpdateReadAllIcon("Group");
+                            UpdateUnreadBadge();
+                        });
+                    }
                 }
             }
         }
     }
 }
 
-function OpenAllFeedButtonFromGroup(feedID) {
+function OpenAllFeedButtonFromGroup(feedID, listUnread) {
     let container = null;
     let itemID = null;
     let className = (options.readitemdisplay == 0) ? " feedPreviewContainerRead" : " feedPreviewContainerRead feedPreviewContainerCondensed";
@@ -1494,18 +1497,10 @@ function OpenAllFeedButtonFromGroup(feedID) {
     if (unreadInfo[feedID].unreadtotal == 0) {
         return;
     }
-
-    let listUnread = OpenAllFeedFromButton(feedID, container, itemID, className);
-
-    if (listUnread.length > 0) {
-        SendUnreadInfoToWorker(listUnread, true).then(function () {
-            UpdateFeedUnread(feedID);
-        });
-    }
+    OpenAllFeedFromButton(feedID, container, itemID, className, listUnread);
 }
 
-function OpenAllFeedFromButton(feedID, container, itemID, className) {
-    let listUnread = [];
+function OpenAllFeedFromButton(feedID, container, itemID, className, listUnread) {
     for (let i = 0; i < feedInfo[feedID].items.length; i++) {
         itemID = feedInfo[feedID].items[i].itemID;
 
@@ -1521,7 +1516,6 @@ function OpenAllFeedFromButton(feedID, container, itemID, className) {
             }
         }
     }
-    return listUnread
 }
 function SendUnreadInfoToWorker(listUnread, setunset) {
     if (setunset) {

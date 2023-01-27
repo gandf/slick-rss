@@ -239,25 +239,24 @@ function ExternalRequest(request, sender, sendResponse) {
         }
 
         if (updated) {
-            store.setItem('unreadinfo', unreadInfo);
+            store.setItem('unreadinfo', unreadInfo).then(function(){
+                if (groupToCalc.length > 0) {
+                    for (let i = 0; i < groupToCalc.length; i++) {
+                        CalcGroupCountUnread(groupToCalc[i]);
+                    }
+                }
+                UpdateUnreadBadge();
+                if (viewerPort != null) {
+                    viewerPort.postMessage({type: "unreadInfo"});
+                }
+            });
         }
 
         sendResponse({});
-        if (groupToCalc.length > 0) {
-            for (let i = 0; i < groupToCalc.length; i++) {
-                CalcGroupCountUnread(groupToCalc[i]);
-            }
-        }
-        UpdateUnreadBadge();
 
         if (options.log) {
             console.log('|' + request.type + ' | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
         }
-
-        if (viewerPort != null) {
-            viewerPort.postMessage({type: "unreadInfo"});
-        }
-
         return;
     }
 
