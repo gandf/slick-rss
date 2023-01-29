@@ -456,13 +456,15 @@ function UpdateReadAllIcon(type) {
     let count = 0;
     if (unreadInfo != null) {
         if (type == "Feed") {
-            if (unreadInfo[feeds[selectedFeedKey].id] != null) {
-                count = unreadInfo[feeds[selectedFeedKey].id].unreadtotal;
-                if (count == 0) {
-                    count = GetUnreadCount(selectedFeedKey);
+            if (feeds[selectedFeedKey] != undefined) {
+                if (unreadInfo[feeds[selectedFeedKey].id] != null) {
+                    count = unreadInfo[feeds[selectedFeedKey].id].unreadtotal;
+                    if (count == 0) {
+                        count = GetUnreadCount(selectedFeedKey);
+                    }
+                    document.getElementById("markFeedRead").style.display = (count > 0) ? "" : "none";
+                    document.getElementById("openAllFeed").style.display = (count > 0) ? "" : "none";
                 }
-                document.getElementById("markFeedRead").style.display = (count > 0) ? "" : "none";
-                document.getElementById("openAllFeed").style.display = (count > 0) ? "" : "none";
             }
         } else {
             chrome.runtime.sendMessage({"type": "getGroupCountUnread", "data": selectedFeedKey}).then(function (data) {
@@ -498,7 +500,7 @@ function MarkAllFeedsRead() {
     }
     if (listpromise.length > 0) {
         Promise.allSettled(listpromise).then(function () {
-            chrome.tabs.reload();
+            ReloadViewer();
         });
     }
 }
