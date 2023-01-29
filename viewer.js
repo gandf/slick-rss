@@ -137,6 +137,7 @@ port.onMessage.addListener(function (msg) {
                         UpdateFeedUnread(feeds[key].id);
                     }
                 }
+                UpdateReadAllIcon((selectedFeedKeyIsFeed) ? "Feed" : "Group");
             }
         });
     }
