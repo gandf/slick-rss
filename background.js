@@ -211,7 +211,9 @@ function ExternalRequest(request, sender, sendResponse) {
                         }
                     }
                 } else {
-                    delete unreadInfo[listUnread[keys[i]].id].readitems[listUnread[keys[i]].key];
+                    if (unreadInfo[listUnread[keys[i]].id].readitems != undefined) {
+                        delete unreadInfo[listUnread[keys[i]].id].readitems[listUnread[keys[i]].key];
+                    }
                     unreadInfo[listUnread[keys[i]].id].unreadtotal++;
                     updated = true;
                     if (currentFeed.id != k) {
@@ -247,7 +249,7 @@ function ExternalRequest(request, sender, sendResponse) {
             });
         }
 
-        sendResponse({});
+        sendResponse({"data": GetStrFromObject(unreadInfo)});
 
         if (options.log) {
             console.log('|' + request.type + ' | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');

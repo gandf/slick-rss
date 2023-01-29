@@ -480,7 +480,7 @@ function UpdateReadAllIcon(type) {
 
 // marks everything but ReadLater read
 function MarkAllFeedsRead() {
-    let listpromise = [];
+    let refresh = false;
     for (let i = 0; i < feeds.length; i++) {
         if ((feeds[i].id != readLaterFeedID) && (feeds[i].id != allFeedsID)) {
             let feedID = feeds[i].id;
@@ -493,15 +493,13 @@ function MarkAllFeedsRead() {
                 }
             }
             if (listUnread.length > 0) {
-                listpromise.push(SendUnreadInfoToWorker(listUnread, true).then(function () {
-                }));
+                SendUnreadInfoToWorker(listUnread, true);
+                refresh = true;
             }
         }
     }
-    if (listpromise.length > 0) {
-        Promise.allSettled(listpromise).then(function () {
-            ReloadViewer();
-        });
+    if (refresh) {
+        ReloadViewer();
     }
 }
 
@@ -523,10 +521,9 @@ function MarkFeedRead(feedID) {
             MarkFeedReadSub(feedID, itemID, listUnread, className, container);
         }
 
-        SendUnreadInfoToWorker(listUnread, true).then(function () {
-            UpdateFeedUnread(feedID);
-            UpdateReadAllIcon("Feed");
-        });
+        SendUnreadInfoToWorker(listUnread, true);
+        UpdateFeedUnread(feedID);
+        UpdateReadAllIcon("Feed");
     } else {
         groupKey = GetGroupKeyByID(feedID);
         if (groupKey != null) {
@@ -569,9 +566,8 @@ function MarkFeedReadFromGroup(feedID) {
 
     MarkFeedReadSub(feedID, itemID, listUnread, className, container);
 
-    SendUnreadInfoToWorker(listUnread, true).then(function () {
-        UpdateFeedUnread(feedID);
-    });
+    SendUnreadInfoToWorker(listUnread, true);
+    UpdateFeedUnread(feedID);
 }
 
 function MarkFeedReadSub(feedID, itemID, listUnread, className, container) {
@@ -629,10 +625,9 @@ function MarkItemRead(itemID) {
     }
 
     listUnread.push({id: feedID, key: itemID});
-    SendUnreadInfoToWorker(listUnread, true).then(function () {
-        UpdateFeedUnread(feedID);
-        UpdateReadAllIcon((selectedFeedKeyIsFeed) ? "Feed" : "Group");
-    });
+    SendUnreadInfoToWorker(listUnread, true);
+    UpdateFeedUnread(feedID);
+    UpdateReadAllIcon((selectedFeedKeyIsFeed) ? "Feed" : "Group");
 }
 
 function MarkItemUnread(itemID) {
@@ -686,11 +681,10 @@ function MarkItemUnread(itemID) {
 
         UnMarkItemReadLaterWithoutSelectFeed(findWithAttr(readlaterInfo[readLaterFeedID].items, 'itemID', itemID));
 
-        SendUnreadInfoToWorker(listUnread, false).then(function () {
-            UpdateFeedUnread(readLaterFeedID);
-            UpdateFeedUnread(feedID);
-            UpdateReadAllIcon((selectedFeedKeyIsFeed) ? "Feed" : "Group");
-        });
+        SendUnreadInfoToWorker(listUnread, false);
+        UpdateFeedUnread(readLaterFeedID);
+        UpdateFeedUnread(feedID);
+        UpdateReadAllIcon((selectedFeedKeyIsFeed) ? "Feed" : "Group");
     }
 }
 
@@ -1458,10 +1452,9 @@ function OpenAllFeedButton(feedID) {
         }
 
         if (listUnread.length > 0) {
-            SendUnreadInfoToWorker(listUnread, true).then(function () {
-                UpdateFeedUnread(feedID);
-                UpdateReadAllIcon("Feed");
-            });
+            SendUnreadInfoToWorker(listUnread, true);
+            UpdateFeedUnread(feedID);
+            UpdateReadAllIcon("Feed");
         }
     } else {
         groupKey = GetGroupKeyByID(feedID);
@@ -1480,11 +1473,10 @@ function OpenAllFeedButton(feedID) {
                         OpenAllFeedButtonFromGroup(item.id, listUnread);
                     });
                     if (listUnread.length > 0) {
-                        SendUnreadInfoToWorker(listUnread, true).then(function () {
-                            UpdateFeedUnread(feedID);
-                            UpdateReadAllIcon("Group");
-                            UpdateUnreadBadge();
-                        });
+                        SendUnreadInfoToWorker(listUnread, true);
+                        UpdateFeedUnread(feedID);
+                        UpdateReadAllIcon("Group");
+                        UpdateUnreadBadge();
                     }
                 }
             }
@@ -1522,9 +1514,21 @@ function OpenAllFeedFromButton(feedID, container, itemID, className, listUnread)
 }
 function SendUnreadInfoToWorker(listUnread, setunset) {
     if (setunset) {
-        return chrome.runtime.sendMessage({"type": "setUnreadInfo", "data": GetStrFromObject(listUnread)});
+        SendUnreadInfoToWorkerAndreadResponse({"type": "setUnreadInfo", "data": GetStrFromObject(listUnread)});
     } else {
-        return chrome.runtime.sendMessage({"type": "unsetUnreadInfo", "data": GetStrFromObject(listUnread)});
+        SendUnreadInfoToWorkerAndreadResponse({"type": "unsetUnreadInfo", "data": GetStrFromObject(listUnread)});
+    }
+}
+
+async function SendUnreadInfoToWorkerAndreadResponse(data) {
+    let result = await chrome.runtime.sendMessage(data);
+    if (result != undefined) {
+        if (result.data != undefined) {
+            result = GetObjectFromStr(result.data);
+            if (result.constructor === Array) {
+                unreadInfo = result;
+            }
+        }
     }
 }
 
