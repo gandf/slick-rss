@@ -925,7 +925,7 @@ function CheckForUnread(checkForUnreadCounterID) {
                                                                             thumbnail[k][":@"]["url"] = thumbnail[k][":@"]["url"].replaceAll('/v/', '/embed/');
                                                                         }
                                                                     }
-                                                                    let iframeTag = '<iframe src="' + thumbnail[k][":@"]["url"] + '" title="Video player" frameborder="0" style="border: 0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+                                                                    let iframeTag = '<iframe src="' + thumbnail[k][":@"]["url"] + '" title="Video player" frameborder="0" style="border: 0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen sandbox="allow-forms allow-orientation-lock allow-same-origin allow-scripts allow-storage-access-by-user-activation "></iframe>';
                                                                     if (item.content != null) {
                                                                         item.content = item.content + iframeTag;
                                                                     } else {

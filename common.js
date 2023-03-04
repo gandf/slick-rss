@@ -558,3 +558,8 @@ function FormatDTWithMs(mseconds) {
 function filterByID(obj) {
     return ((obj.id != readLaterFeedID) && (obj.id != allFeedsID));
 }
+
+function cleanScriptFromHTML(htmlcontent) {
+    let scriptRegex = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
+    return htmlcontent.replace(scriptRegex, "");
+}

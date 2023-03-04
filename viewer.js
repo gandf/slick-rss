@@ -1342,7 +1342,7 @@ function ShowFeedError(message, content, showErrorContent, url, urlredirected) {
                 let heightSize = Math.max(feedPrev.offsetHeight - document.getElementById("feedError").offsetHeight, 50);
 
                 if (showErrorContent) {
-                    feediframe.innerHTML = '<iframe id="ContentIFrame" srcdoc="" frameborder="0" style="border: 0" height="' + heightSize + '" width="' + feedPrev.style.width + '"></iframe>';
+                    feediframe.innerHTML = '<iframe id="ContentIFrame" srcdoc="" frameborder="0" style="border: 0" height="' + heightSize + '" width="' + feedPrev.style.width + '" sandbox="allow-same-origin"></iframe>';
 
                     feediframe.style.height = feedPrev.style.height;
                     feediframe.style.width = feedPrev.style.width;
@@ -1352,11 +1352,13 @@ function ShowFeedError(message, content, showErrorContent, url, urlredirected) {
                     let contentfeediframe = document.getElementById("ContentIFrame");
                     contentfeediframe.srcdoc = content;
                 } else {
+                    let iframeurl;
                     if (urlredirected != undefined) {
-                        feediframe.innerHTML = '<iframe id="ContentIFrame" src="' + urlredirected + '" frameborder="0" style="border: 0" height="' + heightSize + '" width="' + feedPrev.style.width + '"></iframe>';
+                        iframeurl = urlredirected;
                     } else {
-                        feediframe.innerHTML = '<iframe id="ContentIFrame" src="' + url + '" frameborder="0" style="border: 0" height="' + heightSize + '" width="' + feedPrev.style.width + '"></iframe>';
+                        iframeurl = url;
                     }
+                    feediframe.innerHTML = '<iframe id="ContentIFrame" src="' + iframeurl + '" frameborder="0" style="border: 0" height="' + heightSize + '" width="' + feedPrev.style.width + '"  sandbox="allow-same-origin"></iframe>';
                     feediframe.style.height = feedPrev.style.height;
                     feediframe.style.width = feedPrev.style.width;
                     if (addiframe) {
@@ -1374,10 +1376,30 @@ function ShowFeedError(message, content, showErrorContent, url, urlredirected) {
         }
     }
 
+    document.getElementById("urlRedirected").style.display = "none";
+
+    let feedErrorContentElement = document.getElementById("feedErrorContent");
+
     if (showErrorNow && (content != undefined) && (content != "")) {
-        document.getElementById("feedErrorContent").innerHTML = content;
+        let feediframeerror = document.getElementById("iframefeedErrorContent");
+        if (feediframeerror != undefined) {
+            feedErrorContentElement.removeChild(feediframeerror);
+        }
+        feediframeerror = document.createElement("iframe");
+        feediframeerror.setAttribute("class", "iframefeedErrorContent");
+        feediframeerror.setAttribute("id", "iframefeedErrorContent");
+        feediframeerror.setAttribute("width", "100%");
+        let postitionTag = feedErrorContentElement.getBoundingClientRect();
+        feediframeerror.setAttribute("height", (screen.availHeight * 0.92) - (postitionTag.bottom + window.scrollY + 2) + "px");
+        feediframeerror.sandbox = 'allow-forms allow-same-origin';
+        feediframeerror.srcdoc = cleanScriptFromHTML(content);
+        feedErrorContentElement.appendChild(feediframeerror);
     } else {
-        document.getElementById("feedErrorContent").innerHTML = "";
+        let feediframeerror = document.getElementById("iframefeedErrorContent");
+        if (feediframeerror != undefined) {
+            feedErrorContentElement.removeChild(feediframeerror);
+        }
+        feedErrorContentElement.innerHTML = "";
     }
 }
 
