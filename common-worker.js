@@ -32,7 +32,7 @@ function GetElementByTagNameJS() {
 
     try {
         if (!multiplesElements) {
-            const parser = new fxparser.XMLParser();
+            const parser = new XMLParser();
             let datajson = parser.parse(node);
             return SearchTag(datajson, defaultValue, tag, 0);
         }
