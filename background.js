@@ -761,8 +761,9 @@ function CheckForUnread(checkForUnreadCounterID) {
                                     feedInfo[feedID].date = Date.now();
                                 }
                             }
-
-                            for (let e = 0; e < entries.length; e++) {
+                            
+                            let nbItems = Math.min(entries.length, feeds[checkForUnreadCounterID].maxitems = 0 ? entries.length : feeds[checkForUnreadCounterID].maxitems);
+                            for (let e = 0; e < nbItems; e++) {
                                 useDateInID = true;
                                 getDummyDate = true;
                                 item = {};
