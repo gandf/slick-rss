@@ -887,13 +887,14 @@ function CheckForUnread(checkForUnreadCounterID) {
                                         thumbnail = thumbtemp;
 
                                         for (let k = 0; k < thumbnail.length; k++) {
-                                            keys = Object.keys(thumbnail[k]);
-                                            let val = Object.values(thumbnail[k]);
+                                            keys = Object.keys(thumbnail[k]).sort();
+                                            let soundFound = false;
                                             for (let j = 0; j < keys.length; j++) {
-                                                if (keys[j].toUpperCase() == "MEDIA:CONTENT") {
-                                                    for (let n1 = 0; n1 < val[j].length; n1++) {
-                                                        let keys2 = Object.keys(val[j][n1]);
-                                                        let val2 = Object.values(val[j][n1]);
+                                                let key = keys[j].toUpperCase();
+                                                if (key == "MEDIA:CONTENT") {
+                                                    for (let n1 = 0; n1 < thumbnail[k][keys[j]].length; n1++) {
+                                                        let keys2 = Object.keys(thumbnail[k][keys[j]][n1]);
+                                                        let val2 = Object.values(thumbnail[k][keys[j]][n1]);
                                                         for (let n2 = 0; n2 < keys2.length; n2++) {
                                                             if (keys2[n2].toUpperCase() == "MEDIA:DESCRIPTION") {
                                                                 if (CleanText(val2[n2]).includes("thumbnail")) {
@@ -924,10 +925,11 @@ function CheckForUnread(checkForUnreadCounterID) {
                                                                             thumbnail[k][":@"]["url"] = thumbnail[k][":@"]["url"].replaceAll('/v/', '/embed/');
                                                                         }
                                                                     }
+                                                                    let iframeTag = '<iframe src="' + thumbnail[k][":@"]["url"] + '" title="Video player" frameborder="0" style="border: 0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
                                                                     if (item.content != null) {
-                                                                        item.content = item.content + '<iframe src="' + thumbnail[k][":@"]["url"] + '" title="Video player" frameborder="0" style="border: 0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+                                                                        item.content = item.content + iframeTag;
                                                                     } else {
-                                                                        item.content = '<iframe src="' + thumbnail[k][":@"]["url"] + '" title="Video player" frameborder="0" style="border: 0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+                                                                        item.content = iframeTag;
                                                                     }
                                                                     break;
                                                                 }
@@ -935,22 +937,37 @@ function CheckForUnread(checkForUnreadCounterID) {
                                                         }
                                                     }
                                                 } else {
-                                                    if (keys[j].toUpperCase() == "URL") {
-                                                        item.thumbnail = "<img src=\"" + val[j] + "\">";
-                                                    }
-                                                    if (keys[j].toUpperCase() == "MEDIA:DESCRIPTION") {
-                                                        if (item.content != null) {
-                                                            item.content = item.content + '<BR/>' + CleanText(thumbnail[k][keys[j]]);
-                                                        } else {
-                                                            item.content = CleanText(thumbnail[k][keys[j]]);
+                                                    if (key == "TYPE") {
+                                                        if (thumbnail[k][keys[j]].startsWith("audio/")) {
+                                                            if (thumbnail[k]["url"] != undefined) {
+                                                                soundFound = true;
+                                                                let audioTag = '<audio controls><source src="' + thumbnail[k]["url"] + '" type="' + thumbnail[k][keys[j]] + '"></audio>';
+                                                                if (item.content != null) {
+                                                                    item.content = audioTag + item.content;
+                                                                } else {
+                                                                    item.content = audioTag;
+                                                                }
+                                                            }
                                                         }
                                                     }
-                                                    if (keys[j].toUpperCase() == "MEDIA:THUMBNAIL") {
-                                                        if (thumbnail[k][":@"] != undefined) {
-                                                            if (thumbnail[k][":@"]["url"] != undefined) {
-                                                                thumbnailurl = thumbnail[k][":@"]["url"];
-                                                                item.thumbnail = "<img src=\"" + thumbnailurl + "\">";
-                                                                break;
+                                                    if (!soundFound) {
+                                                        if (key == "URL") {
+                                                            item.thumbnail = "<img src=\"" + thumbnail[k][keys[j]] + "\">";
+                                                        }
+                                                        if (key == "MEDIA:DESCRIPTION") {
+                                                            if (item.content != null) {
+                                                                item.content = item.content + '<BR/>' + CleanText(thumbnail[k][keys[j]]);
+                                                            } else {
+                                                                item.content = CleanText(thumbnail[k][keys[j]]);
+                                                            }
+                                                        }
+                                                        if (key == "MEDIA:THUMBNAIL") {
+                                                            if (thumbnail[k][":@"] != undefined) {
+                                                                if (thumbnail[k][":@"]["url"] != undefined) {
+                                                                    thumbnailurl = thumbnail[k][":@"]["url"];
+                                                                    item.thumbnail = "<img src=\"" + thumbnailurl + "\">";
+                                                                    break;
+                                                                }
                                                             }
                                                         }
                                                     }
