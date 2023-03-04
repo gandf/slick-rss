@@ -845,24 +845,37 @@ function SelectFeedOrGroup(key, type) {
         document.getElementById("refresh").style.display = (feedsOrGroups[key].id != readLaterFeedID) ? "" : "none";
 
         // feed isn't ready yet
-        let feednotready = feedsOrGroupsInfo[feedsOrGroups[key].id] == null;
-        if (!feednotready) {
-            feednotready = feedsOrGroupsInfo[feedsOrGroups[key].id].loading;
-        }
-        if (feednotready) {
-            document.getElementById("refresh").style.display = "none";
-            document.getElementById("headerMessage").innerHTML = GetMessageText("backViewerLoadingFeed");
-            document.getElementById("header").className = "loading";
+        let feednotready;
+        if (feedsOrGroups[key].id != readLaterFeedID) {
+            if (feedsOrGroups[key].id == allFeedsID) {
+                let keys = Object.keys(feedInfo);
+                for (let i = 0; i < keys.length; i++) {
+                    feednotready = feedInfo[keys[i]].loading;
+                    if (feednotready) {
+                        break;
+                    }
+                }
+            } else {
+                feednotready = feedsOrGroupsInfo[feedsOrGroups[key].id] == null;
+                if (!feednotready) {
+                    feednotready = feedsOrGroupsInfo[feedsOrGroups[key].id].loading;
+                }
+            }
+            if (feednotready) {
+                document.getElementById("refresh").style.display = "none";
+                document.getElementById("headerMessage").innerHTML = GetMessageText("backViewerLoadingFeed");
+                document.getElementById("header").className = "loading";
 
-            if (type == "Feed") {
-                // must be a new feed with no content yet
-                chrome.runtime.sendMessage({
-                    "type": "checkForUnreadOnSelectedFeedCompleted",
-                    "selectedFeedKey": key
-                }).then(function () {
-                    RenderFeedFromSelect(type, key, feedsOrGroups);
-                });
-                return;
+                if (type == "Feed") {
+                    // must be a new feed with no content yet
+                    chrome.runtime.sendMessage({
+                        "type": "checkForUnreadOnSelectedFeedCompleted",
+                        "selectedFeedKey": key
+                    }).then(function () {
+                        RenderFeedFromSelect(type, key, feedsOrGroups);
+                    });
+                    return;
+                }
             }
         }
 
