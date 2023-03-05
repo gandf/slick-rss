@@ -101,8 +101,8 @@ function RefreshViewer() {
                     viewerPortTabID = tabs[0].id;
                     chrome.tabs.reload(viewerPortTabID, {bypassCache: true});
                 } else {
-                    for (tab in tabs) {
-                        if (tab.id == viewerPortTabID) {
+                    for (let tab in tabs) {
+                        if (tabs[tab].id == viewerPortTabID) {
                             chrome.tabs.reload(viewerPortTabID, {bypassCache: true});
                             break;
                         }
