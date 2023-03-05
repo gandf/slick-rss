@@ -97,17 +97,16 @@ function RefreshViewer() {
     chrome.tabs.query({url: chrome.runtime.getURL("viewer.html")}, function (tabs) {
         if (tabs != null) {
             if (tabs.length > 0) {
-                if (viewerPortTabID == null) {
-                    viewerPortTabID = tabs[0].id;
-                    chrome.tabs.reload(viewerPortTabID, {bypassCache: true});
-                } else {
+                if (viewerPortTabID != null) {
                     for (let tab in tabs) {
                         if (tabs[tab].id == viewerPortTabID) {
                             chrome.tabs.reload(viewerPortTabID, {bypassCache: true});
-                            break;
+                            return;
                         }
                     }
                 }
+                viewerPortTabID = tabs[0].id;
+                chrome.tabs.reload(viewerPortTabID, {bypassCache: true});
             }
         }
     });

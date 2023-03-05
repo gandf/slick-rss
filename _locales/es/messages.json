@@ -639,6 +639,6 @@
     "message": "Mostrar enlace a la herramienta de búsqueda de feeds"
   },
   "getToolFindFeed": {
-    "message": "Obtener herramienta para encontrar feeds"
+    "message": "Extensión del buscador de feeds"
   }
 }

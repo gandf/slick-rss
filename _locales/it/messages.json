@@ -639,6 +639,6 @@
     "message": "Mostra collegamento allo strumento di ricerca feed"
   },
   "getToolFindFeed": {
-    "message": "Ottieni uno strumento per trovare i feed"
+    "message": "Estensione per la ricerca di feed"
   }
 }
