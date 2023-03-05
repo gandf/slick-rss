@@ -819,6 +819,8 @@ function CheckForUnread(checkForUnreadCounterID) {
                                 }
                                 thumbnailurl = null;
                                 thumbnailtype = null;
+                                item.category = CleanText2(SearchTag(entries[e], null, ["CATEGORY"], 0));
+                                item.comments = CleanText2(SearchTag(entries[e], null, ["COMMENTS"], 0));
 
                                 // don't bother storing extra stuff past max.. only title for Mark All Read
                                 if (e <= feeds[checkForUnreadCounterID].maxitems) {

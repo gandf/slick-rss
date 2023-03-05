@@ -629,6 +629,9 @@
   "optionDontReadOnTitleClick": {
     "message": "Don't mark item read on click on title link"
   },
+  "commentsLink": {
+    "message": "Comments"
+  },
   "enexportTitle": {
       "message": "Slick RSS : Export Feeds"
   },
@@ -1249,5 +1252,8 @@
   },
   "enoptionDontReadOnTitleClick": {
     "message": "Don't mark item read on click on title link"
+  },
+  "encommentsLink": {
+    "message": "Comments"
   }
 }

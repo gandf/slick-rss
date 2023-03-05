@@ -628,5 +628,8 @@
   },
   "optionDontReadOnTitleClick": {
     "message": "Don't mark item read on click on title link"
+  },
+  "commentsLink": {
+    "message": "Comments"
   }
 }

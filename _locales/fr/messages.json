@@ -628,5 +628,8 @@
   },
   "optionDontReadOnTitleClick": {
     "message": "Ne pas marquer lu après avoir cliqué sur le lien du titre d'un article"
+  },
+  "commentsLink": {
+    "message": "Commentaires"
   }
 }

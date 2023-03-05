@@ -628,5 +628,8 @@
   },
   "optionForceEnglishLang": {
     "message": "Forza la lingua inglese"
+  },
+  "commentsLink": {
+    "message": "Commenti"
   }
 }

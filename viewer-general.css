@@ -101,7 +101,7 @@ body {
     width: 100%;
 }
 
-.feedPreviewContainerCondensed .feedPreviewSummaryContent, .feedPreviewContainerCondensed .feedPreviewSummary, .feedPreviewContainerCondensed .feedPreviewDate, .feedPreviewContainerCondensed .feedPreviewAuthor {
+.feedPreviewContainerCondensed .feedPreviewSummaryContent, .feedPreviewContainerCondensed .feedPreviewSummary, .feedPreviewContainerCondensed .feedPreviewDate, .feedPreviewContainerCondensed .feedPreviewAuthor .feedPreviewFoot .feedPreviewComments {
     display: none;
 }
 
@@ -168,12 +168,19 @@ blockquote > blockquote > blockquote > blockquote {
     float: left;
     white-space: nowrap;
     width: 1%;
+    position: absolute;
+    top: 1px;
+    left: 1px;
 }
 
 .feedPreviewAuthor {
     padding: 5px;
     font-size: var(--feedPreviewAuthor-font-size);
     text-align: right;
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    float: right;
 }
 
 .feedPreviewMarkRead {
@@ -265,4 +272,14 @@ blockquote > blockquote > blockquote > blockquote {
 
 #urlRedirectedUrl {
     font-weight: bold;
+}
+
+.feedPreviewComments {
+    padding: 5px;
+    font-size: var(--feedPreviewAuthor-font-size);
+    text-align: center;
+}
+
+.feedPreviewFoot {
+    position: relative;
 }

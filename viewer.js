@@ -922,6 +922,9 @@ function RenderFeed(type) {
     let feedSummaryContent = null;
     let feedSummary = null;
     let feedAuthor = null;
+    let feedComments = null;
+    let feedPreviewFoot = null;
+    let feedUnread = null;
     let summaryLinks = null;
     let summaryImages = null;
     let summaryObjects = null;
@@ -1166,11 +1169,36 @@ function RenderFeed(type) {
 
         feedPublished = document.createElement("div");
         feedPublished.setAttribute("class", "feedPreviewDate");
-        feedPublished.appendChild(document.createTextNode(GetFormattedDate(item.date)));
+        let datePub = GetFormattedDate(item.date);
+        if ((item.category != undefined) || (item.category == "")) {
+            datePub += ' ' + item.category;
+        }
+        feedPublished.appendChild(document.createTextNode(datePub));
 
         feedAuthor = document.createElement("div");
         feedAuthor.setAttribute("class", "feedPreviewAuthor");
         feedAuthor.innerText = item.author;
+
+
+        feedPreviewFoot = document.createElement("div");
+        feedPreviewFoot.setAttribute("class", "feedPreviewFoot");
+
+        feedComments = document.createElement("div");
+        feedComments.setAttribute("class", "feedPreviewComments");
+        if ((item.comments != undefined) || (item.comments == "") && (typeof item.comments == "string")) {
+            let feedCommentsLink = document.createElement("a");
+            feedCommentsLink.setAttribute("href", item.comments);
+            feedCommentsLink.innerText = GetMessageText("commentsLink");
+            $(feedCommentsLink).click({url: item.comments}, function (event) {
+                LinkProxy(event.data.url);
+                return false;
+            });
+            feedComments.appendChild(feedCommentsLink);
+        } else {
+            let feedEmpty = document.createElement("div");
+            feedEmpty.innerHTML = "&nbsp;";
+            feedComments.appendChild(feedEmpty);
+        }
 
         feedSummaryContent = document.createElement("div");
         feedSummaryContent.setAttribute("class", "feedPreviewSummaryContent");
@@ -1305,8 +1333,11 @@ function RenderFeed(type) {
         feedContainer.appendChild(feedTitle);
         feedContainer.appendChild(feedSummaryContent);
         feedContainer.appendChild(feedSummary);
-        feedContainer.appendChild(feedPublished);
-        feedContainer.appendChild(feedAuthor);
+
+        feedPreviewFoot.appendChild(feedPublished);
+        feedPreviewFoot.appendChild(feedComments);
+        feedPreviewFoot.appendChild(feedAuthor);
+        feedContainer.appendChild(feedPreviewFoot);
 
         feedTd = document.createElement("td");
         feedTd.style.width = colWidth;
