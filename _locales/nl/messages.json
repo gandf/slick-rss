@@ -210,7 +210,7 @@
     "message": "AM/PM"
   },
   "optionGithubUrl": {
-    "message": "GitHub URL:"
+    "message": "GitHub URL"
   },
   "optionFeedUnread": {
     "message": "Ongelezen opties voor feeds"
@@ -291,7 +291,7 @@
     "message": " px (0 = onbeperkt)"
   },
   "optionStorageUsage": {
-    "message": "Opslaggebruik:"
+    "message": "Opslaggebruik"
   },
   "optionStorageUsageValue1": {
     "message": "Gebruik makend van "
@@ -552,16 +552,16 @@
     "message": "Actieve inlogconsole"
   },
   "optionVersion": {
-    "message": "Versie:"
+    "message": "Versie"
   },
   "optionAppName": {
-    "message": "Naam:"
+    "message": "Naam"
   },
   "optionAppDescription": {
-    "message": "Beschrijving:"
+    "message": "Beschrijving"
   },
   "optionContentSummary": {
-    "message": "Inhoudsoverzicht:"
+    "message": "Inhoudsoverzicht"
   },
   "optionShowSummaryFullContent": {
     "message": "Standaard volledige inhoud weergeven"
@@ -633,6 +633,12 @@
     "message": "Opmerkingen"
   },
   "optionGetRssFeedUrl": {
-    "message": "Uitbreiding om feed-URL op webpagina te vinden :"
+    "message": "Uitbreiding om feed-URL op webpagina te vinden"
+  },
+  "optionShowToolFindFeed": {
+    "message": "Toon link naar zoekfunctie voor feeds"
+  },
+  "getToolFindFeed": {
+    "message": "Download tool om feeds te vinden"
   }
 }

@@ -213,7 +213,7 @@
     "message": "AM/PM"
   },
   "optionGithubUrl": {
-    "message": "GitHub URL:"
+    "message": "GitHub URL"
   },
   "optionFeedUnread": {
     "message": "Fuentes Opciones no leídas"
@@ -294,7 +294,7 @@
     "message": " px (0 = ilimitado)"
   },
   "optionStorageUsage": {
-    "message": "Uso de almacenamiento:"
+    "message": "Uso de almacenamiento"
   },
   "optionStorageUsageValue1": {
     "message": "Utilizando "
@@ -555,16 +555,16 @@
     "message": "Inicio de sesión activo en la consola"
   },
   "optionVersion": {
-    "message": "Versión:"
+    "message": "Versión"
   },
   "optionAppName": {
-    "message": "Nombre:"
+    "message": "Nombre"
   },
   "optionAppDescription": {
-    "message": "Descripción:"
+    "message": "Descripción"
   },
   "optionContentSummary": {
-    "message": "Resumen de contenido:"
+    "message": "Resumen de contenido"
   },
   "optionShowSummaryFullContent": {
     "message": "Mostrar contenido completo por defecto"
@@ -633,6 +633,12 @@
     "message": "Comentarios"
   },
   "optionGetRssFeedUrl": {
-    "message": "Extensión para encontrar la URL del feed en la página web :"
+    "message": "Extensión para encontrar la URL del feed en la página web"
+  },
+  "optionShowToolFindFeed": {
+    "message": "Mostrar enlace a la herramienta de búsqueda de feeds"
+  },
+  "getToolFindFeed": {
+    "message": "Obtener herramienta para encontrar feeds"
   }
 }

@@ -55,6 +55,7 @@ function SetupScreen()
 		document.getElementById("levelSearchTags").value = options.levelSearchTags;
 		document.getElementById("notifyWindowType").selectedIndex = options.typeNotify;
 		document.getElementById("optionLogInConsole").selectedIndex = options.log;
+		document.getElementById("optionShowToolFindFeed").selectedIndex = options.showGetRSSFeedUrl;
 		document.getElementById("showsavethisfeed").selectedIndex = options.showsavethisfeed;
 		document.getElementById("dontReadOnTitleClick").selectedIndex = options.dontreadontitleclick;
 
@@ -137,6 +138,7 @@ function Save()
 	options.levelSearchTags = parseInt(levelSearchTags, 10);
 	options.typeNotify = document.getElementById("notifyWindowType").selectedIndex;
 	options.log = (document.getElementById("optionLogInConsole").selectedIndex == 1);
+	options.showGetRSSFeedUrl = (document.getElementById("optionShowToolFindFeed").selectedIndex == 1);
 	options.showsavethisfeed = (document.getElementById("showsavethisfeed").selectedIndex == 1);
 	options.dontreadontitleclick = (document.getElementById("dontReadOnTitleClick").selectedIndex == 1);
 

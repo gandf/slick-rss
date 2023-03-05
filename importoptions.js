@@ -134,6 +134,9 @@ function ImportOptions()
 			if (optionsToImport.log != undefined) {
 				options.log = optionsToImport.log;
 			}
+			if (optionsToImport.showGetRSSFeedUrl != undefined) {
+				options.showGetRSSFeedUrl = optionsToImport.showGetRSSFeedUrl;
+			}
 			if (optionsToImport.dontreadontitleclick != undefined) {
 				options.dontreadontitleclick = optionsToImport.dontreadontitleclick;
 			}

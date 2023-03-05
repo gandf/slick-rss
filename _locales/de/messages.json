@@ -210,7 +210,7 @@
     "message": "AM/PM"
   },
   "optionGithubUrl": {
-    "message": "GitHub URL:"
+    "message": "GitHub URL"
   },
   "optionFeedUnread": {
     "message": "Optionen für ungelesene Feeds"
@@ -291,7 +291,7 @@
     "message": " px (0 = unbegrenzt)"
   },
   "optionStorageUsage": {
-    "message": "Speichernutzung:"
+    "message": "Speichernutzung"
   },
   "optionStorageUsageValue1": {
     "message": "Verwenden "
@@ -552,16 +552,16 @@
     "message": "Aktive Anmeldekonsole"
   },
   "optionVersion": {
-    "message": "Ausführung:"
+    "message": "Ausführung"
   },
   "optionAppName": {
-    "message": "Name:"
+    "message": "Name"
   },
   "optionAppDescription": {
-    "message": "Beschreibung:"
+    "message": "Beschreibung"
   },
   "optionContentSummary": {
-    "message": "Zusammenfassung des Inhalts:"
+    "message": "Zusammenfassung des Inhalts"
   },
   "optionShowSummaryFullContent": {
     "message": "Standardmäßig vollständigen Inhalt anzeigen"
@@ -633,6 +633,12 @@
     "message": "Kommentare"
   },
   "optionGetRssFeedUrl": {
-    "message": "Erweiterung zum Suchen der Feed-URL auf der Webseite :"
+    "message": "Erweiterung zum Suchen der Feed-URL auf der Webseite"
+  },
+  "optionShowToolFindFeed": {
+    "message": "Link zum Feed-Suchtool anzeigen"
+  },
+  "getToolFindFeed": {
+    "message": "Feed Finder-Erweiterung"
   }
 }

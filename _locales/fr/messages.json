@@ -210,7 +210,7 @@
     "message": "AM/PM"
   },
   "optionGithubUrl": {
-    "message": "Adresse GitHub : "
+    "message": "Adresse GitHub"
   },
   "optionFeedUnread": {
     "message": "Options flux non lu"
@@ -291,7 +291,7 @@
     "message": " px (0 = illimité)"
   },
   "optionStorageUsage": {
-    "message": "Utilisation stockage :"
+    "message": "Utilisation stockage"
   },
   "optionStorageUsageValue1": {
     "message": ""
@@ -555,16 +555,16 @@
     "message": "Activer log dans la console"
   },
   "optionVersion": {
-    "message": "Version :"
+    "message": "Version"
   },
   "optionAppName": {
-    "message": "Nom :"
+    "message": "Nom"
   },
   "optionAppDescription": {
-    "message": "Description :"
+    "message": "Description"
   },
   "optionContentSummary": {
-    "message": "Résumé du contenu :"
+    "message": "Résumé du contenu"
   },
   "optionShowSummaryFullContent": {
     "message": "Afficher le contenu complet par défaut"
@@ -633,6 +633,12 @@
     "message": "Commentaires"
   },
   "optionGetRssFeedUrl": {
-    "message": "Extension pour trouver les URL des flux dans une page web :"
+    "message": "Extension pour trouver les URL des flux dans une page web"
+  },
+  "optionShowToolFindFeed": {
+    "message": "Afficher lien vers l'outil de recherche des flux"
+  },
+  "getToolFindFeed": {
+    "message": "Extension trouveur de flux"
   }
 }

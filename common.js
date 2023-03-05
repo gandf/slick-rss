@@ -284,6 +284,7 @@ function GetDefaultOptions() {
         "levelSearchTags": 8,
         "typeNotify": 1,
         "log": false,
+        "showGetRSSFeedUrl": true,
         "showsavethisfeed": true,
         "dontreadontitleclick": false
     };

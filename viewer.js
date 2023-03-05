@@ -36,6 +36,11 @@ waitOptionReady().then(function () {
     if (options.readlaterenabled) {
         loadReadlaterInfo();
     }
+    if (options.showGetRSSFeedUrl) {
+        document.getElementById("getToolFindFeed").style.display = "";
+    } else {
+        document.getElementById("getToolFindFeed").style.display = "none";
+    }
 });
 
 store.getItem('unreadinfo').then(function (data) {

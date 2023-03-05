@@ -210,7 +210,7 @@
     "message": "AM/PM"
   },
   "optionGithubUrl": {
-    "message": "GitHub URL:"
+    "message": "GitHub URL"
   },
   "optionFeedUnread": {
     "message": "Feed Unread Options"
@@ -291,7 +291,7 @@
     "message": " px (0 = unlimited)"
   },
   "optionStorageUsage": {
-    "message": "Storage usage:"
+    "message": "Storage usage"
   },
   "optionStorageUsageValue1": {
     "message": "Using "
@@ -555,16 +555,16 @@
     "message": "Active log in console"
   },
   "optionVersion": {
-    "message": "Version:"
+    "message": "Version"
   },
   "optionAppName": {
-    "message": "Name:"
+    "message": "Name"
   },
   "optionAppDescription": {
-    "message": "Description:"
+    "message": "Description"
   },
   "optionContentSummary": {
-    "message": "Content summary:"
+    "message": "Content summary"
   },
   "optionShowSummaryFullContent": {
     "message": "Show full content by default"
@@ -633,6 +633,12 @@
     "message": "Comments"
   },
   "optionGetRssFeedUrl": {
-    "message": "Extension to find feed URL in web page:"
+    "message": "Extension to find feed URL in web page"
+  },
+  "optionShowToolFindFeed": {
+    "message": "Show link to tool to find feeds"
+  },
+  "getToolFindFeed": {
+    "message": "Get tool to find feeds"
   }
 }
