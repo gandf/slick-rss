@@ -631,5 +631,8 @@
   },
   "commentsLink": {
     "message": "Opmerkingen"
+  },
+  "optionGetRssFeedUrl": {
+    "message": "Uitbreiding om feed-URL op webpagina te vinden :"
   }
 }

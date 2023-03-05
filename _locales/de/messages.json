@@ -631,5 +631,8 @@
   },
   "commentsLink": {
     "message": "Kommentare"
+  },
+  "optionGetRssFeedUrl": {
+    "message": "Erweiterung zum Suchen der Feed-URL auf der Webseite :"
   }
 }

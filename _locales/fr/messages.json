@@ -631,5 +631,8 @@
   },
   "commentsLink": {
     "message": "Commentaires"
+  },
+  "optionGetRssFeedUrl": {
+    "message": "Extension pour trouver les URL des flux dans une page web :"
   }
 }

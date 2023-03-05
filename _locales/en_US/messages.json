@@ -631,5 +631,8 @@
   },
   "commentsLink": {
     "message": "Comments"
+  },
+  "optionGetRssFeedUrl": {
+    "message": "Extension to find feed URL in web page:"
   }
 }

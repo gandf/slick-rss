@@ -631,5 +631,8 @@
   },
   "commentsLink": {
     "message": "Commenti"
+  },
+  "optionGetRssFeedUrl": {
+    "message": "Estensione per trovare l'URL del feed nella pagina web :"
   }
 }
