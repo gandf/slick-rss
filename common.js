@@ -106,7 +106,7 @@ function FormatDate(dt, format) {
         format = format.replace("[yyyy]", (isLocal) ? dt.getFullYear() : dt.getUTCFullYear());
     }
     if (format.includes("[yy]")) {
-        format = format.replace("[yy]", (isLocal) ? (dt.getFullYear() + "").substring(2, 2) : (dt.getUTCFullYear() + "").substring(2, 2));
+        format = format.replace("[yy]", (isLocal) ? (dt.getFullYear() + "").substring(2, 4) : (dt.getUTCFullYear() + "").substring(2, 4));
     }
 
     if (format.includes("[mm]")) {
