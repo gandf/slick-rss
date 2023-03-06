@@ -101,7 +101,7 @@ body {
     width: 100%;
 }
 
-.feedPreviewContainerCondensed .feedPreviewSummaryContent, .feedPreviewContainerCondensed .feedPreviewSummary, .feedPreviewContainerCondensed .feedPreviewDate, .feedPreviewContainerCondensed .feedPreviewAuthor .feedPreviewFoot .feedPreviewComments {
+.feedPreviewContainerCondensed .feedPreviewSummaryContent, .feedPreviewContainerCondensed .feedPreviewSummary, .feedPreviewContainerCondensed .feedPreviewDate, .feedPreviewContainerCondensed .feedPreviewAuthor, .feedPreviewContainerCondensed .feedPreviewFoot, .feedPreviewContainerCondensed .feedPreviewComments {
     display: none;
 }
 
