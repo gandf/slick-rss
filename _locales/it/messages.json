@@ -640,5 +640,8 @@
   },
   "getToolFindFeed": {
     "message": "Estensione per la ricerca di feed"
+  },
+  "optionUseViewByCategory": {
+    "message": "Usa la visualizzazione per categorie"
   }
 }

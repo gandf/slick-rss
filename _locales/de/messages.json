@@ -640,5 +640,8 @@
   },
   "getToolFindFeed": {
     "message": "Feed Finder-Erweiterung"
+  },
+  "optionUseViewByCategory": {
+    "message": "Verwenden Sie die Ansicht nach Kategorien"
   }
 }

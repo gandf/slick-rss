@@ -640,5 +640,8 @@
   },
   "getToolFindFeed": {
     "message": "Extension trouveur de flux"
+  },
+  "optionUseViewByCategory": {
+    "message": "Utiliser la vue par catégories"
   }
 }

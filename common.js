@@ -286,7 +286,8 @@ function GetDefaultOptions() {
         "log": false,
         "showGetRSSFeedUrl": true,
         "showsavethisfeed": true,
-        "dontreadontitleclick": false
+        "dontreadontitleclick": false,
+        "useViewByCategory": false
     };
 }
 

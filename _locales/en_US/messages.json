@@ -640,5 +640,8 @@
   },
   "getToolFindFeed": {
     "message": "Get tool to find feeds"
+  },
+  "optionUseViewByCategory": {
+    "message": "Use view by categories"
   }
 }

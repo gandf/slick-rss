@@ -641,6 +641,9 @@
   "getToolFindFeed": {
     "message": "Get tool to find feeds"
   },
+  "optionUseViewByCategory": {
+    "message": "Use view by categories"
+  },
   "enexportTitle": {
       "message": "Slick RSS : Export Feeds"
   },
@@ -1273,5 +1276,8 @@
   },
   "engetToolFindFeed": {
     "message": "Get tool to find feeds"
+  },
+  "enoptionUseViewByCategory": {
+    "message": "Use view by categories"
   }
 }

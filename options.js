@@ -58,6 +58,7 @@ function SetupScreen()
 		document.getElementById("optionShowToolFindFeed").selectedIndex = options.showGetRSSFeedUrl;
 		document.getElementById("showsavethisfeed").selectedIndex = options.showsavethisfeed;
 		document.getElementById("dontReadOnTitleClick").selectedIndex = options.dontreadontitleclick;
+		document.getElementById("useViewByCategory").selectedIndex = options.useViewByCategory;
 
 		let manifestData = chrome.runtime.getManifest();
 		document.getElementById("NoVersion").innerHTML = manifestData.version + " " + manifestData.current_locale;
@@ -141,6 +142,7 @@ function Save()
 	options.showGetRSSFeedUrl = (document.getElementById("optionShowToolFindFeed").selectedIndex == 1);
 	options.showsavethisfeed = (document.getElementById("showsavethisfeed").selectedIndex == 1);
 	options.dontreadontitleclick = (document.getElementById("dontReadOnTitleClick").selectedIndex == 1);
+	options.useViewByCategory = (document.getElementById("useViewByCategory").selectedIndex == 1);
 
 	var promiseCheckForUnread = [];
 	promiseCheckForUnread.push(store.setItem('options', options));

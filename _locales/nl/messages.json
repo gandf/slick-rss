@@ -640,5 +640,8 @@
   },
   "getToolFindFeed": {
     "message": "Feed Finder-extensie"
+  },
+  "optionUseViewByCategory": {
+    "message": "Gebruik weergave per categorie"
   }
 }
