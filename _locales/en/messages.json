@@ -644,6 +644,9 @@
   "optionUseViewByCategory": {
     "message": "Use view by categories"
   },
+  "categoryFilter": {
+    "message": "Category filter"
+  },
   "enexportTitle": {
       "message": "Slick RSS : Export Feeds"
   },
@@ -1279,5 +1282,8 @@
   },
   "enoptionUseViewByCategory": {
     "message": "Use view by categories"
+  },
+  "encategoryFilter": {
+    "message": "Category filter"
   }
 }

@@ -643,5 +643,8 @@
   },
   "optionUseViewByCategory": {
     "message": "Gebruik weergave per categorie"
+  },
+  "categoryFilter": {
+    "message": "Categoriefilter"
   }
 }

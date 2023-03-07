@@ -174,6 +174,9 @@ function UpdateDataFromWorker() {
             if (localData.groupInfo != undefined) {
                 groupInfo = GetObjectFromStr(localData.groupInfo);
             }
+            if (options.useViewByCategory) {
+                RefreshCategoryList();
+            }
             readingFeeds = false;
             if (showingFeeds) {
                 showingFeeds = false;
@@ -1612,4 +1615,57 @@ function InternalConnection(port) {
             }
         }
     }
+}
+
+const delay = ms => new Promise(res => setTimeout(res, ms));
+
+const RefreshCategoryList = async () => {
+    await delay(8000);
+    removeAll();
+    let categoryArray = ListAllCategories();
+    categoryArray.sort();
+    for (const cat of categoryArray) {
+        AddCategoryToList(cat);
+    }
+}
+function AddCategoryToList(cat) {
+    let newOption = new Option(cat,cat);
+    let selectBox = document.getElementById("categoryList");
+    if (selectBox != undefined) {
+        selectBox.appendChild(newOption);
+    }
+}
+
+function removeAll() {
+    let selectBox = document.getElementById("categoryList");
+    if (selectBox != undefined) {
+        while (selectBox.options.length > 0) {
+            selectBox.children[0].remove();
+        }
+        AddCategoryToList(' ');
+    }
+}
+
+function ListAllCategories() {
+    let categoryArray = [];
+    let keys = Object.keys(feedInfo);
+    let nbKeys = keys.length;
+    for (let i = 0; i <nbKeys; i++) {
+        if ((keys[i] != allFeedsID) && (keys[i] != readLaterFeedID)) {
+            if (!feedInfo[keys[i]].loading) {
+                let nbItem = feedInfo[keys[i]].items.length;
+                for (let j = 0; j < nbItem; j++) {
+                    let item = feedInfo[keys[i]].items[j];
+                    if (item.category != undefined) {
+                        if (item.category != "") {
+                            if (categoryArray.indexOf(item.category) == -1) {
+                                categoryArray.push(item.category);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return categoryArray;
 }

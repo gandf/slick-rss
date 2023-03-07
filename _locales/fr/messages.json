@@ -643,5 +643,8 @@
   },
   "optionUseViewByCategory": {
     "message": "Utiliser la vue par catégories"
+  },
+  "categoryFilter": {
+    "message": "Filtre catégorie"
   }
 }
