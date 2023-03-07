@@ -1178,7 +1178,7 @@ function RenderFeed(type) {
         feedPublished = document.createElement("div");
         feedPublished.setAttribute("class", "feedPreviewDate");
         let datePub = GetFormattedDate(item.date);
-        if ((item.category != undefined) || (item.category == "")) {
+        if ((item.category != undefined) && (item.category != "")) {
             datePub += ' ' + item.category;
         }
         feedPublished.appendChild(document.createTextNode(datePub));

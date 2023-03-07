@@ -818,7 +818,8 @@ function CheckForUnread(checkForUnreadCounterID) {
                                 }
                                 thumbnailurl = null;
                                 thumbnailtype = null;
-                                item.category = CleanText2(SearchTag(entries[e], null, ["CATEGORY"], 0));
+                                //item.category = CleanText2(SearchTag(entries[e], null, ["CATEGORY"], 0));
+                                item.category = CleanArrayCategory(SearchTags(entries[e], null, ["CATEGORY"], 0));
                                 item.comments = CleanText2(SearchTag(entries[e], null, ["COMMENTS"], 0));
 
                                 // don't bother storing extra stuff past max.. only title for Mark All Read
@@ -1445,4 +1446,54 @@ function DecodeText(data) {
         }
     }
     return doc;
+}
+
+function CleanArrayCategory(arrayCat) {
+    if (arrayCat == undefined) {
+        return [];
+    }
+    if (arrayCat.constructor === Array) {
+        let categories = [];
+        let value;
+        let found = false;
+        for (const cat of arrayCat) {
+            try {
+                value = cat[0][0][0]["#text"];
+                if (typeof value === 'string' || value instanceof String) {
+                    categories.push(value);
+                    found = true;
+                }
+            } catch {
+                for (const subcat of cat) {
+                    if (typeof subcat === 'string' || subcat instanceof String) {
+                        categories.push(subcat);
+                        found = true;
+                    } else {
+                        if (subcat['term'] != undefined) {
+                            if (typeof subcat['term'] === 'string' || subcat['term'] instanceof String) {
+                                categories.push(subcat['term']);
+                                found = true;
+                            }
+                        }
+                    }
+                }
+            }
+            if (!found) {
+                try {
+                    value = cat[0][0]["#text"];
+                    if (typeof value === 'string' || value instanceof String) {
+                        categories.push(value);
+                        found = true;
+                    }
+                } catch {
+                }
+            }
+        }
+        if (!found) {
+            return CleanText2(arrayCat);
+        }
+        return categories;
+    } else {
+        return CleanText2(arrayCat);
+    }
 }
