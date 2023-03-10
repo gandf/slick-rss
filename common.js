@@ -18,7 +18,8 @@ readlaterInfo[readLaterFeedID] = {
     group: "",
     loading: false,
     items: [],
-    error: ""
+    error: "",
+    category: ""
 };
 
 var promiseOptionBegin = GetOptions();

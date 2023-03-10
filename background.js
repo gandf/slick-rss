@@ -639,7 +639,8 @@ function CheckForUnread(checkForUnreadCounterID) {
             errorContent: "",
             showErrorContent: false,
             guid: "",
-            image: ""
+            image: "",
+            category: ""
         };
 
         try {
@@ -818,7 +819,6 @@ function CheckForUnread(checkForUnreadCounterID) {
                                 }
                                 thumbnailurl = null;
                                 thumbnailtype = null;
-                                //item.category = CleanText2(SearchTag(entries[e], null, ["CATEGORY"], 0));
                                 item.category = CleanArrayCategory(SearchTags(entries[e], null, ["CATEGORY"], 0));
                                 item.comments = CleanText2(SearchTag(entries[e], null, ["COMMENTS"], 0));
 
@@ -1348,7 +1348,7 @@ function GetGroupItems(groupIndex, id, title, description) {
     });
     if (filteredFeeds != null) {
         if (groupInfo[id] == null) {
-            groupInfo[id] = {title: title, description: description, group: "", loading: true, items: [], error: ""};
+            groupInfo[id] = {title: title, description: description, group: "", loading: true, items: [], error: "", category: ""};
         }
         if ((options.showallfeeds == true) && (id != allFeedsID)) {
             if (groupInfo[allFeedsID] == null) {
@@ -1358,7 +1358,8 @@ function GetGroupItems(groupIndex, id, title, description) {
                     group: "",
                     loading: true,
                     items: [],
-                    error: ""
+                    error: "",
+                    category: ""
                 };
             }
         }
@@ -1366,7 +1367,7 @@ function GetGroupItems(groupIndex, id, title, description) {
             if (feedInfo[filteredFeeds[i].id] != null) {
                 info = feedInfo[filteredFeeds[i].id].items;
                 for (let j = 0; j < info.length; j++) {
-                    item = GetNewItem(info[j].title, info[j].date, info[j].order, info[j].content, info[j].idOrigin, info[j].itemID, info[j].url, info[j].author, info[j].thumbnail, info[j].summary, info[j].updated);
+                    item = GetNewItem(info[j].title, info[j].date, info[j].order, info[j].content, info[j].idOrigin, info[j].itemID, info[j].url, info[j].author, info[j].thumbnail, info[j].summary, info[j].updated, info[j].category);
                     groupInfo[id].items.push(item);
                     if ((options.showallfeeds == true) && (id != allFeedsID)) {
                         groupInfo[allFeedsID].items.push(item);
@@ -1377,7 +1378,7 @@ function GetGroupItems(groupIndex, id, title, description) {
     }
 }
 
-function GetNewItem(title, date, order, content, idOrigin, itemID, url, author, thumbnail, summary, updated) {
+function GetNewItem(title, date, order, content, idOrigin, itemID, url, author, thumbnail, summary, updated, category) {
     return {
         title: title,
         date: date,
@@ -1389,7 +1390,8 @@ function GetNewItem(title, date, order, content, idOrigin, itemID, url, author, 
         author: author,
         thumbnail: thumbnail,
         summary: summary,
-        updated: updated
+        updated: updated,
+        category: category
     };
 }
 

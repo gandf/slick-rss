@@ -1187,7 +1187,6 @@ function RenderFeed(type) {
         feedAuthor.setAttribute("class", "feedPreviewAuthor");
         feedAuthor.innerText = item.author;
 
-
         feedPreviewFoot = document.createElement("div");
         feedPreviewFoot.setAttribute("class", "feedPreviewFoot");
 
