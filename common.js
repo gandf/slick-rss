@@ -563,7 +563,5 @@ function filterByID(obj) {
 }
 
 function cleanScriptFromHTML(htmlcontent) {
-    //let scriptRegex = /<script\b[^<]*(?:(?!<\/script.*>)<[^<]*)*<\/script.*>/gi;
-    //return htmlcontent.replaceAll(scriptRegex, "");
     return DOMPurify.sanitize(htmlcontent);
 }

@@ -1,0 +1,61 @@
+
+.delete
+{
+	width: 16px;
+	height: 16px;
+	cursor: pointer;
+}
+
+.markDelete td
+{
+	background-color: #EBEBE4 !important;
+}
+
+.badRow
+{
+	background-color: Red;
+}
+
+.markDelete input
+{
+	border: 2px solid transparent;
+}
+
+#feedGrid td
+{
+	text-align: center;
+	vertical-align: middle;
+}
+#feedGrid .add
+{
+	background-color: #ACCEF7 !important;
+}
+#feedGrid th
+{
+	text-align: left;
+}
+
+#newTitle, .title
+{
+	width: 300px;
+}
+
+#newUrl, .url
+{
+	width: 500px;
+}
+
+#newGroup, .group
+{
+	width: 300px;
+}
+
+#newMaxItems, .maxItems
+{
+	width: 25px;
+}
+
+#newOrder, .order
+{
+	width: 45px;
+}

@@ -156,12 +156,9 @@ function AddRow(feedKey)
 	button.setAttribute("src", "x_gray.png");
 	button.setAttribute("class", "delete");
 
-	//var tmp = this.parentNode.parentNode;
-
 	$(button).click({id:feedKey}, function(event) {
 		MarkDelete($('#' + event.data.id).get(0));
 	});
-	//button.setAttribute("onclick", "MarkDelete(this.parentNode.parentNode);");
 	button.setAttribute("title", "Delete feed");
 	row.insertCell(6).appendChild(button);
 }

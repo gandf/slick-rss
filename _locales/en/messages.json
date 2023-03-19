@@ -647,6 +647,9 @@
   "categoryFilter": {
     "message": "Category filter"
   },
+  "manageCategories": {
+    "message": "Manage categories"
+  },
   "enexportTitle": {
       "message": "Slick RSS : Export Feeds"
   },
@@ -1285,5 +1288,8 @@
   },
   "encategoryFilter": {
     "message": "Category filter"
+  },
+  "enmanageCategories": {
+    "message": "Manage categories"
   }
 }

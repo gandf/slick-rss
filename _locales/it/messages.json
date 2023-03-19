@@ -646,5 +646,8 @@
   },
   "categoryFilter": {
     "message": "Filtro di categoria"
+  },
+  "manageCategories": {
+    "message": "Gestisci le categorie"
   }
 }

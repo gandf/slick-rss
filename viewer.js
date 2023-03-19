@@ -897,6 +897,9 @@ function SelectFeedOrGroup(key, type) {
         }
 
         RenderFeedFromSelect(type, key, feedsOrGroups);
+
+        RefreshCategoryList();
+        ShowCategory(true);
     });
 }
 
@@ -1361,6 +1364,8 @@ function ShowFeedError(message, content, showErrorContent, url, urlredirected) {
     document.getElementById("feedError").style.display = "";
     document.getElementById("headerLogo").style.backgroundImage = "url(rss.png)";
 
+    ShowCategory(false);
+
     let showErrorNow = true;
     if (options.showfeediframes) {
         if ((typeof content == "string") && ((url != undefined) || (urlredirected != undefined))) {
@@ -1615,24 +1620,23 @@ function InternalConnection(port) {
         }
     }
 }
-
-const delay = ms => new Promise(res => setTimeout(res, ms));
-
-const RefreshCategoryList = async () => {
-    await delay(8000);
+function RefreshCategoryList() {
     removeAll();
     let categoryArray = ListAllCategories();
     categoryArray.sort();
-    for (const cat of categoryArray) {
-        AddCategoryToList(cat);
-    }
-}
-function AddCategoryToList(cat) {
-    let newOption = new Option(cat,cat);
+
+    let options;
     let selectBox = document.getElementById("categoryList");
     if (selectBox != undefined) {
-        selectBox.appendChild(newOption);
+        options = selectBox.innerHTML;
     }
+    for (const cat of categoryArray) {
+        options += AddCategoryToList(cat);
+    }
+    selectBox.innerHTML = options;
+}
+function AddCategoryToList(cat) {
+    return '<option data-value="' + cat + '" value="' + cat + '"></option>';
 }
 
 function removeAll() {
@@ -1641,12 +1645,35 @@ function removeAll() {
         while (selectBox.options.length > 0) {
             selectBox.children[0].remove();
         }
-        AddCategoryToList(' ');
+        selectBox.innerHTML = AddCategoryToList(' ');
     }
 }
 
 function ListAllCategories() {
     let categoryArray = [];
+
+    if ((selectedFeedKey != null) && !(selectedFeedKeyIsFeed && (selectedFeedKey == allFeedsID))) {
+        let info;
+        if ((selectedFeedKey == readLaterFeedID) || (selectedFeedKey == 0)) {
+            info = readlaterInfo[readLaterFeedID];
+        } else {
+            if (selectedFeedKeyIsFeed) {
+                info = feedInfo[feeds[selectedFeedKey].id];
+            } else {
+                info = groupInfo[groups[selectedFeedKey].id];
+            }
+        }
+
+        if (info != undefined) {
+            let nbItem = info.items.length;
+            for (let j = 0; j < nbItem; j++) {
+                let item = info.items[j];
+                categoryArray = SearchCat(categoryArray, item);
+            }
+        }
+        return categoryArray;
+    }
+
     let keys = Object.keys(feedInfo);
     let nbKeys = keys.length;
     for (let i = 0; i <nbKeys; i++) {
@@ -1655,16 +1682,48 @@ function ListAllCategories() {
                 let nbItem = feedInfo[keys[i]].items.length;
                 for (let j = 0; j < nbItem; j++) {
                     let item = feedInfo[keys[i]].items[j];
-                    if (item.category != undefined) {
-                        if (item.category != "") {
-                            if (categoryArray.indexOf(item.category) == -1) {
-                                categoryArray.push(item.category);
-                            }
+                    categoryArray = SearchCat(categoryArray, item);
+                }
+            }
+        }
+    }
+    return categoryArray;
+}
+
+function SearchCat(categoryArray, item) {
+    if (item.category != undefined) {
+        if (item.category.constructor === Array) {
+            for (let cat of item.category) {
+                if (typeof cat == 'string') {
+                    if (cat != "") {
+                        if (categoryArray.indexOf(cat) == -1) {
+                            categoryArray.push(cat);
                         }
+                    }
+                }
+            }
+        } else {
+            if (typeof item.category == 'string') {
+                if (item.category != "") {
+                    if (categoryArray.indexOf(item.category) == -1) {
+                        categoryArray.push(item.category);
                     }
                 }
             }
         }
     }
     return categoryArray;
+}
+
+function ShowCategory(showCat) {
+    if (options.useViewByCategory && showCat) {
+        let listOption = document.getElementById("categoryList").options;
+        if (listOption.length > 1) {
+            document.getElementById("categoryFilter").style.display = "";
+        } else {
+            document.getElementById("categoryFilter").style.display = "none";
+        }
+    } else {
+        document.getElementById("categoryFilter").style.display = "none";
+    }
 }

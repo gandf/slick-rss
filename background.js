@@ -1,4 +1,3 @@
-var promiseUpgrade = null;
 var promiseGetUnreadCounts = null;
 var checkingForUnread = false;
 var checkForUnreadCounter = 0;
@@ -13,6 +12,7 @@ var apiaddurlTabID = null;
 var forceRefresh = false;
 var spamProtect = [];
 var listApiUrlToAdd = [];
+var listCategoriesRegistered = [];
 
 chrome.action.onClicked.addListener(ButtonClicked);
 chrome.runtime.onMessage.addListener(ExternalRequest);
@@ -22,16 +22,24 @@ chrome.runtime.onMessageExternal.addListener(ApiRequest);
 
 waitOptionReady().then(function () {
     DoUpgrades().then(function() {
-        promiseGetUnreadCounts = GetUnreadCounts();
-        waitGetUnreadCounts().then(function () {
-            GetFeeds(function () {
-                CleanUpUnreadOrphans().then(function () {
-                    CheckForUnreadStart();
+        waitCategoriesReady().then(function () {
+            promiseGetUnreadCounts = GetUnreadCounts();
+            waitGetUnreadCounts().then(function () {
+                GetFeeds(function () {
+                    CleanUpUnreadOrphans().then(function () {
+                        CheckForUnreadStart();
+                    });
                 });
             });
         });
     });
 });
+
+var promiseCategoriesBegin = GetCategoriesRegistered();
+
+async function waitCategoriesReady() {
+    return await Promise.allSettled([promiseCategoriesBegin]);
+}
 
 async function waitGetUnreadCounts() {
     return await Promise.allSettled([promiseGetUnreadCounts]);
@@ -69,6 +77,16 @@ function InternalConnection(port) {
             apiaddurlTabID = null;
         });
     }
+}
+
+function GetCategoriesRegistered() {
+    return store.getItem('categories').then(function (data) {
+        if (data != null) {
+            listCategoriesRegistered = data;
+        } else {
+            listCategoriesRegistered = [];
+        }
+    });
 }
 
 // tells viewer to reload, a feed changed
@@ -418,6 +436,25 @@ function ExternalRequest(request, sender, sendResponse) {
         listApiUrlToAdd = [];
         sendResponse();
         return;
+    }
+
+    if (request.type == "listAllCategories") {
+        sendResponse(GetStrFromObject(ListAllCategories()));
+        if (options.log) {
+            console.log('|listAllCategories | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
+        }
+        return;
+    }
+
+    if (request.type == "saveCategories") {
+        if (request.data != undefined) {
+            listCategoriesRegistered = GetObjectFromStr(request.data);
+            store.setItem('categories', listCategoriesRegistered).then(function () { });
+        }
+        sendResponse({});
+        if (options.log) {
+            console.log('|saveCategories | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
+        }
     }
 }
 
@@ -1498,4 +1535,39 @@ function CleanArrayCategory(arrayCat) {
     } else {
         return CleanText2(arrayCat);
     }
+}
+
+function ListAllCategories() {
+    let listCat = [];
+    let listCategories = [];
+    let feedid;
+    let category;
+
+    for (let i = 0; i < feeds.length; i++) {
+        feedid = feeds[i].id;
+        if (feedid != allFeedsID) {
+            if (feedInfo[feedid] != undefined) {
+                if (feedInfo[feedid].items != undefined) {
+                    for (let j = 0; j < feedInfo[feedid].items.length; j++) {
+                        category = feedInfo[feedid].items[j].category;
+                        if (category) {
+                            if (!listCat.includes(category)) {
+                                listCat.push(category);
+                                listCategories.push({category: category, color: ""});
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if (listCategoriesRegistered != undefined) {
+        for(let key in listCategoriesRegistered) {
+            if (!listCat.includes(listCategoriesRegistered[key].category)) {
+                listCat.push(category);
+                listCategories.push({category: listCategoriesRegistered[key].category, color: listCategoriesRegistered[key].color});
+            }
+        }
+    }
+    return listCategories;
 }
