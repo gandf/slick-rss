@@ -40,10 +40,10 @@ function Add()
 		return;
 	}
 
-	AddRow(listCategories.push(CreateNewCat(category, color)));
+	AddRow(listCategories.push(CreateNewCat(category, color)) - 1);
 
 	document.getElementById("newCategory").value = "";
-	document.getElementById("newColor").value = "";
+	document.getElementById("newColor").value = "#659DD8";
 }
 
 function CreateNewCat(category, color) {
@@ -58,11 +58,6 @@ function IsValid(category, color)
 {
 	if(category == "") {
 		alert(GetMessageText("manageAlertCategory"));
-		return false;
-	}
-
-	if(color == "") {
-		alert(GetMessageText("manageColor"));
 		return false;
 	}
 	return true;
@@ -87,9 +82,13 @@ function AddRow(key)
 	row.insertCell(0).appendChild(input);
 
 	input = document.createElement('input');
-	input.setAttribute("type", "text");
+	input.setAttribute("type", "color");
 	input.setAttribute("class", "color");
-	input.setAttribute("value", listCategories[key].color);
+	if (listCategories[key].color == "") {
+		input.setAttribute("value", "#659DD8");
+	} else {
+		input.setAttribute("value", listCategories[key].color);
+	}
 
 	row.insertCell(1).appendChild(input);
 
@@ -127,6 +126,7 @@ function Save()
 	let row = null;
 	let category;
 	let color;
+	let catList = [];
 
 	if (lastBadRow != null && lastBadRow.className != "markDelete") {
 		lastBadRow.className = "";
@@ -141,31 +141,14 @@ function Save()
 		if(row.className != "markDelete" && !IsValid(category, color)) {
 			row.className = "badRow";
 			lastBadRow = row;
-			return;
 		}
-
-		listCategories[key].category = category;
-		listCategories[key].color = color;
-	}
-
-	// delete feeds that are marked, start from end so indexes don't get screwed up
-	for(let i = listCategories.length - 1; i >= 0; i--) {
-		row = document.getElementById(i);
-		if (row != undefined) {
-			if(row.className == "markDelete") {
-				feeds.splice(i, 1);
+		if(row.className != "markDelete") {
+			if (color.toUpperCase() != "#659DD8") {
+				catList.push({category: category, color: color});
 			}
 		}
 	}
-/*
-	var resultPromise = store.setItem('feeds', feeds.filter(filterByID)).then(function(data){
-		GetUnreadCounts();
-		CleanUpUnreadOrphans();
-	});*/
-/*
-	resultPromise.then(function(){
-		chrome.runtime.sendMessage({"type": "refreshFeeds" }).then(function(){
-			window.location = chrome.runtime.getURL("viewer.html");
-		});
-	});*/
+	chrome.runtime.sendMessage({"type": "saveCategories", "data": GetStrFromObject(catList)}).then(function(){
+		window.location = chrome.runtime.getURL("viewer.html");
+	});
 }

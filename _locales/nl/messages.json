@@ -649,5 +649,14 @@
   },
   "manageCategories": {
     "message": "Beheer Categorieën"
+  },
+  "manageAlertCategory": {
+    "message": "Categorie kan niet leeg zijn."
+  },
+  "manageCategory": {
+    "message": "Categorie"
+  },
+  "manageColor": {
+    "message": "Beheer kleur"
   }
 }

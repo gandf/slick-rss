@@ -650,6 +650,15 @@
   "manageCategories": {
     "message": "Manage categories"
   },
+  "manageCategory": {
+    "message": "Category"
+  },
+  "manageColor": {
+    "message": "Manage color"
+  },
+  "manageAlertCategory": {
+    "message": "Categoy can't be empty."
+  },
   "enexportTitle": {
       "message": "Slick RSS : Export Feeds"
   },
@@ -1291,5 +1300,14 @@
   },
   "enmanageCategories": {
     "message": "Manage categories"
+  },
+  "enmanageAlertCategory": {
+    "message": "Categoy can't be empty."
+  },
+  "enmanageCategory": {
+    "message": "Category"
+  },
+  "enmanageColor": {
+    "message": "Manage color"
   }
 }

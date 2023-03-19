@@ -649,5 +649,14 @@
   },
   "manageCategories": {
     "message": "Gérer les catégories"
+  },
+  "manageAlertCategory": {
+    "message": "la catégorie ne peut pas être vide."
+  },
+  "manageCategory": {
+    "message": "Catégorie"
+  },
+  "manageColor": {
+    "message": "Couleur"
   }
 }

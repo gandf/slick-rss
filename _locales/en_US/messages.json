@@ -649,5 +649,14 @@
   },
   "manageCategories": {
     "message": "Manage categories"
+  },
+  "manageAlertCategory": {
+    "message": "Categoy can't be empty."
+  },
+  "manageCategory": {
+    "message": "Category"
+  },
+  "manageColor": {
+    "message": "Manage color"
   }
 }

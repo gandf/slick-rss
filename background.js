@@ -1620,6 +1620,11 @@ function ListAllCategories() {
             if (!listCat.includes(listCategoriesRegistered[key].category)) {
                 listCat.push(category);
                 listCategories.push({category: listCategoriesRegistered[key].category, color: listCategoriesRegistered[key].color});
+            } else {
+                let catToUpdate = listCategories.find(obj => obj.category === listCategoriesRegistered[key].category);
+                if (catToUpdate) {
+                    catToUpdate.color = listCategoriesRegistered[key].color;
+                }
             }
         }
     }

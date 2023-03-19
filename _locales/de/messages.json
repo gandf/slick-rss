@@ -646,5 +646,17 @@
   },
   "categoryFilter": {
     "message": "Kategoriefilter"
+  },
+  "manageAlertCategory": {
+    "message": "Kategorie darf nicht leer sein."
+  },
+  "manageCategories": {
+    "message": "Kategorien verwalten"
+  },
+  "manageCategory": {
+    "message": "Kategorie"
+  },
+  "manageColor": {
+    "message": "Farbe verwalten"
   }
 }
