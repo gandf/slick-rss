@@ -20,6 +20,16 @@ $(document).ready(function () {
     $('#openAllFeedButton').click(function () {
         OpenAllFeedButton((selectedFeedKeyIsFeed ? feeds[selectedFeedKey].id : groups[selectedFeedKey].id));
     });
+    $('#categoryFilter').on('input', function() {
+        let enteredValue = $(this).val();
+        let options = $('#categoryList');
+        for (let i = 0; i < options.length; i++) {
+            if (options.eq(i).val() === enteredValue) {
+                //***
+                break;
+            }
+        }
+    });
 });
 
 document.documentElement.setAttribute('lang', GetMessageText('lang'));
@@ -1687,6 +1697,7 @@ function ListAllCategories() {
             }
         }
     }
+    categoryArray.sort();
     return categoryArray;
 }
 

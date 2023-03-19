@@ -13,6 +13,7 @@ var forceRefresh = false;
 var spamProtect = [];
 var listApiUrlToAdd = [];
 var listCategoriesRegistered = [];
+var charToDel = ['/','\\', ' '];
 
 chrome.action.onClicked.addListener(ButtonClicked);
 chrome.runtime.onMessage.addListener(ExternalRequest);
@@ -798,7 +799,7 @@ function CheckForUnread(checkForUnreadCounterID) {
                                     feedInfo[feedID].date = Date.now();
                                 }
                             }
-                            
+
                             let nbItems = Math.min(entries.length, feeds[checkForUnreadCounterID].maxitems = 0 ? entries.length : feeds[checkForUnreadCounterID].maxitems);
                             for (let e = 0; e < nbItems; e++) {
                                 useDateInID = true;
@@ -857,6 +858,29 @@ function CheckForUnread(checkForUnreadCounterID) {
                                 thumbnailurl = null;
                                 thumbnailtype = null;
                                 item.category = CleanArrayCategory(SearchTags(entries[e], null, ["CATEGORY"], 0));
+
+                                if (item.category != undefined) {
+                                    if (item.category.constructor === Array) {
+                                        let newCatArray = [];
+                                        for (let cat of item.category) {
+                                            if (typeof cat == 'string') {
+                                                if (cat != "") {
+                                                    newCatArray.push(cleanCatStr(cat));
+                                                }
+                                            }
+                                        }
+                                        if (newCatArray.length > 0) {
+                                            item.category = newCatArray;
+                                        }
+                                    } else {
+                                        if (typeof item.category == 'string') {
+                                            if (item.category != "") {
+                                                item.category = cleanCatStr(item.category);
+                                            }
+                                        }
+                                    }
+                                }
+
                                 item.comments = CleanText2(SearchTag(entries[e], null, ["COMMENTS"], 0));
 
                                 // don't bother storing extra stuff past max.. only title for Mark All Read
@@ -1550,10 +1574,27 @@ function ListAllCategories() {
                 if (feedInfo[feedid].items != undefined) {
                     for (let j = 0; j < feedInfo[feedid].items.length; j++) {
                         category = feedInfo[feedid].items[j].category;
-                        if (category) {
-                            if (!listCat.includes(category)) {
-                                listCat.push(category);
-                                listCategories.push({category: category, color: ""});
+                        if (category != undefined) {
+                            if (category.constructor === Array) {
+                                for (let cat of category) {
+                                    if (typeof cat == 'string') {
+                                        if (cat != "") {
+                                            if (!listCat.includes(cat)) {
+                                                listCat.push(cat);
+                                                listCategories.push({category: cat, color: ""});
+                                            }
+                                        }
+                                    }
+                                }
+                            } else {
+                                if (typeof category == 'string') {
+                                    if (category != "") {
+                                        if (!listCat.includes(category)) {
+                                            listCat.push(category);
+                                            listCategories.push({category: category, color: ""});
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -1561,6 +1602,19 @@ function ListAllCategories() {
             }
         }
     }
+
+    listCategories.sort(function(a, b) {
+        let categoryA = a.category.toUpperCase();
+        let categoryB = b.category.toUpperCase();
+        if (categoryA < categoryB) {
+            return -1;
+        }
+        if (categoryA > categoryB) {
+            return 1;
+        }
+        return 0;
+    });
+
     if (listCategoriesRegistered != undefined) {
         for(let key in listCategoriesRegistered) {
             if (!listCat.includes(listCategoriesRegistered[key].category)) {
@@ -1570,4 +1624,14 @@ function ListAllCategories() {
         }
     }
     return listCategories;
+}
+
+function cleanCatStr(catTxt) {
+    while (charToDel.includes(catTxt.charAt(0))) {
+        catTxt = catTxt.slice(1);
+    }
+    while (charToDel.includes(catTxt.charAt(catTxt.length - 1))) {
+        catTxt = catTxt.slice(0, -1);
+    }
+    return catTxt;
 }
