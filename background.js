@@ -12,7 +12,6 @@ var apiaddurlTabID = null;
 var forceRefresh = false;
 var spamProtect = [];
 var listApiUrlToAdd = [];
-var listCategoriesRegistered = [];
 var charToDel = ['/','\\', ' '];
 
 chrome.action.onClicked.addListener(ButtonClicked);
@@ -78,16 +77,6 @@ function InternalConnection(port) {
             apiaddurlTabID = null;
         });
     }
-}
-
-function GetCategoriesRegistered() {
-    return store.getItem('categories').then(function (data) {
-        if (data != null) {
-            listCategoriesRegistered = data;
-        } else {
-            listCategoriesRegistered = [];
-        }
-    });
 }
 
 // tells viewer to reload, a feed changed

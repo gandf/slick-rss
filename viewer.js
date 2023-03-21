@@ -35,22 +35,38 @@ $(document).ready(function () {
 document.documentElement.setAttribute('lang', GetMessageText('lang'));
 
 var showFeedsWork = false;
+var listCategoriesRegisteredUpper;
 
-waitOptionReady().then(function () {
-    if (options.darkmode) {
-        activeDarkMode();
-    } else {
-        disableDarkMode();
+var promiseCategoriesBegin = GetCategoriesRegistered();
+
+async function waitCategoriesReady() {
+    return await Promise.allSettled([promiseCategoriesBegin]);
+}
+
+waitCategoriesReady().then(function () {
+    if (listCategoriesRegistered != undefined) {
+        listCategoriesRegisteredUpper = [];
+        for(let key in listCategoriesRegistered) {
+            listCategoriesRegisteredUpper.push({category: listCategoriesRegistered[key].category.toUpperCase(), color: listCategoriesRegistered[key].color});
+        }
     }
 
-    if (options.readlaterenabled) {
-        loadReadlaterInfo();
-    }
-    if (options.showGetRSSFeedUrl) {
-        document.getElementById("getToolFindFeed").style.display = "";
-    } else {
-        document.getElementById("getToolFindFeed").style.display = "none";
-    }
+    waitOptionReady().then(function () {
+        if (options.darkmode) {
+            activeDarkMode();
+        } else {
+            disableDarkMode();
+        }
+
+        if (options.readlaterenabled) {
+            loadReadlaterInfo();
+        }
+        if (options.showGetRSSFeedUrl) {
+            document.getElementById("getToolFindFeed").style.display = "";
+        } else {
+            document.getElementById("getToolFindFeed").style.display = "none";
+        }
+    });
 });
 
 store.getItem('unreadinfo').then(function (data) {
@@ -1251,6 +1267,38 @@ function RenderFeed(type) {
             }
         } else {
             feedContainer.setAttribute("class", "feedPreviewContainer");
+        }
+
+        let categoryColor = undefined;
+        if ((listCategoriesRegisteredUpper != undefined) && (item.category != undefined)) {
+            if (item.category.constructor === Array) {
+                for (let cat of item.category) {
+                    if (typeof cat == 'string') {
+                        if (cat != "") {
+                            let catUpper = cat.toUpperCase();
+                            let catColor = listCategoriesRegisteredUpper.find(obj => obj.category == catUpper);
+                            if (catColor) {
+                                categoryColor = catColor.color;
+                                break;
+                            }
+                        }
+                    }
+                }
+            } else {
+                if (typeof item.category == 'string') {
+                    if (item.category != "") {
+                        let catUpper = item.category.toUpperCase();
+                        let catColor = listCategoriesRegisteredUpper.find(obj => obj.category == catUpper);
+                        if (catColor) {
+                            categoryColor = catColor.color;
+                        }
+                    }
+                }
+            }
+        }
+        if (categoryColor != undefined) {
+            feedContainer.style.borderColor = categoryColor;
+            feedTitle.style.backgroundColor = categoryColor;
         }
 
         // make all summary links open a new tab

@@ -11,6 +11,7 @@ var feeds = [];
 var groupInfo = [];
 var groups = [];
 var unreadTotal = 0;
+var listCategoriesRegistered = [];
 var readlaterInfo = [];
 readlaterInfo[readLaterFeedID] = {
     title: GetMessageText("backReadLater"),
@@ -26,6 +27,16 @@ var promiseOptionBegin = GetOptions();
 
 async function waitOptionReady() {
     return await Promise.allSettled([promiseOptionBegin]);
+}
+
+function GetCategoriesRegistered() {
+    return store.getItem('categories').then(function (data) {
+        if (data != null) {
+            listCategoriesRegistered = data;
+        } else {
+            listCategoriesRegistered = [];
+        }
+    });
 }
 
 function GetStrFromObject(obj) {
