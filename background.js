@@ -1566,6 +1566,7 @@ function ListAllCategories() {
     let listCategories = [];
     let feedid;
     let category;
+    let catUpper;
 
     for (let i = 0; i < feeds.length; i++) {
         feedid = feeds[i].id;
@@ -1579,8 +1580,9 @@ function ListAllCategories() {
                                 for (let cat of category) {
                                     if (typeof cat == 'string') {
                                         if (cat != "") {
-                                            if (!listCat.includes(cat)) {
-                                                listCat.push(cat);
+                                            catUpper = cat.toUpperCase();
+                                            if (!listCat.includes(catUpper)) {
+                                                listCat.push(catUpper);
                                                 listCategories.push({category: cat, color: ""});
                                             }
                                         }
@@ -1589,8 +1591,9 @@ function ListAllCategories() {
                             } else {
                                 if (typeof category == 'string') {
                                     if (category != "") {
-                                        if (!listCat.includes(category)) {
-                                            listCat.push(category);
+                                        catUpper = category.toUpperCase();
+                                        if (!listCat.includes(catUpper)) {
+                                            listCat.push(catUpper);
                                             listCategories.push({category: category, color: ""});
                                         }
                                     }
@@ -1617,11 +1620,13 @@ function ListAllCategories() {
 
     if (listCategoriesRegistered != undefined) {
         for(let key in listCategoriesRegistered) {
-            if (!listCat.includes(listCategoriesRegistered[key].category)) {
-                listCat.push(category);
-                listCategories.push({category: listCategoriesRegistered[key].category, color: listCategoriesRegistered[key].color});
+            category = listCategoriesRegistered[key].category;
+            catUpper = category.toUpperCase();
+            if (!listCat.includes(catUpper)) {
+                listCat.push(catUpper);
+                listCategories.push({category: category, color: listCategoriesRegistered[key].color});
             } else {
-                let catToUpdate = listCategories.find(obj => obj.category === listCategoriesRegistered[key].category);
+                let catToUpdate = listCategories.find(obj => obj.category.toUpperCase() === catUpper);
                 if (catToUpdate) {
                     catToUpdate.color = listCategoriesRegistered[key].color;
                 }

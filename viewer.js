@@ -635,7 +635,7 @@ function MarkItemRead(itemID) {
         }
     }
 
-    if (options.showallfeeds == true) {
+    if (options.showallfeeds) {
         element = document.getElementById("item_" + allFeedsID + "_" + itemID);
         if (element != null) {
             element.className += className;
@@ -690,7 +690,7 @@ function MarkItemUnread(itemID) {
                 }
             }
         }
-        if (options.showallfeeds == true) {
+        if (options.showallfeeds) {
             element = document.getElementById("item_" + allFeedsID + "_" + itemID);
             if (element != null) {
                 element.className = element.className.replace(className, "");
@@ -1631,7 +1631,7 @@ function InternalConnection(port) {
     }
 }
 function RefreshCategoryList() {
-    removeAll();
+    removeAllCategories();
     let categoryArray = ListAllCategories();
     categoryArray.sort();
 
@@ -1649,7 +1649,7 @@ function AddCategoryToList(cat) {
     return '<option data-value="' + cat + '" value="' + cat + '"></option>';
 }
 
-function removeAll() {
+function removeAllCategories() {
     let selectBox = document.getElementById("categoryList");
     if (selectBox != undefined) {
         while (selectBox.options.length > 0) {
@@ -1661,9 +1661,17 @@ function removeAll() {
 
 function ListAllCategories() {
     let categoryArray = [];
+    let categoryArrayUpper = [];
+    let resultCat;
+    let info;
+    let isAllFeed = false;
 
-    if ((selectedFeedKey != null) && !(selectedFeedKeyIsFeed && (selectedFeedKey == allFeedsID))) {
-        let info;
+    if (!selectedFeedKeyIsFeed) {
+        if (groups[selectedFeedKey] != undefined) {
+            isAllFeed = (groups[selectedFeedKey].id == allFeedsID);
+        }
+    }
+    if ((selectedFeedKey != null) && !(isAllFeed)) {
         if ((selectedFeedKey == readLaterFeedID) || (selectedFeedKey == 0)) {
             info = readlaterInfo[readLaterFeedID];
         } else {
@@ -1678,9 +1686,12 @@ function ListAllCategories() {
             let nbItem = info.items.length;
             for (let j = 0; j < nbItem; j++) {
                 let item = info.items[j];
-                categoryArray = SearchCat(categoryArray, item);
+                resultCat = SearchCat(categoryArray, categoryArrayUpper, item);
+                categoryArray = resultCat.categoryArray;
+                categoryArrayUpper = resultCat.categoryArrayUpper;
             }
         }
+        categoryArray.sort();
         return categoryArray;
     }
 
@@ -1692,7 +1703,9 @@ function ListAllCategories() {
                 let nbItem = feedInfo[keys[i]].items.length;
                 for (let j = 0; j < nbItem; j++) {
                     let item = feedInfo[keys[i]].items[j];
-                    categoryArray = SearchCat(categoryArray, item);
+                    resultCat = SearchCat(categoryArray, categoryArrayUpper, item);
+                    categoryArray = resultCat.categoryArray;
+                    categoryArrayUpper = resultCat.categoryArrayUpper;
                 }
             }
         }
@@ -1701,14 +1714,17 @@ function ListAllCategories() {
     return categoryArray;
 }
 
-function SearchCat(categoryArray, item) {
+function SearchCat(categoryArray, categoryArrayUpper, item) {
+    let catUpper;
     if (item.category != undefined) {
         if (item.category.constructor === Array) {
             for (let cat of item.category) {
                 if (typeof cat == 'string') {
                     if (cat != "") {
-                        if (categoryArray.indexOf(cat) == -1) {
+                        catUpper = cat.toUpperCase();
+                        if (categoryArrayUpper.indexOf(catUpper) == -1) {
                             categoryArray.push(cat);
+                            categoryArrayUpper.push(catUpper);
                         }
                     }
                 }
@@ -1716,14 +1732,16 @@ function SearchCat(categoryArray, item) {
         } else {
             if (typeof item.category == 'string') {
                 if (item.category != "") {
-                    if (categoryArray.indexOf(item.category) == -1) {
+                    catUpper = item.category.toUpperCase();
+                    if (categoryArrayUpper.indexOf(catUpper) == -1) {
                         categoryArray.push(item.category);
+                        categoryArrayUpper.push(catUpper);
                     }
                 }
             }
         }
     }
-    return categoryArray;
+    return {categoryArray: categoryArray, categoryArrayUpper: categoryArrayUpper};
 }
 
 function ShowCategory(showCat) {
