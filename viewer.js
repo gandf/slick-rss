@@ -1046,24 +1046,26 @@ function RenderFeed(type) {
         showItem = true;
         item = feedsOrGroupsInfo[feedID].items[i];
 
-        if ((categoryFilterUpper != '') && (categoryFilterUpper != undefined)) {
-            showItem = false;
-            if (item.category != undefined) {
-                if (item.category.constructor === Array) {
-                    for (let cat of item.category) {
-                        if (typeof cat == 'string') {
-                            if (cat != "") {
-                                showItem = (categoryFilterUpper == cat.toUpperCase());
-                                if (showItem) {
-                                    break;
+        if (options.useViewByCategory) {
+            if ((categoryFilterUpper != '') && (categoryFilterUpper != undefined)) {
+                showItem = false;
+                if (item.category != undefined) {
+                    if (item.category.constructor === Array) {
+                        for (let cat of item.category) {
+                            if (typeof cat == 'string') {
+                                if (cat != "") {
+                                    showItem = (categoryFilterUpper == cat.toUpperCase());
+                                    if (showItem) {
+                                        break;
+                                    }
                                 }
                             }
                         }
-                    }
-                } else {
-                    if (typeof item.category == 'string') {
-                        if (item.category != "") {
-                            showItem = (categoryFilterUpper == item.category.toUpperCase());
+                    } else {
+                        if (typeof item.category == 'string') {
+                            if (item.category != "") {
+                                showItem = (categoryFilterUpper == item.category.toUpperCase());
+                            }
                         }
                     }
                 }
@@ -1314,36 +1316,38 @@ function RenderFeed(type) {
                 feedContainer.setAttribute("class", "feedPreviewContainer");
             }
 
-            let categoryColor = undefined;
-            if ((listCategoriesRegisteredUpper != undefined) && (item.category != undefined)) {
-                if (item.category.constructor === Array) {
-                    for (let cat of item.category) {
-                        if (typeof cat == 'string') {
-                            if (cat != "") {
-                                let catUpper = cat.toUpperCase();
+            if (options.useViewByCategory) {
+                let categoryColor = undefined;
+                if ((listCategoriesRegisteredUpper != undefined) && (item.category != undefined)) {
+                    if (item.category.constructor === Array) {
+                        for (let cat of item.category) {
+                            if (typeof cat == 'string') {
+                                if (cat != "") {
+                                    let catUpper = cat.toUpperCase();
+                                    let catColor = listCategoriesRegisteredUpper.find(obj => obj.category == catUpper);
+                                    if (catColor) {
+                                        categoryColor = catColor.color;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        if (typeof item.category == 'string') {
+                            if (item.category != "") {
+                                let catUpper = item.category.toUpperCase();
                                 let catColor = listCategoriesRegisteredUpper.find(obj => obj.category == catUpper);
                                 if (catColor) {
                                     categoryColor = catColor.color;
-                                    break;
                                 }
                             }
                         }
                     }
-                } else {
-                    if (typeof item.category == 'string') {
-                        if (item.category != "") {
-                            let catUpper = item.category.toUpperCase();
-                            let catColor = listCategoriesRegisteredUpper.find(obj => obj.category == catUpper);
-                            if (catColor) {
-                                categoryColor = catColor.color;
-                            }
-                        }
-                    }
                 }
-            }
-            if (categoryColor != undefined) {
-                feedContainer.style.borderColor = categoryColor;
-                feedTitle.style.backgroundColor = categoryColor;
+                if (categoryColor != undefined) {
+                    feedContainer.style.borderColor = categoryColor;
+                    feedTitle.style.backgroundColor = categoryColor;
+                }
             }
 
             // make all summary links open a new tab
