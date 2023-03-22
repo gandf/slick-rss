@@ -11,6 +11,8 @@ $(document).ready(function()
 		w.addEventListener('load', window.close(), true);
 	});
 	$('#exportOptions').click(function(){window.open(chrome.runtime.getURL("exportoptions.html"), 'height=250,width=550');});
+	$('#importCategories').click(function(){window.open(chrome.runtime.getURL("importcategories.html"), 'height=250,width=550');});
+	$('#exportCategories').click(function(){window.open(chrome.runtime.getURL("exportcategories.html"), 'height=250,width=550');});
 	$('#dateDone').click(function(){ShowDateSample(true);});
 	$('#dateFormat').focus(function(){EditDateFormat();});
 

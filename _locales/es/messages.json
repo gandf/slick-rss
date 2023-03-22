@@ -658,5 +658,29 @@
   },
   "manageColor": {
     "message": "Administrar color"
+  },
+  "optionImportCategories": {
+    "message": "Categorías de importación"
+  },
+  "optionExportCategories": {
+    "message": "Categorías de exportación"
+  },
+  "optionCategoriesManagement": {
+    "message": "Gestión de categorías"
+  },
+  "exportCategoriesTitle": {
+    "message": "Slick RSS : Categorías de exportación"
+  },
+  "exportCategoriesForm": {
+    "message": "Copie el contenido del archivo de categorías json en el cuadro de texto a continuación."
+  },
+  "importCategoriesTitle": {
+    "message": "Slick RSS : Categorías de importación"
+  },
+  "importCategories": {
+    "message": "Categorías de importación"
+  },
+  "importCategoriesForm": {
+    "message": "Pegue el contenido del archivo de categorías json en el cuadro de texto a continuación."
   }
 }

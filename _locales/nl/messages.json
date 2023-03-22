@@ -658,5 +658,29 @@
   },
   "manageColor": {
     "message": "Beheer kleur"
+  },
+  "optionImportCategories": {
+    "message": "Categorieën importeren"
+  },
+  "optionExportCategories": {
+    "message": "Categorieën exporteren"
+  },
+  "optionCategoriesManagement": {
+    "message": "Categorieën beheer"
+  },
+  "exportCategoriesTitle": {
+    "message": "Slick RSS : Categorieën exporteren"
+  },
+  "exportCategoriesForm": {
+    "message": "Kopieer de inhoud van uw json Categories-bestand naar het onderstaande tekstvak."
+  },
+  "importCategoriesTitle": {
+    "message": "Slick RSS : Categorieën importeren"
+  },
+  "importCategories": {
+    "message": "Categorieën importeren"
+  },
+  "importCategoriesForm": {
+    "message": "Plak de inhoud van uw json Categories-bestand in het onderstaande tekstvak."
   }
 }

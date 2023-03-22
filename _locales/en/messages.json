@@ -659,6 +659,30 @@
   "manageAlertCategory": {
     "message": "Categoy can't be empty."
   },
+  "optionImportCategories": {
+    "message": "Import Categories"
+  },
+  "optionExportCategories": {
+    "message": "Export Categories"
+  },
+  "optionCategoriesManagement": {
+    "message": "Categories management"
+  },
+  "exportCategoriesTitle": {
+    "message": "Slick RSS : Export Categories"
+  },
+  "exportCategoriesForm": {
+    "message": "Copy your json Categories file contents into the textbox below."
+  },
+  "importCategoriesTitle": {
+    "message": "Slick RSS : Import Categories"
+  },
+  "importCategories": {
+    "message": "Import Categories"
+  },
+  "importCategoriesForm": {
+    "message": "Paste your json Categories file contents into the textbox below."
+  },
   "enexportTitle": {
       "message": "Slick RSS : Export Feeds"
   },
@@ -1309,5 +1333,29 @@
   },
   "enmanageColor": {
     "message": "Manage color"
+  },
+  "enoptionImportCategories": {
+    "message": "Import Categories"
+  },
+  "enoptionExportCategories": {
+    "message": "Export Categories"
+  },
+  "enoptionCategoriesManagement": {
+    "message": "Categories management"
+  },
+  "enexportCategoriesTitle": {
+    "message": "Slick RSS : Export Categories"
+  },
+  "enexportCategoriesForm": {
+    "message": "Copy your json Categories file contents into the textbox below."
+  },
+  "enimportCategoriesTitle": {
+    "message": "Slick RSS : Import Categories"
+  },
+  "enimportCategories": {
+    "message": "Import Categories"
+  },
+  "enimportCategoriesForm": {
+    "message": "Paste your json Categories file contents into the textbox below."
   }
 }
