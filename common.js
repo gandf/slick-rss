@@ -576,3 +576,18 @@ function filterByID(obj) {
 function cleanScriptFromHTML(htmlcontent) {
     return DOMPurify.sanitize(htmlcontent);
 }
+
+function sortArrayStr(listStr) {
+    listStr.sort(function(a, b) {
+        let categoryA = a.toUpperCase();
+        let categoryB = b.toUpperCase();
+        if (categoryA < categoryB) {
+            return -1;
+        }
+        if (categoryA > categoryB) {
+            return 1;
+        }
+        return 0;
+    });
+    return listStr;
+}

@@ -283,3 +283,12 @@ blockquote > blockquote > blockquote > blockquote {
 .feedPreviewFoot {
     position: relative;
 }
+
+.catFilter {
+    margin-left: 5px;
+}
+
+.catFilterInput {
+    margin-left: 5px;
+
+}

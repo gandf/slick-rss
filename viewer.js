@@ -21,12 +21,18 @@ $(document).ready(function () {
         OpenAllFeedButton((selectedFeedKeyIsFeed ? feeds[selectedFeedKey].id : groups[selectedFeedKey].id));
     });
     $('#categoryFilter').on('input', function() {
-        let enteredValue = $(this).val();
-        let options = $('#categoryList');
+        let enteredValue = document.getElementById("catFilterValue").value.toUpperCase();
+        if (enteredValue == "") {
+            categoryFilterUpper = "";
+            ShowFeeds();
+            return;
+        }
+        let options = document.getElementById("categoryList").options;
         for (let i = 0; i < options.length; i++) {
-            if (options.eq(i).val() === enteredValue) {
-                //***
-                break;
+            if (options[i].value.toUpperCase() === enteredValue) {
+                categoryFilterUpper = enteredValue;
+                ShowFeeds();
+                return;
             }
         }
     });
@@ -36,6 +42,7 @@ document.documentElement.setAttribute('lang', GetMessageText('lang'));
 
 var showFeedsWork = false;
 var listCategoriesRegisteredUpper;
+var categoryFilterUpper = '';
 
 var promiseCategoriesBegin = GetCategoriesRegistered();
 
@@ -109,7 +116,7 @@ port.onMessage.addListener(function (msg) {
         document.getElementById("feedsLoading").style.display = "none";
         document.getElementById("feedsOptions").style.display = "";
 
-        UpdateDataFromWorker();
+        UpdateDataFromWorker(undefined);
         for (let key in feeds) {
             if (key != 0) {
                 UpdateFeedUnread(feeds[key].id);
@@ -122,7 +129,7 @@ port.onMessage.addListener(function (msg) {
             console.log('feedupdatecomplete');
         }
 
-        UpdateDataFromWorker();
+        UpdateDataFromWorker(msg.id);
         UpdateFeedUnread(msg.id);
 
         // refresh page if you are on the one that changed
@@ -178,12 +185,12 @@ function ReloadViewer() {
     chrome.tabs.reload();
 }
 
-UpdateDataFromWorker();
+UpdateDataFromWorker(undefined);
 
 window.onload = ShowFeeds;
 window.onresize = FixFeedList;
 
-function UpdateDataFromWorker() {
+function UpdateDataFromWorker(id) {
     readingFeeds = true;
     chrome.runtime.sendMessage({"type": "getFeedsAndGroupsInfo"}).then(function (data) {
         if (data != undefined) {
@@ -201,7 +208,16 @@ function UpdateDataFromWorker() {
                 groupInfo = GetObjectFromStr(localData.groupInfo);
             }
             if (options.useViewByCategory) {
-                RefreshCategoryList();
+                if (selectedFeedKeyIsFeed && (selectedFeedKey != undefined)) {
+                    if (feeds[selectedFeedKey].id == id) {
+                        RefreshCategoryList();
+                    }
+                }
+                if (!selectedFeedKeyIsFeed) {
+                    if (id == undefined) {
+                        RefreshCategoryList();
+                    }
+                }
             }
             readingFeeds = false;
             if (showingFeeds) {
@@ -975,6 +991,7 @@ function RenderFeed(type) {
     let feedTd = null;
     let href = "";
     let headerMessage = "";
+    let showItem;
 
     if (feedsOrGroupsInfo[feedID] == null) {
         return;
@@ -1026,393 +1043,422 @@ function RenderFeed(type) {
 
     let nbItem = Math.min(feedsOrGroupsInfo[feedID].items.length, feedsOrGroups[selectedFeedKey].maxitems);
     for (let i = 0; i < nbItem; i++) {
+        showItem = true;
         item = feedsOrGroupsInfo[feedID].items[i];
-        itemID = item.itemID;
 
-        let containerId = "item_" + feedID + "_" + itemID;
-
-        feedMarkRead = null;
-        feedMarkRead = document.createElement("img");
-        feedMarkRead.setAttribute("src", "x.png");
-        feedMarkRead.addEventListener("mouseover", onmouseover);
-        feedMarkRead.addEventListener("mouseout", onmouseout);
-
-        if (feedID == readLaterFeedID) {
-            $(feedMarkRead).click({i: i}, function (event) {
-                UnMarkItemReadLater(event.data.i);
-                return false;
-            });
-        } else {
-            $(feedMarkRead).click({itemID: itemID}, function (event) {
-                MarkItemRead(event.data.itemID);
-                return false;
-            });
+        if ((categoryFilterUpper != '') && (categoryFilterUpper != undefined)) {
+            showItem = false;
+            if (item.category != undefined) {
+                if (item.category.constructor === Array) {
+                    for (let cat of item.category) {
+                        if (typeof cat == 'string') {
+                            if (cat != "") {
+                                showItem = (categoryFilterUpper == cat.toUpperCase());
+                                if (showItem) {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    if (typeof item.category == 'string') {
+                        if (item.category != "") {
+                            showItem = (categoryFilterUpper == item.category.toUpperCase());
+                        }
+                    }
+                }
+            }
         }
 
-        feedMarkRead.title = GetMessageText("backViewerMarkRead");
-        feedMarkRead.setAttribute("class", "feedPreviewMarkRead");
+        if (showItem) {
+            itemID = item.itemID;
 
-        feedLink = document.createElement("a");
-        href = item.url;
-        if ((href != null) && (typeof href == "string")) {
-            href.startsWith("/") && !href.startsWith("//") && (href = feedBaseUrl + href);
-        }
-        feedLink.setAttribute("href", href);
-        feedLink.innerHTML = (i + 1) + ". " + item.title;
+            let containerId = "item_" + feedID + "_" + itemID;
 
-        if (feedID == readLaterFeedID) {
-            if (options.readlaterremovewhenviewed) {
-                $(feedLink).click({url: href, i: i}, function (event) {
-                    LinkProxy(event.data.url);
+            feedMarkRead = null;
+            feedMarkRead = document.createElement("img");
+            feedMarkRead.setAttribute("src", "x.png");
+            feedMarkRead.addEventListener("mouseover", onmouseover);
+            feedMarkRead.addEventListener("mouseout", onmouseout);
+
+            if (feedID == readLaterFeedID) {
+                $(feedMarkRead).click({i: i}, function (event) {
                     UnMarkItemReadLater(event.data.i);
                     return false;
                 });
             } else {
-                $(feedLink).click({url: href}, function (event) {
-                    LinkProxy(event.data.url);
-                    return false;
-                });
-            }
-        } else {
-            $(feedLink).click({url: href, feedID: feedID, itemID: itemID}, function (event) {
-                LinkProxy(event.data.url);
-                if (!options.dontreadontitleclick) {
+                $(feedMarkRead).click({itemID: itemID}, function (event) {
                     MarkItemRead(event.data.itemID);
-                }
-                if (options.markreadonclick) {
-                    MarkFeedRead(event.data.feedID);
-                }
-                return false;
-            });
-        }
-
-        feedTitle = document.createElement("div");
-        feedTitle.setAttribute("class", "feedPreviewTitle");
-        feedTitle.appendChild(feedMarkRead);
-
-        if (options.readlaterenabled && (feedID != readLaterFeedID)) {
-            feedReadLater = document.createElement("img");
-            feedReadLater.setAttribute("src", "star.png");
-            feedReadLater.setAttribute("class", "feedPreviewReadLater");
-            feedReadLater.setAttribute("title", GetMessageText("backReadLater"));
-            feedReadLater.addEventListener("mouseover", onmouseover);
-            feedReadLater.addEventListener("mouseout", onmouseout);
-            $(feedReadLater).click({feedID: feedID, i: i}, function (event) {
-                MarkItemReadLater(event.data.feedID, event.data.i);
-                return false;
-            });
-            feedTitle.appendChild(feedReadLater);
-
-            feedUnread = document.createElement("img");
-            feedUnread.setAttribute("src", "revert.png");
-            feedUnread.addEventListener("mouseover", onmouseover);
-            feedUnread.addEventListener("mouseout", onmouseout);
-            feedUnread.setAttribute("class", "feedPreviewUnread");
-            feedUnread.setAttribute("title", GetMessageText("backViewerMarkUnread"));
-            feedUnread.setAttribute("display", "none");
-            $(feedUnread).click({itemID: itemID}, function (event) {
-                MarkItemUnread(event.data.itemID);
-                return false;
-            });
-
-            feedTitle.appendChild(feedUnread);
-        }
-
-        if (options.showfeedcontentsummary < 2) {
-            let sens;
-            let feedSummaryImg = document.createElement("img");
-            let feedSummaryImg2 = document.createElement("img");
-
-            if (options.showfeedcontentsummary == 0) {
-                feedSummaryImg.setAttribute("src", "up.png");
-                feedSummaryImg.setAttribute("title", GetMessageText("backSummaryHide"));
-                sens = false;
-            } else {
-                feedSummaryImg.setAttribute("src", "down.png");
-                feedSummaryImg.setAttribute("title", GetMessageText("backSummaryShow"));
-                sens = true;
-            }
-            feedSummaryImg.setAttribute("class", "feedPreviewSummaryImg");
-            feedSummaryImg.addEventListener("mouseover", onmouseover);
-            feedSummaryImg.addEventListener("mouseout", onmouseout);
-            if (sens) {
-                $(feedSummaryImg).click({containerId: containerId, feedID: feedID, i: i}, function (event) {
-                    ShowContent("", event.data.containerId, event.data.feedID, event.data.i, true);
-                    return false;
-                });
-            } else {
-                $(feedSummaryImg).click({containerId: containerId, feedID: feedID, i: i}, function (event) {
-                    ShowContent("", event.data.containerId, event.data.feedID, event.data.i, false);
                     return false;
                 });
             }
-            feedTitle.appendChild(feedSummaryImg);
 
-            if (options.showfeedcontentsummary == 0) {
-                feedSummaryImg2.setAttribute("src", "down.png");
-                feedSummaryImg2.setAttribute("title", GetMessageText("backSummaryShow"));
-                sens = true;
-            } else {
-                feedSummaryImg2.setAttribute("src", "up.png");
-                feedSummaryImg2.setAttribute("title", GetMessageText("backSummaryHide"));
-                sens = false;
+            feedMarkRead.title = GetMessageText("backViewerMarkRead");
+            feedMarkRead.setAttribute("class", "feedPreviewMarkRead");
+
+            feedLink = document.createElement("a");
+            href = item.url;
+            if ((href != null) && (typeof href == "string")) {
+                href.startsWith("/") && !href.startsWith("//") && (href = feedBaseUrl + href);
             }
-            feedSummaryImg2.setAttribute("class", "feedPreviewSummaryImg2");
-            feedSummaryImg2.addEventListener("mouseover", onmouseover);
-            feedSummaryImg2.addEventListener("mouseout", onmouseout);
-            feedSummaryImg2.style.display = "none";
-            if (sens) {
-                $(feedSummaryImg2).click({containerId: containerId, feedID: feedID, i: i}, function (event) {
-                    ShowContent("2", event.data.containerId, event.data.feedID, event.data.i, true);
-                    return false;
-                });
-            } else {
-                $(feedSummaryImg2).click({containerId: containerId, feedID: feedID, i: i}, function (event) {
-                    ShowContent("2", event.data.containerId, event.data.feedID, event.data.i, false);
-                    return false;
-                });
-            }
-            feedTitle.appendChild(feedSummaryImg2);
-        }
-
-        if (options.showsavethisfeed) {
-            let onefeed = document.createElement("img");
-            onefeed.setAttribute("src", "download.png");
-            onefeed.setAttribute("class", "onefeed");
-            $(onefeed).click({containerId: containerId}, function (event) {
-                let refdoc = document.getElementById(event.data.containerId);
-                let docTitle = refdoc.querySelector('.feedPreviewTitle');
-                let docContent = refdoc.querySelector('.feedPreviewSummaryContent');
-
-                listonefeed[event.data.containerId] = {title: docTitle.innerHTML, content: docContent.innerHTML};
-
-                chrome.tabs.create({url: "showonefeed.html#" + event.data.containerId});
-                return false;
-            });
-            onefeed.addEventListener("mouseover", onmouseover);
-            onefeed.addEventListener("mouseout", onmouseout);
-            feedTitle.appendChild(onefeed);
-        }
-
-        if (item.updated) {
-            let feedreadUpdated = document.createElement("img");
-            feedreadUpdated.setAttribute("src", "bell.png");
-            feedreadUpdated.setAttribute("title", GetMessageText("bell"));
-            feedreadUpdated.setAttribute("class", "feedreadUpdated");
-            feedTitle.appendChild(feedreadUpdated);
-        }
-
-        feedTitle.appendChild(feedLink);
-
-        feedPublished = document.createElement("div");
-        feedPublished.setAttribute("class", "feedPreviewDate");
-        let datePub = GetFormattedDate(item.date);
-        if ((item.category != undefined) && (item.category != "")) {
-            datePub += ' ' + item.category;
-        }
-        feedPublished.appendChild(document.createTextNode(datePub));
-
-        feedAuthor = document.createElement("div");
-        feedAuthor.setAttribute("class", "feedPreviewAuthor");
-        feedAuthor.innerText = item.author;
-
-        feedPreviewFoot = document.createElement("div");
-        feedPreviewFoot.setAttribute("class", "feedPreviewFoot");
-
-        feedComments = document.createElement("div");
-        feedComments.setAttribute("class", "feedPreviewComments");
-        if ((item.comments != undefined) || (item.comments == "") && (typeof item.comments == "string")) {
-            let feedCommentsLink = document.createElement("a");
-            feedCommentsLink.setAttribute("href", item.comments);
-            feedCommentsLink.innerText = GetMessageText("commentsLink");
-            $(feedCommentsLink).click({url: item.comments}, function (event) {
-                LinkProxy(event.data.url);
-                return false;
-            });
-            feedComments.appendChild(feedCommentsLink);
-        } else {
-            let feedEmpty = document.createElement("div");
-            feedEmpty.innerHTML = "&nbsp;";
-            feedComments.appendChild(feedEmpty);
-        }
-
-        feedSummaryContent = document.createElement("div");
-        feedSummaryContent.setAttribute("class", "feedPreviewSummaryContent");
-        if ((options.feedsmaxheight != null) && (options.feedsmaxheight != 0)) {
-            feedSummaryContent.style.maxHeight = options.feedsmaxheight + "px";
-        } else {
-            feedSummaryContent.style.maxHeight = "none";
-        }
-
-        if (options.showfeedcontentsummary == 1) {
-            feedSummaryContent.style.display = "none";
-        } else {
-            feedSummaryContent.style.display = "";
-        }
-
-        if (options.usethumbnail && (item.thumbnail != null)) {
-            feedSummaryContent.innerHTML = '<div class="thumbnail">' + item.thumbnail + '</div>' + item.content;
-        } else {
-            feedSummaryContent.innerHTML = item.content;
-        }
-
-        feedContainer = document.createElement("div");
-        feedContainer.setAttribute("id", containerId);
-
-        if (ItemIsRead((feedID != readLaterFeedID) ? feedsOrGroupsInfo[feedID].items[i].idOrigin : readLaterFeedID, itemID)) {
-            if (options.readitemdisplay == 0) {
-                feedContainer.setAttribute("class", "feedPreviewContainer feedPreviewContainerRead");
-            } else {
-                feedContainer.setAttribute("class", "feedPreviewContainer feedPreviewContainerRead feedPreviewContainerCondensed");
-            }
-        } else {
-            feedContainer.setAttribute("class", "feedPreviewContainer");
-        }
-
-        let categoryColor = undefined;
-        if ((listCategoriesRegisteredUpper != undefined) && (item.category != undefined)) {
-            if (item.category.constructor === Array) {
-                for (let cat of item.category) {
-                    if (typeof cat == 'string') {
-                        if (cat != "") {
-                            let catUpper = cat.toUpperCase();
-                            let catColor = listCategoriesRegisteredUpper.find(obj => obj.category == catUpper);
-                            if (catColor) {
-                                categoryColor = catColor.color;
-                                break;
-                            }
-                        }
-                    }
-                }
-            } else {
-                if (typeof item.category == 'string') {
-                    if (item.category != "") {
-                        let catUpper = item.category.toUpperCase();
-                        let catColor = listCategoriesRegisteredUpper.find(obj => obj.category == catUpper);
-                        if (catColor) {
-                            categoryColor = catColor.color;
-                        }
-                    }
-                }
-            }
-        }
-        if (categoryColor != undefined) {
-            feedContainer.style.borderColor = categoryColor;
-            feedTitle.style.backgroundColor = categoryColor;
-        }
-
-        // make all summary links open a new tab
-        summaryLinks = feedSummaryContent.getElementsByTagName("a");
-        for (let l = 0; l < summaryLinks.length; l++) {
-            href = summaryLinks[l].getAttribute("href");
-
-            $(summaryLinks[l]).click({href: href}, function (event) {
-                LinkProxy(event.data.href);
-                return false;
-            });
+            feedLink.setAttribute("href", href);
+            feedLink.innerHTML = (i + 1) + ". " + item.title;
 
             if (feedID == readLaterFeedID) {
                 if (options.readlaterremovewhenviewed) {
-                    $(summaryLinks[l]).click({i: i}, function (event) {
+                    $(feedLink).click({url: href, i: i}, function (event) {
+                        LinkProxy(event.data.url);
                         UnMarkItemReadLater(event.data.i);
+                        return false;
+                    });
+                } else {
+                    $(feedLink).click({url: href}, function (event) {
+                        LinkProxy(event.data.url);
                         return false;
                     });
                 }
             } else {
-                $(summaryLinks[l]).click({itemID: itemID}, function (event) {
-                    MarkItemRead(event.data.itemID);
+                $(feedLink).click({url: href, feedID: feedID, itemID: itemID}, function (event) {
+                    LinkProxy(event.data.url);
+                    if (!options.dontreadontitleclick) {
+                        MarkItemRead(event.data.itemID);
+                    }
+                    if (options.markreadonclick) {
+                        MarkFeedRead(event.data.feedID);
+                    }
                     return false;
                 });
             }
-        }
 
-        // show snug images, or nuke them
-        summaryImages = feedSummaryContent.getElementsByTagName("img");
-        for (let q = summaryImages.length - 1; q >= 0; q--) {
-            if (options.showfeedimages) {
-                summaryImages[q].style.maxWidth = "95%";
-                summaryImages[q].style.width = "";
-                summaryImages[q].style.height = "";
-                summaryImages[q].removeAttribute("width");
-                summaryImages[q].removeAttribute("height");
-            } else {
-                summaryImages[q].parentNode.removeChild(summaryImages[q]);
+            feedTitle = document.createElement("div");
+            feedTitle.setAttribute("class", "feedPreviewTitle");
+            feedTitle.appendChild(feedMarkRead);
+
+            if (options.readlaterenabled && (feedID != readLaterFeedID)) {
+                feedReadLater = document.createElement("img");
+                feedReadLater.setAttribute("src", "star.png");
+                feedReadLater.setAttribute("class", "feedPreviewReadLater");
+                feedReadLater.setAttribute("title", GetMessageText("backReadLater"));
+                feedReadLater.addEventListener("mouseover", onmouseover);
+                feedReadLater.addEventListener("mouseout", onmouseout);
+                $(feedReadLater).click({feedID: feedID, i: i}, function (event) {
+                    MarkItemReadLater(event.data.feedID, event.data.i);
+                    return false;
+                });
+                feedTitle.appendChild(feedReadLater);
+
+                feedUnread = document.createElement("img");
+                feedUnread.setAttribute("src", "revert.png");
+                feedUnread.addEventListener("mouseover", onmouseover);
+                feedUnread.addEventListener("mouseout", onmouseout);
+                feedUnread.setAttribute("class", "feedPreviewUnread");
+                feedUnread.setAttribute("title", GetMessageText("backViewerMarkUnread"));
+                feedUnread.setAttribute("display", "none");
+                $(feedUnread).click({itemID: itemID}, function (event) {
+                    MarkItemUnread(event.data.itemID);
+                    return false;
+                });
+
+                feedTitle.appendChild(feedUnread);
             }
-        }
 
-        // show snug objects, or nuke them
-        for (let p = 0; p < 2; p++) {
-            switch (p) {
-                case 0:
-                    summaryObjects = feedSummaryContent.getElementsByTagName("object");
-                    break;
-                case 1:
-                    summaryObjects = feedSummaryContent.getElementsByTagName("embed");
-                    break;
-                case 2:
-                    summaryObjects = feedSummaryContent.getElementsByTagName("iframe");
-                    break;
-            }
+            if (options.showfeedcontentsummary < 2) {
+                let sens;
+                let feedSummaryImg = document.createElement("img");
+                let feedSummaryImg2 = document.createElement("img");
 
-            for (let o = summaryObjects.length - 1; o >= 0; o--) {
-                if (!options.showfeedobjects) {
-                    summaryObjects[o].parentNode.removeChild(summaryObjects[o]);
+                if (options.showfeedcontentsummary == 0) {
+                    feedSummaryImg.setAttribute("src", "up.png");
+                    feedSummaryImg.setAttribute("title", GetMessageText("backSummaryHide"));
+                    sens = false;
                 } else {
-                    summaryObjects[o].style.maxWidth = "95%";
-                    summaryObjects[o].style.width = "";
-                    summaryObjects[o].style.height = "";
-                    summaryObjects[o].removeAttribute("width");
-                    summaryObjects[o].removeAttribute("height");
+                    feedSummaryImg.setAttribute("src", "down.png");
+                    feedSummaryImg.setAttribute("title", GetMessageText("backSummaryShow"));
+                    sens = true;
+                }
+                feedSummaryImg.setAttribute("class", "feedPreviewSummaryImg");
+                feedSummaryImg.addEventListener("mouseover", onmouseover);
+                feedSummaryImg.addEventListener("mouseout", onmouseout);
+                if (sens) {
+                    $(feedSummaryImg).click({containerId: containerId, feedID: feedID, i: i}, function (event) {
+                        ShowContent("", event.data.containerId, event.data.feedID, event.data.i, true);
+                        return false;
+                    });
+                } else {
+                    $(feedSummaryImg).click({containerId: containerId, feedID: feedID, i: i}, function (event) {
+                        ShowContent("", event.data.containerId, event.data.feedID, event.data.i, false);
+                        return false;
+                    });
+                }
+                feedTitle.appendChild(feedSummaryImg);
+
+                if (options.showfeedcontentsummary == 0) {
+                    feedSummaryImg2.setAttribute("src", "down.png");
+                    feedSummaryImg2.setAttribute("title", GetMessageText("backSummaryShow"));
+                    sens = true;
+                } else {
+                    feedSummaryImg2.setAttribute("src", "up.png");
+                    feedSummaryImg2.setAttribute("title", GetMessageText("backSummaryHide"));
+                    sens = false;
+                }
+                feedSummaryImg2.setAttribute("class", "feedPreviewSummaryImg2");
+                feedSummaryImg2.addEventListener("mouseover", onmouseover);
+                feedSummaryImg2.addEventListener("mouseout", onmouseout);
+                feedSummaryImg2.style.display = "none";
+                if (sens) {
+                    $(feedSummaryImg2).click({containerId: containerId, feedID: feedID, i: i}, function (event) {
+                        ShowContent("2", event.data.containerId, event.data.feedID, event.data.i, true);
+                        return false;
+                    });
+                } else {
+                    $(feedSummaryImg2).click({containerId: containerId, feedID: feedID, i: i}, function (event) {
+                        ShowContent("2", event.data.containerId, event.data.feedID, event.data.i, false);
+                        return false;
+                    });
+                }
+                feedTitle.appendChild(feedSummaryImg2);
+            }
+
+            if (options.showsavethisfeed) {
+                let onefeed = document.createElement("img");
+                onefeed.setAttribute("src", "download.png");
+                onefeed.setAttribute("class", "onefeed");
+                $(onefeed).click({containerId: containerId}, function (event) {
+                    let refdoc = document.getElementById(event.data.containerId);
+                    let docTitle = refdoc.querySelector('.feedPreviewTitle');
+                    let docContent = refdoc.querySelector('.feedPreviewSummaryContent');
+
+                    listonefeed[event.data.containerId] = {title: docTitle.innerHTML, content: docContent.innerHTML};
+
+                    chrome.tabs.create({url: "showonefeed.html#" + event.data.containerId});
+                    return false;
+                });
+                onefeed.addEventListener("mouseover", onmouseover);
+                onefeed.addEventListener("mouseout", onmouseout);
+                feedTitle.appendChild(onefeed);
+            }
+
+            if (item.updated) {
+                let feedreadUpdated = document.createElement("img");
+                feedreadUpdated.setAttribute("src", "bell.png");
+                feedreadUpdated.setAttribute("title", GetMessageText("bell"));
+                feedreadUpdated.setAttribute("class", "feedreadUpdated");
+                feedTitle.appendChild(feedreadUpdated);
+            }
+
+            feedTitle.appendChild(feedLink);
+
+            feedPublished = document.createElement("div");
+            feedPublished.setAttribute("class", "feedPreviewDate");
+            let datePub = GetFormattedDate(item.date);
+            if ((item.category != undefined) && (item.category != "")) {
+                datePub += ' ' + item.category;
+            }
+            feedPublished.appendChild(document.createTextNode(datePub));
+
+            feedAuthor = document.createElement("div");
+            feedAuthor.setAttribute("class", "feedPreviewAuthor");
+            feedAuthor.innerText = item.author;
+
+            feedPreviewFoot = document.createElement("div");
+            feedPreviewFoot.setAttribute("class", "feedPreviewFoot");
+
+            feedComments = document.createElement("div");
+            feedComments.setAttribute("class", "feedPreviewComments");
+
+            if ((item.comments != undefined) || (item.comments == "") && (typeof item.comments == "string")) {
+                let feedCommentsLink = document.createElement("a");
+                feedCommentsLink.setAttribute("href", item.comments);
+                feedCommentsLink.innerText = GetMessageText("commentsLink");
+                $(feedCommentsLink).click({url: item.comments}, function (event) {
+                    LinkProxy(event.data.url);
+                    return false;
+                });
+                feedComments.appendChild(feedCommentsLink);
+            } else {
+                let feedEmpty = document.createElement("div");
+                feedEmpty.innerHTML = "&nbsp;";
+                feedComments.appendChild(feedEmpty);
+            }
+
+            feedSummaryContent = document.createElement("div");
+            feedSummaryContent.setAttribute("class", "feedPreviewSummaryContent");
+            if ((options.feedsmaxheight != null) && (options.feedsmaxheight != 0)) {
+                feedSummaryContent.style.maxHeight = options.feedsmaxheight + "px";
+            } else {
+                feedSummaryContent.style.maxHeight = "none";
+            }
+
+            if (options.showfeedcontentsummary == 1) {
+                feedSummaryContent.style.display = "none";
+            } else {
+                feedSummaryContent.style.display = "";
+            }
+
+            if (options.usethumbnail && (item.thumbnail != null)) {
+                feedSummaryContent.innerHTML = '<div class="thumbnail">' + item.thumbnail + '</div>' + item.content;
+            } else {
+                feedSummaryContent.innerHTML = item.content;
+            }
+
+            feedContainer = document.createElement("div");
+            feedContainer.setAttribute("id", containerId);
+
+            if (ItemIsRead((feedID != readLaterFeedID) ? feedsOrGroupsInfo[feedID].items[i].idOrigin : readLaterFeedID, itemID)) {
+                if (options.readitemdisplay == 0) {
+                    feedContainer.setAttribute("class", "feedPreviewContainer feedPreviewContainerRead");
+                } else {
+                    feedContainer.setAttribute("class", "feedPreviewContainer feedPreviewContainerRead feedPreviewContainerCondensed");
+                }
+            } else {
+                feedContainer.setAttribute("class", "feedPreviewContainer");
+            }
+
+            let categoryColor = undefined;
+            if ((listCategoriesRegisteredUpper != undefined) && (item.category != undefined)) {
+                if (item.category.constructor === Array) {
+                    for (let cat of item.category) {
+                        if (typeof cat == 'string') {
+                            if (cat != "") {
+                                let catUpper = cat.toUpperCase();
+                                let catColor = listCategoriesRegisteredUpper.find(obj => obj.category == catUpper);
+                                if (catColor) {
+                                    categoryColor = catColor.color;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    if (typeof item.category == 'string') {
+                        if (item.category != "") {
+                            let catUpper = item.category.toUpperCase();
+                            let catColor = listCategoriesRegisteredUpper.find(obj => obj.category == catUpper);
+                            if (catColor) {
+                                categoryColor = catColor.color;
+                            }
+                        }
+                    }
                 }
             }
+            if (categoryColor != undefined) {
+                feedContainer.style.borderColor = categoryColor;
+                feedTitle.style.backgroundColor = categoryColor;
+            }
+
+            // make all summary links open a new tab
+            summaryLinks = feedSummaryContent.getElementsByTagName("a");
+            for (let l = 0; l < summaryLinks.length; l++) {
+                href = summaryLinks[l].getAttribute("href");
+
+                $(summaryLinks[l]).click({href: href}, function (event) {
+                    LinkProxy(event.data.href);
+                    return false;
+                });
+
+                if (feedID == readLaterFeedID) {
+                    if (options.readlaterremovewhenviewed) {
+                        $(summaryLinks[l]).click({i: i}, function (event) {
+                            UnMarkItemReadLater(event.data.i);
+                            return false;
+                        });
+                    }
+                } else {
+                    $(summaryLinks[l]).click({itemID: itemID}, function (event) {
+                        MarkItemRead(event.data.itemID);
+                        return false;
+                    });
+                }
+            }
+
+            // show snug images, or nuke them
+            summaryImages = feedSummaryContent.getElementsByTagName("img");
+            for (let q = summaryImages.length - 1; q >= 0; q--) {
+                if (options.showfeedimages) {
+                    summaryImages[q].style.maxWidth = "95%";
+                    summaryImages[q].style.width = "";
+                    summaryImages[q].style.height = "";
+                    summaryImages[q].removeAttribute("width");
+                    summaryImages[q].removeAttribute("height");
+                } else {
+                    summaryImages[q].parentNode.removeChild(summaryImages[q]);
+                }
+            }
+
+            // show snug objects, or nuke them
+            for (let p = 0; p < 2; p++) {
+                switch (p) {
+                    case 0:
+                        summaryObjects = feedSummaryContent.getElementsByTagName("object");
+                        break;
+                    case 1:
+                        summaryObjects = feedSummaryContent.getElementsByTagName("embed");
+                        break;
+                    case 2:
+                        summaryObjects = feedSummaryContent.getElementsByTagName("iframe");
+                        break;
+                }
+
+                for (let o = summaryObjects.length - 1; o >= 0; o--) {
+                    if (!options.showfeedobjects) {
+                        summaryObjects[o].parentNode.removeChild(summaryObjects[o]);
+                    } else {
+                        summaryObjects[o].style.maxWidth = "95%";
+                        summaryObjects[o].style.width = "";
+                        summaryObjects[o].style.height = "";
+                        summaryObjects[o].removeAttribute("width");
+                        summaryObjects[o].removeAttribute("height");
+                    }
+                }
+            }
+
+            // Remove long space before or after img in style from feed
+            summaryObjects = feedSummaryContent.querySelectorAll('[style]');
+            for (let o = summaryObjects.length - 1; o >= 0; o--) {
+                summaryObjects[o].style.paddingTop = "";
+                summaryObjects[o].style.paddingBottom = "";
+            }
+
+            if (columnCount == options.columns) {
+                columnCount = 0;
+            }
+
+            if (columnCount == 0) {
+                currentTr = document.createElement("tr");
+                document.getElementById("feedPreview").appendChild(currentTr);
+            }
+
+            feedSummary = document.createElement("div");
+            feedSummary.setAttribute("class", "feedPreviewSummary");
+            feedSummary.style.maxHeight = "none";
+            if (options.usethumbnail && (item.thumbnail != null)) {
+                feedSummary.innerHTML = '<div class="thumbnail">' + item.thumbnail + '</div>' + item.summary;
+            } else {
+                feedSummary.innerHTML = item.summary;
+            }
+
+            if (options.showfeedcontentsummary == 1) {
+                feedSummary.style.display = "";
+            } else {
+                feedSummary.style.display = "none";
+            }
+
+            feedContainer.appendChild(feedTitle);
+            feedContainer.appendChild(feedSummaryContent);
+            feedContainer.appendChild(feedSummary);
+
+            feedPreviewFoot.appendChild(feedPublished);
+            feedPreviewFoot.appendChild(feedComments);
+            feedPreviewFoot.appendChild(feedAuthor);
+            feedContainer.appendChild(feedPreviewFoot);
+
+            feedTd = document.createElement("td");
+            feedTd.style.width = colWidth;
+            feedTd.appendChild(feedContainer);
+
+            currentTr.appendChild(feedTd);
+            columnCount++;
         }
-
-        // Remove long space before or after img in style from feed
-        summaryObjects = feedSummaryContent.querySelectorAll('[style]');
-        for (let o = summaryObjects.length - 1; o >= 0; o--) {
-            summaryObjects[o].style.paddingTop = "";
-            summaryObjects[o].style.paddingBottom = "";
-        }
-
-        if (columnCount == options.columns) {
-            columnCount = 0;
-        }
-
-        if (columnCount == 0) {
-            currentTr = document.createElement("tr");
-            document.getElementById("feedPreview").appendChild(currentTr);
-        }
-
-        feedSummary = document.createElement("div");
-        feedSummary.setAttribute("class", "feedPreviewSummary");
-        feedSummary.style.maxHeight = "none";
-        if (options.usethumbnail && (item.thumbnail != null)) {
-            feedSummary.innerHTML = '<div class="thumbnail">' + item.thumbnail + '</div>' + item.summary;
-        } else {
-            feedSummary.innerHTML = item.summary;
-        }
-
-        if (options.showfeedcontentsummary == 1) {
-            feedSummary.style.display = "";
-        } else {
-            feedSummary.style.display = "none";
-        }
-
-        feedContainer.appendChild(feedTitle);
-        feedContainer.appendChild(feedSummaryContent);
-        feedContainer.appendChild(feedSummary);
-
-        feedPreviewFoot.appendChild(feedPublished);
-        feedPreviewFoot.appendChild(feedComments);
-        feedPreviewFoot.appendChild(feedAuthor);
-        feedContainer.appendChild(feedPreviewFoot);
-
-        feedTd = document.createElement("td");
-        feedTd.style.width = colWidth;
-        feedTd.appendChild(feedContainer);
-
-        currentTr.appendChild(feedTd);
-        columnCount++;
     }
 }
 
@@ -1681,7 +1727,6 @@ function InternalConnection(port) {
 function RefreshCategoryList() {
     removeAllCategories();
     let categoryArray = ListAllCategories();
-    categoryArray.sort();
 
     let options;
     let selectBox = document.getElementById("categoryList");
@@ -1739,8 +1784,7 @@ function ListAllCategories() {
                 categoryArrayUpper = resultCat.categoryArrayUpper;
             }
         }
-        categoryArray.sort();
-        return categoryArray;
+        return sortArrayStr(categoryArray);
     }
 
     let keys = Object.keys(feedInfo);
@@ -1758,8 +1802,7 @@ function ListAllCategories() {
             }
         }
     }
-    categoryArray.sort();
-    return categoryArray;
+    return sortArrayStr(categoryArray);
 }
 
 function SearchCat(categoryArray, categoryArrayUpper, item) {
@@ -1803,4 +1846,31 @@ function ShowCategory(showCat) {
     } else {
         document.getElementById("categoryFilter").style.display = "none";
     }
+}
+
+function GetCurrentInfo() {
+    let info = undefined;
+    let isAllFeed = false;
+    let id;
+    if (!selectedFeedKeyIsFeed) {
+        if (groups[selectedFeedKey] != undefined) {
+            isAllFeed = (groups[selectedFeedKey].id == allFeedsID);
+            id = groups[selectedFeedKey].id;
+        }
+    }
+    if ((selectedFeedKey != null) && !(isAllFeed)) {
+        if ((selectedFeedKey == readLaterFeedID) || (selectedFeedKey == 0)) {
+            info = readlaterInfo[readLaterFeedID];
+            id = readLaterFeedID;
+        } else {
+            if (selectedFeedKeyIsFeed) {
+                info = feedInfo[feeds[selectedFeedKey].id];
+                id = feeds[selectedFeedKey].id;
+            } else {
+                info = groupInfo[groups[selectedFeedKey].id];
+                id = groups[selectedFeedKey].id;
+            }
+        }
+    }
+    return {info: info, id: id};
 }
