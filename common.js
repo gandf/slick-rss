@@ -294,7 +294,6 @@ function GetDefaultOptions() {
         "forcelangen": false,
         "levelSearchTag": 5,
         "levelSearchTags": 8,
-        "typeNotify": 1,
         "log": false,
         "showGetRSSFeedUrl": true,
         "showsavethisfeed": true,
@@ -457,7 +456,7 @@ function UpdateUnreadBadge() {
     }
 
     if (newNotif) {
-        PlayNotificationSound();
+        NotifyNew();
         newNotif = false;
     }
 
@@ -469,28 +468,6 @@ function UpdateUnreadBadge() {
     // update title
     if (viewerPort != null) {
         viewerPort.postMessage({type: "unreadtotalchanged"});
-    }
-}
-
-function PlayNotificationSound() {
-    if (options.playSoundNotif) {
-        if (viewerPort != null) {
-            viewerPort.postMessage({type: "playSound"});
-        } else {
-            if (options.typeNotify == 0) {
-                chrome.windows.create({
-                    url: chrome.runtime.getURL("notify.html"),
-                    width: 10,
-                    top: 1,
-                    left: 1,
-                    height: 1,
-                    focused: false,
-                    type: "popup"
-                });
-            } else {
-                chrome.tabs.create({url: chrome.runtime.getURL("notify_tab.html"), active: true});
-            }
-        }
     }
 }
 
@@ -590,4 +567,22 @@ function sortArrayStr(listStr) {
         return 0;
     });
     return listStr;
+}
+
+function NotifyNew() {
+    if (options.playSoundNotif) {
+        if (Notification.permission == "granted") {
+            let NotOpt = {
+                type: "list",
+                title: GetMessageText("NotifyTitle"),
+                message: GetMessageText("NotifyTitle"),
+                iconUrl: manifest.icons[128] ,
+                items: [{ title: "Item1", message: "This is item 1."},
+                    { title: "Item2", message: "This is item 2."},
+                    { title: "Item3", message: "This is item 3."},
+                    { title: "Item4", message: "This is item 4."}]
+            }
+            chrome.notifications.create("SlickRssNewFeeds" + Date().toLocaleString(), NotOpt, function () {});
+        }
+    }
 }

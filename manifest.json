@@ -19,6 +19,7 @@
         "service_worker": "background-worker.js"
     },
     "permissions": ["tabs","alarms"],
+    "optional_permissions": ["notifications"],
     "host_permissions": ["http://*/","https://*/"],
     "content_security_policy": {
         "extension_pages": "script-src 'self'; object-src 'self'"

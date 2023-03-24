@@ -153,12 +153,6 @@ port.onMessage.addListener(function (msg) {
         UpdateTitle();
     }
 
-    if (msg.type == "playSound") {
-        let audio = new Audio('Glisten.ogg');
-        audio.addEventListener('ended', ReloadViewer);
-        audio.play();
-    }
-
     if (msg.type == "progressLoading") {
         UpdateLoadingProgress(msg.currentFeeds, msg.currentFeedsCount);
     }

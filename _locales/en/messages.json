@@ -252,7 +252,7 @@
     "message": "Show totals in feed list"
   },
   "optionPlaySound": {
-    "message": "Play notification sound"
+    "message": "Enable notification"
   },
   "optionReadLater": {
     "message": "Read Later Options"
@@ -536,15 +536,6 @@
   "backurlRedirected": {
     "message": "URL has been redirected to "
   },
-  "optionNotifyWindowType": {
-    "message": "Notification window type"
-  },
-  "optionWindow": {
-    "message": "Window"
-  },
-  "optionTab": {
-    "message": "Tab"
-  },
   "apiTitle": {
     "message": "Slick RSS : API add feed"
   },
@@ -682,6 +673,9 @@
   },
   "importCategoriesForm": {
     "message": "Paste your json Categories file contents into the textbox below."
+  },
+  "NotifyTitle": {
+    "message": "Slick RSS : Latest News"
   },
   "enexportTitle": {
       "message": "Slick RSS : Export Feeds"
@@ -927,7 +921,7 @@
       "message": "Show totals in feed list"
   },
   "enoptionPlaySound": {
-      "message": "Play notification sound"
+      "message": "Enable notification"
   },
   "enoptionReadLater": {
       "message": "Read Later Options"
@@ -1211,15 +1205,6 @@
   "enbackurlRedirected": {
     "message": "URL has been redirected to "
   },
-  "enoptionNotifyWindowType": {
-    "message": "Notification window type"
-  },
-  "enoptionWindow": {
-    "message": "Window"
-  },
-  "enoptionTab": {
-    "message": "Tab"
-  },
   "enapiTitle": {
       "message": "Slick RSS : API add feed"
   },
@@ -1357,5 +1342,8 @@
   },
   "enimportCategoriesForm": {
     "message": "Paste your json Categories file contents into the textbox below."
+  },
+  "enNotifyTitle": {
+    "message": "Slick RSS : Latest News"
   }
 }

@@ -252,7 +252,7 @@
     "message": "Summen in Feedliste anzeigen"
   },
   "optionPlaySound": {
-    "message": "Benachrichtigungston abspielen"
+    "message": "Aktiviere Benachrichtigungen"
   },
   "optionReadLater": {
     "message": "Später lesen Optionen"
@@ -533,15 +533,6 @@
   "backurlRedirected": {
     "message": "Die URL wurde auf die Adresse umgeleitet "
   },
-  "optionNotifyWindowType": {
-    "message": "Benachrichtigungsfenstertyp"
-  },
-  "optionWindow": {
-    "message": "Fenster"
-  },
-  "optionTab": {
-    "message": "Tab"
-  },
   "apiTitle": {
     "message": "Slick RSS : API feeds hinzufügen"
   },
@@ -682,5 +673,8 @@
   },
   "importCategoriesForm": {
     "message": "Fügen Sie den Inhalt Ihrer JSON-Kategoriedatei in das Textfeld unten ein."
+  },
+  "NotifyTitle": {
+    "message": "Slick RSS : Neuesten Nachrichten"
   }
 }

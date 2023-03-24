@@ -45,6 +45,15 @@ function SetupScreen()
 		document.getElementById("unreadTotalDisplay").selectedIndex = options.unreadtotaldisplay;
 		document.getElementById("unreadItemTotalDisplay").selectedIndex = options.unreaditemtotaldisplay;
 		document.getElementById("enablePlaySound").selectedIndex = options.playSoundNotif;
+
+		document.getElementById("enablePlaySound").addEventListener("change", function(){
+			if (this.selectedIndex == 1) {
+				if (Notification.permission != "granted") {
+					chrome.permissions.request({permissions: ['notifications']}, (granted) => {});
+				}
+			}
+		});
+
 		document.getElementById("columns").selectedIndex = options.columns - 1;
 		document.getElementById("readLaterEnabled").selectedIndex = options.readlaterenabled;
 		document.getElementById("readLaterRemoveWhenViewed").selectedIndex = options.readlaterremovewhenviewed;
@@ -55,17 +64,14 @@ function SetupScreen()
 		document.getElementById("forceLangEn").selectedIndex = options.forcelangen;
 		document.getElementById("levelSearchTag").value = options.levelSearchTag;
 		document.getElementById("levelSearchTags").value = options.levelSearchTags;
-		document.getElementById("notifyWindowType").selectedIndex = options.typeNotify;
 		document.getElementById("optionLogInConsole").selectedIndex = options.log;
 		document.getElementById("optionShowToolFindFeed").selectedIndex = options.showGetRSSFeedUrl;
 		document.getElementById("showsavethisfeed").selectedIndex = options.showsavethisfeed;
 		document.getElementById("dontReadOnTitleClick").selectedIndex = options.dontreadontitleclick;
 		document.getElementById("useViewByCategory").selectedIndex = options.useViewByCategory;
-
-		let manifestData = chrome.runtime.getManifest();
-		document.getElementById("NoVersion").innerHTML = manifestData.version + " " + manifestData.current_locale;
-		document.getElementById("appName").innerHTML = manifestData.name;
-		document.getElementById("appDescription").innerHTML = manifestData.description;
+		document.getElementById("NoVersion").innerHTML = manifest.version + " " + manifest.current_locale;
+		document.getElementById("appName").innerHTML = manifest.name;
+		document.getElementById("appDescription").innerHTML = manifest.description;
 
 		navigator.storage.estimate().then(({usage, quota}) => {
 			document.getElementById("StorageUsageValue").innerHTML = GetMessageText("optionStorageUsageValue1") + formatBytes(usage) + GetMessageText("optionStorageUsageValue2") + formatBytes(quota) + GetMessageText("optionStorageUsageValue3");
@@ -139,7 +145,6 @@ function Save()
 	options.forcelangen = (document.getElementById("forceLangEn").selectedIndex == 1);
 	options.levelSearchTag = parseInt(levelSearchTag, 10);
 	options.levelSearchTags = parseInt(levelSearchTags, 10);
-	options.typeNotify = document.getElementById("notifyWindowType").selectedIndex;
 	options.log = (document.getElementById("optionLogInConsole").selectedIndex == 1);
 	options.showGetRSSFeedUrl = (document.getElementById("optionShowToolFindFeed").selectedIndex == 1);
 	options.showsavethisfeed = (document.getElementById("showsavethisfeed").selectedIndex == 1);

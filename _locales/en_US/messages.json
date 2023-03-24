@@ -252,7 +252,7 @@
     "message": "Show totals in feed list"
   },
   "optionPlaySound": {
-    "message": "Play notification sound"
+    "message": "Enable notification"
   },
   "optionReadLater": {
     "message": "Read Later Options"
@@ -536,15 +536,6 @@
   "backurlRedirected": {
     "message": "URL has been redirected to "
   },
-  "optionNotifyWindowType": {
-    "message": "Notification window type"
-  },
-  "optionWindow": {
-    "message": "Window"
-  },
-  "optionTab": {
-    "message": "Tab"
-  },
   "apiTitle": {
     "message": "Slick RSS : API add feed"
   },
@@ -682,5 +673,8 @@
   },
   "importCategoriesForm": {
     "message": "Paste your json Categories file contents into the textbox below."
+  },
+  "NotifyTitle": {
+    "message": "Slick RSS : Latest News"
   }
 }

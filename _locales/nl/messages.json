@@ -252,7 +252,7 @@
     "message": "Toon totalen in feedlijst"
   },
   "optionPlaySound": {
-    "message": "Meldingsgeluid afspelen"
+    "message": "Melding inschakelen"
   },
   "optionReadLater": {
     "message": "Latere opties lezen"
@@ -533,15 +533,6 @@
   "backurlRedirected": {
     "message": "De URL is omgeleid naar het adres "
   },
-  "optionNotifyWindowType": {
-    "message": "Type meldingsvenster"
-  },
-  "optionWindow": {
-    "message": "Raam"
-  },
-  "optionTab": {
-    "message": "Tab"
-  },
   "apiTitle": {
     "message": "Slick RSS : API feeds toevoegen"
   },
@@ -682,5 +673,8 @@
   },
   "importCategoriesForm": {
     "message": "Plak de inhoud van uw json Categories-bestand in het onderstaande tekstvak."
+  },
+  "NotifyTitle": {
+    "message": "Slick RSS : Laatste nieuws"
   }
 }

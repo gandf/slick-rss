@@ -255,7 +255,7 @@
     "message": "Mostrar totales en la lista de fuentes"
   },
   "optionPlaySound": {
-    "message": "Reproducir sonido de notificación"
+    "message": "Habilitar la notificación"
   },
   "optionReadLater": {
     "message": "Opciones de lectura posterior"
@@ -536,15 +536,6 @@
   "backurlRedirected": {
     "message": "La URL ha sido redirigida a la dirección "
   },
-  "optionNotifyWindowType": {
-    "message": "Tipo de ventana de notificación"
-  },
-  "optionWindow": {
-    "message": "Ventana"
-  },
-  "optionTab": {
-    "message": "Pestaña"
-  },
   "apiTitle": {
     "message": "Slick RSS : API añadir fuentes"
   },
@@ -682,5 +673,8 @@
   },
   "importCategoriesForm": {
     "message": "Pegue el contenido del archivo de categorías json en el cuadro de texto a continuación."
+  },
+  "NotifyTitle": {
+    "message": "Slick RSS : Últimas noticias"
   }
 }

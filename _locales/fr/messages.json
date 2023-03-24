@@ -252,7 +252,7 @@
     "message": "Afficher totaux dans la liste de flux"
   },
   "optionPlaySound": {
-    "message": "Jouer son de notification"
+    "message": "Activer notification"
   },
   "optionReadLater": {
     "message": "Options Lire plus tard"
@@ -536,15 +536,6 @@
   "backurlRedirected": {
     "message": "L'URL a été redirigée à l'adresse "
   },
-  "optionNotifyWindowType": {
-    "message": "Type de fenêtre de notification"
-  },
-  "optionWindow": {
-    "message": "Fenêtre"
-  },
-  "optionTab": {
-    "message": "Onglet"
-  },
   "apiTitle": {
     "message": "Slick RSS : API ajout flux"
   },
@@ -682,5 +673,8 @@
   },
   "importCategoriesForm": {
     "message": "Collez le contenu de votre fichier Catégories json dans la zone de texte ci-dessous."
+  },
+  "NotifyTitle": {
+    "message": "Slick RSS : Dernières nouvelles"
   }
 }
