@@ -676,5 +676,8 @@
   },
   "NotifyTitle": {
     "message": "Slick RSS : Últimas noticias"
+  },
+  "addAuthNotif": {
+    "message": "Agregar autorización de notificación"
   }
 }

@@ -569,20 +569,62 @@ function sortArrayStr(listStr) {
     return listStr;
 }
 
+function ItemIsRead(feedID, itemID) {
+    let currentFeed = feeds.find(function (el) {
+        return (el.id == feedID);
+    });
+    if (currentFeed == readLaterFeedID) {
+        return false;
+    }
+    if (currentFeed != null) {
+        if (unreadInfo[currentFeed.id] != undefined) {
+            if (unreadInfo[currentFeed.id].readitems != undefined) {
+                return (unreadInfo[currentFeed.id].readitems[itemID] != null);
+            }
+        }
+    }
+    return false;
+}
+
 function NotifyNew() {
     if (options.playSoundNotif) {
         if (Notification.permission == "granted") {
-            let NotOpt = {
-                type: "list",
-                title: GetMessageText("NotifyTitle"),
-                message: GetMessageText("NotifyTitle"),
-                iconUrl: manifest.icons[128] ,
-                items: [{ title: "Item1", message: "This is item 1."},
-                    { title: "Item2", message: "This is item 2."},
-                    { title: "Item3", message: "This is item 3."},
-                    { title: "Item4", message: "This is item 4."}]
+            let NewItems = [];
+            let NewItemsCount = 0;
+
+            let keys = Object.keys(feeds);
+            for (let i = 0 ; i < keys.length ; i++) {
+                let feedTmp = feeds[keys[i]];
+                if (feedTmp.id != readLaterFeedID) {
+                    let keysInfo = Object.keys(feedInfo[feedTmp.id].items);
+                    for (let j = 0; j < keysInfo.length; j++) {
+                        let feedInfoTmp = feedInfo[feedTmp.id].items[keysInfo[j]];
+
+                        if (!ItemIsRead(feedTmp.id, feedInfoTmp.itemID)) {
+                            NewItemsCount++;
+                            NewItems.push({title: feedInfoTmp.title.substring(0,30) + '...', message: ""});
+                            if (NewItemsCount == 4) {
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (NewItemsCount == 4) {
+                    break;
+                }
             }
-            chrome.notifications.create("SlickRssNewFeeds" + Date().toLocaleString(), NotOpt, function () {});
+
+            if (NewItemsCount > 0) {
+                let NotOpt = {
+                    type: "list",
+                    title: GetMessageText("NotifyTitle"),
+                    message: GetMessageText("NotifyTitle"),
+                    iconUrl: manifest.icons[128],
+                    items: NewItems
+                }
+                chrome.notifications.create("SlickRssNewFeeds" + Date().toLocaleString(), NotOpt, function () {
+                });
+            }
         }
     }
 }

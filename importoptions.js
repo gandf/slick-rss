@@ -25,6 +25,10 @@ $(document).ready(function()
 				if (Notification.permission != "granted") {
 					chrome.permissions.request({permissions: ['notifications']}, (granted) => {});
 				}
+			} else  {
+				if (Notification.permission == "granted") {
+					chrome.permissions.remove({permissions: ['notifications']}, (removed) => {});
+				}
 			}
 
 			ImportOptions(optionsToImport);

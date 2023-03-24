@@ -2,7 +2,19 @@
 // wire stuff to prevent XSS :(
 $(document).ready(function()
 {
-	$('#save').click(function(){Save();});
+	$('#save').click(function(){
+		if (document.getElementById("enablePlaySound").selectedIndex == 1) {
+			if (Notification.permission != "granted") {
+				chrome.permissions.request({permissions: ['notifications']}, (granted) => {});
+			}
+		} else {
+			if (Notification.permission == "granted") {
+				chrome.permissions.remove({permissions: ['notifications']}, (removed) => {});
+			}
+		}
+
+		Save();
+	});
 	$('#cancel').click(function(){window.close();});
 	$('#importFeeds').click(function(){window.open(chrome.runtime.getURL("import.html"), 'height=250,width=550');});
 	$('#exportFeeds').click(function(){window.open(chrome.runtime.getURL("export.html"), 'height=250,width=550');});
@@ -45,15 +57,6 @@ function SetupScreen()
 		document.getElementById("unreadTotalDisplay").selectedIndex = options.unreadtotaldisplay;
 		document.getElementById("unreadItemTotalDisplay").selectedIndex = options.unreaditemtotaldisplay;
 		document.getElementById("enablePlaySound").selectedIndex = options.playSoundNotif;
-
-		document.getElementById("enablePlaySound").addEventListener("change", function(){
-			if (this.selectedIndex == 1) {
-				if (Notification.permission != "granted") {
-					chrome.permissions.request({permissions: ['notifications']}, (granted) => {});
-				}
-			}
-		});
-
 		document.getElementById("columns").selectedIndex = options.columns - 1;
 		document.getElementById("readLaterEnabled").selectedIndex = options.readlaterenabled;
 		document.getElementById("readLaterRemoveWhenViewed").selectedIndex = options.readlaterremovewhenviewed;

@@ -34,23 +34,6 @@ function GetGroupKeyByID(id) {
     }
 }
 
-function ItemIsRead(feedID, itemID) {
-    let currentFeed = feeds.find(function (el) {
-        return (el.id == feedID);
-    });
-    if (currentFeed == readLaterFeedID) {
-        return false;
-    }
-    if (currentFeed != null) {
-        if (unreadInfo[currentFeed.id] != undefined) {
-            if (unreadInfo[currentFeed.id].readitems != undefined) {
-                return (unreadInfo[currentFeed.id].readitems[itemID] != null);
-            }
-        }
-    }
-    return false;
-}
-
 function GetFeedInfoItem(feedID, itemIndex) {
     let feedGroupInfo = feedInfo[feedID];
 

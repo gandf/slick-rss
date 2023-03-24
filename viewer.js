@@ -36,6 +36,11 @@ $(document).ready(function () {
             }
         }
     });
+    $('#addAuthNotif').click(function () {
+        if (options.playSoundNotif && (Notification.permission != "granted")) {
+            chrome.permissions.request({permissions: ['notifications']}, (granted) => {});
+        }
+    });
 });
 
 document.documentElement.setAttribute('lang', GetMessageText('lang'));
@@ -72,6 +77,12 @@ waitCategoriesReady().then(function () {
             document.getElementById("getToolFindFeed").style.display = "";
         } else {
             document.getElementById("getToolFindFeed").style.display = "none";
+        }
+
+        if (options.playSoundNotif && (Notification.permission != "granted")) {
+            document.getElementById("addAuthNotif").style.display = "";
+        } else {
+            document.getElementById("addAuthNotif").style.display = "none";
         }
     });
 });

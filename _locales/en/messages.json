@@ -677,6 +677,9 @@
   "NotifyTitle": {
     "message": "Slick RSS : Latest News"
   },
+  "addAuthNotif": {
+    "message": "Add notification authorization"
+  },
   "enexportTitle": {
       "message": "Slick RSS : Export Feeds"
   },
@@ -1345,5 +1348,8 @@
   },
   "enNotifyTitle": {
     "message": "Slick RSS : Latest News"
+  },
+  "enaddAuthNotif": {
+    "message": "Add notification authorization"
   }
 }

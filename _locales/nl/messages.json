@@ -676,5 +676,8 @@
   },
   "NotifyTitle": {
     "message": "Slick RSS : Laatste nieuws"
+  },
+  "addAuthNotif": {
+    "message": "Meldingsautorisatie toevoegen"
   }
 }
