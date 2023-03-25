@@ -601,8 +601,15 @@ function NotifyNew() {
                         let feedInfoTmp = feedInfo[feedTmp.id].items[keysInfo[j]];
 
                         if (!ItemIsRead(feedTmp.id, feedInfoTmp.itemID)) {
-                            NewItemsCount++;
-                            NewItems.push({title: feedInfoTmp.title.substring(0,30) + '...', message: ""});
+                            if (feedInfoTmp.title != undefined) {
+                                NewItemsCount++;
+                                NewItems.push({title: feedInfoTmp.title.substring(0,30) + '...', message: ""});
+                            } else {
+                                if (feedInfoTmp.description != undefined) {
+                                    NewItemsCount++;
+                                    NewItems.push({title: feedInfoTmp.description.substring(0,30) + '...', message: ""});
+                                }
+                            }
                             if (NewItemsCount == 4) {
                                 break;
                             }

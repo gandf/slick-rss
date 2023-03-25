@@ -1047,6 +1047,7 @@ function RenderFeed(type) {
     }
 
     let nbItem = Math.min(feedsOrGroupsInfo[feedID].items.length, feedsOrGroups[selectedFeedKey].maxitems);
+    let itemNo = 0;
     for (let i = 0; i < nbItem; i++) {
         showItem = true;
         item = feedsOrGroupsInfo[feedID].items[i];
@@ -1078,6 +1079,7 @@ function RenderFeed(type) {
         }
 
         if (showItem) {
+            itemNo++;
             itemID = item.itemID;
 
             let containerId = "item_" + feedID + "_" + itemID;
@@ -1109,7 +1111,11 @@ function RenderFeed(type) {
                 href.startsWith("/") && !href.startsWith("//") && (href = feedBaseUrl + href);
             }
             feedLink.setAttribute("href", href);
-            feedLink.innerHTML = (i + 1) + ". " + item.title;
+            if (item.title != undefined) {
+                feedLink.innerHTML = itemNo + ". " + item.title;
+            } else {
+                feedLink.innerHTML = itemNo + ". " + item.description
+            }
 
             if (feedID == readLaterFeedID) {
                 if (options.readlaterremovewhenviewed) {
@@ -1303,7 +1309,7 @@ function RenderFeed(type) {
             }
 
             if (options.usethumbnail && (item.thumbnail != null)) {
-                feedSummaryContent.innerHTML = '<div class="thumbnail">' + item.thumbnail + '</div>' + item.content;
+                feedSummaryContent.innerHTML = '<div class="thumbnail">' + item.thumbnail + '</div>' + item.content; //***
             } else {
                 feedSummaryContent.innerHTML = item.content;
             }
@@ -1441,7 +1447,7 @@ function RenderFeed(type) {
             feedSummary.setAttribute("class", "feedPreviewSummary");
             feedSummary.style.maxHeight = "none";
             if (options.usethumbnail && (item.thumbnail != null)) {
-                feedSummary.innerHTML = '<div class="thumbnail">' + item.thumbnail + '</div>' + item.summary;
+                feedSummary.innerHTML = '<div class="thumbnail">' + item.thumbnail + '</div>' + item.summary; //***
             } else {
                 feedSummary.innerHTML = item.summary;
             }

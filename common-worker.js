@@ -16,6 +16,10 @@ function CleanText(text)
     }
 }
 
+function DefaultText2(text) {
+    return {0: {0: {"#text": text}}};
+}
+
 function GetElementByTagNameJS() {
     let node = arguments[0];
     let defaultValue = arguments[1];

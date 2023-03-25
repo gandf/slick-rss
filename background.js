@@ -608,7 +608,7 @@ function CheckForUnreadStart(key) {
                 if (options.checkinterval < 3) {
                     options.checkinterval = 3;
                 }
-                chrome.alarms.create('CheckForUnread', {periodInMinutes: Number(options.checkinterval)});
+                chrome.alarms.create('CheckForUnread', {delayInMinutes: Number(options.checkinterval), periodInMinutes: Number(options.checkinterval)});
             }
         });
 
@@ -728,9 +728,9 @@ function CheckForUnread(checkForUnreadCounterID) {
                             let rootNode = GetElementByTagNameJS(doc, null, false, "rss", "rdf:RDF");
                             if (rootNode == null) {
                                 rootNode = GetElementByTagNameJS(doc, null, false, "feed");
-                                if (rootNode != null) {
-                                    feedPresent = true;
-                                }
+                            }
+                            if (rootNode != null) {
+                                feedPresent = true;
                             }
 
                             if ((entries.length == 0) && (rootNode == null)) {
@@ -794,9 +794,13 @@ function CheckForUnread(checkForUnreadCounterID) {
                                 useDateInID = true;
                                 getDummyDate = true;
                                 item = {};
-                                item.title = CleanText2(SearchTag(entries[e], GetMessageText("backNoTitle"), ["TITLE"], 0));
+                                item.title = CleanText2(SearchTag(entries[e], DefaultText2(GetMessageText("backNoTitle")), ["TITLE"], 0));
                                 if (typeof item.title == 'string') {
                                     item.title = item.title.replaceAll("U+20AC", '€').replaceAll("&apos;", "'");
+                                }
+                                item.description = CleanText2(SearchTag(entries[e], DefaultText2(GetMessageText("backNoTitle")), ["DESCRIPTION"], 0));
+                                if (typeof item.description == 'string') {
+                                    item.description = item.description.replaceAll("U+20AC", '€').replaceAll("&apos;", "'");
                                 }
                                 item.date = CleanText2(SearchTag(entries[e], null, ["PUBDATE", "UPDATED", "DC:DATE", "DATE", "PUBLISHED"], 0));
                                 if (item.date == undefined) {
