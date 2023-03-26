@@ -603,7 +603,7 @@ function NotifyNew() {
                         if (!ItemIsRead(feedTmp.id, feedInfoTmp.itemID)) {
                             if (feedInfoTmp.title != undefined) {
                                 NewItemsCount++;
-                                NewItems.push({title: feedInfoTmp.title.substring(0,30) + '...', message: ""});
+                                NewItems.push({title: feedInfoTmp.title.substring(0,40) + '...', message: ""});
                             } else {
                                 if (feedInfoTmp.description != undefined) {
                                     NewItemsCount++;
