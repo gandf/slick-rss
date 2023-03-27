@@ -18,7 +18,7 @@
     "background": {
         "service_worker": "background-worker.js"
     },
-    "permissions": ["tabs","alarms"],
+    "permissions": ["alarms"],
     "optional_permissions": ["notifications"],
     "host_permissions": ["http://*/","https://*/"],
     "content_security_policy": {

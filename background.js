@@ -102,22 +102,10 @@ function ButtonClicked(tab) {
 }
 
 function RefreshViewer() {
-    chrome.tabs.query({url: chrome.runtime.getURL("viewer.html")}, function (tabs) {
-        if (tabs != null) {
-            if (tabs.length > 0) {
-                if (viewerPortTabID != null) {
-                    for (let tab in tabs) {
-                        if (tabs[tab].id == viewerPortTabID) {
-                            chrome.tabs.reload(viewerPortTabID, {bypassCache: true});
-                            return;
-                        }
-                    }
-                }
-                viewerPortTabID = tabs[0].id;
-                chrome.tabs.reload(viewerPortTabID, {bypassCache: true});
-            }
-        }
-    });
+    if (viewerPortTabID != null) {
+        chrome.tabs.reload(viewerPortTabID, {bypassCache: true});
+        return;
+    }
 }
 
 function ExternalRequest(request, sender, sendResponse) {
@@ -560,14 +548,6 @@ function DoUpgrades() {
     }
 
     let resultPromise = Promise.allSettled(listPromise);
-
-    chrome.tabs.query({url: chrome.runtime.getURL("apiaddurl.html")}, function (tab) {
-        if (tab.length > 0) {
-            apiaddurlTabID = tab[0].id;
-        } else {
-            apiaddurlTabID = null;
-        }
-    });
 
     return resultPromise;
 }
