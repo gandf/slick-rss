@@ -679,5 +679,8 @@
   },
   "addAuthNotif": {
     "message": "Meldingsautorisatie toevoegen"
+  },
+  "buttonSuggest": {
+    "message": "Voorstellen aan \"Get RSS Feed URL\""
   }
 }

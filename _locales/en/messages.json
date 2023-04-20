@@ -680,6 +680,9 @@
   "addAuthNotif": {
     "message": "Add notification authorization"
   },
+  "buttonSuggest": {
+    "message": "Suggest to \"Get RSS Feed URL\""
+  },
   "enexportTitle": {
       "message": "Slick RSS : Export Feeds"
   },
@@ -1351,5 +1354,8 @@
   },
   "enaddAuthNotif": {
     "message": "Add notification authorization"
+  },
+  "enbuttonSuggest": {
+    "message": "Suggest to \"Get RSS Feed URL\""
   }
 }

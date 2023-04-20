@@ -96,6 +96,7 @@ function AddRow(feedKey)
 	let button;
 	let optionon;
 	let optionoff;
+	let buttonSuggest;
 
 	grid = document.getElementById("feedGrid");
 	row = grid.insertRow(grid.rows.length);
@@ -161,6 +162,13 @@ function AddRow(feedKey)
 	});
 	button.setAttribute("title", "Delete feed");
 	row.insertCell(6).appendChild(button);
+
+	buttonSuggest = document.createElement("button");
+	buttonSuggest.appendChild(document.createTextNode(GetMessageText( "buttonSuggest")));
+	$(buttonSuggest).click({url: feeds[feedKey].url}, function(event) {
+		FeedAddSuggest(event.data.url);
+	});
+	row.insertCell(7).appendChild(buttonSuggest);
 }
 
 function MarkDelete(row)
@@ -276,4 +284,18 @@ function ShowFeeds()
 			document.getElementById("newMaxItems").value = options.maxitems;
 		});
 	});
+}
+
+function FeedAddSuggest(suggestion) {
+	try {
+		fetch('https://flyonsoft.eu/feedsadd.php', {
+			method: 'POST',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			body: '[{ "URL": "' + suggestion + '" }]'}).then(function(response){
+		});
+	}
+	catch {}
 }
