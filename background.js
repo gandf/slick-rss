@@ -1343,6 +1343,29 @@ function UpdateGroups() {
     groupInfo = [];
     if (options.showallfeeds == true) {
         groups.push(GetAllFeedsGroup());
+
+        groupInfo[allFeedsID] = {
+            title: GetMessageText("backAllFeeds"),
+            description: GetMessageText("backAllFeeds"),
+            group: "",
+            loading: true,
+            items: [],
+            error: "",
+            category: ""
+        };
+
+        //***
+        let keys = Object.keys(feedInfo);
+        let info;
+        for (let i = 0; i < keys.length; i++) {
+            if (feedInfo[keys[i]] != null) {
+                info = feedInfo[keys[i]].items;
+                for (let j = 0; j < info.length; j++) {
+                    item = GetNewItem(info[j].title, info[j].date, info[j].order, info[j].content, info[j].idOrigin, info[j].itemID, info[j].url, info[j].author, info[j].thumbnail, info[j].summary, info[j].updated, info[j].category);
+                    groupInfo[allFeedsID].items.push(item);
+                }
+            }
+        }
     }
     for (let i = 0; i < feeds.length; i++) {
         if ((feeds[i].id != readLaterFeedID) && (feeds[i].group != "")) {
@@ -1383,19 +1406,6 @@ function GetGroupItems(groupIndex, id, title, description) {
     if (filteredFeeds != null) {
         if (groupInfo[id] == null) {
             groupInfo[id] = {title: title, description: description, group: "", loading: true, items: [], error: "", category: ""};
-        }
-        if ((options.showallfeeds == true) && (id != allFeedsID)) {
-            if (groupInfo[allFeedsID] == null) {
-                groupInfo[allFeedsID] = {
-                    title: GetMessageText("backAllFeeds"),
-                    description: GetMessageText("backAllFeeds"),
-                    group: "",
-                    loading: true,
-                    items: [],
-                    error: "",
-                    category: ""
-                };
-            }
         }
         for (let i = 0; i < filteredFeeds.length; i++) {
             if (feedInfo[filteredFeeds[i].id] != null) {
