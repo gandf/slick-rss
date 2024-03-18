@@ -1,3 +1,5 @@
+const referenceDate = GetDate("Thu, 31 Dec 2019 23:59:59 +0000").getTime();
+const charToDel = ['/','\\', ' '];
 var promiseGetUnreadCounts = null;
 var checkingForUnread = false;
 var checkForUnreadCounter = 0;
@@ -5,14 +7,12 @@ var allFeedsUnreadCounter = -1;
 var checkForUnreadFeeds = [];
 var getFeedsCallBack = null;
 var refreshFeed = false;
-var referenceDate = GetDate("Thu, 31 Dec 2019 23:59:59 +0000").getTime();
 var viewerPortTabID = null;
 var apiaddurlPort = null;
 var apiaddurlTabID = null;
 var forceRefresh = false;
 var spamProtect = [];
 var listApiUrlToAdd = [];
-var charToDel = ['/','\\', ' '];
 
 chrome.action.onClicked.addListener(ButtonClicked);
 chrome.runtime.onMessage.addListener(ExternalRequest);
@@ -585,21 +585,21 @@ function CheckForUnreadStart(key) {
                 if ((options.checkinterval == 0) || (options.checkinterval == null)) {
                     options.checkinterval = 60;
                 }
-                if (options.checkinterval < 3) {
-                    options.checkinterval = 3;
+                if (options.checkinterval < 1) {
+                    options.checkinterval = 1;
                 }
                 chrome.alarms.create('CheckForUnread', {delayInMinutes: Number(options.checkinterval), periodInMinutes: Number(options.checkinterval)});
+                
+                if (viewerPort != null) {
+                    viewerPort.postMessage({type: "refreshallstarted"});
+                }
+                CheckForUnread(checkForUnreadCounter);
             }
         });
-
-        if (viewerPort != null) {
-            viewerPort.postMessage({type: "refreshallstarted"});
-        }
     } else {
         refreshFeed = true;
+        CheckForUnread(checkForUnreadCounter);
     }
-
-    CheckForUnread(checkForUnreadCounter);
 }
 
 // goes through each feed and gets how many you haven't read since last time you were there
@@ -610,7 +610,6 @@ function CheckForUnread(checkForUnreadCounterID) {
     }
     var feedID = feeds[checkForUnreadCounterID].id;
     var now = new Date();
-    const offsetMs = now.getTimezoneOffset() * 60 * 1000;
     var promiseCheckForUnread = [];
     var status;
 
