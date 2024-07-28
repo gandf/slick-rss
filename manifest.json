@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "__MSG_appName__",
-    "version": "3.018",
+    "version": "4.0.0",
     "author": "__MSG_appAuthor__",
     "homepage_url": "https://github.com/gandf/slick-rss",
     "description": "__MSG_appDesc__",
@@ -18,10 +18,16 @@
     "background": {
         "service_worker": "background-worker.js"
     },
-    "permissions": ["alarms"],
+    "permissions": ["alarms", "offscreen"],
     "optional_permissions": ["notifications"],
     "host_permissions": ["http://*/","https://*/"],
     "content_security_policy": {
-        "extension_pages": "script-src 'self'; object-src 'self'"
-    }
+        "extension_pages": "script-src 'self'; object-src 'self'; worker-src 'self'",
+        "sandbox": "sandbox allow-scripts; script-src 'self' 'unsafe-inline' 'unsafe-eval'; child-src 'self';"
+    },
+    "sandbox": {
+    "pages": [
+      "sqlworker.js"
+    ]
+  }
 }

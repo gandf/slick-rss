@@ -147,7 +147,10 @@ function ImportOptions(optionsToImport)
 			options.dontreadontitleclick = optionsToImport.dontreadontitleclick;
 		}
 
-		store.setItem('options', options).then(function() {
+		requests = [];
+		requests.push({type: 'setOptions', tableName: 'Options', waitResponse: false, subtype: 'Options', data: options });
+		requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Options', waitResponse: true, subtype: 'Options' });
+		sendtoSQL('requests', 'ImportOptions', true, { requests: requests }, function(){
 			chrome.runtime.sendMessage({"type": "refreshOptionsAndRefreshFeeds"}).then(function(){
 				window.close();
 			});

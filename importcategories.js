@@ -1,4 +1,3 @@
-
 $(document).ready(function()
 {
 	$('#import').click(function(){Import();});
@@ -39,9 +38,19 @@ function ImportCategories()
 	try {
 		listCategoriesRegistered = JSON.parse(value);
 
-		chrome.runtime.sendMessage({"type": "saveCategories", "data": GetStrFromObject(listCategoriesRegistered)}).then(function(){
-			window.close();
+		let requests = [];
+		listCategoriesRegistered.forEach((category, index) => {
+			if (category.category && category.category != "") {
+				requests.push({type: 'addColor', waitResponse: false, data: { name: category.category, color: category.color ?? "#888888", order: category.order ?? index } });
+			}
 		});
+
+		if (requests.length > 0) {
+			requests.push({type: 'export', responsetype: 'responseExport', tableName: '', waitResponse: true, subtype: 'Colors', data: options });
+			sendtoSQL('requests', 'ImportCategories', true, { requests: requests }, function(){
+				window.close();
+			});
+		}
 	}
 	catch (e) {
 		alert(GetMessageText("importAlertError") + e);

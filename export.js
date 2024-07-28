@@ -26,7 +26,7 @@ function ExportFeeds()
 		for(let i = 0; i < feeds.length;i++)
 		{
 			if (feeds[i].id != readLaterFeedID)
-			opml += "<outline type=\"rss\" text=\"" + feeds[i].title.replaceAll("&", "&amp;") + "\" xmlUrl=\"" + feeds[i].url.replaceAll("&", "&amp;") + "\" group=\"" + feeds[i].group.replaceAll("&", "&amp;") + "\" excludeUnreadCount=\"" + feeds[i].excludeUnreadCount + "\"/>\n";
+				opml += "<outline type=\"rss\" text=\"" + feeds[i].title.replaceAll("&", "&amp;") + "\" xmlUrl=\"" + feeds[i].url.replaceAll("&", "&amp;") + "\" group=\"" + feeds[i].group.replaceAll("&", "&amp;") + "\" excludeUnreadCount=\"" + feeds[i].excludeUnreadCount + "\"/>\n";
 		}
 
 		opml += "</body>\n</opml>";

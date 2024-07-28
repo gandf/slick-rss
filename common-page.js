@@ -1,3 +1,13 @@
+function GetSenderSql() {
+    var url = window.location.href;
+    var fileName = url.substring(url.lastIndexOf('/') + 1, url.includes('?') ? url.indexOf('?') : url.length);
+    return fileName.substring(0, fileName.lastIndexOf('.')) || fileName;
+}
+
+function CommWithSQL(request, sender, sendResponse) {
+
+}
+
 function switchTheme(themesize) {
   let app = document.getElementById("app");
   if (app != null) {
@@ -46,36 +56,33 @@ function GetFeedInfoItem(feedID, itemIndex) {
     return feedGroupInfo.items[itemIndex];
 }
 
-// gets the feed array for everyone to use
-function GetFeedsSimple(callBack) {
-    feeds = [];
-    getFeedsCallBack = callBack;
-
-    store.getItem('feeds').then(function(datafeeds) {
-        if (datafeeds != null) {
-            datafeeds.forEach(datafeed => {
-                if (datafeed.excludeUnreadCount == undefined) {
-                    datafeed.excludeUnreadCount = 0;
-                }
-            });
-            feeds = datafeeds.sort(function (a, b) {
-                return a.order - b.order;
-            });
-        }
-        getFeedsCallBack(feeds);
-    });
-}
-
 function formatBytes(a,b=2){let textBytes=GetMessageText("Bytes");let textKB=GetMessageText("KB");let textMB=GetMessageText("MB");let textGB=GetMessageText("GB");let textTB=GetMessageText("TB");let textPB=GetMessageText("PB");let textEB=GetMessageText("EB");let textZB=GetMessageText("ZB");let textYB=GetMessageText("YB");if(0===a)return`0 ${textBytes}`;const c=0>b?0:b,d=Math.floor(Math.log(a)/Math.log(1024));return parseFloat((a/Math.pow(1024,d)).toFixed(c))+" "+[`${textBytes}`,`${textKB}`,`${textMB}`,`${textGB}`,`${textTB}`,`${textPB}`,`${textEB}`,`${textZB}`,`${textYB}`][d]}
 
 function loadReadlaterInfo() {
-    return store.getItem('readlaterinfo').then(function(data) {
-        if (data != null) {
-            if (data[readLaterFeedID].items.length > 0) {
-                readlaterInfo = data;
-            }
-        }
+    let resolveLoadReadlaterInfo;
+    let waitLoadReadlaterInfo = new Promise((resolve) => {
+        resolveLoadReadlaterInfo = resolve;
     });
+
+    sendtoSQL('getReadlaterinfoItem', 'loadReadlaterInfo', true, null, 
+        function (data) {
+            if (data != null) {
+                if (data[0] != undefined) {
+                    if (data[0].value != undefined) {
+                        if (data[0].value[0] != undefined) {
+                            if (data[0].value[0].value != undefined) {
+                                //TODO a revoir après
+                                readlaterInfo.items = data[0].value[0].value;
+                            }
+                        }
+                    }
+                }
+            }
+            resolveLoadReadlaterInfo();
+        }
+    );
+    
+    return waitLoadReadlaterInfo;
 }
 
 function GetUnreadCount(feedID){

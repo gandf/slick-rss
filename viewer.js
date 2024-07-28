@@ -49,25 +49,21 @@ var showFeedsWork = false;
 var listCategoriesRegisteredUpper;
 var categoryFilterUpper = '';
 
-var promiseCategoriesBegin = GetCategoriesRegistered();
-
-async function waitCategoriesReady() {
-    return await Promise.allSettled([promiseCategoriesBegin]);
-}
-
-waitCategoriesReady().then(function () {
-    if (listCategoriesRegistered != undefined) {
-        listCategoriesRegisteredUpper = [];
-        for(let key in listCategoriesRegistered) {
-            listCategoriesRegisteredUpper.push({category: listCategoriesRegistered[key].category.toUpperCase(), color: listCategoriesRegistered[key].color});
-        }
+waitOptionReady().then(function () {
+    if (options.darkmode) {
+        activeDarkMode();
+    } else {
+        disableDarkMode();
     }
 
-    waitOptionReady().then(function () {
-        if (options.darkmode) {
-            activeDarkMode();
-        } else {
-            disableDarkMode();
+    GetCategoriesRegistered().then(function () {
+        if (listCategoriesRegistered != undefined) {
+            listCategoriesRegisteredUpper = [];
+            for(let key in listCategoriesRegistered) {
+                if ((listCategoriesRegistered[key].name != undefined) && (listCategoriesRegistered[key].name != "")) {
+                    listCategoriesRegisteredUpper.push({category: listCategoriesRegistered[key].name.toUpperCase(), color: listCategoriesRegistered[key].color});
+                }
+            }
         }
 
         if (options.readlaterenabled) {
@@ -78,7 +74,7 @@ waitCategoriesReady().then(function () {
         } else {
             document.getElementById("getToolFindFeed").style.display = "none";
         }
-
+    
         if (options.playSoundNotif && (Notification.permission != "granted")) {
             document.getElementById("addAuthNotif").style.display = "";
         } else {
@@ -87,9 +83,17 @@ waitCategoriesReady().then(function () {
     });
 });
 
-store.getItem('unreadinfo').then(function (data) {
+sendtoSQL('getLastSelectedFeed', 'Viewer', true, undefined, function(data){
     if (data != null) {
         unreadInfo = data;
+    }
+});
+
+GetFeedsSimple();
+
+sendtoSQL('getColors', 'Viewer', true, undefined, function(data){
+    if (data != null) {
+        category = data;
     }
 });
 
@@ -169,7 +173,7 @@ port.onMessage.addListener(function (msg) {
     }
 
     if (msg.type == "unreadInfo") {
-        store.getItem('unreadinfo').then(function (data) {
+        sendtoSQL('getLastSelectedFeed', 'ViewerOnMessage', true, undefined, function(data){
             if (data != null) {
                 unreadInfo = data;
                 if (options.log) {
@@ -197,7 +201,52 @@ window.onresize = FixFeedList;
 
 function UpdateDataFromWorker(id) {
     readingFeeds = true;
-    chrome.runtime.sendMessage({"type": "getFeedsAndGroupsInfo"}).then(function (data) {
+
+    /*
+    sendResponse(JSON.stringify({
+        "feeds": GetStrFromObject(feeds),
+        "feedInfo": GetStrFromObject(feedInfo),
+        "groups": GetStrFromObject(groups),
+        "groupInfo": GetStrFromObject(groupInfo)
+*/
+    let listPromise = [];
+    let resolveGetCacheFeedInfo;
+    let waitGetCacheFeedInfo = new Promise((resolve) => {
+        resolveGetCacheFeedInfo = resolve;
+    });
+    listPromise.push(waitGetCacheFeedInfo);
+
+    sendtoSQL('getCacheFeedInfo', 'Viewer', true, undefined, function(data){
+        if (data != undefined) {
+            if (data != undefined) {
+                feedInfo = data;
+            }
+            resolveGetCacheFeedInfo();
+        }
+    });
+    
+    Promise.allSettled(listPromise).then(function () {
+        if (options.useViewByCategory) {
+            if (selectedFeedKeyIsFeed && (selectedFeedKey != undefined)) {
+                if (feeds[selectedFeedKey].id == id) {
+                    RefreshCategoryList();
+                }
+            }
+            if (!selectedFeedKeyIsFeed) {
+                if (id == undefined) {
+                    RefreshCategoryList();
+                }
+            }
+        }
+        readingFeeds = false;
+        if (showingFeeds) {
+            showingFeeds = false;
+            ShowFeeds();
+        }
+    });
+
+/*
+    chrome.runtime.sendMessage({"type": "getFeedsAndGroupsInfo"}).then(function (data) {  //***
         if (data != undefined) {
             let localData = JSON.parse(data);
             if (localData.feeds != undefined) {
@@ -230,7 +279,7 @@ function UpdateDataFromWorker(id) {
                 ShowFeeds();
             }
         }
-    });
+    });*/
 }
 
 function UpdateLoadingProgress(currentFeeds, currentFeedsCount) {
@@ -259,7 +308,7 @@ function UpdateLoadingProgress(currentFeeds, currentFeedsCount) {
 function UpdateTitle() {
     let title = "Slick RSS" + (selectedFeedKeyIsFeed ? (feeds[selectedFeedKey] ? " [" + feeds[selectedFeedKey].title + "]" : "") : (groups[selectedFeedKey] ? " [" + groups[selectedFeedKey].title + "]" : ""));
 
-    chrome.runtime.sendMessage({"type": "getUnreadTotal"}).then(function (data) {
+    sendtoSQL('getUnreadTotal', 'UpdateTitle', true, undefined, function(data){
         if (data != undefined)
             unreadTotal = data;
         if ((options.unreadtotaldisplay >= 2) && options.unreaditemtotaldisplay && unreadTotal > 0) {
@@ -272,12 +321,12 @@ function UpdateTitle() {
 }
 
 function ShowFeeds() {
-    if (readingFeeds) {
+    /*if (readingFeeds) {
         showingFeeds = true;
         return;
-    }
+    }*/
 
-    store.getItem('lastSelectedFeed').then(function (data) {
+	sendtoSQL('getLastSelectedFeed', 'ShowFeeds', true, undefined, function(data){
         let selectKey = null;
         let lastSelectedID = null;
         let lastSelectedType = null;
@@ -374,11 +423,15 @@ function FixFeedList() {
     let feedPreviewScroller = document.getElementById("feedPreviewScroller");
     let header = document.getElementById("header");
 
-    feedPreviewScroller.style.height = (document.body.offsetHeight - header.offsetHeight) + "px";
-    feedPreviewScroller.style.width = (window.innerWidth - feedScroller.offsetWidth) + "px"; // some feeds don't wrap well so we must force a strict width
+    if (feedPreviewScroller != undefined) {
+        feedPreviewScroller.style.height = (document.body.offsetHeight - header.offsetHeight) + "px";
+        feedPreviewScroller.style.width = (window.innerWidth - feedScroller.offsetWidth) + "px"; // some feeds don't wrap well so we must force a strict width
+    }
 
-    feedScroller.style.height = document.body.offsetHeight - document.getElementById("feedHeader").offsetHeight + "px";
-    feedScroller.style.overflowY = (feedScroller.offsetHeight < feedScroller.scrollHeight) ? "scroll" : "hidden";
+    if (feedScroller != undefined) {
+        feedScroller.style.height = document.body.offsetHeight - document.getElementById("feedHeader").offsetHeight + "px";
+        feedScroller.style.overflowY = (feedScroller.offsetHeight < feedScroller.scrollHeight) ? "scroll" : "hidden";
+    }
     UpdateSizeProgress(true);
 }
 
@@ -491,7 +544,7 @@ function UpdateGroupUnread(key) {
         return;
     }
 
-    chrome.runtime.sendMessage({"type": "getGroupCountUnread", "data": key}).then(function (data) {
+    chrome.runtime.sendMessage({"type": "getGroupCountUnread", "data": key}).then(function (data) { //***
         if (data != null) {
             let count = data;
             if (document.getElementById("feedTitleGroup" + id) != null) {
@@ -522,7 +575,7 @@ function UpdateReadAllIcon(type) {
                 }
             }
         } else {
-            chrome.runtime.sendMessage({"type": "getGroupCountUnread", "data": selectedFeedKey}).then(function (data) {
+            chrome.runtime.sendMessage({"type": "getGroupCountUnread", "data": selectedFeedKey}).then(function (data) { //***
                 if (data != null) {
                     count = data;
                     document.getElementById("markFeedRead").style.display = (count > 0) ? "" : "none";
@@ -833,13 +886,19 @@ function SelectFeedOrGroup(key, type) {
     var lastSelectedFeedType = null;
     let listPromise = [];
 
-    let promiselastSelectedFeed = store.getItem('lastSelectedFeed').then(function (data) {
+    let resolveGetLastSelectedFeed;
+    let waitGetLastSelectedFeed = new Promise((resolve) => {
+        resolveGetLastSelectedFeed = resolve;
+    });
+
+    listPromise.push(waitGetLastSelectedFeed);
+	sendtoSQL('getLastSelectedFeed', 'ShowFeeds', true, undefined, function(data){
         if (data != null) {
             lastSelectedFeedID = data.lastSelectedFeedID;
             lastSelectedFeedType = data.lastSelectedFeedType;
         }
+        resolveGetLastSelectedFeed();
     });
-    listPromise.push(promiselastSelectedFeed);
 
     if (type == "Feed") {
         if (feeds[key].id == readLaterFeedID) {
@@ -869,7 +928,11 @@ function SelectFeedOrGroup(key, type) {
         let lastSelectedFeed = {};
         lastSelectedFeed.lastSelectedFeedID = feedsOrGroups[key].id;
         lastSelectedFeed.lastSelectedFeedType = type;
-        store.setItem('lastSelectedFeed', lastSelectedFeed);
+
+		requests = [];
+		requests.push({type: 'setLastSelectedFeed', waitResponse: false, data: lastSelectedFeed });
+		requests.push({type: 'export', responsetype: 'responseExport', tableName: 'LastSelectedFeed', waitResponse: true, subtype: 'LastSelectedFeed' });
+		sendtoSQL('requests', 'SelectFeedOrGroup', false, { requests: requests });
 
         document.getElementById("feedPreviewScroller").scrollTop = 0;
 
@@ -923,7 +986,7 @@ function SelectFeedOrGroup(key, type) {
 
                 if (type == "Feed") {
                     // must be a new feed with no content yet
-                    chrome.runtime.sendMessage({
+                    chrome.runtime.sendMessage({ //***
                         "type": "checkForUnreadOnSelectedFeedCompleted",
                         "selectedFeedKey": key
                     }).then(function () {
@@ -1584,9 +1647,11 @@ function unhover(element) {
 
 function UpdateSizeProgress(updateAll) {
     if ((sizeFeedHeader == null) || updateAll) {
-        let localSizeFeedHeader = document.getElementById("feedHeader").offsetWidth;
-        if ((localSizeFeedHeader != 0) && !isNaN(localSizeFeedHeader)) {
-            sizeFeedHeader = localSizeFeedHeader;
+        if (document.getElementById("feedHeader") != undefined) {
+            let localSizeFeedHeader = document.getElementById("feedHeader").offsetWidth;
+            if ((localSizeFeedHeader != 0) && !isNaN(localSizeFeedHeader)) {
+                sizeFeedHeader = localSizeFeedHeader;
+            }
         }
     }
     if ((sizeFeedsLoadingTxt == null) || updateAll) {
@@ -1608,8 +1673,10 @@ function UpdateSizeProgress(updateAll) {
         } else {
             sizeProgressboxLoading = computedSize + 'px';
         }
-        if (document.getElementById("feedsLoadingProgressBox").style.width != sizeProgressboxLoading) {
-            document.getElementById("feedsLoadingProgressBox").style.width = sizeProgressboxLoading;
+        if (document.getElementById("feedsLoadingProgressBox") != undefined) {
+            if (document.getElementById("feedsLoadingProgressBox").style.width != sizeProgressboxLoading) {
+                document.getElementById("feedsLoadingProgressBox").style.width = sizeProgressboxLoading;
+            }
         }
     }
 }
@@ -1709,6 +1776,7 @@ function OpenAllFeedFromButton(feedID, container, itemID, className, listUnread)
         }
     }
 }
+
 function SendUnreadInfoToWorker(listUnread, setunset) {
     if (setunset) {
         SendUnreadInfoToWorkerAndreadResponse({"type": "setUnreadInfo", "data": GetStrFromObject(listUnread)});
@@ -1718,7 +1786,7 @@ function SendUnreadInfoToWorker(listUnread, setunset) {
 }
 
 async function SendUnreadInfoToWorkerAndreadResponse(data) {
-    let result = await chrome.runtime.sendMessage(data);
+    let result = await chrome.runtime.sendMessage(data); //***
     if (result != undefined) {
         if (result.data != undefined) {
             result = GetObjectFromStr(result.data);

@@ -49,6 +49,7 @@ function ImportFeeds()
 			}
 		}
 
+		let feedsToImport = [];
 		for(let i = 0;i < nodes.length; i++)
 		{
 			if(nodes[i].getAttribute("type") == "rss")
@@ -72,8 +73,16 @@ function ImportFeeds()
 					}
 				}
 
-				feeds.push(CreateNewFeed(nodes[i].getAttribute("text"), nodes[i].getAttribute("xmlUrl"), group, options.maxitems, maxOrder, excludeUnreadCount));
-				importCount ++;
+				let url = nodes[i].getAttribute("xmlUrl");
+				if ((url != undefined) && (url != "") && (url != null))
+				{
+					if (!feeds.some(feed => feed.url === url)) {
+						if (!feedsToImport.some(feed => feed.url === url)) {
+							feedsToImport.push(CreateNewFeed(nodes[i].getAttribute("text"), url, group, options.maxitems, maxOrder, excludeUnreadCount));
+							importCount++;
+						}
+					}
+				}
 			}
 		}
 
@@ -83,16 +92,29 @@ function ImportFeeds()
 			return;
 		}
 
-		//remove ReadLater
-		if (feeds.filter(filterByID).length > 0) {
-			let resultPromise = store.setItem('feeds', feeds.filter(filterByID)).then(function(data){
+		let requests = [];
+		let feedids = [];
+		let feedfiltered = feedsToImport.filter(filterByID);
+		
+		for (let i = 0; i < feedfiltered.length; i++) {
+			let feed = feedfiltered[i];
+			let feedid = parseInt(feed.id, 10);
+			if (!feedids.includes(feedid)) {
+				requests.push({type: 'addFeed', waitResponse: false, data: feed });
+				feedids.push(feedid);
+			}
+		}
+		if (requests.length > 0) {
+			requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Group', waitResponse: true, subtype: 'Group' });
+			requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Feeds', waitResponse: true, subtype: 'Feeds' });
+			sendtoSQL('requests', 'Import', true, { requests: requests }, function(){
 				alert(GetMessageText("importAlertImportedFeeds1") + importCount + GetMessageText("importAlertImportedFeeds2"));
-			});
-			resultPromise.then(function(){
 				chrome.runtime.sendMessage({"type": "checkForUnread"}).then(function(){
 					window.close();
 			 	});
 			});
+		} else {
+			alert(GetMessageText("importAlertNothing"));
 		}
 	});
 }

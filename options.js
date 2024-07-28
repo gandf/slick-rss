@@ -155,11 +155,35 @@ function Save()
 	options.useViewByCategory = (document.getElementById("useViewByCategory").selectedIndex == 1);
 
 	var promiseCheckForUnread = [];
-	promiseCheckForUnread.push(store.setItem('options', options));
+
+	let resolveSetOptions;
+    let waitSetOptions = new Promise((resolve) => {
+        resolveSetOptions = resolve;
+    });
+	promiseCheckForUnread.push(waitSetOptions);
+
+	requests = [];
+	requests.push({type: 'setOptions', tableName: 'Options', waitResponse: false, subtype: 'Options', data: options });
+	requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Options', waitResponse: true, subtype: 'Options' });
+	sendtoSQL('requests', 'ImportOptions', true, { requests: requests }, function(){
+		resolveSetOptions();
+	});
 
 	if(!options.readlaterenabled)
 	{
-		promiseCheckForUnread.push(store.setItem('readlater', {}));  //delete readlater
+		let resolveReadLlater;
+		let waitReadlater = new Promise((resolve) => {
+			resolveReadLlater = resolve;
+		});
+		promiseCheckForUnread.push(waitReadlater);
+	
+		requests = [];
+		requests.push({type: 'clearReadlaterinfo', waitResponse: false });
+		requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Readlaterinfo', waitResponse: true, subtype: 'Readlaterinfo' });
+		requests.push({type: 'export', responsetype: 'responseExport', tableName: 'ReadlaterinfoItem', waitResponse: true, subtype: 'ReadlaterinfoItem' });
+		sendtoSQL('requests', 'ImportOptionsClear', true, { requests: requests }, function(){
+			resolveReadLlater();
+		});
 	}
 	Promise.allSettled([promiseCheckForUnread]).then(function() {
 		chrome.runtime.sendMessage({"type": "refreshOptionsAndRefreshFeeds"}).then(function(){

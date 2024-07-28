@@ -129,9 +129,11 @@ function AddRow(feedKey)
 		feeds[feedKey].excludeUnreadCount = rowData.selectedIndex;
 
 		if (IsValid(feeds[feedKey].title, feeds[feedKey].url, feeds[feedKey].group, feeds[feedKey].maxitems, null)) {
-			chrome.runtime.sendMessage({type: "addFeed",  feedData: {title: feeds[feedKey].title, url: feeds[feedKey].url, group: feeds[feedKey].group, maxItems: feeds[feedKey].maxitems, excludeUnreadCount: feeds[feedKey].excludeUnreadCount}}).then(function(){
-
-			});
+			let requests = [];
+			requests.push({type: 'addFeed', waitResponse: false, data: {title: feeds[feedKey].title, url: feeds[feedKey].url, group: feeds[feedKey].group, maxItems: feeds[feedKey].maxitems, excludeUnreadCount: feeds[feedKey].excludeUnreadCount} });
+			requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Group', waitResponse: true, subtype: 'Group' });
+			requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Feeds', waitResponse: true, subtype: 'Feeds' });
+			sendtoSQL('requests', 'ApiAddUrlRowClick', false, { requests: requests });
 		}
 	});
 	row.insertCell(5).appendChild(button);

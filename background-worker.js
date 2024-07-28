@@ -3,6 +3,7 @@ try {
   importScripts("localforage.min.js");
   importScripts("fxparser.min.js");
   importScripts("datamanager.js");
+  importScripts("sqloffscreenmgr.js");
   importScripts("common-worker.js");
   importScripts("common.js");
   importScripts("background.js");

@@ -9,8 +9,6 @@ $(document).ready(function()
 
 document.documentElement.setAttribute('lang', GetMessageText('lang'));
 
-window.onload = GetCategoriesListFromWorker;
-
 waitOptionReady().then(function () {
 	if (options.darkmode) {
 		activeDarkMode();
@@ -19,10 +17,12 @@ waitOptionReady().then(function () {
 	}
 });
 
+GetCategoriesListFromWorker();
+
 function GetCategoriesListFromWorker() {
-	chrome.runtime.sendMessage({"type": "listAllCategories"}).then(function (data) {
+	sendtoSQL('getColors', 'GetCategoriesListFromWorker', true, null, function(data){
 		if (data != undefined) {
-			listCategories = GetObjectFromStr(data);
+			listCategories = data;
 
 			for(let key in listCategories) {
 				AddRow(key);
@@ -33,30 +33,30 @@ function GetCategoriesListFromWorker() {
 
 function Add()
 {
-	let category = document.getElementById("newCategory").value;
+	let name = document.getElementById("newCategory").value;
 	let color = document.getElementById("newColor").value;
 
-	if(!IsValid(category, color)) {
+	if(!IsValid(name, color)) {
 		return;
 	}
 
-	AddRow(listCategories.push(CreateNewCat(category, color)) - 1);
+	AddRow(listCategories.push(CreateNewCat(name, color)) - 1);
 
 	document.getElementById("newCategory").value = "";
 	document.getElementById("newColor").value = "#659DD8";
 }
 
-function CreateNewCat(category, color) {
+function CreateNewCat(name, color) {
 	return {
-		category: category,
+		name: name,
 		color: color,
 		id: GetRandomID()
 	};
 }
 
-function IsValid(category, color)
+function IsValid(name, color)
 {
-	if(category == "") {
+	if(name == "") {
 		alert(GetMessageText("manageAlertCategory"));
 		return false;
 	}
@@ -77,7 +77,7 @@ function AddRow(key)
 	input = document.createElement('input');
 	input.setAttribute("type", "text");
 	input.setAttribute("class", "category");
-	input.setAttribute("value", listCategories[key].category);
+	input.setAttribute("value", listCategories[key].name);
 
 	row.insertCell(0).appendChild(input);
 
@@ -124,7 +124,7 @@ function MarkDelete(row)
 function Save()
 {
 	let row = null;
-	let category;
+	let name;
 	let color;
 	let catList = [];
 
@@ -132,23 +132,32 @@ function Save()
 		lastBadRow.className = "";
 	}
 
+	let catorder = 0;
 	for(let key in listCategories) {
 		row = document.getElementById(key);
 
-		category = row.childNodes[0].childNodes[0].value;
+		name = row.childNodes[0].childNodes[0].value;
 		color = row.childNodes[1].childNodes[0].value;
+		catorder++;
 
-		if(row.className != "markDelete" && !IsValid(category, color)) {
+		if(row.className != "markDelete" && !IsValid(name, color)) {
 			row.className = "badRow";
 			lastBadRow = row;
 		}
 		if(row.className != "markDelete") {
 			if (color.toUpperCase() != "#659DD8") {
-				catList.push({category: category, color: color});
+				catList.push({name: name, color: color, order: catorder});
 			}
 		}
 	}
-	chrome.runtime.sendMessage({"type": "saveCategories", "data": GetStrFromObject(catList)}).then(function(){
+
+	requests = [];
+	requests.push({ type: 'deleteColor', waitResponse: false });
+	for (let i = 0; i < catList.length; i++) {
+		requests.push({ type: 'addColor', data: { name: catList[i].name, color: catList[i].color, order: catList[i].order }, waitResponse: false });
+	}
+	requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Colors', waitResponse: true, subtype: 'Colors' });
+	sendtoSQL('requests', 'saveCategories', true, { requests: requests }, function(){
 		window.location = chrome.runtime.getURL("viewer.html");
 	});
 }

@@ -22,5 +22,7 @@ waitOptionReady().then(function () {
 
 function ExportCategories()
 {
-	document.getElementById("opml").value = JSON.stringify(listCategoriesRegistered, null, '\t');
+	sendtoSQL('getColors', 'ExportCategories', true, undefined, function(response){
+		document.getElementById("opml").value = JSON.stringify(response, null, '\t');
+	});
 }

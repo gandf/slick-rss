@@ -1,27 +1,51 @@
-var manifest = chrome.runtime.getManifest();
-var defaultOptions = GetDefaultOptions();
-var options = defaultOptions;
-var readLaterFeedID = 9999999999;
-var allFeedsID = 9999999998;
-var unreadInfo = {};
-var newNotif = false;
-var viewerPort = null;
-var feedInfo = [];
-var feeds = [];
-var groupInfo = [];
-var groups = [];
-var unreadTotal = 0;
-var listCategoriesRegistered = [];
-var readlaterInfo = [];
-readlaterInfo[readLaterFeedID] = {
-    title: GetMessageText("backReadLater"),
-    description: GetMessageText("backItemsMarkedReadLater"),
-    group: "",
-    loading: false,
-    items: [],
-    error: "",
-    category: ""
-};
+var manifest;
+var defaultOptions;
+var options;
+const readLaterFeedID = 9999999999;
+const allFeedsID = 9999999998;
+var unreadInfo;
+var newNotif;
+var viewerPort;
+var feedInfo;
+var feeds;
+var groupInfo;
+var groups;
+var unreadTotal;
+var listCategoriesRegistered;
+var readlaterInfo;
+var senderSql;
+var optionFrom;
+
+var datacommoninitialized;
+if (datacommoninitialized !== true) {
+    manifest = chrome.runtime.getManifest();
+    defaultOptions = GetDefaultOptions();
+    options = defaultOptions;
+    unreadInfo = {};
+    newNotif = false;
+    viewerPort = null;
+    feedInfo = [];
+    feeds = [];
+    groupInfo = [];
+    groups = [];
+    unreadTotal = 0;
+    listCategoriesRegistered = [];
+    readlaterInfo = [];
+
+    datacommoninitialized = true;
+}
+
+if (readlaterInfo[readLaterFeedID] === undefined) {
+    readlaterInfo[readLaterFeedID] = {
+        title: GetMessageText("backReadLater"),
+        description: GetMessageText("backItemsMarkedReadLater"),
+        group: "",
+        loading: false,
+        items: [],
+        error: "",
+        category: ""
+    };
+}
 
 var promiseOptionBegin = GetOptions();
 
@@ -30,13 +54,30 @@ async function waitOptionReady() {
 }
 
 function GetCategoriesRegistered() {
-    return store.getItem('categories').then(function (data) {
-        if (data != null) {
-            listCategoriesRegistered = data;
-        } else {
-            listCategoriesRegistered = [];
-        }
+    let resolveGetCategories;
+    let waitCategoriesRegistered = new Promise((resolve) => {
+        resolveGetCategories = resolve;
     });
+
+    sendtoSQL('getColors', 'GetCategoriesRegistered', true, null, 
+        function (data) {
+            let updatedCat = false;
+            if (data != null) {
+                if (Array.isArray(data)) {
+                    if (data.length > 0) {
+                        listCategoriesRegistered = data;
+                        updatedCat = true;
+                    }
+                }
+            }
+            if (!updatedCat) {
+                listCategoriesRegistered = [];
+            }
+            resolveGetCategories();
+        }
+    );
+    
+    return waitCategoriesRegistered;
 }
 
 function GetStrFromObject(obj) {
@@ -263,6 +304,7 @@ function GetWeekdayName(dayOfWeek) {
     }
 }
 
+
 // used to get defaults to help fill in missing pieces as I add more options
 function GetDefaultOptions() {
     return {
@@ -304,18 +346,50 @@ function GetDefaultOptions() {
 
 // gets all or some options, filling in defaults when needed
 function GetOptions() {
-    return store.getItem('options').then(function (data) {
-        if (data != null) {
-            options = data;
-
-            // fill in defaults for new options
-            for (let key in GetDefaultOptions()) {
-                if (options[key] == undefined) {
-                    options[key] = defaultOptions[key];
+    if (senderSql == undefined) {
+        senderSql = GetSenderSql();
+    }
+    let resolveOptionsReady;
+    let waitOptionsReady = new Promise((resolve) => {
+        resolveOptionsReady = resolve;
+    });
+    sendtoSQL('getOptions', 'GetOptions', true, null, 
+        function (data) {
+            if (data != null) {
+                if (data[0] != undefined) {
+                    if (data[0].value != undefined) {
+                        options = data[0].value;
+                        optionFrom = 'sql';
+            
+                        // fill in defaults for new options
+                        for (let key in GetDefaultOptions()) {
+                            if (options[key] == undefined) {
+                                options[key] = defaultOptions[key];
+                            }
+                        }
+                        resolveOptionsReady();
+                        return;
+                    }
                 }
             }
+            store.getItem('options').then(function (data) {
+                if (data != null) {
+                    options = data;
+                    optionFrom = 'direct';
+        
+                    // fill in defaults for new options
+                    for (let key in GetDefaultOptions()) {
+                        if (options[key] == undefined) {
+                            options[key] = defaultOptions[key];
+                        }
+                    }
+                }
+                resolveOptionsReady();
+            });     
         }
-    });
+    );
+
+    return waitOptionsReady;
 }
 
 //convert an Atom-formatted date string to a javascript-compatible date string
@@ -484,7 +558,8 @@ function CleanUpUnreadOrphans() {
             delete unreadInfo[key];
         }
     }
-    let promiseCleanUpUnreadOrphans = store.setItem('unreadinfo', unreadInfo);
+
+    let promiseCleanUpUnreadOrphans = SetUnreadInfoWithPromise(unreadInfo);
 
     UpdateUnreadBadge();
 
@@ -494,17 +569,21 @@ function CleanUpUnreadOrphans() {
 // returns a dictionary of unread counts {feedsid} = unreadtotal, readitems{}
 // may need a way to clean this if they delete feeds
 function GetUnreadCounts() {
-    return store.getItem('unreadinfo').then(function (data) {
+    let resolveGetUnreadInfo;
+    let waitGetUnreadInfo = new Promise((resolve) => {
+        resolveGetUnreadInfo = resolve;
+    });
+
+    sendtoSQL('getUnreadinfo', 'GetUnreadCounts', true, null, function (data) {
         if (data != null) {
             unreadInfo = data;
         } else {
             unreadInfo = {};
-            store.setItem('unreadinfo', {});
+            SetUnreadInfo({});
         }
-    }, function (dataError) {
-        unreadInfo = {};
-        store.setItem('unreadinfo', {});
+        resolveGetUnreadInfo();
     });
+    return waitGetUnreadInfo;
 }
 
 function GetFeedsFilterByGroup(key) {
@@ -523,7 +602,7 @@ function GetFeedsFilterByGroup(key) {
 }
 
 function saveReadlaterInfo() {
-    return store.setItem('readlaterinfo', readlaterInfo);
+    return SetUnreadInfoWithPromise(unreadInfo);
 }
 
 function FormatDTWithMs(mseconds) {
@@ -634,4 +713,66 @@ function NotifyNew() {
             }
         }
     }
+}
+
+function SetUnreadInfo(data, callback) {
+    let requests = [];
+    requests.push({type: 'clearUnreadinfo', tableName: 'Unreadinfo', waitResponse: false });
+    let key = Object.keys(data);
+    for (let i = 0; i <  key.length; i++) {
+        requests.push({type: 'setUnreadinfo', waitResponse: false, data: { feed_id: key[i], unreadtotal: data[key[i]].unreadtotal } });
+        let items = data[key[i]].readitems;
+        if (items != undefined) {
+            let keysitem = Object.keys(items);
+            for (let j = 0; j < keysitem.length; j++) {
+                requests.push({type: 'addUnreadinfoItem', waitResponse: false, data: { feed_id: key[i], itemHash: keysitem[j], value: items[keysitem[j]] } });
+            }
+        }               
+    }
+    requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Unreadinfo', waitResponse: true, subtype: 'Unreadinfo' });
+    requests.push({type: 'export', responsetype: 'responseExport', tableName: 'UnreadinfoItem', waitResponse: true, subtype: 'UnreadinfoItem' });
+    sendtoSQL('requests', 'SetUnreadInfo', true, { requests: requests }, function () {
+        callback();
+    });
+}
+
+function SetUnreadInfoWithPromise(data) {
+    let resolveSetUnreadInfo;
+    let waitSetUnreadInfo = new Promise((resolve) => {
+        resolveSetUnreadInfo = resolve;
+    });
+
+    SetUnreadInfo(data, function () {
+        resolveSetUnreadInfo();
+    });
+    return waitSetUnreadInfo;
+}
+
+
+// gets the feed array for everyone to use
+function GetFeedsSimple(callBack) {
+    feeds = [];
+    let getFeedsCallBack = callBack;
+
+	sendtoSQL('getFeeds', 'GetFeedsSimple', true, undefined, function(datafeeds) {
+        if (datafeeds != null) {
+            for (let i = 0; i < datafeeds.length; i++) {
+                if (datafeeds[i].excludeUnreadCount == undefined) {
+                    datafeeds[i].excludeUnreadCount = 0;
+                }
+            }
+            feeds = datafeeds.sort(function (a, b) {
+                return a.order - b.order;
+            });
+        }
+        if (feeds.length > 0) {
+            if (feeds[0].id = readLaterFeedID) {
+                feeds[0].title = GetMessageText("backReadLater");
+                feeds[0].description = GetMessageText("backItemsMarkedReadLater");
+            }
+        }
+        if (getFeedsCallBack != null) {
+            getFeedsCallBack(feeds);
+        }
+    });
 }
