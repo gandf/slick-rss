@@ -34,7 +34,7 @@ self.onmessage = async function(event) {
   }
 
   requests.forEach(request => {
-    //log(`request: '${request.type}'.`);
+    log(`request: '${request.type}'.`);
     switch (request.type) {
       case 'init':
       {
@@ -70,7 +70,7 @@ self.onmessage = async function(event) {
           CREATE TABLE `UnreadinfoItem` (`feed_id` INT, `itemHash` string, `value` INT, PRIMARY KEY (`feed_id`, `itemHash`));");
 
         alasql("DROP TABLE IF EXISTS `Cache`;\
-          CREATE TABLE `Cache` (`key` INT PRIMARY KEY, `value` DATETIME, `data` JSON);");
+          CREATE TABLE `Cache` (`key` INT PRIMARY KEY, `value` DATETIME);");
 
         alasql("DROP TABLE IF EXISTS `CacheFeedInfo`;\
           CREATE TABLE `CacheFeedInfo` (`feed_id` INT PRIMARY KEY, `title` string, `description` string, `loading` boolean, `error` string, `errorContent` string, `showErrorContent` boolean, `guid` string, `image` string, `category` JSON, `date` DATETIME);");
@@ -140,14 +140,14 @@ self.onmessage = async function(event) {
               request.data.time = new Date().getTime();
             }
             alasql("DELETE FROM `Cache`;\
-            INSERT INTO `Cache` VALUES ('', ?, ?)", [request.data.time, request.data.data]);
+            INSERT INTO `Cache` VALUES ('', ?)", [request.data.time]);
           }
         break;
       }
       case 'getCache':
       {
         if (canWork) {
-          result(responseName(request.type), request.id, request.waitResponse, alasql("SELECT `data` FROM `Cache` WHERE (`key` = '')"));
+          result(responseName(request.type), request.id, request.waitResponse, alasql("SELECT `value` FROM `Cache` WHERE (`key` = '')"));
         }
         break;
       }
@@ -192,13 +192,18 @@ self.onmessage = async function(event) {
       case 'getCacheFeedInfo':
       {
         if (canWork) {
-          result(responseName(request.type), request.id, request.waitResponse,
-            alasql(`SELECT feedinfo.*, item.*, gr.name
+          let requestsql = `SELECT feedinfo.*, item.*, gr.name
               FROM \`CacheFeedInfo\` as feedinfo
               LEFT JOIN \`CacheFeedInfoItem\` as item ON feedinfo.\`feed_id\` = item.\`idOrigin\`
               LEFT JOIN \`Feeds\` AS feeds ON feeds.\`id\` = feedinfo.\`feed_id\`
-              LEFT JOIN \`Group\` AS gr ON gr.\`id\` = feeds.\`group_id\`
-              `));
+              LEFT JOIN \`Group\` AS gr ON gr.\`id\` = feeds.\`group_id\``;
+          if (request.feed_id == undefined) {
+            result(responseName(request.type), request.id, request.waitResponse, alasql(requestsql));
+          } else {
+            result(responseName(request.type), request.id, request.waitResponse,
+            alasql(`${requestsql}
+              WHERE feedinfo.\`feed_id\` = ?`, [request.feed_id]));
+          }
         }
         break;
       }
@@ -524,6 +529,49 @@ self.onmessage = async function(event) {
       {
         if (canWork && (request.data.value != undefined)) {
           alasql(`DELETE FROM \`UnreadinfoItem\` WHERE \`value\` < ?`, [request.data.value]);
+        }
+        break;
+      }
+      case 'getGroups':
+      {
+        if (canWork) {
+          result(responseName(request.type), request.id, request.waitResponse, alasql(
+            `SELECT gr.\`name\` AS title, '' AS URL,'' AS \`group\`, 99999 AS maxitems, 0 AS \`order\`, gr.\`id\`, SUM(unread.\`unreadtotal\`) AS \`unreadCount\` 
+            FROM \`Group\` as gr
+            LEFT JOIN (
+              SELECT \`group_id\`
+              FROM \`Feeds\`
+              WHERE \`excludeUnreadCount\` = false
+              ) AS feeds ON feeds.\`group_id\` = gr.\`id\`
+            LEFT JOIN \`Unreadinfo\` AS unread ON unread.\`feed_id\` = feeds.\`id\`
+            GROUP BY gr.\`name\`, gr.\`id\``
+          ));
+        }
+        break;
+      }
+      case 'getGroupInfo':
+      {
+        if (canWork) {
+          let requestsql = `SELECT feedinfo.\`title\`, feedinfo.\`description\`, gr.\`name\` as \`group\`, feedinfo.\`loading\`, feedinfo.\`error\`, feedinfo.\`errorContent\`, feedinfo.\`showErrorContent\`, feedinfo.\`guid\`, feedinfo.\`image\`, feedinfo.\`category\`, feedinfo.\`date\`, feedinfo.\`feed_id\`
+            FROM \`Group\` AS gr
+            LEFT JOIN \`Feeds\` AS feeds ON feeds.\`group_id\` = gr.\`id\`
+            LEFT JOIN \`CacheFeedInfo\` AS feedinfo ON feedinfo.\`feed_id\` = feeds.\`id\``;
+          let resultdata;
+          if (request.group_id == undefined) {
+            resultdata = alasql(requestsql);
+          } else {
+            resultdata = alasql(`${requestsql}
+              WHERE gr.\`id\` = ?`, [request.group_id]);
+          }
+
+          for (let i = 0; i < resultdata.length; i++) {
+            resultdata[i].items = alasql(
+              `SELECT \`itemID\`, \`title\`, \`description\`, \`date\`, \`content\`, \`summary\`, \`updated\`, \`guid\`, \`category\`, \`comments\`, \`url\`, \`thumbnail\`, \`author\`, \`order\`
+              FROM \`CacheFeedInfoItem\`
+              WHERE \`idOrigin\` = ?`, [resultdata[i].feed_id]);
+          }
+
+          result(responseName(request.type), request.id, request.waitResponse, resultdata);
         }
         break;
       }

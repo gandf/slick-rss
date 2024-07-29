@@ -189,7 +189,7 @@ async function handleMessages(message, sender, sendResponse) {
       worker.postMessage({ type: 'removeReadlaterinfoItem', waitResponse: message.waitResponse, itemID: message.data.itemID });
       break;
     }
-    case 'getOptions': case 'getLastSelectedFeed': case 'getFeeds': case 'getReadlaterinfoItem': case 'getColors': case 'getCacheFeedInfo': case 'getUnreadTotal': case 'getUnreadinfo': case 'getUnreadinfoFull':{
+    case 'getOptions': case 'getLastSelectedFeed': case 'getFeeds': case 'getReadlaterinfoItem': case 'getColors': case 'getCacheFeedInfo': case 'getUnreadTotal': case 'getUnreadinfo': case 'getUnreadinfoFull': case 'getGroups': case 'getGroupInfo': {
       callWorker(true, message.type.substring("get".length), message);
       break;
     }

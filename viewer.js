@@ -83,7 +83,7 @@ waitOptionReady().then(function () {
     });
 });
 
-sendtoSQL('getLastSelectedFeed', 'Viewer', true, undefined, function(data){
+sendtoSQL('getUnreadinfo', 'Viewer', true, undefined, function(data){
     if (data != null) {
         unreadInfo = data;
     }
@@ -202,21 +202,29 @@ window.onresize = FixFeedList;
 function UpdateDataFromWorker(id) {
     readingFeeds = true;
 
-    /*
-    sendResponse(JSON.stringify({
-        "feeds": GetStrFromObject(feeds),
-        "feedInfo": GetStrFromObject(feedInfo),
-        "groups": GetStrFromObject(groups),
-        "groupInfo": GetStrFromObject(groupInfo)
-*/
     let listPromise = [];
+    let resolveGetGroups;
+    let waitGetGroups = new Promise((resolve) => {
+        resolveGetGroups = resolve;
+    });
+    listPromise.push(waitGetGroups);
+
+    sendtoSQL('getGroups', 'Viewer', true, undefined, function(data){
+        if (data != undefined) {
+            if (data != undefined) {
+                groups = data;
+            }
+            resolveGetGroups();
+        }
+    });
+
     let resolveGetCacheFeedInfo;
     let waitGetCacheFeedInfo = new Promise((resolve) => {
         resolveGetCacheFeedInfo = resolve;
     });
     listPromise.push(waitGetCacheFeedInfo);
 
-    sendtoSQL('getCacheFeedInfo', 'Viewer', true, undefined, function(data){
+    sendtoSQL('getCacheFeedInfo', 'Viewer', true, id == undefined ? undefined : { feed_id: id }, function(data){
         if (data != undefined) {
             if (data != undefined) {
                 feedInfo = data;
@@ -224,7 +232,22 @@ function UpdateDataFromWorker(id) {
             resolveGetCacheFeedInfo();
         }
     });
-    
+
+    let resolveGetGroupInfo;
+    let waitGetGroupInfo = new Promise((resolve) => {
+        resolveGetGroupInfo = resolve;
+    });
+    listPromise.push(waitGetGroupInfo);
+
+    sendtoSQL('getGroupInfo', 'Viewer', true, id == undefined ? undefined : { group_id: id }, function(data){
+        if (data != undefined) {
+            if (data != undefined) {
+                groupInfo = data;
+            }
+            resolveGetGroupInfo();
+        }
+    });
+
     Promise.allSettled(listPromise).then(function () {
         if (options.useViewByCategory) {
             if (selectedFeedKeyIsFeed && (selectedFeedKey != undefined)) {
@@ -244,42 +267,6 @@ function UpdateDataFromWorker(id) {
             ShowFeeds();
         }
     });
-
-/*
-    chrome.runtime.sendMessage({"type": "getFeedsAndGroupsInfo"}).then(function (data) {  //***
-        if (data != undefined) {
-            let localData = JSON.parse(data);
-            if (localData.feeds != undefined) {
-                feeds = GetObjectFromStr(localData.feeds);
-            }
-            if (localData.feedInfo != undefined) {
-                feedInfo = GetObjectFromStr(localData.feedInfo);
-            }
-            if (localData.groups != undefined) {
-                groups = GetObjectFromStr(localData.groups);
-            }
-            if (localData.groupInfo != undefined) {
-                groupInfo = GetObjectFromStr(localData.groupInfo);
-            }
-            if (options.useViewByCategory) {
-                if (selectedFeedKeyIsFeed && (selectedFeedKey != undefined)) {
-                    if (feeds[selectedFeedKey].id == id) {
-                        RefreshCategoryList();
-                    }
-                }
-                if (!selectedFeedKeyIsFeed) {
-                    if (id == undefined) {
-                        RefreshCategoryList();
-                    }
-                }
-            }
-            readingFeeds = false;
-            if (showingFeeds) {
-                showingFeeds = false;
-                ShowFeeds();
-            }
-        }
-    });*/
 }
 
 function UpdateLoadingProgress(currentFeeds, currentFeedsCount) {
@@ -331,8 +318,10 @@ function ShowFeeds() {
         let lastSelectedID = null;
         let lastSelectedType = null;
         if (data != null) {
-            lastSelectedID = data.lastSelectedFeedID;
-            lastSelectedType = data.lastSelectedFeedType;
+            if (data.length > 0) {
+                lastSelectedID = data[0].lastSelectedFeedID;
+                lastSelectedType = data[0].lastSelectedFeedType;
+            }
         }
 
         UpdateTitle();
@@ -894,8 +883,10 @@ function SelectFeedOrGroup(key, type) {
     listPromise.push(waitGetLastSelectedFeed);
 	sendtoSQL('getLastSelectedFeed', 'ShowFeeds', true, undefined, function(data){
         if (data != null) {
-            lastSelectedFeedID = data.lastSelectedFeedID;
-            lastSelectedFeedType = data.lastSelectedFeedType;
+            if (data.length > 0) {
+                lastSelectedFeedID = data[0].lastSelectedFeedID;
+                lastSelectedFeedType = data[0].lastSelectedFeedType;
+            }
         }
         resolveGetLastSelectedFeed();
     });
@@ -938,7 +929,7 @@ function SelectFeedOrGroup(key, type) {
 
         clearTimeout(feedReadToID);
 
-        if (selectedFeedKey != null) {
+        if ((selectedFeedKey != null) &&(selectedFeedKey != undefined)) {
             document.getElementById("feedTitle" + lastSelectedFeedType + selectedFeedsOrGroups[selectedFeedKey].id).setAttribute("class", "");
         }
 

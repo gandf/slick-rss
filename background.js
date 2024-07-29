@@ -12,6 +12,7 @@ var forceRefresh;
 var spamProtect;
 var listApiUrlToAdd;
 var eventRegistered;
+var dtCache;
 
 var datainitialized;
 if (datainitialized !== true) {
@@ -29,6 +30,7 @@ if (datainitialized !== true) {
     senderSql = GetSenderSql();
 
     datainitialized = true;
+    dtCache = null;
 }
 
 if (eventRegistered == undefined) {
@@ -46,7 +48,29 @@ waitOptionReady().then(function () {
             GetUnreadCounts().then(function () {
                 GetFeeds(function () {
                     CleanUpUnreadOrphans().then(function () {
-                        CheckForUnreadStart();
+                        GetCache().then(function () {
+                            if ((options.checkinterval == 0) || (options.checkinterval == null)) {
+                                options.checkinterval = 60;
+                            }
+                            if (options.checkinterval < 1) {
+                                options.checkinterval = 1;
+                            }
+                            let currentDate = new Date();
+                            let CheckDT = new Date(currentDate.getTime() - options.checkinterval * 60000);
+                            if (dtCache <= CheckDT) {
+                                chrome.alarms.get('CheckForUnread', function (alarm) {
+                                    if (typeof alarm === 'undefined' || alarm.name !== 'CheckForUnread') {
+                                        CheckForUnreadStart();
+                                    }
+                                });
+                            } else {
+                                chrome.alarms.get('CheckForUnread', function (alarm) {
+                                    if (typeof alarm === 'undefined' || alarm.name !== 'CheckForUnread') {
+                                        chrome.alarms.create('CheckForUnread', {delayInMinutes: Number(Number(dtCache - CheckDT) / 60000), periodInMinutes: Number(options.checkinterval)});
+                                    }
+                                });
+                            }
+                        });
                     });
                 });
             });
@@ -554,7 +578,7 @@ function CheckForUnreadStart(key) {
                     viewerPort.postMessage({type: "refreshallstarted"});
                 }
 
-                sendtoSQL('setCache', 'CheckForUnreadStartSetCache', false, { time: new Date(), data: {} });
+                sendtoSQL('setCache', 'CheckForUnreadStartSetCache', false, { time: new Date() });
 
                 CheckForUnread(checkForUnreadCounter);
             });
@@ -1618,6 +1642,30 @@ function ListAllCategories() {
     return listCategories;
 }
 
+function GetCache() {
+    let resolveGetCache;
+    let waitGetCache = new Promise((resolve) => {
+        resolveGetCache = resolve;
+    });
+
+    if (dtCache != null) {
+        return new Promise(resolve => setTimeout(resolve, 5));
+    }
+
+    sendtoSQL('getCache', 'GetCache', true, null, 
+        function (data) {
+            if (data != null) {
+                if (data.length > 0) {
+                    dtCache = data;
+                }
+            }
+            resolveGetCache();
+        }
+    );
+    
+    return waitGetCache;
+}
+
 function cleanCatStr(catTxt) {
     while (charToDel.includes(catTxt.charAt(0))) {
         catTxt = catTxt.slice(1);
@@ -1642,4 +1690,4 @@ function updateFeedInfoLoading(id, loading) {
 
 function updateFeedInfoItem(item) {
     sendtoSQL('addCacheFeedInfoItem', 'updateFeedInfoItem', false, item);
-}   
+}
