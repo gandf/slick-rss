@@ -191,51 +191,6 @@ function OnMessageRequest(request, sender, sendResponse) {
         return;
     }
 
-    if (request.type == "getFeeds") {
-        sendResponse(GetStrFromObject(feeds));
-        if (options.log) {
-            console.log('|getFeeds | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
-        }
-        return;
-    }
-
-    if (request.type == "getFeedInfo") {
-        sendResponse(GetStrFromObject(feedInfo));
-        if (options.log) {
-            console.log('|getFeedInfo | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
-        }
-        return;
-    }
-
-    if (request.type == "getGroups") {
-        sendResponse(GetStrFromObject(groups));
-        if (options.log) {
-            console.log('|getGroups | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
-        }
-        return;
-    }
-
-    if (request.type == "getGroupInfo") {
-        sendResponse(GetStrFromObject(groupInfo));
-        if (options.log) {
-            console.log('|getGroupInfo | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
-        }
-        return;
-    }
-
-    if (request.type == "getFeedsAndGroupsInfo") {
-        sendResponse(JSON.stringify({
-            "feeds": GetStrFromObject(feeds),
-            "feedInfo": GetStrFromObject(feedInfo),
-            "groups": GetStrFromObject(groups),
-            "groupInfo": GetStrFromObject(groupInfo)
-        }));
-        if (options.log) {
-            console.log('|getFeedsAndGroupsInfo | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
-        }
-        return;
-    }
-
     if (request.type == "getGroupCountUnread") {
         let found = false;
         if (request.data != null) {
@@ -251,14 +206,6 @@ function OnMessageRequest(request, sender, sendResponse) {
         }
         if (options.log) {
             console.log('|getGroupCountUnread | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
-        }
-        return;
-    }
-
-    if (request.type == "getUnreadTotal") {
-        sendResponse(unreadTotal);
-        if (options.log) {
-            console.log('|getUnreadTotal | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
         }
         return;
     }
@@ -337,14 +284,6 @@ function OnMessageRequest(request, sender, sendResponse) {
     if (request.type == "cleanListApiUrlToAdd") {
         listApiUrlToAdd = [];
         sendResponse();
-        return;
-    }
-
-    if (request.type == "listAllCategories") {
-        sendResponse(GetStrFromObject(ListAllCategories()));
-        if (options.log) {
-            console.log('|listAllCategories | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
-        }
         return;
     }
 }
@@ -1221,6 +1160,8 @@ function CheckReadFinish(checkForUnreadCounterID) {
 
 // ran after checking for unread is done
 function CheckForUnreadComplete() {
+    updateFeedInfoLoading(undefined, false);
+
     checkingForUnread = false;
     refreshFeed = false;
 
@@ -1567,80 +1508,6 @@ function CleanArrayCategory(arrayCat) {
     }
 }
 
-function ListAllCategories() {
-    let listCat = [];
-    let listCategories = [];
-    let feedid;
-    let category;
-    let catUpper;
-
-    for (let i = 0; i < feeds.length; i++) {
-        feedid = feeds[i].id;
-        if (feedid != allFeedsID) {
-            if (feedInfo[feedid] != undefined) {
-                if (feedInfo[feedid].items != undefined) {
-                    for (let j = 0; j < feedInfo[feedid].items.length; j++) {
-                        category = feedInfo[feedid].items[j].category;
-                        if (category != undefined) {
-                            if (category.constructor === Array) {
-                                for (let cat of category) {
-                                    if (typeof cat == 'string') {
-                                        if (cat != "") {
-                                            catUpper = cat.toUpperCase();
-                                            if (!listCat.includes(catUpper)) {
-                                                listCat.push(catUpper);
-                                                listCategories.push({category: cat, color: ""});
-                                            }
-                                        }
-                                    }
-                                }
-                            } else {
-                                if (typeof category == 'string') {
-                                    if (category != "") {
-                                        catUpper = category.toUpperCase();
-                                        if (!listCat.includes(catUpper)) {
-                                            listCat.push(catUpper);
-                                            listCategories.push({category: category, color: ""});
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    listCategories.sort(function(a, b) {
-        let categoryA = a.category.toUpperCase();
-        let categoryB = b.category.toUpperCase();
-        if (categoryA < categoryB) {
-            return -1;
-        }
-        if (categoryA > categoryB) {
-            return 1;
-        }
-        return 0;
-    });
-
-    if (listCategoriesRegistered != undefined) {
-        for(let key in listCategoriesRegistered) {
-            category = listCategoriesRegistered[key].category;
-            catUpper = category.toUpperCase();
-            if (!listCat.includes(catUpper)) {
-                listCat.push(catUpper);
-                listCategories.push({category: category, color: listCategoriesRegistered[key].color});
-            } else {
-                let catToUpdate = listCategories.find(obj => obj.category.toUpperCase() === catUpper);
-                if (catToUpdate) {
-                    catToUpdate.color = listCategoriesRegistered[key].color;
-                }
-            }
-        }
-    }
-    return listCategories;
-}
 
 function GetCache() {
     let resolveGetCache;

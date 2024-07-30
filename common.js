@@ -356,26 +356,9 @@ function GetOptions() {
     sendtoSQL('getOptions', 'GetOptions', true, null, 
         function (data) {
             if (data != null) {
-                if (data[0] != undefined) {
-                    if (data[0].value != undefined) {
-                        options = data[0].value;
-                        optionFrom = 'sql';
-            
-                        // fill in defaults for new options
-                        for (let key in GetDefaultOptions()) {
-                            if (options[key] == undefined) {
-                                options[key] = defaultOptions[key];
-                            }
-                        }
-                        resolveOptionsReady();
-                        return;
-                    }
-                }
-            }
-            store.getItem('options').then(function (data) {
-                if (data != null) {
+                if (typeof data === 'object') {
                     options = data;
-                    optionFrom = 'direct';
+                    optionFrom = 'sql';
         
                     // fill in defaults for new options
                     for (let key in GetDefaultOptions()) {
@@ -383,9 +366,25 @@ function GetOptions() {
                             options[key] = defaultOptions[key];
                         }
                     }
+                    resolveOptionsReady();
+                    return;
                 }
-                resolveOptionsReady();
-            });     
+            } else {
+                store.getItem('options').then(function (data) {
+                    if (data != null) {
+                        options = data;
+                        optionFrom = 'direct';
+            
+                        // fill in defaults for new options
+                        for (let key in GetDefaultOptions()) {
+                            if (options[key] == undefined) {
+                                options[key] = defaultOptions[key];
+                            }
+                        }
+                    }
+                    resolveOptionsReady();
+                });     
+            }
         }
     );
 

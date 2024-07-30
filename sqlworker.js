@@ -34,7 +34,7 @@ self.onmessage = async function(event) {
   }
 
   requests.forEach(request => {
-    log(`request: '${request.type}'.`);
+    //log(`request: '${request.type}'.`);
     switch (request.type) {
       case 'init':
       {
@@ -289,7 +289,23 @@ self.onmessage = async function(event) {
       case 'getOptions':
       {
         if (canWork) {
-          result(responseName(request.type), request.id, request.waitResponse, alasql('SELECT `value` FROM `Options`'));
+          let option = alasql('SELECT `value` FROM `Options`')
+          if (option.length == 0) {
+            option = {};
+          } else {
+            option = option[0].value;
+          }
+          if (Array.isArray(option)) {
+            if (option.length == 0) {
+              option = {};
+            } else {
+              option = option[0];
+              if (option.value != undefined) {
+                option = option.value;
+              }
+            }
+          }
+          result(responseName(request.type), request.id, request.waitResponse, option);
         }
         break;
       }
