@@ -226,11 +226,13 @@ function UpdateDataFromWorker(id) {
 
     sendtoSQL('getCacheFeedInfo', 'Viewer', true, id == undefined ? undefined : { feed_id: id }, function(data){
         if (data != undefined) {
-            if (data != undefined) {
-                feedInfo = data;
+            //format feedinfo
+            feedInfo = {};
+            for (let i = 0; i < data.length; i++) {
+                feedInfo[data[i].feed_id] = data[i];
             }
-            resolveGetCacheFeedInfo();
         }
+        resolveGetCacheFeedInfo();
     });
 
     let resolveGetGroupInfo;
@@ -241,11 +243,13 @@ function UpdateDataFromWorker(id) {
 
     sendtoSQL('getGroupInfo', 'Viewer', true, id == undefined ? undefined : { group_id: id }, function(data){
         if (data != undefined) {
-            if (data != undefined) {
-                groupInfo = data;
+            //format feedinfo
+            groupInfo = {};
+            for (let i = 0; i < data.length; i++) {
+                groupInfo[data[i].feed_id] = data[i];
             }
-            resolveGetGroupInfo();
         }
+        resolveGetGroupInfo();
     });
 
     Promise.allSettled(listPromise).then(function () {
@@ -432,11 +436,14 @@ function ShowFeed(key) {
         if (document.getElementById("feedTitleFeed" + feeds[key].id) == null) {
             li.innerText = feeds[key].title;
             li.setAttribute("id", "feedTitleFeed" + feeds[key].id);
+            li.setAttribute("data-type", "feed");
+            li.setAttribute("data-id", feeds[key].id);
+            li.setAttribute("data-key", key);
             span.setAttribute("id", "feedUnreadFeed" + feeds[key].id);
 
-            $(li).click(function () {
+            $(li).click(function (event) {
                 selectedFeedKeyIsFeed = true;
-                SelectFeed(key);
+                SelectFeed(event.target.getAttribute("data-key"));
                 return false;
             });
 
@@ -455,11 +462,14 @@ function ShowGroup(key) {
     if (document.getElementById("feedTitleGroup" + groups[key].id) == null) {
         li.innerText = groups[key].title;
         li.setAttribute("id", "feedTitleGroup" + groups[key].id);
+        li.setAttribute("data-type", "group");
+        li.setAttribute("data-id", groups[key].id);
+        li.setAttribute("data-key", key);
         span.setAttribute("id", "feedUnreadGroup" + groups[key].id);
 
         $(li).click(function () {
             selectedFeedKeyIsFeed = false;
-            SelectGroup(key);
+            SelectFeed(event.target.getAttribute("data-key"));
             return false;
         });
 
@@ -865,6 +875,9 @@ function SelectGroup(key) {
 }
 
 function SelectFeedOrGroup(key, type) {
+    if (typeof key === 'string') {
+        key = parseInt(key);
+    }
     let feediframe = document.getElementById("contentNotFormated");
     if (feediframe != undefined) {
         document.getElementById("feedPreviewScroller").removeChild(feediframe);
@@ -891,10 +904,37 @@ function SelectFeedOrGroup(key, type) {
         resolveGetLastSelectedFeed();
     });
 
+    let resolveGetInfo;
+    let waitGetInfo = new Promise((resolve) => {
+        resolveGetInfo = resolve;
+    });
+
+    listPromise.push(waitGetInfo);
     if (type == "Feed") {
+        sendtoSQL('getCacheFeedInfo', 'ViewerShowFeeds', true, { feed_id: feeds[key].id }, function(data){
+            if (data != null) {
+                if (data.length > 0) {
+                    if (data[0].items != undefined) {
+                        feedsOrGroupsInfo = data[0];
+                    }
+                }
+            }
+            resolveGetInfo();
+        });
         if (feeds[key].id == readLaterFeedID) {
             listPromise.push(loadReadlaterInfo());
         }
+    } else {
+        sendtoSQL('getGroupInfo', 'ViewerShowGroups', true, { group_id: groups[key].id }, function(data){
+            if (data != null) {
+                if (data.length > 0) {
+                    if (data[0].items != undefined) {
+                        feedsOrGroupsInfo = data[0];
+                    }
+                }
+            }
+            resolveGetInfo();
+        });
     }
 
     Promise.allSettled(listPromise).then(function () {
@@ -908,12 +948,9 @@ function SelectFeedOrGroup(key, type) {
             feedsOrGroups = feeds;
             if (feeds[key].id == readLaterFeedID) {
                 feedsOrGroupsInfo = readlaterInfo;
-            } else {
-                feedsOrGroupsInfo = feedInfo;
             }
         } else {
             feedsOrGroups = groups;
-            feedsOrGroupsInfo = groupInfo;
         }
 
         let lastSelectedFeed = {};
@@ -929,7 +966,7 @@ function SelectFeedOrGroup(key, type) {
 
         clearTimeout(feedReadToID);
 
-        if ((selectedFeedKey != null) &&(selectedFeedKey != undefined)) {
+        if ((selectedFeedKey != null) && (selectedFeedKey != undefined)) {
             document.getElementById("feedTitle" + lastSelectedFeedType + selectedFeedsOrGroups[selectedFeedKey].id).setAttribute("class", "");
         }
 
@@ -965,9 +1002,10 @@ function SelectFeedOrGroup(key, type) {
                     }
                 }
             } else {
-                feednotready = feedsOrGroupsInfo[feedsOrGroups[key].id] == null;
-                if (!feednotready) {
-                    feednotready = feedsOrGroupsInfo[feedsOrGroups[key].id].loading;
+                if (feedsOrGroupsInfo == undefined) {
+                    feednotready = true;
+                } else {
+                    feednotready = !feedsOrGroupsInfo.loading ? false : true;
                 }
             }
             if (feednotready) {
@@ -981,7 +1019,29 @@ function SelectFeedOrGroup(key, type) {
                         "type": "checkForUnreadOnSelectedFeedCompleted",
                         "selectedFeedKey": key
                     }).then(function () {
-                        RenderFeedFromSelect(type, key, feedsOrGroups);
+                        if (type == "Feed") {
+                            sendtoSQL('getCacheFeedInfo', 'ViewerShowFeeds', true, { feed_id: feeds[key].id }, function(data){
+                                if (data != null) {
+                                    if (data.length > 0) {
+                                        if (data[0].items != undefined) {
+                                            feedsOrGroupsInfo = data[0];
+                                        }
+                                    }
+                                }
+                                RenderFeedFromSelect(type, key, feedsOrGroups, feedsOrGroupsInfo);
+                            });
+                        } else {
+                            sendtoSQL('getGroupInfo', 'ViewerShowGroups', true, { group_id: groups[key].id }, function(data){
+                                if (data != null) {
+                                    if (data.length > 0) {
+                                        if (data[0].items != undefined) {
+                                            feedsOrGroupsInfo = data[0];
+                                        }
+                                    }
+                                }
+                                RenderFeedFromSelect(type, key, feedsOrGroups, feedsOrGroupsInfo);
+                            });
+                        }
                     });
                     return;
                 }
@@ -989,23 +1049,23 @@ function SelectFeedOrGroup(key, type) {
         }
 
         // feed loaded, but had an error
-        if (feedsOrGroupsInfo[feedsOrGroups[key].id] != null) {
-            if (feedsOrGroupsInfo[feedsOrGroups[key].id].error != "") {
-                ShowFeedError(feedsOrGroupsInfo[feedsOrGroups[key].id].error, feedsOrGroupsInfo[feedsOrGroups[key].id].errorContent, feedsOrGroupsInfo[feedsOrGroups[key].id].showErrorContent, feedsOrGroups[key].url, feedsOrGroups[key].urlredirected);
+        if (feedsOrGroupsInfo != null) {
+            if (feedsOrGroupsInfo.error != "") {
+                ShowFeedError(feedsOrGroupsInfo.error, feedsOrGroupsInfo.errorContent, feedsOrGroupsInfo.showErrorContent, feedsOrGroups[key].url, feedsOrGroups[key].urlredirected);
                 return;
             }
-            document.getElementById("noItems").style.display = (feedsOrGroupsInfo[feedsOrGroups[key].id].items.length == 0) ? "" : "none";
+            document.getElementById("noItems").style.display = (feedsOrGroupsInfo.items.length == 0) ? "" : "none";
         }
 
-        RenderFeedFromSelect(type, key, feedsOrGroups);
+        RenderFeedFromSelect(type, key, feedsOrGroups, feedsOrGroupsInfo);
 
         RefreshCategoryList();
         ShowCategory(true);
     });
 }
 
-function RenderFeedFromSelect(type, key, feedsOrGroups) {
-    RenderFeed(type);
+function RenderFeedFromSelect(type, key, feedsOrGroups, feedsOrGroupsInfo) {
+    RenderFeed(type, feedsOrGroupsInfo);
     UpdateReadAllIcon(type);
     FixFeedList(); // in case header wraps
 
@@ -1023,7 +1083,7 @@ function RenderFeedFromSelect(type, key, feedsOrGroups) {
     focusFeed();
 }
 
-function RenderFeed(type) {
+function RenderFeed(type, feedsOrGroupsInfo) {
     let itemID = null;
     let feedTitle = null;
     let feedLink = null;
@@ -1042,7 +1102,6 @@ function RenderFeed(type) {
     let summaryObjects = null;
     let item = null;
     let feedsOrGroups = (type == "Feed") ? feeds : groups;
-    let feedsOrGroupsInfo = (type == "Feed") ? ((feedsOrGroups[selectedFeedKey].id == readLaterFeedID) ? readlaterInfo : feedInfo) : groupInfo;
     let feedID = feedsOrGroups[selectedFeedKey].id;
     let currentTr = null;
     let columnCount = 0;
@@ -1052,21 +1111,25 @@ function RenderFeed(type) {
     let headerMessage = "";
     let showItem;
 
-    if (feedsOrGroupsInfo[feedID] == null) {
+    if ((type == "Feed") && (feedsOrGroups[selectedFeedKey].id == readLaterFeedID)) {
+        feedsOrGroupsInfo = readlaterInfo;
+    }
+
+    if (feedsOrGroupsInfo == null) {
         return;
     }
 
-    headerMessage = feedsOrGroupsInfo[feedID].title;
-    if (feedsOrGroupsInfo[feedID].description != "" && options.showdescriptions) {
-        headerMessage += "<span> : " + feedsOrGroupsInfo[feedID].description + "</span>";
+    headerMessage = feedsOrGroupsInfo.title;
+    if (feedsOrGroupsInfo.description != "" && options.showdescriptions) {
+        headerMessage += "<span> : " + feedsOrGroupsInfo.description + "</span>";
     }
     document.getElementById("headerMessage").innerHTML = headerMessage;
 
     let logoUsed = false;
-    if (feedsOrGroupsInfo[feedID].image != undefined) {
-        if (feedsOrGroupsInfo[feedID].image[0] != undefined) {
-            if (feedsOrGroupsInfo[feedID].image[0]["url"] != undefined) {
-                document.getElementById("headerLogo").style.backgroundImage = "url(" + feedsOrGroupsInfo[feedID].image[0]["url"] + ")";
+    if (feedsOrGroupsInfo.image != undefined) {
+        if (feedsOrGroupsInfo.image[0] != undefined) {
+            if (feedsOrGroupsInfo.image[0]["url"] != undefined) {
+                document.getElementById("headerLogo").style.backgroundImage = "url(" + feedsOrGroupsInfo.image[0]["url"] + ")";
                 logoUsed = true;
             }
         }
@@ -1100,11 +1163,11 @@ function RenderFeed(type) {
         document.getElementById("urlRedirected").style.display = "none";
     }
 
-    let nbItem = Math.min(feedsOrGroupsInfo[feedID].items.length, feedsOrGroups[selectedFeedKey].maxitems);
+    let nbItem = Math.min(feedsOrGroupsInfo.items.length, feedsOrGroups[selectedFeedKey].maxitems);
     let itemNo = 0;
     for (let i = 0; i < nbItem; i++) {
         showItem = true;
-        item = feedsOrGroupsInfo[feedID].items[i];
+        item = feedsOrGroupsInfo.items[i];
 
         if (options.useViewByCategory) {
             if ((categoryFilterUpper != '') && (categoryFilterUpper != undefined)) {
@@ -1371,7 +1434,7 @@ function RenderFeed(type) {
             feedContainer = document.createElement("div");
             feedContainer.setAttribute("id", containerId);
 
-            if (ItemIsRead((feedID != readLaterFeedID) ? feedsOrGroupsInfo[feedID].items[i].idOrigin : readLaterFeedID, itemID)) {
+            if (ItemIsRead((feedID != readLaterFeedID) ? feedsOrGroupsInfo.items[i].idOrigin : readLaterFeedID, itemID)) {
                 if (options.readitemdisplay == 0) {
                     feedContainer.setAttribute("class", "feedPreviewContainer feedPreviewContainerRead");
                 } else {

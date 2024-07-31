@@ -192,18 +192,33 @@ self.onmessage = async function(event) {
       case 'getCacheFeedInfo':
       {
         if (canWork) {
-          let requestsql = `SELECT feedinfo.*, item.*, gr.name
+          let requestsql = `SELECT feedinfo.*, gr.name
               FROM \`CacheFeedInfo\` as feedinfo
-              LEFT JOIN \`CacheFeedInfoItem\` as item ON feedinfo.\`feed_id\` = item.\`idOrigin\`
               LEFT JOIN \`Feeds\` AS feeds ON feeds.\`id\` = feedinfo.\`feed_id\`
               LEFT JOIN \`Group\` AS gr ON gr.\`id\` = feeds.\`group_id\``;
-          if (request.feed_id == undefined) {
-            result(responseName(request.type), request.id, request.waitResponse, alasql(requestsql));
+          let resultdata;
+          if (request.data == undefined) {
+            resultdata = alasql(requestsql);
           } else {
-            result(responseName(request.type), request.id, request.waitResponse,
-            alasql(`${requestsql}
-              WHERE feedinfo.\`feed_id\` = ?`, [request.feed_id]));
+            if (request.data.feed_id == undefined) {
+              resultdata = alasql(requestsql);
+            } else {
+              resultdata = alasql(`${requestsql}
+                WHERE feedinfo.\`feed_id\` = ?`, [request.data.feed_id]);
+            }
           }
+
+          if (request.data != undefined) {
+            if (request.data.feed_id != undefined) {
+              for (let i = 0; i < resultdata.length; i++) {
+              resultdata[i].items = alasql(
+                `SELECT \`itemID\`, \`title\`, \`description\`, \`date\`, \`content\`, \`summary\`, \`updated\`, \`guid\`, \`category\`, \`comments\`, \`url\`, \`thumbnail\`, \`author\`, \`order\`
+                FROM \`CacheFeedInfoItem\`
+                WHERE \`idOrigin\` = ?`, [resultdata[i].feed_id]);
+              }
+            }
+          }
+          result(responseName(request.type), request.id, request.waitResponse, resultdata);
         }
         break;
       }
@@ -573,11 +588,15 @@ self.onmessage = async function(event) {
             LEFT JOIN \`Feeds\` AS feeds ON feeds.\`group_id\` = gr.\`id\`
             LEFT JOIN \`CacheFeedInfo\` AS feedinfo ON feedinfo.\`feed_id\` = feeds.\`id\``;
           let resultdata;
-          if (request.group_id == undefined) {
+          if (request.data == undefined) {
             resultdata = alasql(requestsql);
           } else {
-            resultdata = alasql(`${requestsql}
-              WHERE gr.\`id\` = ?`, [request.group_id]);
+            if (request.data.group_id == undefined) {
+              resultdata = alasql(requestsql);
+            } else {
+              resultdata = alasql(`${requestsql}
+                WHERE gr.\`id\` = ?`, [request.data.group_id]);
+            }
           }
 
           for (let i = 0; i < resultdata.length; i++) {

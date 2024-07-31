@@ -1508,7 +1508,6 @@ function CleanArrayCategory(arrayCat) {
     }
 }
 
-
 function GetCache() {
     let resolveGetCache;
     let waitGetCache = new Promise((resolve) => {
