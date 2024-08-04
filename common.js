@@ -35,6 +35,8 @@ if (datacommoninitialized !== true) {
     datacommoninitialized = true;
 }
 
+var promiseOptionBegin = GetOptions();
+
 if (readlaterInfo[readLaterFeedID] === undefined) {
     readlaterInfo[readLaterFeedID] = {
         title: GetMessageText("backReadLater"),
@@ -46,8 +48,6 @@ if (readlaterInfo[readLaterFeedID] === undefined) {
         category: ""
     };
 }
-
-var promiseOptionBegin = GetOptions();
 
 async function waitOptionReady() {
     return await Promise.allSettled([promiseOptionBegin]);

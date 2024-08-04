@@ -154,6 +154,9 @@ function Save()
 	options.dontreadontitleclick = (document.getElementById("dontReadOnTitleClick").selectedIndex == 1);
 	options.useViewByCategory = (document.getElementById("useViewByCategory").selectedIndex == 1);
 
+	localStorage.setItem('darkmode', options.darkmode);
+    localStorage.setItem('fontSize', options.fontSize);
+
 	var promiseCheckForUnread = [];
 
 	let resolveSetOptions;

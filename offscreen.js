@@ -199,7 +199,7 @@ async function handleMessages(message, sender, sendResponse) {
     }
     case 'setOptions': case 'setLastSelectedFeed': case 'addFeed': case 'setReadlaterinfoItem': case 'addColor': case 'deleteColor': case 'setUnreadinfo':
     case 'clearUnreadinfo': case 'addUnreadinfoItem': case 'clearUnreadinfoItem': case 'clearReadlaterinfo': case 'clearCacheFeedInfo': case 'addCacheFeedInfo':
-    case 'updateCacheFeedInfoLoading': case 'updateCacheFeedInfo': case 'addCacheFeedInfoItem': {
+    case 'updateCacheFeedInfoLoading': case 'updateCacheFeedInfo': case 'addCacheFeedInfoItem': case 'updateFeed': {
       callWorker(false, null, message);
       break;
     }

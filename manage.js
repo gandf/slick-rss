@@ -1,48 +1,30 @@
-var lastBadRow = null;
+options.darkmode = (localStorage.getItem('darkmode') == "true");
+options.fontSize = localStorage.getItem('fontSize');
+if (options.darkmode) {
+	activeDarkMode();
+} else {
+	disableDarkMode();
+}
+
+var table;
+var listdelete = [];
 
 $(document).ready(function()
 {
 	$('#save').click(function(){Save();});
-	$('#add').click(function(){Add();});
+
+	ShowFeeds();
+});
+
+waitOptionReady().then(function () {
+	if (options.darkmode) {
+		activeDarkMode();
+	} else {
+		disableDarkMode();
+	}
 });
 
 document.documentElement.setAttribute('lang', GetMessageText('lang'));
-
-ShowFeeds();
-
-function Add()
-{
-	let title = document.getElementById("newTitle").value;
-	let url = document.getElementById("newUrl").value;
-	let group = document.getElementById("newGroup").value;
-	let maxItems = document.getElementById("newMaxItems").value;
-	let order = document.getElementById("newOrder").value;
-	let excludeUnreadCount = document.getElementById("newExcludeUnreadCount").selectedIndex;
-	let maxOrder = 0;
-	let itemOrder = 0;
-
-	if(!IsValid(title, url, group, maxItems, order)) {
-		return;
-	}
-
-	AddRow(feeds.push(CreateNewFeed(title, url, group, maxItems, order, excludeUnreadCount)) - 1);
-
-	for(let feedKey in feeds) {
-		itemOrder = parseInt(feeds[feedKey].order, 10);
-
-		if(itemOrder > maxOrder) {
-			maxOrder = itemOrder;
-		}
-	}
-
-	document.getElementById("newOrder").value = maxOrder + 1;
-	document.getElementById("newTitle").value = "";
-	document.getElementById("newUrl").value = "";
-	document.getElementById("newGroup").value = "";
-	document.getElementById("newMaxItems").value = options.maxitems;
-	document.getElementById("newExcludeUnreadCount").selectedIndex = 0;
-
-}
 
 function IsValid(title, url, group, maxItems, order)
 {
@@ -88,171 +70,38 @@ function IsValid(title, url, group, maxItems, order)
 	return true;
 }
 
-function AddRow(feedKey)
-{
-	let grid;
-	let row;
-	let input;
-	let button;
-	let optionon;
-	let optionoff;
-	let buttonSuggest;
-
-	grid = document.getElementById("feedGrid");
-	row = grid.insertRow(grid.rows.length);
-	row.setAttribute("id", feedKey);
-
-	input = document.createElement('input');
-	input.setAttribute("type", "text");
-	input.setAttribute("class", "title");
-	input.setAttribute("value", feeds[feedKey].title);
-
-	row.insertCell(0).appendChild(input);
-
-	input = document.createElement('input');
-	input.setAttribute("type", "text");
-	input.setAttribute("class", "url");
-	input.setAttribute("value", feeds[feedKey].url);
-
-	row.insertCell(1).appendChild(input);
-
-	input = document.createElement('input');
-	input.setAttribute("type", "text");
-	input.setAttribute("class", "group");
-	input.setAttribute("value", feeds[feedKey].group);
-
-	row.insertCell(2).appendChild(input);
-
-	input = document.createElement('input');
-	input.setAttribute("type", "text");
-	input.setAttribute("class", "maxItems");
-	input.setAttribute("value", feeds[feedKey].maxitems);
-
-	row.insertCell(3).appendChild(input);
-
-	input = document.createElement('input');
-	input.setAttribute("type", "text");
-	input.setAttribute("class", "order");
-	input.setAttribute("value", feeds[feedKey].order);
-
-	row.insertCell(4).appendChild(input);
-
-	optionoff = document.createElement("option");
-	optionoff.value = 0;
-	optionoff.text = GetMessageText("optionOff");
-
- 	optionon = document.createElement("option");
-	optionon.value = 1;
-	optionon.text = GetMessageText("optionOn");
-
-	select = document.createElement('select');
-	select.setAttribute("id", "excludeUnreadCount");
-	select.appendChild(optionoff);
-	select.appendChild(optionon);
-	select.selectedIndex = feeds[feedKey].excludeUnreadCount;
-
-	row.insertCell(5).appendChild(select);
-
-	button = document.createElement("img");
-	button.setAttribute("src", "x_gray.png");
-	button.setAttribute("class", "delete");
-
-	$(button).click({id:feedKey}, function(event) {
-		MarkDelete($('#' + event.data.id).get(0));
-	});
-	button.setAttribute("title", "Delete feed");
-	row.insertCell(6).appendChild(button);
-
-	buttonSuggest = document.createElement("button");
-	buttonSuggest.appendChild(document.createTextNode(GetMessageText( "buttonSuggest")));
-	$(buttonSuggest).click({url: feeds[feedKey].url}, function(event) {
-		FeedAddSuggest(event.data.url);
-	});
-	row.insertCell(7).appendChild(buttonSuggest);
-}
-
-function MarkDelete(row)
-{
-	var marked = (row.className == "markDelete");
-
-	if(!marked)	{
-		row.setAttribute("class", "markDelete");
-	} else {
-		if(row != lastBadRow) {
-			row.setAttribute("class", "");
-		} else {
-			row.setAttribute("class", "badRow");
-		}
-	}
-
-	row.childNodes[0].childNodes[0].disabled = !marked; // title
-	row.childNodes[1].childNodes[0].disabled = !marked; // url
-	row.childNodes[2].childNodes[0].disabled = !marked; // group
-	row.childNodes[3].childNodes[0].disabled = !marked; // max items
-	row.childNodes[4].childNodes[0].disabled = !marked; // order
-	row.childNodes[5].childNodes[0].disabled = !marked; // excludeUnreadCount
-
-}
-
 function Save()
 {
-	var row = null;
-	var title;
-	var url;
-	var group;
-	var maxItems;
-	var order;
-	var excludeUnreadCount;
-
-	if (lastBadRow != null && lastBadRow.className != "markDelete") {
-		lastBadRow.className = "";
-	}
-
-	for(feedKey in feeds) {
-		if (feeds[feedKey].id != readLaterFeedID) {
-			row = document.getElementById(feedKey);
-
-			title = row.childNodes[0].childNodes[0].value;
-			url = row.childNodes[1].childNodes[0].value;
-			group = row.childNodes[2].childNodes[0].value;
-			maxItems = row.childNodes[3].childNodes[0].value;
-			order = row.childNodes[4].childNodes[0].value;
-			excludeUnreadCount = row.childNodes[5].childNodes[0].selectedIndex;
-
-			if(row.className != "markDelete" && !IsValid(title, url, group, maxItems, order)) {
-				row.className = "badRow";
-				lastBadRow = row;
-				return;
-			}
-
-			feeds[feedKey].title = title;
-			feeds[feedKey].url = url;
-			feeds[feedKey].group = group;
-			feeds[feedKey].maxitems = maxItems;
-			feeds[feedKey].order = order;
-			feeds[feedKey].excludeUnreadCount = excludeUnreadCount;
-		}
-	}
-
-	// delete feeds that are marked, start from end so indexes don't get screwed up
-	for(var i = feeds.length - 1; i >= 0; i--) {
-		row = document.getElementById(i);
-		if (row != undefined) {
-			if(row.className == "markDelete") {
-				feeds.splice(i, 1);
-			}
-		}
-	}
-
 	let requests = [];
-	let feedids = [];
-	feeds.filter(filterByID).forEach((feed) => {
-		let feedid = parseInt(feed.id, 10);
-		if (!feedids.includes(feedid)) {
-			requests.push({type: 'addFeed', waitResponse: false, data: feed });
-			feedids.push(feedid);
+	for(let i = 0; i < listdelete.length; i++) {
+		let feedid = listdelete[i];
+		if (feedid > 0) {
+			requests.push({type: 'deleteFeed', waitResponse: false, data: { feed_id: feedid } });
 		}
-	});
+	}
+
+	let datafeeds = table.getData();
+	for (let i = 0; i < datafeeds.length; i++) {
+		let feed = datafeeds[i];
+		if (feed.id === undefined) {
+			continue;
+		}
+		if (!IsValid(feed.title, feed.url, feed.group, feed.maxitems, feed.order)) {
+			return;
+		}
+		if (feed.id < 0) {
+			requests.push({type: 'addFeed', waitResponse: false, data: CreateNewFeed(feed.title, feed.url, feed.group, feed.maxitems, feed.order, feed.excludeUnreadCount) });
+		} else {
+			let onefeed = feeds.filter(x => x.id == feed.id);
+			if (onefeed.length > 0) {
+				onefeed = onefeed[0];
+				if ((onefeed.title != feed.title) || (onefeed.url != feed.url) || (onefeed.group != feed.group) || (onefeed.maxitems != feed.maxitems) || (onefeed.order != feed.order) || (onefeed.excludeUnreadCount != feed.excludeUnreadCount)) {
+					requests.push({type: 'updateFeed', waitResponse: false, data: feed });
+				}
+			}
+		}
+	}
+
 	if (requests.length > 0) {
 		requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Group', waitResponse: true, subtype: 'Group' });
 		requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Feeds', waitResponse: true, subtype: 'Feeds' });
@@ -266,34 +115,137 @@ function Save()
 	}
 }
 
-function ShowFeeds()
-{
-	var maxOrder = 0;
-	var itemOrder = 0;
+var IntegerEditor = function(cell, onRendered, success, cancel) {
+	var input = document.createElement("input");
 
-	waitOptionReady().then(function () {
-		if (options.darkmode) {
-			activeDarkMode();
+	input.setAttribute("type", "number");
+	input.setAttribute("min", "0");
+	input.style.width = "100%";
+	input.style.boxSizing = "border-box";
+	input.value = cell.getValue();
+	input.addEventListener("blur", function(e) {
+		var value = input.value;
+		if (Number.isInteger(parseInt(value))) {
+			success(parseInt(value));
 		} else {
-			disableDarkMode();
+			cancel();
 		}
-		document.getElementById("newMaxItems").value = options.maxitems;
 	});
 
-	GetFeedsSimple(function(feeds) {
-		for(feedKey in feeds) {
-			// skip read later feed
-			if (feeds[feedKey].id != readLaterFeedID) {
-				AddRow(feedKey);
-				itemOrder = parseInt(feeds[feedKey].order, 10);
+	onRendered(function() {
+		input.focus();
+		input.style.height = "100%";
+	});
+	return input;
+};
 
-				if(itemOrder > maxOrder) {
-					maxOrder = itemOrder;
-				}
+function ShowFeeds()
+{
+	GetFeedsSimple(function(feeds) {
+		let feedsreturned = JSON.parse(JSON.stringify(feeds));
+
+		feedsreturned.sort((a, b) => a.order - b.order);
+
+		let reorder = 0;
+		for(let i = 0; i < feedsreturned.length; i++) {
+			if (feedsreturned[i].id != readLaterFeedID) {
+				reorder++;
+				feedsreturned[i].order = reorder;
 			}
 		}
 
-		document.getElementById("newOrder").value = maxOrder + 1;
+		var deleteIcon = function(cell, formatterParams, onRendered){
+			if (cell.getRow().getData().id === undefined) {
+				return '<button>' + GetMessageText("add") + '</button>';
+			} else {
+				return '<img src="x_gray.png" class="delete" title="' + GetMessageText("Delete feed") + '">';
+			}
+		};
+
+		//Build Tabulator
+		table = new Tabulator("#feedGrid-table", {
+			height:"95vh",
+			addRowPos:"top",
+			layout: "fitDataTable",
+			index:"order",
+			keybindings:{
+				"navNext" : ["13"],
+			},
+			columns:[
+				{title:"", field:"id", visible:false},
+				{title:GetMessageText("manageName"), field:"title", width:300, editor:"input", resizable:false},
+				{title:GetMessageText("manageUrl"), field:"url", width:400, editor:"input", resizable:false},
+				{title:GetMessageText("manageGroup"), field:"group", width:200, editor:"list", editorParams:{autocomplete:"true", allowEmpty:true,listOnEmpty:true, valuesLookup:true, freetext:true}, resizable:false},
+				{title:GetMessageText("manageMaxItems"), field:"maxitems", width:120, editor:IntegerEditor, hozAlign:"center", headerHozAlign: "center", resizable:false},
+				{title:GetMessageText("manageOrder"), field:"order", editor:IntegerEditor, hozAlign:"center", width:100, headerHozAlign: "center", resizable:false},
+				{title:GetMessageText("excludeUnreadCount"), field:"excludeUnreadCount", hozAlign:"center", vertAlign:"middle", formatter:"toggle", width:200, headerHozAlign: "center", resizable:false, formatterParams:{
+					size:16,
+					onValue:1,
+					offValue:0,
+					onTruthy:true,
+					onColor:"#285491",
+					//offColor:"red",
+					clickable:true,
+				}},
+				{title:"", hozAlign:"center", vertAlign: "middle", formatter:deleteIcon, cssClass:"no-background", resizable:false, cellClick:function(e, cell)
+					{
+						if (cell.getRow().getData().id === undefined) {
+							//Add feed
+							let rowdata = cell.getRow().getData();
+							if ((rowdata.title != undefined) && (rowdata.title != "") && (rowdata.url != undefined) && (rowdata.url != "")) {
+								let orderValues = table.getData().map(function(row) {
+									return row.order;
+								});
+								orderValues = orderValues.filter(function(value) {
+									return Number.isInteger(value);
+								});
+								if (!Number.isInteger(rowdata.order)) {
+									let maxOrder;
+									if (orderValues.length == 0) {
+										maxOrder = 0;
+									} else {
+										maxOrder = Math.max(...orderValues);
+									}
+									rowdata.order = maxOrder + 1;
+								}
+								if (rowdata.id == undefined) {
+									rowdata.id = -1;;
+								}
+								table.addRow({ title: rowdata.title, url: rowdata.url, group: rowdata.group, maxitems: rowdata.maxitems, order: rowdata.order, id: rowdata.id, excludeUnreadCount: rowdata.excludeUnreadCount }, false);
+								cell.getRow().delete();
+								table.addRow({ excludeUnreadCount: false, maxitems: options.maxitems });
+							}
+						} else {
+							//Delete feed
+							let id = cell.getRow().getData().id;
+							if ((id != undefined) && (id > 0)) {
+								listdelete.push(id);
+							}
+							cell.getRow().delete();
+						}					
+					}, headerSort:false, minWidth: 80
+				},
+				{title: "", hozAlign: "center", resizable:false, formatter: function(cell, formatterParams, onRendered)
+					{
+						if (cell.getRow().getData().id === undefined) {
+							return "";
+						}
+						return '<button class="suggest-button">' + GetMessageText("buttonSuggest") + '</button>';
+					}, cssClass: "no-background", headerSort:false, widthShrink:1, cellClick:function(e, cell)
+					{
+						let rowdata = cell.getRow().getData();
+						if ((rowdata.id != undefined) && (rowdata.url != undefined) && (rowdata.url != "")) {
+							FeedAddSuggest(rowdata.url);
+						}
+					}
+				},
+			],
+			data:feedsreturned.filter(filterByID)
+		});
+		
+		table.on("tableBuilt", function() {
+			table.addRow({ excludeUnreadCount: false, maxitems: options.maxitems });
+		});
 	});
 }
 

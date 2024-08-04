@@ -376,7 +376,7 @@ self.onmessage = async function(event) {
             deleteFeed(id);
           }
           let idgroup = null;
-          if (request.data.group == '') {
+          if ((request.data.group == '') || (request.data.group == null) || (request.data.group == undefined)) {
             idgroup = null;
           } else {
             let searchidgroup = alasql(`SELECT \`id\` FROM \`Group\` WHERE \`name\` = ?`, [request.data.group]);
@@ -397,6 +397,27 @@ self.onmessage = async function(event) {
       {
         if (canWork && (request.feed_id != undefined)) {
           deleteFeed(request.feed_id);
+        }
+        break;
+      }
+      case 'updateFeed':
+      {
+        if (canWork && (request.data != undefined)) {
+          let idgroup = null;
+          if (request.data.group == '') {
+            idgroup = null;
+          } else {
+            let searchidgroup = alasql(`SELECT \`id\` FROM \`Group\` WHERE \`name\` = ?`, [request.data.group]);
+            if (searchidgroup.length > 0) {
+              idgroup = searchidgroup[0].id;
+            }
+            if ((idgroup == undefined) || (idgroup == "") || (idgroup == null)) {
+              alasql(`INSERT INTO \`Group\` (name) VALUES (?)`, [request.data.group]);
+              let searchidgroup = alasql(`SELECT \`id\` FROM \`Group\` WHERE \`name\` = ?`, [request.data.group]);
+              idgroup = searchidgroup[0].id;
+            }
+          }
+          alasql(`UPDATE \`Feeds\` SET \`title\` = ?, \`url\` = ?, \`group_id\` = ?, \`maxitems\` = ?, \`order\` = ?, \`excludeUnreadCount\` = ?, \`urlredirected\` = ? WHERE \`id\` = ?`, [request.data.title, request.data.url, idgroup, request.data.maxitems, request.data.order, request.data.excludeUnreadCount, request.data.urlredirected, request.data.id]);
         }
         break;
       }

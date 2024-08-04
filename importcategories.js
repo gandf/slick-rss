@@ -1,3 +1,11 @@
+options.darkmode = (localStorage.getItem('darkmode') == "true");
+options.fontSize = localStorage.getItem('fontSize');
+if (options.darkmode) {
+	activeDarkMode();
+} else {
+	disableDarkMode();
+}
+
 $(document).ready(function()
 {
 	$('#import').click(function(){Import();});

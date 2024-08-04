@@ -136,3 +136,20 @@ body {
     margin: 0;
     padding: 0;
 }
+
+.no-background .tabulator-cell {
+    background-color: transparent !important;
+}
+
+.tabulator .tabulator-header .tabulator-col.tabulator-sortable .tabulator-col-title {
+    color:#999FAA !important;
+}
+
+.tabulator-row .tabulator-cell {
+    color:#999FAA !important;
+}
+
+.center-table {
+    margin: 0 auto;
+    width: fit-content;
+}

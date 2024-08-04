@@ -1,4 +1,11 @@
-// to prevent XSS :(
+options.darkmode = (localStorage.getItem('darkmode') == "true");
+options.fontSize = localStorage.getItem('fontSize');
+if (options.darkmode) {
+	activeDarkMode();
+} else {
+	disableDarkMode();
+}
+
 $(document).ready(function () {
     $('#refreshAll').click(function () {
         chrome.runtime.sendMessage({type: "checkForUnread"}).then(function () {
@@ -81,7 +88,35 @@ waitOptionReady().then(function () {
             document.getElementById("addAuthNotif").style.display = "none";
         }
     });
+    localStorage.setItem('darkmode', options.darkmode);
+    localStorage.setItem('fontSize', options.fontSize);
 });
+
+function openPageWithParams(pageurl, newpage) {
+    var form = document.createElement("form");
+    form.setAttribute("method", "post");
+    form.setAttribute("action", pageurl);
+    if (newpage) {
+        form.setAttribute("target", "_blank");
+    }
+
+    var input1 = document.createElement("input");
+    input1.setAttribute("type", "hidden");
+    input1.setAttribute("name", "darkmode");
+    input1.setAttribute("value", options.darkmode);
+    form.appendChild(input1);
+
+    var input2 = document.createElement("input");
+    input2.setAttribute("type", "hidden");
+    input2.setAttribute("name", "font");
+    input2.setAttribute("value", options.fontSize);
+    form.appendChild(input2);
+
+    document.body.appendChild(form);
+    form.submit();
+
+    document.body.removeChild(form);
+}
 
 sendtoSQL('getUnreadinfo', 'Viewer', true, undefined, function(data){
     if (data != null) {
@@ -834,7 +869,7 @@ function MarkItemReadLater(feedID, itemIndex) {
     if (!itemExist) {
         readlaterInfo[readLaterFeedID].items.push(currentItem);
     }
-
+//TODO ***
     unreadInfo[readLaterFeedID].unreadtotal = readlaterInfo[readLaterFeedID].items.length;
 
     MarkItemRead(itemID);
@@ -916,6 +951,7 @@ function SelectFeedOrGroup(key, type) {
                 if (data.length > 0) {
                     if (data[0].items != undefined) {
                         feedsOrGroupsInfo = data[0];
+                        feedInfo[feeds[key].id].items = feedsOrGroupsInfo.items;
                     }
                 }
             }
@@ -930,6 +966,7 @@ function SelectFeedOrGroup(key, type) {
                 if (data.length > 0) {
                     if (data[0].items != undefined) {
                         feedsOrGroupsInfo = data[0];
+                        groupInfo[feeds[key].id].items = feedsOrGroupsInfo.items;
                     }
                 }
             }
@@ -1895,7 +1932,7 @@ function ListAllCategories() {
     let resultCat;
     let info;
     let isAllFeed = false;
-
+//TODO ***
     if (!selectedFeedKeyIsFeed) {
         if (groups[selectedFeedKey] != undefined) {
             isAllFeed = (groups[selectedFeedKey].id == allFeedsID);

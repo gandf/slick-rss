@@ -17,19 +17,27 @@ function switchTheme(themesize) {
 
 function activeDarkMode() {
     switchTheme('' + options.fontSize);
-    let keys = Object.keys(document.getElementsByTagName("link"));
+    let listcss = document.getElementsByTagName("link");
+    let keys = Object.keys(listcss);
     for (let i = 0; i < keys.length; i++) {
-        let oldlink = document.getElementsByTagName("link").item(keys[i]);
-        oldlink.setAttribute("href", oldlink.getAttribute("href").replace(".", "_dark."));
+        let oldlink = listcss.item(keys[i]);
+        let hrefValue = oldlink.getAttribute("href");
+        if (!hrefValue.endsWith("_dark.css")) {
+            oldlink.setAttribute("href", hrefValue.replace(".", "_dark."));
+        }
     }
 }
 
 function disableDarkMode() {
     switchTheme('' + options.fontSize);
-    let keys = Object.keys(document.getElementsByTagName("link"));
+    let listcss = document.getElementsByTagName("link");
+    let keys = Object.keys(listcss);
     for (let i = 0; i < keys.length; i++) {
-        let oldlink = document.getElementsByTagName("link").item(keys[i]);
-        oldlink.setAttribute("href", oldlink.getAttribute("href").replace("_dark.", "."));
+        let oldlink = listcss.item(keys[i]);
+        let hrefValue = oldlink.getAttribute("href");
+        if (hrefValue.endsWith("_dark.css")) {
+            oldlink.setAttribute("href", hrefValue.replace("_dark.", "."));
+        }
     }
 }
 

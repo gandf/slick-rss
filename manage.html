@@ -4,9 +4,11 @@
     <title data-locale="manageTitle">Slick RSS : Manage Feeds</title>
     <link rel="stylesheet" href="common.css" type="text/css" />
     <link rel="stylesheet" href="manage.css" type="text/css" />
+    <link rel="stylesheet" href="tabulator.css" type="text/css" />
     <script type="text/javascript" src="jquery-3.6.3.min.js"></script>
     <script type="text/javascript" src="localforage.min.js"></script>
     <script type="text/javascript" src="datamanager.js"></script>
+    <script type="text/javascript" src="tabulator.min.js"></script>
     <script type="text/javascript" src="sqloffscreenmgr.js"></script>
     <script type="text/javascript" src="common-page.js"></script>
     <script type="text/javascript" src="common.js"></script>
@@ -21,26 +23,11 @@
 <td><a href="managecategories.html" data-locale="manageCategories">Manage Categories</a> | <a href="#" id='save' data-locale="save">Save</a> | <a href="viewer.html" data-locale="cancel">Cancel</a></td></tr>
 </table>
 
-<table id="feedGrid" cellpadding="5" cellspacing="0" border="0">
-<tr>
-<th data-locale="manageName">Name</th>
-<th data-locale="manageUrl">URL</th>
-<th data-locale="manageGroup">Group</th>
-<th data-locale="manageMaxItems">Max Items</th>
-<th data-locale="manageOrder">Order</th>
-<th data-locale="excludeUnreadCount">Exclude from unread count</th>
-<th></th>
-</tr>
-<tr class="add">
-<td><input type="text" id="newTitle" value="" maxlength="50" /></td>
-<td><input type="text" id="newUrl" value="" maxlength="500" /></td>
-<td><input type="text" id="newGroup" value="" maxlength="50" /></td>
-<td><input type="text" id="newMaxItems" value="" maxlength="3" /></td>
-<td><input type="text" id="newOrder" value="" maxlength="6" /></td>
-<td><select id="newExcludeUnreadCount"><option value="0" data-locale="optionOff">Off</option><option value="1" data-locale="optionOn">On</option></select></td>
-<td><button type="button" id='add' data-locale="add">Add</button></td>
-</tr>
-</table>
+<div class="center-table">
+<div id="feedGrid-table"></div>
+<p></p>
+</div>
+
 </div>
 <script  type="text/javascript" src='localize.js' ></script>
 </body>
