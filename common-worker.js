@@ -1,3 +1,7 @@
+var manifest;
+var defaultOptions;
+var options;
+
 function CleanText2(text)
 {
     try {

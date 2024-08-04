@@ -1,5 +1,3 @@
-
-// wire stuff to prevent XSS :(
 $(document).ready(function()
 {
 	$('#save').click(function(){
@@ -156,6 +154,7 @@ function Save()
 
 	localStorage.setItem('darkmode', options.darkmode);
     localStorage.setItem('fontSize', options.fontSize);
+    localStorage.setItem('forcelangen', options.forcelangen);
 
 	var promiseCheckForUnread = [];
 

@@ -1,11 +1,3 @@
-options.darkmode = (localStorage.getItem('darkmode') == "true");
-options.fontSize = localStorage.getItem('fontSize');
-if (options.darkmode) {
-	activeDarkMode();
-} else {
-	disableDarkMode();
-}
-
 $(document).ready(function () {
     $('#refreshAll').click(function () {
         chrome.runtime.sendMessage({type: "checkForUnread"}).then(function () {
@@ -90,6 +82,7 @@ waitOptionReady().then(function () {
     });
     localStorage.setItem('darkmode', options.darkmode);
     localStorage.setItem('fontSize', options.fontSize);
+    localStorage.setItem('forcelangen', options.forcelangen);
 });
 
 function openPageWithParams(pageurl, newpage) {

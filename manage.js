@@ -1,11 +1,3 @@
-options.darkmode = (localStorage.getItem('darkmode') == "true");
-options.fontSize = localStorage.getItem('fontSize');
-if (options.darkmode) {
-	activeDarkMode();
-} else {
-	disableDarkMode();
-}
-
 var table;
 var listdelete = [];
 
@@ -22,9 +14,9 @@ waitOptionReady().then(function () {
 	} else {
 		disableDarkMode();
 	}
+	document.documentElement.setAttribute('lang', GetMessageText('lang'));
 });
 
-document.documentElement.setAttribute('lang', GetMessageText('lang'));
 
 function IsValid(title, url, group, maxItems, order)
 {
@@ -139,6 +131,14 @@ var IntegerEditor = function(cell, onRendered, success, cancel) {
 	return input;
 };
 
+var deleteIcon = function(cell, formatterParams, onRendered){
+	if (cell.getRow().getData().id === undefined) {
+		return '<button>' + GetMessageText("add") + '</button>';
+	} else {
+		return '<img src="x_gray.png" class="delete" title="' + GetMessageText("Delete feed") + '">';
+	}
+};
+
 function ShowFeeds()
 {
 	GetFeedsSimple(function(feeds) {
@@ -154,17 +154,9 @@ function ShowFeeds()
 			}
 		}
 
-		var deleteIcon = function(cell, formatterParams, onRendered){
-			if (cell.getRow().getData().id === undefined) {
-				return '<button>' + GetMessageText("add") + '</button>';
-			} else {
-				return '<img src="x_gray.png" class="delete" title="' + GetMessageText("Delete feed") + '">';
-			}
-		};
-
 		//Build Tabulator
 		table = new Tabulator("#feedGrid-table", {
-			height:"95vh",
+			height:"90vh",
 			addRowPos:"top",
 			layout: "fitDataTable",
 			index:"order",
@@ -209,7 +201,7 @@ function ShowFeeds()
 									rowdata.order = maxOrder + 1;
 								}
 								if (rowdata.id == undefined) {
-									rowdata.id = -1;;
+									rowdata.id = -1;
 								}
 								table.addRow({ title: rowdata.title, url: rowdata.url, group: rowdata.group, maxitems: rowdata.maxitems, order: rowdata.order, id: rowdata.id, excludeUnreadCount: rowdata.excludeUnreadCount }, false);
 								cell.getRow().delete();

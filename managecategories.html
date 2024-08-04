@@ -4,9 +4,11 @@
     <title data-locale="manageCategoriesTitle">Slick RSS : Manage Categories</title>
     <link rel="stylesheet" href="common.css" type="text/css" />
     <link rel="stylesheet" href="managecategories.css" type="text/css" />
+    <link rel="stylesheet" href="tabulator.css" type="text/css" />
     <script type="text/javascript" src="jquery-3.6.3.min.js"></script>
     <script type="text/javascript" src="localforage.min.js"></script>
     <script type="text/javascript" src="datamanager.js"></script>
+    <script type="text/javascript" src="tabulator.min.js"></script>
     <script type="text/javascript" src="sqloffscreenmgr.js"></script>
     <script type="text/javascript" src="common-page.js"></script>
     <script type="text/javascript" src="common.js"></script>
@@ -21,18 +23,10 @@
 <td><a href="#" id='save' data-locale="save">Save</a> | <a href="viewer.html" data-locale="cancel">Cancel</a></td></tr>
 </table>
 
-<table id="feedGrid" cellpadding="5" cellspacing="0" border="0">
-<tr>
-<th data-locale="manageCategory">Category</th>
-<th data-locale="manageColor">Color</th>
-<th></th>
-</tr>
-<tr class="add">
-<td><input type="text" id="newCategory" value="" /></td>
-<td><input type="color" id="newColor" value="#659DD8" /></td>
-<td><button type="button" id='add' data-locale="add">Add</button></td>
-</tr>
-</table>
+<div class="center-table">
+<div id="feedGrid-table"></div>
+</div>
+
 </div>
 <script  type="text/javascript" src='localize.js' ></script>
 </body>

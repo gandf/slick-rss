@@ -59,3 +59,30 @@
 {
 	width: 45px;
 }
+
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.tabulator-row.tabulator-selectable:hover {
+	background-color: #7a611a !important;
+}
+
+.tabulator-row .tabulator-cell {
+	border-right: none !important;
+}
+
+.tabulator .tabulator-header .tabulator-col {
+	border-right: none !important;
+}
+
+.tabulator-row .tabulator-cell.tabulator-editing {
+	border-right: 1px solid #1d68cd !important;
+}
+
+.tabulator {
+	background-color: transparent !important;
+	border: none !important;
+}

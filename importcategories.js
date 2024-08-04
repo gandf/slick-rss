@@ -1,11 +1,3 @@
-options.darkmode = (localStorage.getItem('darkmode') == "true");
-options.fontSize = localStorage.getItem('fontSize');
-if (options.darkmode) {
-	activeDarkMode();
-} else {
-	disableDarkMode();
-}
-
 $(document).ready(function()
 {
 	$('#import').click(function(){Import();});
@@ -49,7 +41,7 @@ function ImportCategories()
 		let requests = [];
 		listCategoriesRegistered.forEach((category, index) => {
 			if (category.category && category.category != "") {
-				requests.push({type: 'addColor', waitResponse: false, data: { name: category.category, color: category.color ?? "#888888", order: category.order ?? index } });
+				requests.push({type: 'addColor', waitResponse: false, data: { name: category.category, color: category.color ?? "#888888", order: category.order ?? index + 1 } });
 			}
 		});
 

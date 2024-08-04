@@ -503,8 +503,8 @@ self.onmessage = async function(event) {
       case 'deleteColor':
       {
         if (canWork) {
-          if (request.name != undefined) {
-            alasql(`DELETE FROM \`Colors\` WHERE \`name\` = ?`, [request.name]);
+          if (request.data.name != undefined) {
+            alasql(`DELETE FROM \`Colors\` WHERE \`name\` = ?`, [request.data.name]);
           } else {
             alasql(`DELETE FROM \`Colors\``);
           }
@@ -514,7 +514,7 @@ self.onmessage = async function(event) {
       case 'modifyColor':
       {
         if (canWork && (request.data != undefined)) {
-          alasql(`UPDATE \`Colors\` SET ? WHERE \`name\` = ?`, [request.data, request.name]);
+          alasql(`UPDATE \`Colors\` SET \`color\` = ?, \`order\` = ? WHERE \`name\` = ?`, [request.data.color, request.data.order, request.data.name]);
         }
         break;
       }

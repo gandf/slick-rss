@@ -1,6 +1,3 @@
-var manifest;
-var defaultOptions;
-var options;
 const readLaterFeedID = 9999999999;
 const allFeedsID = 9999999998;
 var unreadInfo;
@@ -18,9 +15,15 @@ var optionFrom;
 
 var datacommoninitialized;
 if (datacommoninitialized !== true) {
-    manifest = chrome.runtime.getManifest();
-    defaultOptions = GetDefaultOptions();
-    options = defaultOptions;
+    if (manifest == undefined) {
+        manifest = chrome.runtime.getManifest();
+    }
+    if (defaultOptions == undefined) {
+        defaultOptions = GetDefaultOptions();
+    }
+    if (options == undefined) {
+        options = defaultOptions;
+    }
     unreadInfo = {};
     newNotif = false;
     viewerPort = null;

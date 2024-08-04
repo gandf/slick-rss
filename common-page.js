@@ -1,3 +1,13 @@
+var manifest = chrome.runtime.getManifest();
+var defaultOptions = GetDefaultOptionsPage();
+var options = defaultOptions;
+
+if (options.darkmode) {
+	activeDarkMode();
+} else {
+	disableDarkMode();
+}
+
 function GetSenderSql() {
     var url = window.location.href;
     var fileName = url.substring(url.lastIndexOf('/') + 1, url.includes('?') ? url.indexOf('?') : url.length);
@@ -117,4 +127,59 @@ function GetUnreadCount(feedID){
         }
     }
     return count;
+}
+
+function GetDefaultOptionsPage() {
+    let darkmode = localStorage.getItem('darkmode');
+    let fontSize = localStorage.getItem('fontSize');
+    let forcelangen = localStorage.getItem('forcelangen');
+    if ((darkmode == undefined) || (darkmode == null)) {
+        darkmode = true;
+    }
+    if ((fontSize == undefined) || (fontSize == null)) {
+        fontSize = 1;
+    } else {
+        fontSize = parseInt(fontSize);
+        if (fontSize < 1) {
+            fontSize = 1;
+        }
+    }
+    if ((forcelangen == undefined) || (forcelangen == null)) {
+        forcelangen = false;
+    }
+    return {
+        "lastversion": manifest.version,
+        "maxitems": 100,
+        "showdescriptions": true,
+        "dateformat": "[ww] [dd]/[mm]/[yy] [hh]:[nn]",
+        "showfeedimages": true,
+        "showfeedobjects": true,
+        "showfeediframes": true,
+        "showfeedcontent": true,
+        "showfeedcontentsummary": 0,
+        "checkinterval": 60,
+        "markreadonclick": false,
+        "markreadafter": 0,
+        "readitemdisplay": 1,
+        "unreaditemtotaldisplay": true,
+        "unreadtotaldisplay": 3,
+        "columns": 2,
+        "readlaterenabled": true,
+        "readlaterremovewhenviewed": true,
+        "loadlinksinbackground": true,
+        "showallfeeds": false,
+        "usethumbnail": true,
+        "feedsmaxheight": 0,
+        "playSoundNotif": false,
+        "darkmode": darkmode,
+        "fontSize": fontSize,
+        "forcelangen": forcelangen,
+        "levelSearchTag": 5,
+        "levelSearchTags": 8,
+        "log": false,
+        "showGetRSSFeedUrl": true,
+        "showsavethisfeed": true,
+        "dontreadontitleclick": false,
+        "useViewByCategory": false
+    };
 }

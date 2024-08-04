@@ -1,13 +1,13 @@
+var table;
+var listdelete = [];
+
 var lastBadRow = null;
 var listCategories = [];
 
 $(document).ready(function()
 {
 	$('#save').click(function(){Save();});
-	$('#add').click(function(){Add();});
 });
-
-document.documentElement.setAttribute('lang', GetMessageText('lang'));
 
 waitOptionReady().then(function () {
 	if (options.darkmode) {
@@ -15,35 +15,139 @@ waitOptionReady().then(function () {
 	} else {
 		disableDarkMode();
 	}
+	document.documentElement.setAttribute('lang', GetMessageText('lang'));
 });
 
-GetCategoriesListFromWorker();
+var IntegerEditor = function(cell, onRendered, success, cancel) {
+	var input = document.createElement("input");
 
-function GetCategoriesListFromWorker() {
-	sendtoSQL('getColors', 'GetCategoriesListFromWorker', true, null, function(data){
-		if (data != undefined) {
-			listCategories = data;
-
-			for(let key in listCategories) {
-				AddRow(key);
-			}
+	input.setAttribute("type", "number");
+	input.setAttribute("min", "0");
+	input.style.width = "100%";
+	input.style.boxSizing = "border-box";
+	input.value = cell.getValue();
+	input.addEventListener("blur", function(e) {
+		var value = input.value;
+		if (Number.isInteger(parseInt(value))) {
+			success(parseInt(value));
+		} else {
+			cancel();
 		}
 	});
-}
 
-function Add()
-{
-	let name = document.getElementById("newCategory").value;
-	let color = document.getElementById("newColor").value;
+	onRendered(function() {
+		input.focus();
+		input.style.height = "100%";
+	});
+	return input;
+};
 
-	if(!IsValid(name, color)) {
-		return;
+var deleteIcon = function(cell, formatterParams, onRendered){
+	if (cell.getRow().getData().newcat) {
+		return '<button>' + GetMessageText("add") + '</button>';
+	} else {
+		return '<img src="x_gray.png" class="delete" title="' + GetMessageText("Delete category") + '">';
 	}
+};
 
-	AddRow(listCategories.push(CreateNewCat(name, color)) - 1);
+var colorEditor = function(cell, onRendered, success, cancel){
+	var input = document.createElement("input");
+	input.setAttribute("type", "color");
+	input.value = cell.getValue();
+	input.addEventListener("change", function(e){
+		success(input.value);
+	});
 
-	document.getElementById("newCategory").value = "";
-	document.getElementById("newColor").value = "#659DD8";
+	onRendered(function(){
+		input.focus();
+		input.style.cssText = "width:100%; height:100%; padding:0; margin:0; border:none; background:transparent;";
+		input.click();
+	});
+	return input;
+};
+
+var colorFormatter = function(cell, formatterParams, onRendered){
+    var colorDiv = document.createElement("div");
+    colorDiv.style.background = "transparent";
+	colorDiv.style.backgroundColor = cell.getValue();
+    colorDiv.style.width = "100%";
+    colorDiv.style.height = "100%";
+	colorDiv.style.padding = "0";
+	colorDiv.style.margin = "0";
+	colorDiv.style.border = "none";
+    return colorDiv;
+};
+
+GetCategoriesList();
+
+function GetCategoriesList() {
+	sendtoSQL('getColors', 'GetCategoriesList', true, null, function(data){
+		if (data != undefined) {
+			listCategories = data;
+			let listCategoriesreturned = JSON.parse(JSON.stringify(listCategories));
+
+			//Build Tabulator
+			table = new Tabulator("#feedGrid-table", {
+				height:"90vh",
+				addRowPos:"top",
+				layout: "fitDataTable",
+				index:"name",
+				keybindings:{
+					"navNext" : ["13"],
+				},
+				columns:[
+					{title:"", field:"newcat", visible:false},
+					{title:"", field:"toadd", visible:false},
+					{title:GetMessageText("manageCategory"), field:"name", width:200, editor:"input", resizable:false},
+					{title:GetMessageText("manageColor"), field:"color", width:100, editor:colorEditor, formatter: colorFormatter, resizable:false},
+					{title:GetMessageText("manageOrder"), field:"order", editor:IntegerEditor, hozAlign:"center", width:100, headerHozAlign: "center", resizable:false },
+					{title:"", hozAlign:"center", vertAlign: "middle", formatter:deleteIcon, cssClass:"no-background", resizable:false, cellClick:function(e, cell)
+						{
+							if (cell.getRow().getData().newcat) {
+								//Add categorie
+								let rowdata = cell.getRow().getData();
+								if ((rowdata.name != undefined) && (rowdata.name != "") && (rowdata.color != undefined) && (rowdata.color != "")) {
+									if(!IsValid(rowdata.name, rowdata.color)) {
+										return;
+									}
+									let orderValues = table.getData().map(function(row) {
+										return row.order;
+									});
+									orderValues = orderValues.filter(function(value) {
+										return Number.isInteger(value);
+									});
+									if (!Number.isInteger(rowdata.order)) {
+										let maxOrder;
+										if (orderValues.length == 0) {
+											maxOrder = 0;
+										} else {
+											maxOrder = Math.max(...orderValues);
+										}
+										rowdata.order = maxOrder + 1;
+									}
+									table.addRow({ name: rowdata.name, color: rowdata.color, order: rowdata.order, newcat:false, toadd:true }, false);
+									cell.getRow().delete();
+									table.addRow({ name: undefined, color: "#659DD8", order:undefined, newcat: true, toadd:true });
+								}
+							} else {
+								//Delete categorie
+								let id = cell.getRow().getData().id;
+								if ((id != undefined) && (id > 0)) {
+									listdelete.push(id);
+								}
+								cell.getRow().delete();
+							}					
+						}, headerSort:false, minWidth: 80
+					},
+				],
+				data:listCategoriesreturned
+			});
+			
+			table.on("tableBuilt", function() {
+				table.addRow({ name: undefined, color: "#659DD8", order:undefined, newcat: true, toadd: true });
+			});
+		}
+	});
 }
 
 function CreateNewCat(name, color) {
@@ -63,101 +167,48 @@ function IsValid(name, color)
 	return true;
 }
 
-function AddRow(key)
-{
-	let grid;
-	let row;
-	let input;
-	let button;
-
-	grid = document.getElementById("feedGrid");
-	row = grid.insertRow(grid.rows.length);
-	row.setAttribute("id", key);
-
-	input = document.createElement('input');
-	input.setAttribute("type", "text");
-	input.setAttribute("class", "category");
-	input.setAttribute("value", listCategories[key].name);
-
-	row.insertCell(0).appendChild(input);
-
-	input = document.createElement('input');
-	input.setAttribute("type", "color");
-	input.setAttribute("class", "color");
-	if (listCategories[key].color == "") {
-		input.setAttribute("value", "#659DD8");
-	} else {
-		input.setAttribute("value", listCategories[key].color);
-	}
-
-	row.insertCell(1).appendChild(input);
-
-	button = document.createElement("img");
-	button.setAttribute("src", "x_gray.png");
-	button.setAttribute("class", "delete");
-
-	$(button).click({id:key}, function(event) {
-		MarkDelete($('#' + event.data.id).get(0));
-	});
-	button.setAttribute("category", "Delete category");
-	row.insertCell(2).appendChild(button);
-}
-
-function MarkDelete(row)
-{
-	var marked = (row.className == "markDelete");
-
-	if(!marked)	{
-		row.setAttribute("class", "markDelete");
-	} else {
-		if(row != lastBadRow) {
-			row.setAttribute("class", "");
-		} else {
-			row.setAttribute("class", "badRow");
-		}
-	}
-
-	row.childNodes[0].childNodes[0].disabled = !marked; // category
-	row.childNodes[1].childNodes[0].disabled = !marked; // color
-}
-
 function Save()
 {
-	let row = null;
-	let name;
-	let color;
-	let catList = [];
-
-	if (lastBadRow != null && lastBadRow.className != "markDelete") {
-		lastBadRow.className = "";
+	let requests = [];
+	for(let i = 0; i < listdelete.length; i++) {
+		let catname = listdelete[i];
+		if ((catname != undefined) && (catname != null) && (catname != "")) {
+			requests.push({type: 'deleteColor', waitResponse: false, data: { name: catname } });
+		}
 	}
 
-	let catorder = 0;
-	for(let key in listCategories) {
-		row = document.getElementById(key);
-
-		name = row.childNodes[0].childNodes[0].value;
-		color = row.childNodes[1].childNodes[0].value;
-		catorder++;
-
-		if(row.className != "markDelete" && !IsValid(name, color)) {
-			row.className = "badRow";
-			lastBadRow = row;
+	let datacats = table.getData();
+	for (let i = 0; i < datacats.length; i++) {
+		let cat = datacats[i];
+		if ((cat.name == undefined) || (cat.name == "") || cat.newcat) {
+			continue;
 		}
-		if(row.className != "markDelete") {
-			if (color.toUpperCase() != "#659DD8") {
-				catList.push({name: name, color: color, order: catorder});
+		if (!IsValid(cat.name, cat.color)) {
+			return;
+		}
+		if (cat.toadd) {
+			if (car.color.toUpperCase() != "#659DD8") {
+				requests.push({ type: 'addColor', waitResponse: false, data: { name: cat.name, color: cat.color, order: cat.order } });
+			}
+		} else {
+			let onecat = listCategories.filter(x => (x.name == cat.name) && (x.color == cat.color) && (x.order == cat.order));
+			if (onecat.length > 0) {
+				onecat = onecat[0];
+				if ((onecat.name != cat.name) || (onecat.color != cat.color) || (onecat.order != cat.order)) {
+					if (car.color.toUpperCase() != "#659DD8") {
+						requests.push({type: 'modifyColor', waitResponse: false, data: { name: cat.name, color: cat.color, order: cat.order } });
+					} else {
+						requests.push({type: 'deleteColor', waitResponse: false, data: { name: cat.name } });
+					}
+				}
 			}
 		}
 	}
 
-	requests = [];
-	requests.push({ type: 'deleteColor', waitResponse: false });
-	for (let i = 0; i < catList.length; i++) {
-		requests.push({ type: 'addColor', data: { name: catList[i].name, color: catList[i].color, order: catList[i].order }, waitResponse: false });
+	if (requests.length > 0) {
+		requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Colors', waitResponse: true, subtype: 'Colors' });
+		sendtoSQL('requests', 'saveCategories', true, { requests: requests }, function(){
+			window.location = chrome.runtime.getURL("viewer.html");
+		});
 	}
-	requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Colors', waitResponse: true, subtype: 'Colors' });
-	sendtoSQL('requests', 'saveCategories', true, { requests: requests }, function(){
-		window.location = chrome.runtime.getURL("viewer.html");
-	});
 }
