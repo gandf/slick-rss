@@ -35,3 +35,5 @@ Using :
 - https://github.com/localForage/localForage
 - https://jquery.com
 - https://github.com/emn178/js-sha256
+- https://tabulator.info
+- https://getbootstrap.com
