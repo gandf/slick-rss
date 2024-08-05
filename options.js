@@ -189,6 +189,7 @@ function Save()
 	}
 	Promise.allSettled([promiseCheckForUnread]).then(function() {
 		chrome.runtime.sendMessage({"type": "refreshOptionsAndRefreshFeeds"}).then(function(){
+			refreshViewerTab();
 			window.close();
 		});
 	});
@@ -211,4 +212,12 @@ function ShowDateSample(saveDate)
 	document.getElementById("dateFormat").value = GetFormattedDate(new Date());
 	document.getElementById("dateHelp").style.display = "none";
 	document.getElementById("dateDone").style.display = "none";
+}
+
+function refreshViewerTab() {
+    chrome.tabs.query({url: chrome.runtime.getURL("viewer.html")}, function(tabs) {
+        if (tabs.length > 0) {
+            chrome.tabs.reload(tabs[0].id);
+        }
+    });
 }

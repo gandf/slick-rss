@@ -683,6 +683,24 @@
   "buttonSuggest": {
     "message": "Suggest to \"Get RSS Feed URL\""
   },
+  "DeleteFeed": {
+    "message": "Delete Feed"
+  },
+  "DeleteCategory": {
+    "message": "Delete Category"
+  },
+  "manageCategoriesTitle": {
+    "message": "Slick RSS : Manage Categories"
+  },
+  "manageFontColor": {
+    "message": "Manage font color"
+  },
+  "manageAlertColor": {
+    "message": "Color is not valid."
+  },
+  "manageAlertFontColor": {
+    "message": "Font color is not valid."
+  },
   "enexportTitle": {
       "message": "Slick RSS : Export Feeds"
   },
@@ -1357,5 +1375,23 @@
   },
   "enbuttonSuggest": {
     "message": "Suggest to \"Get RSS Feed URL\""
+  },
+  "enDeleteFeed": {
+    "message": "Delete Feed"
+  },
+  "enDeleteCategory": {
+    "message": "Delete Category"
+  },
+  "enmanageCategoriesTitle": {
+    "message": "Slick RSS : Manage Categories"
+  },
+  "enmanageFontColor": {
+    "message": "Manage font color"
+  },
+  "enmanageAlertColor": {
+    "message": "Color is not valid."
+  },
+  "enmanageAlertFontColor": {
+    "message": "Font color is not valid."
   }
 }

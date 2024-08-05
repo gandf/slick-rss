@@ -682,5 +682,23 @@
   },
   "buttonSuggest": {
     "message": "Empfehlen \"Get RSS Feed URL\""
+  },
+  "DeleteFeed": {
+    "message": "Feed löschen"
+  },
+  "DeleteCategory": {
+    "message": "Kategorie löschen"
+  },
+  "manageCategoriesTitle": {
+    "message": "Slick RSS: Kategorien verwalten"
+  },
+  "manageFontColor": {
+    "message": "Schriftfarbe verwalten"
+  },
+  "manageAlertColor": {
+    "message": "Farbe ist nicht gültig."
+  },
+  "manageAlertFontColor": {
+    "message": "Schriftfarbe ist nicht gültig."
   }
 }

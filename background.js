@@ -432,7 +432,12 @@ async function DoUpgrades() {
             requests.push({type: 'deleteColor', waitResponse: false });
             let keys = Object.keys(listCategoriesRegistered);
             for (let i = 0 ; i < keys.length ; i++) {
-                requests.push({type: 'addColor', waitResponse: false, data: {name: listCategoriesRegistered[keys[i]].category, color: listCategoriesRegistered[keys[i]].color, order: keys[i]+1 }});
+                let order = keys[i];
+                if (isNaN(order)) {
+                    order = parseInt(order, 10);
+                }
+                order++;
+                requests.push({type: 'addColor', waitResponse: false, data: { id: GetRandomID(), name: listCategoriesRegistered[keys[i]].category, color: listCategoriesRegistered[keys[i]].color, fontColor: options.darkmode ? "#4D5460" : "#0000EE", order: order }});
             }
             //lastSelectedFeed
             requests.push({type: 'setLastSelectedFeed', waitResponse: false, data: lastSelectedFeedUpgrade});
@@ -465,6 +470,7 @@ async function DoUpgrades() {
             }
 
             //options & save all
+            options.isOption = true;
             requests.push({type: 'saveAll', waitResponse: false, data: options });
             sendtoSQL('requests', 'DoUpgrades', false, { requests: requests });
         });

@@ -1,7 +1,5 @@
 var table;
 var listdelete = [];
-
-var lastBadRow = null;
 var listCategories = [];
 
 $(document).ready(function()
@@ -46,7 +44,7 @@ var deleteIcon = function(cell, formatterParams, onRendered){
 	if (cell.getRow().getData().newcat) {
 		return '<button>' + GetMessageText("add") + '</button>';
 	} else {
-		return '<img src="x_gray.png" class="delete" title="' + GetMessageText("Delete category") + '">';
+		return '<img src="x_gray.png" class="delete" title="' + GetMessageText("DeleteCategory") + '">';
 	}
 };
 
@@ -90,7 +88,7 @@ function GetCategoriesList() {
 			table = new Tabulator("#feedGrid-table", {
 				height:"90vh",
 				addRowPos:"top",
-				layout: "fitDataTable",
+				layout: "fitData",
 				index:"name",
 				keybindings:{
 					"navNext" : ["13"],
@@ -98,16 +96,18 @@ function GetCategoriesList() {
 				columns:[
 					{title:"", field:"newcat", visible:false},
 					{title:"", field:"toadd", visible:false},
-					{title:GetMessageText("manageCategory"), field:"name", width:200, editor:"input", resizable:false},
-					{title:GetMessageText("manageColor"), field:"color", width:100, editor:colorEditor, formatter: colorFormatter, resizable:false},
-					{title:GetMessageText("manageOrder"), field:"order", editor:IntegerEditor, hozAlign:"center", width:100, headerHozAlign: "center", resizable:false },
-					{title:"", hozAlign:"center", vertAlign: "middle", formatter:deleteIcon, cssClass:"no-background", resizable:false, cellClick:function(e, cell)
+					{title:"", field:"id", visible:false},
+					{title:GetMessageText("manageCategory"), field:"name", width:200, editor:"input"},
+					{title:GetMessageText("manageColor"), field:"color", width:100, editor:colorEditor, formatter: colorFormatter},
+					{title:GetMessageText("manageFontColor"), field:"fontColor", width:100, editor:colorEditor, formatter: colorFormatter},
+					{title:GetMessageText("manageOrder"), field:"order", editor:IntegerEditor, hozAlign:"center", width:100, headerHozAlign: "center"},
+					{title:"", hozAlign:"center", vertAlign: "middle", formatter:deleteIcon, cssClass:"no-background", cellClick:function(e, cell)
 						{
 							if (cell.getRow().getData().newcat) {
 								//Add categorie
 								let rowdata = cell.getRow().getData();
 								if ((rowdata.name != undefined) && (rowdata.name != "") && (rowdata.color != undefined) && (rowdata.color != "")) {
-									if(!IsValid(rowdata.name, rowdata.color)) {
+									if(!IsValid(rowdata.name, rowdata.color, rowdata.fontColor)) {
 										return;
 									}
 									let orderValues = table.getData().map(function(row) {
@@ -125,15 +125,19 @@ function GetCategoriesList() {
 										}
 										rowdata.order = maxOrder + 1;
 									}
-									table.addRow({ name: rowdata.name, color: rowdata.color, order: rowdata.order, newcat:false, toadd:true }, false);
+									table.addRow({ id: GetRandomID(), name: rowdata.name, color: rowdata.color, fontColor: rowdata.fontColor, order: rowdata.order, newcat:false, toadd:true }, false);
 									cell.getRow().delete();
-									table.addRow({ name: undefined, color: "#659DD8", order:undefined, newcat: true, toadd:true });
+									if (options.darkmode) {
+										table.addRow({ id: undefined, name: undefined, color: "#659DD8", fontColor: "#4D5460", order:undefined, newcat: true, toadd:true });
+									} else {
+										table.addRow({ id: undefined, name: undefined, color: "#d7e6f8", fontColor: "#0000EE", order:undefined, newcat: true, toadd:true });
+									}
 								}
 							} else {
 								//Delete categorie
-								let id = cell.getRow().getData().id;
-								if ((id != undefined) && (id > 0)) {
-									listdelete.push(id);
+								let catid = cell.getRow().getData().id;
+								if ((catid != undefined) && (catid != null)) {
+									listdelete.push(catid);
 								}
 								cell.getRow().delete();
 							}					
@@ -144,62 +148,66 @@ function GetCategoriesList() {
 			});
 			
 			table.on("tableBuilt", function() {
-				table.addRow({ name: undefined, color: "#659DD8", order:undefined, newcat: true, toadd: true });
+				if (options.darkmode) {
+					table.addRow({ id: undefined, name: undefined, color: "#659DD8", fontColor: "#4D5460", order:undefined, newcat: true, toadd: true });
+				} else {
+					table.addRow({ id: undefined, name: undefined, color: "#d7e6f8", fontColor: "#0000EE", order:undefined, newcat: true, toadd: true });
+				}
 			});
 		}
 	});
 }
 
-function CreateNewCat(name, color) {
-	return {
-		name: name,
-		color: color,
-		id: GetRandomID()
-	};
-}
-
-function IsValid(name, color)
+function IsValid(name, color, fontColor)
 {
 	if(name == "") {
 		alert(GetMessageText("manageAlertCategory"));
 		return false;
 	}
+	if(!isValidColor(color)) {
+		alert(GetMessageText("manageAlertColor"));
+		return false;
+	}
+	if(!isValidColor(fontColor)) {
+		alert(GetMessageText("manageAlertFontColor"));
+		return false;
+	}
 	return true;
+}
+
+function isValidColor(Color) {
+    var s = new Option().style;
+    s.color = Color;
+    return s.color !== '';
 }
 
 function Save()
 {
 	let requests = [];
 	for(let i = 0; i < listdelete.length; i++) {
-		let catname = listdelete[i];
-		if ((catname != undefined) && (catname != null) && (catname != "")) {
-			requests.push({type: 'deleteColor', waitResponse: false, data: { name: catname } });
+		let catid = listdelete[i];
+		if ((catid != undefined) && (catid != null)) {
+			requests.push({type: 'deleteColor', waitResponse: false, data: { id: catid } });
 		}
 	}
 
 	let datacats = table.getData();
 	for (let i = 0; i < datacats.length; i++) {
 		let cat = datacats[i];
-		if ((cat.name == undefined) || (cat.name == "") || cat.newcat) {
+		if ((cat.name == undefined) || (cat.name == "") || cat.newcat || (cat.id == undefined)) {
 			continue;
 		}
-		if (!IsValid(cat.name, cat.color)) {
+		if (!IsValid(cat.name, cat.color, cat.fontColor)) {
 			return;
 		}
 		if (cat.toadd) {
-			if (car.color.toUpperCase() != "#659DD8") {
-				requests.push({ type: 'addColor', waitResponse: false, data: { name: cat.name, color: cat.color, order: cat.order } });
-			}
+			requests.push({ type: 'addColor', waitResponse: false, data: { id: cat.id, name: cat.name, color: cat.color, fontColor: cat.fontColor, order: cat.order } });
 		} else {
-			let onecat = listCategories.filter(x => (x.name == cat.name) && (x.color == cat.color) && (x.order == cat.order));
+			let onecat = listCategories.filter(x => (x.id == cat.id));
 			if (onecat.length > 0) {
 				onecat = onecat[0];
-				if ((onecat.name != cat.name) || (onecat.color != cat.color) || (onecat.order != cat.order)) {
-					if (car.color.toUpperCase() != "#659DD8") {
-						requests.push({type: 'modifyColor', waitResponse: false, data: { name: cat.name, color: cat.color, order: cat.order } });
-					} else {
-						requests.push({type: 'deleteColor', waitResponse: false, data: { name: cat.name } });
-					}
+				if ((onecat.name != cat.name) || (onecat.color != cat.color) || (onecat.fontColor != cat.fontColor) || (onecat.order != cat.order)) {
+					requests.push({type: 'modifyColor', waitResponse: false, data: { id: cat.id, name: cat.name, color: cat.color, fontColor: cat.fontColor, order: cat.order } });
 				}
 			}
 		}

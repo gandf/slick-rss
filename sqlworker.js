@@ -39,7 +39,7 @@ self.onmessage = async function(event) {
       case 'init':
       {
         alasql("DROP TABLE IF EXISTS `Colors`;\
-          CREATE TABLE `Colors` (`name` string PRIMARY KEY , `color` string, `order` INT);");
+          CREATE TABLE `Colors` (`id` INT PRIMARY KEY, `name` string , `color` string, `fontColor` string, `order` INT);");
 
         alasql("DROP TABLE IF EXISTS `Group`;\
           CREATE TABLE `Group` (`id` INT AUTO_INCREMENT PRIMARY KEY , `name` string);");
@@ -494,27 +494,30 @@ self.onmessage = async function(event) {
       }
       case 'addColor':
       {
-        if (canWork && (request.data != undefined) && (request.data.name != "")) {
-          alasql(`DELETE FROM \`Colors\` WHERE \`name\` = ?`, [request.data.name]);
-          alasql(`INSERT INTO \`Colors\` VALUES (?, ?, ?)`, [request.data.name, request.data.color, request.data.order]);
+        if (canWork && (request.data != undefined) && (request.data.id != undefined)) {
+          alasql(`DELETE FROM \`Colors\` WHERE \`id\` = ?`, [request.data.id]);
+          alasql(`INSERT INTO \`Colors\` VALUES (?, ?, ?, ?, ?)`, [request.data.id, request.data.name, request.data.color, request.data.fontColor, request.data.order]);
         }
         break;
       }
       case 'deleteColor':
       {
         if (canWork) {
-          if (request.data.name != undefined) {
-            alasql(`DELETE FROM \`Colors\` WHERE \`name\` = ?`, [request.data.name]);
-          } else {
-            alasql(`DELETE FROM \`Colors\``);
+          if (request.data != undefined) {
+            if (request.data.id != undefined) {
+              alasql(`DELETE FROM \`Colors\` WHERE \`id\` = ?`, [request.data.id]);
+              break;
+            }
           }
+          alasql(`DELETE FROM \`Colors\``);
         }
         break;
       }
       case 'modifyColor':
       {
+        log(`modifyColor: '${JSON.stringify(request.data)}'.`);
         if (canWork && (request.data != undefined)) {
-          alasql(`UPDATE \`Colors\` SET \`color\` = ?, \`order\` = ? WHERE \`name\` = ?`, [request.data.color, request.data.order, request.data.name]);
+          alasql(`UPDATE \`Colors\` SET \`name\` = ?, \`color\` = ?, \`fontColor\` = ?, \`order\` = ? WHERE \`id\` = ?`, [request.data.name, request.data.color, request.data.fontColor, request.data.order, request.data.id]);
         }
         break;
       }

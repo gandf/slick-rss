@@ -294,7 +294,7 @@
     "message": "Utilisation stockage"
   },
   "optionStorageUsageValue1": {
-    "message": ""
+    "message": "Utilise "
   },
   "optionStorageUsageValue2": {
     "message": " utilisés sur "
@@ -682,5 +682,23 @@
   },
   "buttonSuggest": {
     "message": "Suggérer à \"Get RSS Feed URL\""
+  },
+  "DeleteFeed": {
+    "message": "Supprimer le flux"
+  },
+  "DeleteCategory": {
+    "message": "Supprimer Categorie"
+  },
+  "manageCategoriesTitle": {
+    "message": "Slick RSS : Gestion catégories"
+  },
+  "manageFontColor": {
+    "message": "Couleur police"
+  },
+  "manageAlertColor": {
+    "message": "La couleur n'est pas valide."
+  },
+  "manageAlertFontColor": {
+    "message": "La couleur de la police n'est pas valide."
   }
 }

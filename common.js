@@ -119,6 +119,9 @@ function GetMessageText(value) {
     if (options.forcelangen) {
         return chrome.i18n.getMessage('en' + value);
     } else {
+        if (chrome.i18n.getMessage(value) == "") {
+            alert("Missing message: " + value); //**** To remove
+        }
         return chrome.i18n.getMessage(value);
     }
 }
@@ -360,23 +363,9 @@ function GetOptions() {
         function (data) {
             if (data != null) {
                 if (typeof data === 'object') {
-                    options = data;
-                    optionFrom = 'sql';
-        
-                    // fill in defaults for new options
-                    for (let key in GetDefaultOptions()) {
-                        if (options[key] == undefined) {
-                            options[key] = defaultOptions[key];
-                        }
-                    }
-                    resolveOptionsReady();
-                    return;
-                }
-            } else {
-                store.getItem('options').then(function (data) {
-                    if (data != null) {
+                    if (data.isOption != undefined) {
                         options = data;
-                        optionFrom = 'direct';
+                        optionFrom = 'sql';
             
                         // fill in defaults for new options
                         for (let key in GetDefaultOptions()) {
@@ -384,10 +373,26 @@ function GetOptions() {
                                 options[key] = defaultOptions[key];
                             }
                         }
+                        resolveOptionsReady();
+                        return;
                     }
-                    resolveOptionsReady();
-                });     
+                }
             }
+            //If no SQL option => get from indexeddb
+            store.getItem('options').then(function (data) {
+                if (data != null) {
+                    options = data;
+                    optionFrom = 'direct';
+        
+                    // fill in defaults for new options
+                    for (let key in GetDefaultOptions()) {
+                        if (options[key] == undefined) {
+                            options[key] = defaultOptions[key];
+                        }
+                    }
+                }
+                resolveOptionsReady();
+            });     
         }
     );
 

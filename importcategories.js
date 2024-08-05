@@ -41,7 +41,11 @@ function ImportCategories()
 		let requests = [];
 		listCategoriesRegistered.forEach((category, index) => {
 			if (category.category && category.category != "") {
-				requests.push({type: 'addColor', waitResponse: false, data: { name: category.category, color: category.color ?? "#888888", order: category.order ?? index + 1 } });
+				if (options.darkmode) {
+					requests.push({type: 'addColor', waitResponse: false, data: { id: category.id == undefined ? GetRandomID() : category.id, name: category.category, color: category.color ?? "#659DD8", fontColor: category.fontColor ?? "#4D5460", order: category.order ?? index + 1 } });
+				} else {
+					requests.push({type: 'addColor', waitResponse: false, data: { id: category.id == undefined ? GetRandomID() : category.id, name: category.category, color: category.color ?? "#d7e6f8", fontColor: category.fontColor ?? "#0000EE", order: category.order ?? index + 1 } });
+				}
 			}
 		});
 

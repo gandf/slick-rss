@@ -135,7 +135,7 @@ var deleteIcon = function(cell, formatterParams, onRendered){
 	if (cell.getRow().getData().id === undefined) {
 		return '<button>' + GetMessageText("add") + '</button>';
 	} else {
-		return '<img src="x_gray.png" class="delete" title="' + GetMessageText("Delete feed") + '">';
+		return '<img src="x_gray.png" class="delete" title="' + GetMessageText("DeleteFeed") + '">';
 	}
 };
 
@@ -158,19 +158,19 @@ function ShowFeeds()
 		table = new Tabulator("#feedGrid-table", {
 			height:"90vh",
 			addRowPos:"top",
-			layout: "fitDataTable",
+			layout: "fitData",
 			index:"order",
 			keybindings:{
 				"navNext" : ["13"],
 			},
 			columns:[
 				{title:"", field:"id", visible:false},
-				{title:GetMessageText("manageName"), field:"title", width:300, editor:"input", resizable:false},
-				{title:GetMessageText("manageUrl"), field:"url", width:400, editor:"input", resizable:false},
-				{title:GetMessageText("manageGroup"), field:"group", width:200, editor:"list", editorParams:{autocomplete:"true", allowEmpty:true,listOnEmpty:true, valuesLookup:true, freetext:true}, resizable:false},
-				{title:GetMessageText("manageMaxItems"), field:"maxitems", width:120, editor:IntegerEditor, hozAlign:"center", headerHozAlign: "center", resizable:false},
-				{title:GetMessageText("manageOrder"), field:"order", editor:IntegerEditor, hozAlign:"center", width:100, headerHozAlign: "center", resizable:false},
-				{title:GetMessageText("excludeUnreadCount"), field:"excludeUnreadCount", hozAlign:"center", vertAlign:"middle", formatter:"toggle", width:200, headerHozAlign: "center", resizable:false, formatterParams:{
+				{title:GetMessageText("manageName"), field:"title", width:300, editor:"input"},
+				{title:GetMessageText("manageUrl"), field:"url", width:400, editor:"input"},
+				{title:GetMessageText("manageGroup"), field:"group", width:200, editor:"list", editorParams:{autocomplete:"true", allowEmpty:true,listOnEmpty:true, valuesLookup:true, freetext:true}},
+				{title:GetMessageText("manageMaxItems"), field:"maxitems", width:120, editor:IntegerEditor, hozAlign:"center", headerHozAlign: "center"},
+				{title:GetMessageText("manageOrder"), field:"order", editor:IntegerEditor, hozAlign:"center", width:100, headerHozAlign: "center"},
+				{title:GetMessageText("excludeUnreadCount"), field:"excludeUnreadCount", hozAlign:"center", vertAlign:"middle", formatter:"toggle", width:200, headerHozAlign: "center", formatterParams:{
 					size:16,
 					onValue:1,
 					offValue:0,
@@ -179,7 +179,7 @@ function ShowFeeds()
 					//offColor:"red",
 					clickable:true,
 				}},
-				{title:"", hozAlign:"center", vertAlign: "middle", formatter:deleteIcon, cssClass:"no-background", resizable:false, cellClick:function(e, cell)
+				{title:"", hozAlign:"center", vertAlign: "middle", formatter:deleteIcon, cssClass:"no-background", cellClick:function(e, cell)
 					{
 						if (cell.getRow().getData().id === undefined) {
 							//Add feed
@@ -217,7 +217,7 @@ function ShowFeeds()
 						}					
 					}, headerSort:false, minWidth: 80
 				},
-				{title: "", hozAlign: "center", resizable:false, formatter: function(cell, formatterParams, onRendered)
+				{title: "", hozAlign: "center", formatter: function(cell, formatterParams, onRendered)
 					{
 						if (cell.getRow().getData().id === undefined) {
 							return "";
