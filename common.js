@@ -554,23 +554,28 @@ function UpdateUnreadBadge() {
 
 // since the key for unread is the feed id, it's possible that you removed some, as such we should update and clean house
 function CleanUpUnreadOrphans() {
-    let feedIDs = {};
+    let resolveCleanUpUnreadOrphans;
+    let waitCleanUpUnreadOrphans = new Promise((resolve) => {
+        resolveCleanUpUnreadOrphans = resolve;
+    });
 
-    for (let key in feeds) {
-        feedIDs[feeds[key].id] = 1;
-    }
 
-    for (let key in unreadInfo) {
-        if (feedIDs[key] == null) {
-            delete unreadInfo[key];
-        }
-    }
+    let requests = [];
+    requests.push({type: 'cleanUpUnreadOrphans', waitResponse: false });
+    requests.push({type: 'export', responsetype: 'responseExport', tableName: 'UnreadinfoItem', waitResponse: true, subtype: 'UnreadinfoItem' });
+    sendtoSQL('requests', 'CleanUpUnreadOrphans', true, { requests: requests }, function () {
+        sendtoSQL('getUnreadinfoFull', 'CleanUpUnreadOrphans', true, undefined, function (data) {
+            if (data != null) {
+                unreadInfo = data;
+            } else {
+                unreadInfo = {};
+            }
+            UpdateUnreadBadge();
+            resolveCleanUpUnreadOrphans();
+        });
+    });
 
-    let promiseCleanUpUnreadOrphans = SetUnreadInfoWithPromise(unreadInfo);
-
-    UpdateUnreadBadge();
-
-    return promiseCleanUpUnreadOrphans;
+    return waitCleanUpUnreadOrphans;
 }
 
 // returns a dictionary of unread counts {feedsid} = unreadtotal, readitems{}

@@ -1068,8 +1068,6 @@ function CheckForUnread(checkForUnreadCounterID) {
                             // count read that are in current feed
                             if ((unreadInfo[feedID] == undefined) || (unreadInfo[feedID] == null)) {
                                 unreadInfo[feedID] = {unreadtotal: 0, readitems: {}};
-                                requests.push({type: 'clearUnreadinfo', waitResponse: false, data: { feed_id: feedID } });
-                                requests.push({type: 'setUnreadinfo', waitResponse: false, data: { feed_id: feedID, unreadtotal: 0 } });
                             } else {
                                 for (let key in unreadInfo[feedID].readitems) {
                                     if (entryIDs[key] == null) {
@@ -1084,6 +1082,8 @@ function CheckForUnread(checkForUnreadCounterID) {
                                 }
                             }
                             unreadInfo[feedID].unreadtotal = entries.length - readItemCount;
+                            requests.push({type: 'setUnreadinfo', waitResponse: false, data: { feed_id: feedID, unreadtotal: unreadInfo[feedID].unreadtotal } });
+                            requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Unreadinfo', waitResponse: true, subtype: 'Unreadinfo' });
                         } else {
                             feedInfo[feedID].error = GetMessageText("backErrorXML");
                             updateFeedInfo(feedInfo[feedID], true);

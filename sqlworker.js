@@ -33,7 +33,9 @@ self.onmessage = async function(event) {
     log(`Unexpected message type received: '${event.data}'.`);
   }
 
-  requests.forEach(request => {
+  //log(`requests: '${JSON.stringify(requests)}'.`);
+  for (let irequests = 0; irequests < requests.length; irequests++) {
+    let request = requests[irequests];
     //log(`request: '${request.type}'.`);
     switch (request.type) {
       case 'init':
@@ -225,6 +227,7 @@ self.onmessage = async function(event) {
       case 'addCacheFeedInfoItem':
       {
         if (canWork && (request.data != undefined)) {
+          alasql(`DELETE FROM \`CacheFeedInfoItem\` WHERE \`idOrigin\` = ? AND \`itemID\` = ?`, [request.data.idOrigin, request.data.itemID]);
           alasql(`INSERT INTO \`CacheFeedInfoItem\` VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [request.data.idOrigin, request.data.itemID, request.data.title, request.data.description, request.data.date,
             request.data.content, request.data.summary, request.data.updated, request.data.guid, request.data.category, request.data.comments, request.data.url, request.data.thumbnail, request.data.author, request.data.order]);
           }
@@ -549,6 +552,7 @@ self.onmessage = async function(event) {
       case 'setUnreadinfo':
       {
         if (canWork && (request.data != undefined)) {
+          log(`setUnreadinfo: '${JSON.stringify(request.data)}'.`);
           alasql(`DELETE FROM \`Unreadinfo\` WHERE \`feed_id\` = ?`, [request.data.feed_id]);
           alasql(`INSERT INTO \`Unreadinfo\` VALUES (?, ?)`, [request.data.feed_id, request.data.unreadtotal]);
         }
@@ -556,18 +560,22 @@ self.onmessage = async function(event) {
       }
       case 'clearUnreadinfo':
       {
-        if (canWork && (request.data != undefined)) {
-          alasql(`DELETE FROM \`Unreadinfo\` WHERE \`feed_id\` = ?`, [request.data.feed_id]);
-          alasql(`DELETE FROM \`UnreadinfoItem\` WHERE \`feed_id\` = ?`, [request.data.feed_id]);
-        } else {
-          alasql(`DELETE FROM \`Unreadinfo\``);
-          alasql(`DELETE FROM \`UnreadinfoItem\``);
+        if (canWork) {
+          log(`clearUnreadinfo: '${JSON.stringify(request.data)}'.`);
+          if ((request.data != undefined)) {
+            alasql(`DELETE FROM \`Unreadinfo\` WHERE \`feed_id\` = ?`, [request.data.feed_id]);
+            alasql(`DELETE FROM \`UnreadinfoItem\` WHERE \`feed_id\` = ?`, [request.data.feed_id]);
+          } else {
+            alasql(`DELETE FROM \`Unreadinfo\``);
+            alasql(`DELETE FROM \`UnreadinfoItem\``);
+          }
         }
         break;
       }
       case 'addUnreadinfoItem':
       {
         if (canWork && (request.data != undefined)) {
+          log(`addUnreadinfoItem: '${JSON.stringify(request.data)}'.`);
           alasql(`DELETE FROM \`UnreadinfoItem\` WHERE \`feed_id\` = ? AND \`itemHash\` = ?`, [request.data.feed_id, request.data.itemHash]);
           alasql(`INSERT INTO \`UnreadinfoItem\` VALUES (?, ?, ?)`, [request.data.feed_id, request.data.itemHash, request.data.value]);
         }
@@ -576,6 +584,7 @@ self.onmessage = async function(event) {
       case 'deleteUnreadinfoItem':
       {
         if (canWork && (request.data != undefined)) {
+          log(`deleteUnreadinfoItem: '${JSON.stringify(request.data)}'.`);
           alasql(`DELETE FROM \`UnreadinfoItem\` WHERE \`feed_id\` = ? AND \`itemHash\` = ?`, [request.data.feed_id, request.data.itemHash]);
         }
         break;
@@ -583,7 +592,22 @@ self.onmessage = async function(event) {
       case 'cleanUnreadinfoItem':
       {
         if (canWork && (request.data.value != undefined)) {
+          log(`cleanUnreadinfoItem: '${JSON.stringify(request.data)}'.`);
           alasql(`DELETE FROM \`UnreadinfoItem\` WHERE \`value\` < ?`, [request.data.value]);
+        }
+        break;
+      }
+      case 'cleanUpUnreadOrphans':
+      {
+        if (canWork) {
+          log(`cleanUpUnreadOrphans`);
+          alasql(`
+            DELETE FROM \`UnreadinfoItem\`
+            WHERE \`feed_id\` IN (
+                SELECT \`UnreadinfoItem\`.\`feed_id\`
+                FROM \`UnreadinfoItem\`
+                LEFT JOIN \`Unreadinfo\` ON \`UnreadinfoItem\`.\`feed_id\` = \`Unreadinfo\`.\`feed_id\`
+                WHERE \`Unreadinfo\`.\`feed_id\` IS NULL)`);
         }
         break;
       }
@@ -663,7 +687,7 @@ self.onmessage = async function(event) {
         break;
       }
     }
-  });
+  };
   if (!canWork && initialized && tableInitialized === validTableNames.length) {
     canWork = true;
     result('event', null, true, 'initialized');

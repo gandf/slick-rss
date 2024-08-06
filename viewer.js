@@ -111,7 +111,7 @@ function openPageWithParams(pageurl, newpage) {
     document.body.removeChild(form);
 }
 
-sendtoSQL('getUnreadinfo', 'Viewer', true, undefined, function(data){
+sendtoSQL('getUnreadinfoFull', 'Viewer', true, undefined, function(data){
     if (data != null) {
         unreadInfo = data;
     }
@@ -628,7 +628,7 @@ function MarkAllFeedsRead() {
                 }
             }
             if (listUnread.length > 0) {
-                SendUnreadInfoToWorker(listUnread, true);
+                SaveUnreadInfo(listUnread, true);
                 refresh = true;
             }
         }
@@ -656,7 +656,7 @@ function MarkFeedRead(feedID) {
             MarkFeedReadSub(feedID, itemID, listUnread, className, container);
         }
 
-        SendUnreadInfoToWorker(listUnread, true);
+        SaveUnreadInfo(listUnread, true);
         UpdateFeedUnread(feedID);
         UpdateReadAllIcon("Feed");
     } else {
@@ -701,7 +701,7 @@ function MarkFeedReadFromGroup(feedID) {
 
     MarkFeedReadSub(feedID, itemID, listUnread, className, container);
 
-    SendUnreadInfoToWorker(listUnread, true);
+    SaveUnreadInfo(listUnread, true);
     UpdateFeedUnread(feedID);
 }
 
@@ -760,7 +760,7 @@ function MarkItemRead(itemID) {
     }
 
     listUnread.push({id: feedID, key: itemID});
-    SendUnreadInfoToWorker(listUnread, true);
+    SaveUnreadInfo(listUnread, true);
     UpdateFeedUnread(feedID);
     UpdateReadAllIcon((selectedFeedKeyIsFeed) ? "Feed" : "Group");
 }
@@ -816,7 +816,7 @@ function MarkItemUnread(itemID) {
 
         UnMarkItemReadLaterWithoutSelectFeed(findWithAttr(readlaterInfo[readLaterFeedID].items, 'itemID', itemID));
 
-        SendUnreadInfoToWorker(listUnread, false);
+        SaveUnreadInfo(listUnread, false);
         UpdateFeedUnread(readLaterFeedID);
         UpdateFeedUnread(feedID);
         UpdateReadAllIcon((selectedFeedKeyIsFeed) ? "Feed" : "Group");
@@ -944,7 +944,7 @@ function SelectFeedOrGroup(key, type) {
                 if (data.length > 0) {
                     if (data[0].items != undefined) {
                         feedsOrGroupsInfo = data[0];
-                        feedInfo[feeds[key].id].items = feedsOrGroupsInfo.items;
+                        feedInfo[feeds[key].id].items = feedsOrGroupsInfo.items; //*******
                     }
                 }
             }
@@ -1800,7 +1800,7 @@ function OpenAllFeedButton(feedID) {
         }
 
         if (listUnread.length > 0) {
-            SendUnreadInfoToWorker(listUnread, true);
+            SaveUnreadInfo(listUnread, true);
             UpdateFeedUnread(feedID);
             UpdateReadAllIcon("Feed");
         }
@@ -1821,7 +1821,7 @@ function OpenAllFeedButton(feedID) {
                         OpenAllFeedButtonFromGroup(item.id, listUnread);
                     });
                     if (listUnread.length > 0) {
-                        SendUnreadInfoToWorker(listUnread, true);
+                        SaveUnreadInfo(listUnread, true);
                         UpdateFeedUnread(feedID);
                         UpdateReadAllIcon("Group");
                         UpdateUnreadBadge();
@@ -1861,24 +1861,19 @@ function OpenAllFeedFromButton(feedID, container, itemID, className, listUnread)
     }
 }
 
-function SendUnreadInfoToWorker(listUnread, setunset) {
+function SaveUnreadInfo(listUnread, setunset) {
+    let requests = [];
     if (setunset) {
-        SendUnreadInfoToWorkerAndreadResponse({"type": "setUnreadInfo", "data": GetStrFromObject(listUnread)});
+        for (let i = 0; i < listUnread.length; i++) {
+            requests.push({type: 'addUnreadinfoItem', waitResponse: false, data: { feed_id: listUnread[i].id, itemHash: listUnread[i].key, value: new Date().getTime() + 5184000000 } });
+        }
     } else {
-        SendUnreadInfoToWorkerAndreadResponse({"type": "unsetUnreadInfo", "data": GetStrFromObject(listUnread)});
-    }
-}
-
-async function SendUnreadInfoToWorkerAndreadResponse(data) {
-    let result = await chrome.runtime.sendMessage(data); //***
-    if (result != undefined) {
-        if (result.data != undefined) {
-            result = GetObjectFromStr(result.data);
-            if (result.constructor === Array) {
-                unreadInfo = result;
-            }
+        for (let i = 0; i < listUnread.length; i++) {
+            requests.push({type: 'deleteUnreadinfoItem', waitResponse: false, data: { feed_id: listUnread[i].id, itemHash: listUnread[i].key } });
         }
     }
+    requests.push({type: 'export', responsetype: 'responseExport', tableName: 'UnreadinfoItem', waitResponse: true, subtype: 'UnreadinfoItem' });
+    sendtoSQL('requests', 'SaveUnreadInfo', false, { requests: requests });
 }
 
 function InternalConnection(port) {
