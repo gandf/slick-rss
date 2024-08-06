@@ -124,13 +124,31 @@ function ReloadViewer() {
 // manage viewer spawning or focus
 function ButtonClicked(tab) {
     if (viewerPort == null) {
-        chrome.tabs.create({url: chrome.runtime.getURL("viewer.html")}, function (tab) {
-            if (tab != null) {
-                viewerPortTabID = tab.id;
+        chrome.tabs.query({url: chrome.runtime.getURL("viewer.html")}, function(tabs) {
+            if (tabs.length > 0) {
+                let tabId = tabs[0].id;
+                viewerPortTabID = tabId;
+                viewerPort = chrome.tabs.connect(tabId);
+            } else {
+                chrome.tabs.create({url: chrome.runtime.getURL("viewer.html")}, function (tab) {
+                    if (tab != null) {
+                        viewerPortTabID = tab.id;
+                    }
+                });
             }
         });
     } else {
         RefreshViewer();
+        if (viewerPortTabID != null) {
+            chrome.tabs.update(viewerPortTabID, {active: true});
+        } else {
+            chrome.tabs.query({url: chrome.runtime.getURL("viewer.html")}, function(tabs) {
+                if (tabs.length > 0) {
+                    viewerPortTabID = tabs[0].id;
+                    chrome.tabs.update(viewerPortTabID, {active: true});
+                }
+            });
+        }
     }
 }
 
