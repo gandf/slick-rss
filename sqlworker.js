@@ -9,6 +9,7 @@ let initialized = false;
 let tableInitialized = 0;
 let canWork = false;
 let readlaterurl;
+let groupurl;
 
 function result(type, id, waitResponse, msg) {
   //log(`result: '${type}' waitResponse: ${waitResponse} msg: ${JSON.stringify(msg)}.`);
@@ -84,9 +85,12 @@ self.onmessage = async function(event) {
         initialized = true;
         break;
       }
-      case 'readlaterurl':
+      case 'url':
       {
-        readlaterurl = request.data;
+        if (request.data != undefined) {
+          readlaterurl = request.data.readlaterurl;
+          groupurl = request.data.groupurl;
+        }
         break;
       }
       case 'beginTrans':
@@ -631,6 +635,7 @@ self.onmessage = async function(event) {
       case 'getGroupInfo':
       {
         if (canWork) {
+          log(`getGroupInfo: '${JSON.stringify(request.data)}'.`);
           let requestsql = `SELECT feedinfo.\`title\`, feedinfo.\`description\`, gr.\`name\` as \`group\`, feedinfo.\`loading\`, feedinfo.\`error\`, feedinfo.\`errorContent\`, feedinfo.\`showErrorContent\`, feedinfo.\`guid\`, feedinfo.\`image\`, feedinfo.\`category\`, feedinfo.\`date\`, feedinfo.\`feed_id\`
             FROM \`Group\` AS gr
             LEFT JOIN \`Feeds\` AS feeds ON feeds.\`group_id\` = gr.\`id\`
@@ -646,13 +651,24 @@ self.onmessage = async function(event) {
                 WHERE gr.\`id\` = ?`, [request.data.group_id]);
             }
           }
+          log(`getGroupInfo: '${JSON.stringify(resultdata)}'.`);
 
+          if (resultdata.length > 0) {
+            resultdata[0].items = [];
+          }
           for (let i = 0; i < resultdata.length; i++) {
-            resultdata[i].items = alasql(
-              `SELECT \`itemID\`, \`title\`, \`description\`, \`date\`, \`content\`, \`summary\`, \`updated\`, \`guid\`, \`category\`, \`comments\`, \`url\`, \`thumbnail\`, \`author\`, \`order\`
+            let items = alasql(
+              `SELECT \`itemID\`, \`title\`, \`description\`, \`date\`, \`content\`, \`summary\`, \`updated\`, \`guid\`, \`category\`, \`comments\`, \`url\`, \`thumbnail\`, \`author\`, \`order\`, \`idOrigin\`
               FROM \`CacheFeedInfoItem\`
               WHERE \`idOrigin\` = ?`, [resultdata[i].feed_id]);
+            resultdata[0].items.push(...items);
           }
+          if (resultdata.length > 0) {
+            resultdata.splice(1);
+            resultdata[0].url = groupurl;
+            resultdata[0].feed_id = request.data.group_id;
+          }
+          log(`getGroupInfo2: '${JSON.stringify(resultdata)}'.`);
 
           result(responseName(request.type), request.id, request.waitResponse, resultdata);
         }

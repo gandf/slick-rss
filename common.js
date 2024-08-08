@@ -788,3 +788,29 @@ function GetFeedsSimple(callBack) {
         }
     });
 }
+
+function GetAllFeedsGroup() {
+    return CreateNewGroup(GetMessageText("backAllFeeds"), "", -8, allFeedsID, 0);
+}
+
+// helper function for creating new feeds
+function CreateNewGroup(title, group, order, id, unreadCount) {
+    // managed feed doesn't have an id yet
+    if (id == null) {
+        id = GetRandomID();
+    }
+    if (order == null) {
+        if (groups.length == 0) {
+            order = 1;
+        } else {
+            order = Math.max.apply(Math, groups.map(function (o) {
+                return o.order;
+            })) + 1;
+        }
+        if (order < 1) {
+            order = 1;
+        }
+    }
+
+    return {title: title, url: chrome.runtime.getURL("group.html"), group: group, maxitems: 99999, order: order, id: id, unreadCount: unreadCount};
+}

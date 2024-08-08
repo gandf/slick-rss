@@ -30,7 +30,7 @@ function init() {
     loadTable('Cache');
     loadTable('CacheFeedInfo');
     loadTable('CacheFeedInfoItem');
-    worker.postMessage({ type: 'readlaterurl', waitResponse: false, data: chrome.runtime.getURL("readlater.html") });
+    worker.postMessage({ type: 'url', waitResponse: false, data: { readlaterurl: chrome.runtime.getURL("readlater.html"), groupurl: chrome.runtime.getURL("group.html") } });
   } catch (e) {
     log("Error: " + e);
   }

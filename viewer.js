@@ -251,7 +251,11 @@ function UpdateDataFromWorker(id) {
     sendtoSQL('getGroups', 'Viewer', true, undefined, function(data){
         if (data != undefined) {
             if (data != undefined) {
+                groups = [];
                 groups = data;
+                if (options.showallfeeds == true) {
+                    groups.unshift(GetAllFeedsGroup());
+                }
             }
             resolveGetGroups();
         }
@@ -284,6 +288,17 @@ function UpdateDataFromWorker(id) {
         if (data != undefined) {
             //format feedinfo
             groupInfo = {};
+            if (options.showallfeeds == true) {
+                groupInfo[allFeedsID] = {
+                    title: GetMessageText("backAllFeeds"),
+                    description: GetMessageText("backAllFeeds"),
+                    group: "",
+                    loading: true,
+                    items: [],
+                    error: "",
+                    category: ""
+                };
+            }
             for (let i = 0; i < data.length; i++) {
                 groupInfo[data[i].feed_id] = data[i];
             }
@@ -508,7 +523,7 @@ function ShowGroup(key) {
 
         $(li).click(function () {
             selectedFeedKeyIsFeed = false;
-            SelectFeed(event.target.getAttribute("data-key"));
+            SelectGroup(event.target.getAttribute("data-key"));
             return false;
         });
 
@@ -970,7 +985,7 @@ function SelectFeedOrGroup(key, type) {
                 if (data.length > 0) {
                     if (data[0].items != undefined) {
                         feedsOrGroupsInfo = data[0];
-                        groupInfo[feeds[key].id].items = feedsOrGroupsInfo.items;
+                        groupInfo[feeds[key].id].items = feedsOrGroupsInfo.items; //***
                     }
                 }
             }
