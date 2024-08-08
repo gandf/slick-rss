@@ -5,7 +5,6 @@ var checkForUnreadCounter;
 var allFeedsUnreadCounter;
 var checkForUnreadFeeds;
 var refreshFeed;
-var viewerPortTabID;
 var apiaddurlPort;
 var apiaddurlTabID;
 var forceRefresh;
@@ -21,7 +20,6 @@ if (datainitialized !== true) {
     allFeedsUnreadCounter = -1;
     checkForUnreadFeeds = [];
     refreshFeed = false;
-    viewerPortTabID = null;
     apiaddurlPort = null;
     apiaddurlTabID = null;
     forceRefresh = false;
@@ -126,37 +124,27 @@ function ButtonClicked(tab) {
     if (viewerPort == null) {
         chrome.tabs.query({url: chrome.runtime.getURL("viewer.html")}, function(tabs) {
             if (tabs.length > 0) {
-                let tabId = tabs[0].id;
-                viewerPortTabID = tabId;
-                viewerPort = chrome.tabs.connect(tabId);
+                viewerPort = chrome.tabs.connect(tabs[0].id);
+                chrome.tabs.update(tabs[0].id, {active: true});
             } else {
-                chrome.tabs.create({url: chrome.runtime.getURL("viewer.html")}, function (tab) {
-                    if (tab != null) {
-                        viewerPortTabID = tab.id;
-                    }
-                });
+                chrome.tabs.create({url: chrome.runtime.getURL("viewer.html")});
             }
         });
     } else {
-        RefreshViewer();
-        if (viewerPortTabID != null) {
-            chrome.tabs.update(viewerPortTabID, {active: true});
-        } else {
-            chrome.tabs.query({url: chrome.runtime.getURL("viewer.html")}, function(tabs) {
-                if (tabs.length > 0) {
-                    viewerPortTabID = tabs[0].id;
-                    chrome.tabs.update(viewerPortTabID, {active: true});
-                }
-            });
-        }
+        chrome.tabs.query({url: chrome.runtime.getURL("viewer.html")}, function(tabs) {
+            if (tabs.length > 0) {
+                chrome.tabs.update(tabs[0].id, {active: true});
+            }
+        });
     }
 }
 
 function RefreshViewer() {
-    if (viewerPortTabID != null) {
-        chrome.tabs.reload(viewerPortTabID, {bypassCache: true});
-        return;
-    }
+    chrome.tabs.query({url: chrome.runtime.getURL("viewer.html")}, function(tabs) {
+        if (tabs.length > 0) {
+            chrome.tabs.reload(tabs[0].id, {bypassCache: true});
+        }
+    });
 }
 
 function OnMessageRequest(request, sender, sendResponse) {

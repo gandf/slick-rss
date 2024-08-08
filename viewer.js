@@ -218,6 +218,17 @@ port.onMessage.addListener(function (msg) {
     }
 });
 
+chrome.tabs.getCurrent(function(tab) {
+    if (tab) {
+        const currentTabId = tab.id;
+        chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+            if (tabId === currentTabId) {
+                //Refresh data TODO *******
+            }
+        });
+    }
+});
+
 function ReloadViewer() {
     chrome.tabs.reload();
 }
