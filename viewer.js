@@ -199,23 +199,6 @@ port.onMessage.addListener(function (msg) {
     if (msg.type == "progressLoading") {
         UpdateLoadingProgress(msg.currentFeeds, msg.currentFeedsCount);
     }
-
-    if (msg.type == "unreadInfo") {
-        sendtoSQL('getLastSelectedFeed', 'ViewerOnMessage', true, undefined, function(data){
-            if (data != null) {
-                unreadInfo = data;
-                if (options.log) {
-                    console.log('unreadinfo');
-                }
-                for (let key in feeds) {
-                    if (key != 0) {
-                        UpdateFeedUnread(feeds[key].id);
-                    }
-                }
-                UpdateReadAllIcon((selectedFeedKeyIsFeed) ? "Feed" : "Group");
-            }
-        });
-    }
 });
 
 chrome.tabs.getCurrent(function(tab) {
@@ -1490,7 +1473,7 @@ function RenderFeed(type, feedsOrGroupsInfo) {
             feedContainer = document.createElement("div");
             feedContainer.setAttribute("id", containerId);
 
-            if (ItemIsRead((feedID != readLaterFeedID) ? feedsOrGroupsInfo.items[i].idOrigin : readLaterFeedID, itemID)) {
+            if (ItemIsRead((feedID != readLaterFeedID) ? (type == "Feed" ? feedID : feedsOrGroupsInfo.items[i].idOrigin) : readLaterFeedID, itemID)) {
                 if (options.readitemdisplay == 0) {
                     feedContainer.setAttribute("class", "feedPreviewContainer feedPreviewContainerRead");
                 } else {

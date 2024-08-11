@@ -522,7 +522,6 @@ self.onmessage = async function(event) {
       }
       case 'modifyColor':
       {
-        log(`modifyColor: '${JSON.stringify(request.data)}'.`);
         if (canWork && (request.data != undefined)) {
           alasql(`UPDATE \`Colors\` SET \`name\` = ?, \`color\` = ?, \`fontColor\` = ?, \`order\` = ? WHERE \`id\` = ?`, [request.data.name, request.data.color, request.data.fontColor, request.data.order, request.data.id]);
         }
@@ -545,18 +544,33 @@ self.onmessage = async function(event) {
       case 'getUnreadinfoFull':
       {
         if (canWork) {
-          result(responseName(request.type), request.id, request.waitResponse, alasql(`
-            SELECT feedspt.\`feed_id\`, feedspt.\`unreadtotal\`, items.\`itemHash\`, items.\`value\`
-            FROM \`Unreadinfo\` AS feedspt
-            LEFT JOIN \`UnreadinfoItem\` AS items ON items.feed_id = feedspt.feed_id
-          `));
+          let resultdata = alasql(`
+            SELECT \`feed_id\`, \`unreadtotal\`
+            FROM \`Unreadinfo\`
+          `).reduce((acc, item) => {
+            acc[item.feed_id] = { unreadtotal: item.unreadtotal, readitems: {} }
+            return acc;
+          }, {});
+
+          let keys = Object.keys(resultdata);
+          for (let key of keys) {
+            resultdata[key].readitems = alasql(`
+              SELECT \`itemHash\`, \`value\`
+              FROM \`UnreadinfoItem\`
+              WHERE \`feed_id\` = ${key}
+            `).reduce((acc, item) => {
+              acc[item.itemHash] = item.value;
+              return acc;
+            }, {});
+          }
+
+          result(responseName(request.type), request.id, request.waitResponse, resultdata);
         }
         break;
       }
       case 'setUnreadinfo':
       {
         if (canWork && (request.data != undefined)) {
-          log(`setUnreadinfo: '${JSON.stringify(request.data)}'.`);
           alasql(`DELETE FROM \`Unreadinfo\` WHERE \`feed_id\` = ?`, [request.data.feed_id]);
           alasql(`INSERT INTO \`Unreadinfo\` VALUES (?, ?)`, [request.data.feed_id, request.data.unreadtotal]);
         }
@@ -565,7 +579,6 @@ self.onmessage = async function(event) {
       case 'clearUnreadinfo':
       {
         if (canWork) {
-          log(`clearUnreadinfo: '${JSON.stringify(request.data)}'.`);
           if ((request.data != undefined)) {
             alasql(`DELETE FROM \`Unreadinfo\` WHERE \`feed_id\` = ?`, [request.data.feed_id]);
             alasql(`DELETE FROM \`UnreadinfoItem\` WHERE \`feed_id\` = ?`, [request.data.feed_id]);
@@ -579,7 +592,6 @@ self.onmessage = async function(event) {
       case 'addUnreadinfoItem':
       {
         if (canWork && (request.data != undefined)) {
-          log(`addUnreadinfoItem: '${JSON.stringify(request.data)}'.`);
           alasql(`DELETE FROM \`UnreadinfoItem\` WHERE \`feed_id\` = ? AND \`itemHash\` = ?`, [request.data.feed_id, request.data.itemHash]);
           alasql(`INSERT INTO \`UnreadinfoItem\` VALUES (?, ?, ?)`, [request.data.feed_id, request.data.itemHash, request.data.value]);
         }
@@ -588,7 +600,6 @@ self.onmessage = async function(event) {
       case 'deleteUnreadinfoItem':
       {
         if (canWork && (request.data != undefined)) {
-          log(`deleteUnreadinfoItem: '${JSON.stringify(request.data)}'.`);
           alasql(`DELETE FROM \`UnreadinfoItem\` WHERE \`feed_id\` = ? AND \`itemHash\` = ?`, [request.data.feed_id, request.data.itemHash]);
         }
         break;
@@ -596,7 +607,6 @@ self.onmessage = async function(event) {
       case 'cleanUnreadinfoItem':
       {
         if (canWork && (request.data.value != undefined)) {
-          log(`cleanUnreadinfoItem: '${JSON.stringify(request.data)}'.`);
           alasql(`DELETE FROM \`UnreadinfoItem\` WHERE \`value\` < ?`, [request.data.value]);
         }
         break;
@@ -604,7 +614,6 @@ self.onmessage = async function(event) {
       case 'cleanUpUnreadOrphans':
       {
         if (canWork) {
-          log(`cleanUpUnreadOrphans`);
           alasql(`
             DELETE FROM \`UnreadinfoItem\`
             WHERE \`feed_id\` IN (
@@ -635,7 +644,6 @@ self.onmessage = async function(event) {
       case 'getGroupInfo':
       {
         if (canWork) {
-          log(`getGroupInfo: '${JSON.stringify(request.data)}'.`);
           let requestsql = `SELECT feedinfo.\`title\`, feedinfo.\`description\`, gr.\`name\` as \`group\`, feedinfo.\`loading\`, feedinfo.\`error\`, feedinfo.\`errorContent\`, feedinfo.\`showErrorContent\`, feedinfo.\`guid\`, feedinfo.\`image\`, feedinfo.\`category\`, feedinfo.\`date\`, feedinfo.\`feed_id\`
             FROM \`Group\` AS gr
             LEFT JOIN \`Feeds\` AS feeds ON feeds.\`group_id\` = gr.\`id\`
@@ -651,7 +659,6 @@ self.onmessage = async function(event) {
                 WHERE gr.\`id\` = ?`, [request.data.group_id]);
             }
           }
-          log(`getGroupInfo: '${JSON.stringify(resultdata)}'.`);
 
           if (resultdata.length > 0) {
             resultdata[0].items = [];
@@ -666,9 +673,10 @@ self.onmessage = async function(event) {
           if (resultdata.length > 0) {
             resultdata.splice(1);
             resultdata[0].url = groupurl;
-            resultdata[0].feed_id = request.data.group_id;
+            if (request.data != undefined) {
+              resultdata[0].feed_id = request.data.group_id;
+            }
           }
-          log(`getGroupInfo2: '${JSON.stringify(resultdata)}'.`);
 
           result(responseName(request.type), request.id, request.waitResponse, resultdata);
         }
