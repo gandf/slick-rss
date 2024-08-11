@@ -1874,11 +1874,14 @@ function SaveUnreadInfo(listUnread, setunset) {
     let requests = [];
     if (setunset) {
         for (let i = 0; i < listUnread.length; i++) {
-            requests.push({type: 'addUnreadinfoItem', waitResponse: false, data: { feed_id: listUnread[i].id, itemHash: listUnread[i].key, value: new Date().getTime() + 5184000000 } });
+            const newvalue = new Date().getTime() + 5184000000;
+            requests.push({type: 'addUnreadinfoItem', waitResponse: false, data: { feed_id: listUnread[i].id, itemHash: listUnread[i].key, value: newvalue } });
+            unreadInfo[listUnread[i].id].readitems[listUnread[i].key] = newvalue;
         }
     } else {
         for (let i = 0; i < listUnread.length; i++) {
             requests.push({type: 'deleteUnreadinfoItem', waitResponse: false, data: { feed_id: listUnread[i].id, itemHash: listUnread[i].key } });
+            delete unreadInfo[listUnread[i].id].readitems[listUnread[i].key];
         }
     }
     requests.push({type: 'export', responsetype: 'responseExport', tableName: 'UnreadinfoItem', waitResponse: true, subtype: 'UnreadinfoItem' });
