@@ -33,7 +33,7 @@ if (datacommoninitialized !== true) {
     groups = [];
     unreadTotal = 0;
     listCategoriesRegistered = [];
-    readlaterInfo = [];
+    readlaterInfo = {};
 
     datacommoninitialized = true;
 }

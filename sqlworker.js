@@ -61,7 +61,7 @@ self.onmessage = async function(event) {
             `date` string, `guid` string, `order` INT, idOrigin string, `updated` boolean, `url` string, `author` string, `comments` string, PRIMARY KEY (`readlaterinfo_id`, `itemiD`));");
 
         alasql("DROP TABLE IF EXISTS `ItemCategories`;\
-          CREATE TABLE `ItemCategories` (`itemID` string, `category_id` INT, PRIMARY KEY (`itemID`, `category_id`));");
+          CREATE TABLE `ItemCategories` (`idOrigin` INT, `itemID` string, `category_id` INT, PRIMARY KEY (`idOrigin`, `itemID`, `category_id`));");
 
         alasql("DROP TABLE IF EXISTS `Categories`;\
           CREATE TABLE `Categories` (`category_id` INT PRIMARY KEY, `name` string);");
@@ -438,14 +438,24 @@ self.onmessage = async function(event) {
       case 'getReadlaterinfoItem':
       {
         if (canWork) {
-          result(responseName(request.type), request.id, request.waitResponse, alasql(`
-            SELECT item.*, ARRAY(cat.name) AS category_names
-            FROM \`ReadlaterinfoItem\` AS item
-            LEFT JOIN \`ItemCategories\` AS itemcat ON item.itemID = itemcat.itemID
-            LEFT JOIN \`Categories\` AS cat ON itemcat.category_id = cat.category_id
-            GROUP BY item.\`readlaterinfo_id\`, item.\`itemiD\`, item.\`title\`, item.\`summary\`, item.\`thumbnail\`, item.\`content\`,
-            item.\`date\`, item.\`guid\`, item.\`order\`, item.\`idOrigin\`, item.\`updated\`, item.\`url\`, item.\`author\`, item.\`comments\`
-          `));
+          let resultdata = alasql(`SELECT *
+            FROM \`ReadlaterinfoItem\`
+          `).reduce((acc, item) => {
+            acc.push({ author: item.author, category: undefined, comments: item.comments, content: item.content, date: item.date, idOrigin: item.idOrigin, itemID: item.itemID,
+              order: item.order, summary: item.summary, thumbnail: item.thumbnail, title: item.title, updated: item.updated, url: item.url});
+            return acc;
+          }, []);
+
+          let keys = Object.keys(resultdata);
+          for (let key of keys) {
+            resultdata[key].category = alasql(`SELECT cat.\`name\`
+            FROM \`ItemCategories\` AS itemcat
+            LEFT JOIN \`Categories\` AS cat ON itemcat.\`category_id\` = cat.\`category_id\`
+            WHERE (itemcat.\`idOrigin\` = ?) AND (itemcat.\`itemID\` = ?)`, [resultdata[key].idOrigin, resultdata[key].itemID]
+            );
+          }
+
+          result(responseName(request.type), request.id, request.waitResponse, resultdata);
         }
         break;
       }

@@ -369,7 +369,7 @@ function ShowFeeds() {
         document.getElementById("manage").style.display = "";
 
         if (options.readlaterenabled) {
-            ShowFeed(0);
+            ShowFeedRL(0);
             if (selectKey == null) {
                 selectKey = 0;
             }
@@ -463,6 +463,28 @@ function FixFeedList() {
         feedScroller.style.overflowY = (feedScroller.offsetHeight < feedScroller.scrollHeight) ? "scroll" : "hidden";
     }
     UpdateSizeProgress(true);
+}
+
+function ShowFeedRL(key) {
+    let li = document.createElement("li");
+    let span = document.createElement("span");
+
+    if (document.getElementById("feedTitleFeed" + readLaterFeedID) == null) {
+        li.innerText = GetMessageText("backReadLater");
+        li.setAttribute("id", "feedTitleFeed" + readLaterFeedID);
+        span.setAttribute("id", "feedUnreadFeed" + readLaterFeedID);
+
+        $(li).click(function (event) {
+            selectedFeedKeyIsFeed = true;
+            SelectFeedRL();
+            return false;
+        });
+
+        li.appendChild(span);
+
+        document.getElementById("feedList").appendChild(li);
+    }
+    UpdateFeedUnread(readLaterFeedID);
 }
 
 function ShowFeed(key) {
@@ -1006,7 +1028,7 @@ function SelectFeedOrGroup(key, type) {
         clearTimeout(feedReadToID);
 
         if ((selectedFeedKey != null) && (selectedFeedKey != undefined)) {
-            document.getElementById("feedTitle" + lastSelectedFeedType + selectedFeedsOrGroups[selectedFeedKey].id).setAttribute("class", "");
+            document.getElementById("feedTitle" + lastSelectedFeedType + lastSelectedFeedID).setAttribute("class", "");
         }
 
         document.getElementById("feedTitle" + type + feedsOrGroups[key].id).setAttribute("class", "selectedFeed");
@@ -1103,6 +1125,78 @@ function SelectFeedOrGroup(key, type) {
     });
 }
 
+function SelectFeedRL() {
+    let feediframe = document.getElementById("contentNotFormated");
+    if (feediframe != undefined) {
+        document.getElementById("feedPreviewScroller").removeChild(feediframe);
+    }
+
+    var lastSelectedFeedID = null;
+    var lastSelectedFeedType = null;
+    let listPromise = [];
+
+    let resolveGetLastSelectedFeed;
+    let waitGetLastSelectedFeed = new Promise((resolve) => {
+        resolveGetLastSelectedFeed = resolve;
+    });
+
+    listPromise.push(waitGetLastSelectedFeed);
+	sendtoSQL('getLastSelectedFeed', 'ShowFeeds', true, undefined, function(data){
+        if (data != null) {
+            if (data.length > 0) {
+                lastSelectedFeedID = data[0].lastSelectedFeedID;
+                lastSelectedFeedType = data[0].lastSelectedFeedType;
+            }
+        }
+        resolveGetLastSelectedFeed();
+    });
+
+    Promise.allSettled(listPromise).then(function () {
+        loadReadlaterInfo().then(function () {
+            let lastSelectedFeed = {};
+            lastSelectedFeed.lastSelectedFeedID = readLaterFeedID;
+            lastSelectedFeed.lastSelectedFeedType = 'Feed';
+
+            let requests = [];
+            requests.push({type: 'setLastSelectedFeed', waitResponse: false, data: lastSelectedFeed });
+            requests.push({type: 'export', responsetype: 'responseExport', tableName: 'LastSelectedFeed', waitResponse: true, subtype: 'LastSelectedFeed' });
+            sendtoSQL('requests', 'SelectFeedOrGroup', false, { requests: requests });
+
+            document.getElementById("feedPreviewScroller").scrollTop = 0;
+
+            clearTimeout(feedReadToID);
+
+            if ((selectedFeedKey != null) && (selectedFeedKey != undefined)) {
+                document.getElementById("feedTitle" + lastSelectedFeedType + lastSelectedFeedID).setAttribute("class", "");
+            }
+
+            document.getElementById("feedTitleFeed" + readLaterFeedID).setAttribute("class", "selectedFeed");
+
+            selectedFeedKey = 0; //must change by id
+            selectedFeedKeyIsFeed = true;
+            UpdateTitle();
+
+            // clear the slate
+            let el = document.getElementById("feedPreview");
+
+            while (el.childNodes.length >= 1) {
+                el.removeChild(el.firstChild);
+            }
+
+            // clear the slate
+            document.getElementById("markFeedRead").style.display = "none";
+            document.getElementById("header").className = "";
+            document.getElementById("feedError").style.display = "none";
+            document.getElementById("noItems").style.display = "none";
+            document.getElementById("refresh").style.display = "none";
+            
+            RenderFeedFromSelect("Feed", 0, feeds, readlaterInfo[readLaterFeedID]);
+            RefreshCategoryList();
+            ShowCategory(true);
+        });
+    });
+}
+
 function RenderFeedFromSelect(type, key, feedsOrGroups, feedsOrGroupsInfo) {
     RenderFeed(type, feedsOrGroupsInfo);
     UpdateReadAllIcon(type);
@@ -1151,7 +1245,7 @@ function RenderFeed(type, feedsOrGroupsInfo) {
     let showItem;
 
     if ((type == "Feed") && (feedsOrGroups[selectedFeedKey].id == readLaterFeedID)) {
-        feedsOrGroupsInfo = readlaterInfo;
+        feedsOrGroupsInfo = readlaterInfo[readLaterFeedID];
     }
 
     if (feedsOrGroupsInfo == null) {
@@ -1195,14 +1289,19 @@ function RenderFeed(type, feedsOrGroupsInfo) {
     }
     let feedBaseUrl = (new URL(feedsOrGroups[selectedFeedKey].url)).origin;
 
-    if (feedsOrGroups[selectedFeedKey].urlredirected != undefined) {
+    if ((feedsOrGroups[selectedFeedKey].urlredirected != undefined) && (feedsOrGroups[selectedFeedKey].urlredirected != false)) {
         document.getElementById("urlRedirectedUrl").innerText = feedsOrGroups[selectedFeedKey].urlredirected;
         document.getElementById("urlRedirected").style.display = "";
     } else {
         document.getElementById("urlRedirected").style.display = "none";
     }
 
-    let nbItem = Math.min(feedsOrGroupsInfo.items.length, feedsOrGroups[selectedFeedKey].maxitems);
+    let nbItem;
+    if (feedsOrGroups[selectedFeedKey].id != readLaterFeedID) {
+        nbItem = Math.min(feedsOrGroupsInfo.items.length, feedsOrGroups[selectedFeedKey].maxitems);
+    } else {
+        nbItem = feedsOrGroupsInfo.items.length;
+    }
     let itemNo = 0;
     for (let i = 0; i < nbItem; i++) {
         showItem = true;

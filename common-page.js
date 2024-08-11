@@ -84,17 +84,8 @@ function loadReadlaterInfo() {
 
     sendtoSQL('getReadlaterinfoItem', 'loadReadlaterInfo', true, null, 
         function (data) {
-            if (data != null) {
-                if (data[0] != undefined) {
-                    if (data[0].value != undefined) {
-                        if (data[0].value[0] != undefined) {
-                            if (data[0].value[0].value != undefined) {
-                                //TODO a revoir après
-                                readlaterInfo.items = data[0].value[0].value;
-                            }
-                        }
-                    }
-                }
+            if ((data != null) && (data != undefined)) {
+                readlaterInfo[readLaterFeedID].items = data;
             }
             resolveLoadReadlaterInfo();
         }
