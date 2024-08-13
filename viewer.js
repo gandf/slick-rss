@@ -233,12 +233,9 @@ function UpdateDataFromWorker(id) {
 
     sendtoSQL('getGroups', 'Viewer', true, undefined, function(data){
         if (data != undefined) {
-            if (data != undefined) {
-                groups = [];
-                groups = data;
-                if (options.showallfeeds == true) {
-                    groups.unshift(GetAllFeedsGroup());
-                }
+            groups = data;
+            if (options.showallfeeds == true) {
+                groups[allFeedsID] = GetAllFeedsGroup();
             }
             resolveGetGroups();
         }
@@ -375,7 +372,15 @@ function ShowFeeds() {
             }
         }
 
-        for (let key in groups) {
+        let keys = Object.keys(groups);
+        keys.sort((a, b) => {
+            if (groups[a].order === groups[b].order) {
+                return groups[a].title.localeCompare(groups[b].title);
+            }
+            return groups[a].order - groups[b].order;
+        });
+        
+        for (let key of keys) {
             ShowGroup(key);
 
             if ((groups[key].id == lastSelectedID) && (lastSelectedType == "Group")) {
@@ -975,7 +980,7 @@ function SelectFeedOrGroup(key, type) {
                 if (data.length > 0) {
                     if (data[0].items != undefined) {
                         feedsOrGroupsInfo = data[0];
-                        feedInfo[feeds[key].id].items = feedsOrGroupsInfo.items; //*******
+                        feedInfo[feeds[key].id].items = feedsOrGroupsInfo.items;
                     }
                 }
             }
@@ -985,13 +990,12 @@ function SelectFeedOrGroup(key, type) {
             listPromise.push(loadReadlaterInfo());
         }
     } else {
-        sendtoSQL('getGroupInfo', 'ViewerShowGroups', true, { group_id: groups[key].id }, function(data){
+        sendtoSQL('getGroupInfo', 'ViewerShowGroups', true, { group_id: key }, function(data){
             if (data != null) {
-                if (data.length > 0) {
-                    if (data[0].items != undefined) {
-                        feedsOrGroupsInfo = data[0];
-                        groupInfo[feeds[key].id].items = feedsOrGroupsInfo.items; //***
-                    }
+                if (data[key].items != undefined) {
+                    feedsOrGroupsInfo = data[key];
+                    feedsOrGroupsInfo.title = groups[key].title;
+                    groupInfo[key] = feedsOrGroupsInfo;
                 }
             }
             resolveGetInfo();

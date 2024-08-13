@@ -12,15 +12,12 @@ let readlaterurl;
 let groupurl;
 
 function result(type, id, waitResponse, msg) {
-  //log(`result: '${type}' waitResponse: ${waitResponse} msg: ${JSON.stringify(msg)}.`);
   if (waitResponse) {
     postMessage({ type, id, msg });
   }
 }
 
 self.onmessage = async function(event) {
-  //log(`event: '${event.data.type}'.`);
-  //log(`event.data: '${JSON.stringify(event.data)}'.`);
   let requests = undefined;
   if (event.data.data != undefined) {
     if (event.data.data.requests != undefined) {
@@ -34,10 +31,8 @@ self.onmessage = async function(event) {
     log(`Unexpected message type received: '${event.data}'.`);
   }
 
-  //log(`requests: '${JSON.stringify(requests)}'.`);
   for (let irequests = 0; irequests < requests.length; irequests++) {
     let request = requests[irequests];
-    //log(`request: '${request.type}'.`);
     switch (request.type) {
       case 'init':
       {
@@ -637,8 +632,8 @@ self.onmessage = async function(event) {
       case 'getGroups':
       {
         if (canWork) {
-          result(responseName(request.type), request.id, request.waitResponse, alasql(
-            `SELECT gr.\`name\` AS title, '' AS URL,'' AS \`group\`, 99999 AS maxitems, 0 AS \`order\`, gr.\`id\`, SUM(unread.\`unreadtotal\`) AS \`unreadCount\` 
+          let resultdata = alasql(
+            `SELECT gr.\`name\`, gr.\`id\`, SUM(unread.\`unreadtotal\`) AS \`unreadCount\` 
             FROM \`Group\` as gr
             LEFT JOIN (
               SELECT \`group_id\`
@@ -647,47 +642,66 @@ self.onmessage = async function(event) {
               ) AS feeds ON feeds.\`group_id\` = gr.\`id\`
             LEFT JOIN \`Unreadinfo\` AS unread ON unread.\`feed_id\` = feeds.\`id\`
             GROUP BY gr.\`name\`, gr.\`id\``
-          ));
+          ).reduce((acc, item) => {
+            acc[item.id] = { title: item.name, url: groupurl, group: '', maxitems: 99999, order: 0, id: item.id, unreadCount: item.unreadCount == undefined ? 0 : item.unreadCount };
+            return acc;
+          }, {});
+  
+          result(responseName(request.type), request.id, request.waitResponse, resultdata);
         }
         break;
       }
       case 'getGroupInfo':
       {
         if (canWork) {
-          let requestsql = `SELECT feedinfo.\`title\`, feedinfo.\`description\`, gr.\`name\` as \`group\`, feedinfo.\`loading\`, feedinfo.\`error\`, feedinfo.\`errorContent\`, feedinfo.\`showErrorContent\`, feedinfo.\`guid\`, feedinfo.\`image\`, feedinfo.\`category\`, feedinfo.\`date\`, feedinfo.\`feed_id\`
-            FROM \`Group\` AS gr
-            LEFT JOIN \`Feeds\` AS feeds ON feeds.\`group_id\` = gr.\`id\`
-            LEFT JOIN \`CacheFeedInfo\` AS feedinfo ON feedinfo.\`feed_id\` = feeds.\`id\``;
+          let requestsql = `SELECT \`id\`, \`name\` FROM \`Group\``;
           let resultdata;
-          if (request.data == undefined) {
-            resultdata = alasql(requestsql);
-          } else {
-            if (request.data.group_id == undefined) {
-              resultdata = alasql(requestsql);
-            } else {
+          let filterbygroup = false;
+          let getallfeedinfo = false;
+          if (request.data != undefined) {
+            if ((request.data.group_id != undefined) && (request.data.group_id != allFeedsID)) {
+              filterbygroup = true;
               resultdata = alasql(`${requestsql}
-                WHERE gr.\`id\` = ?`, [request.data.group_id]);
+                WHERE \`id\` = ?`, [request.data.group_id]);
+            }
+            getallfeedinfo = (request.data.group_id != undefined) && (request.data.group_id == allFeedsID);
+            if (getallfeedinfo) {
+              resultdata = [{ id: allFeedsID, name: 'All Feeds' }];
             }
           }
-
-          if (resultdata.length > 0) {
-            resultdata[0].items = [];
+          if (!filterbygroup && !getallfeedinfo) {
+            resultdata = alasql(requestsql);
           }
-          for (let i = 0; i < resultdata.length; i++) {
-            let items = alasql(
-              `SELECT \`itemID\`, \`title\`, \`description\`, \`date\`, \`content\`, \`summary\`, \`updated\`, \`guid\`, \`category\`, \`comments\`, \`url\`, \`thumbnail\`, \`author\`, \`order\`, \`idOrigin\`
-              FROM \`CacheFeedInfoItem\`
-              WHERE \`idOrigin\` = ?`, [resultdata[i].feed_id]);
-            resultdata[0].items.push(...items);
-          }
-          if (resultdata.length > 0) {
-            resultdata.splice(1);
-            resultdata[0].url = groupurl;
-            if (request.data != undefined) {
-              resultdata[0].feed_id = request.data.group_id;
+          resultdata = resultdata.reduce((acc, item) => {
+            acc[item.id] = { group: item.name };
+            return acc;
+          }, {});
+          let keys = Object.keys(resultdata);
+          for (let key of keys) {
+            let intermResult = alasql(`SELECT feedinfo.\`title\`, feedinfo.\`description\`, feedinfo.\`loading\`, feedinfo.\`error\`, feedinfo.\`errorContent\`, feedinfo.\`showErrorContent\`, feedinfo.\`guid\`, feedinfo.\`image\`, feedinfo.\`category\`, feedinfo.\`date\`, feedinfo.\`feed_id\`, feeds.\`maxitems\`
+              FROM \`Feeds\` AS feeds
+              LEFT JOIN \`CacheFeedInfo\` AS feedinfo ON feedinfo.\`feed_id\` = feeds.\`id\`
+              ${(key != allFeedsID) ? `WHERE feeds.\`group_id\` = ${key}` : ''}`);
+            if (intermResult.length > 0) {
+              resultdata[key] = { ...resultdata[key], ...intermResult[0] };
+              resultdata[key].items = [];
+              delete resultdata[key].maxitems;
+              if (filterbygroup || getallfeedinfo) {
+                if ((request.data.group_id == key) || getallfeedinfo) {
+                  for (let i = 0; i < intermResult.length; i++) {
+                    let items = alasql(
+                      `SELECT \`itemID\`, \`title\`, \`description\`, \`date\`, \`content\`, \`summary\`, \`updated\`, \`guid\`, \`category\`, \`comments\`, \`url\`, \`thumbnail\`, \`author\`, \`order\`, \`idOrigin\`
+                      FROM \`CacheFeedInfoItem\`
+                      WHERE \`idOrigin\` = ?`, [intermResult[i].feed_id]);
+                      if ((intermResult[i].maxitems != undefined) && (intermResult[i].maxitems > 0)) {
+                        items.splice(intermResult[i].maxitems);
+                      }
+                    resultdata[key].items.push(...items);
+                  }
+                }
+              }
             }
           }
-
           result(responseName(request.type), request.id, request.waitResponse, resultdata);
         }
         break;
