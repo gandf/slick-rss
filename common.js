@@ -570,6 +570,10 @@ function CleanUpUnreadOrphans() {
             } else {
                 unreadInfo = {};
             }
+            unreadInfo[readLaterFeedID] = {unreadtotal: 0, readitems: {}};
+            if (unreadInfo[readLaterFeedID] != undefined) {
+                unreadInfo[readLaterFeedID].unreadtotal = readlaterInfo[readLaterFeedID].items.length;
+            }
             UpdateUnreadBadge();
             resolveCleanUpUnreadOrphans();
         });
@@ -592,6 +596,10 @@ function GetUnreadCounts() {
         } else {
             unreadInfo = {};
             SetUnreadInfo({});
+        }
+        unreadInfo[readLaterFeedID] = {unreadtotal: 0, readitems: {}};
+        if (unreadInfo[readLaterFeedID] != undefined) {
+            unreadInfo[readLaterFeedID].unreadtotal = readlaterInfo[readLaterFeedID].items.length;
         }
         resolveGetUnreadInfo();
     });
@@ -732,14 +740,16 @@ function SetUnreadInfo(data, callback) {
     requests.push({type: 'clearUnreadinfo', tableName: 'Unreadinfo', waitResponse: false });
     let key = Object.keys(data);
     for (let i = 0; i <  key.length; i++) {
-        requests.push({type: 'setUnreadinfo', waitResponse: false, data: { feed_id: key[i], unreadtotal: data[key[i]].unreadtotal } });
-        let items = data[key[i]].readitems;
-        if (items != undefined) {
-            let keysitem = Object.keys(items);
-            for (let j = 0; j < keysitem.length; j++) {
-                requests.push({type: 'addUnreadinfoItem', waitResponse: false, data: { feed_id: key[i], itemHash: keysitem[j], value: items[keysitem[j]] } });
-            }
-        }               
+        if (key[i] != readLaterFeedID) {
+            requests.push({type: 'setUnreadinfo', waitResponse: false, data: { feed_id: key[i], unreadtotal: data[key[i]].unreadtotal } });
+            let items = data[key[i]].readitems;
+            if (items != undefined) {
+                let keysitem = Object.keys(items);
+                for (let j = 0; j < keysitem.length; j++) {
+                    requests.push({type: 'addUnreadinfoItem', waitResponse: false, data: { feed_id: key[i], itemHash: keysitem[j], value: items[keysitem[j]] } });
+                }
+            }               
+        }
     }
     requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Unreadinfo', waitResponse: true, subtype: 'Unreadinfo' });
     requests.push({type: 'export', responsetype: 'responseExport', tableName: 'UnreadinfoItem', waitResponse: true, subtype: 'UnreadinfoItem' });

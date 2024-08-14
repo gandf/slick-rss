@@ -114,6 +114,10 @@ function openPageWithParams(pageurl, newpage) {
 sendtoSQL('getUnreadinfoFull', 'Viewer', true, undefined, function(data){
     if (data != null) {
         unreadInfo = data;
+        unreadInfo[readLaterFeedID] = {unreadtotal: 0, readitems: {}};
+        if (unreadInfo[readLaterFeedID] != undefined) {
+            unreadInfo[readLaterFeedID].unreadtotal = readlaterInfo[readLaterFeedID].items.length;
+        }
     }
 });
 
@@ -778,12 +782,17 @@ function MarkItemRead(itemID) {
     let currentFeed = feeds.find(el => el.id == feedID);
 
     if (currentFeed != null) {
-        //search group by name
-        let currentGroup = groups.find(el => el.title == currentFeed.group);
-        if (currentGroup != null) {
-            element = document.getElementById("item_" + currentGroup.id + "_" + itemID);
-            if (element != null) {
-                element.className += className;
+        if (currentFeed.group != "") {
+            //search group by name
+            let groupkeys = Object.keys(groups);
+            for (let i = 0; i < groupkeys.length; i++) {
+                if (groups[groupkeys[i]].title == currentFeed.group) {
+                    element = document.getElementById("item_" + groups[groupkeys[i]].id + "_" + itemID);
+                    if (element != null) {
+                        element.className += className;
+                    }
+                    break;
+                }
             }
         }
     }
@@ -832,13 +841,17 @@ function MarkItemUnread(itemID) {
             });
             if (currentFeed != null) {
                 //search group by name
-                let currentGroup = groups.find(function (el) {
-                    return (el.title == currentFeed.group);
-                });
-                if (currentGroup != null) {
-                    element = document.getElementById("item_" + currentGroup.id + "_" + itemID);
-                    if (element != null) {
-                        element.className = element.className.replace(className, "");
+                if (currentFeed.group != "") {
+                    //search group by name
+                    let groupkeys = Object.keys(groups);
+                    for (let i = 0; i < groupkeys.length; i++) {
+                        if (groups[groupkeys[i]].title == currentFeed.group) {
+                            element = document.getElementById("item_" + groups[groupkeys[i]].id + "_" + itemID);
+                            if (element != null) {
+                                element.className = element.className.replace(className, "");
+                            }
+                            break;
+                        }
                     }
                 }
             }
