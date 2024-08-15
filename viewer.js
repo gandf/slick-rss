@@ -697,7 +697,7 @@ function MarkFeedRead(feedID) {
             requests.push({type: 'export', responsetype: 'responseExport', tableName: 'ReadlaterinfoItem', waitResponse: true, subtype: 'ReadlaterinfoItem' });
             sendtoSQL('requests', 'MarkFeedRead', false, { requests: requests });
 
-            SelectFeed(0);
+            SelectFeedRL();
         } else {
             MarkFeedReadSub(feedID, itemID, listUnread, className, container);
         }
@@ -934,15 +934,15 @@ function MarkItemReadLater(feedID, itemIndex) {
 function UnMarkItemReadLater(itemIndex) {
     if (itemIndex >= 0) {
         UnMarkItemReadLaterWithoutSelectFeed(itemIndex).then(function () {
-            SelectFeed(0);
+            SelectFeedRL();
         });
     }
 }
 
 function UnMarkItemReadLaterWithoutSelectFeed(itemIndex) {
-	let ResolveUnreafLaterInfo;
+	let ResolveUnreadLaterInfo;
     let waitSqlUnreafLaterInfo = new Promise((resolve) => {
-        ResolveUnreafLaterInfo = resolve;
+        ResolveUnreadLaterInfo = resolve;
     });
 
     if (itemIndex >= 0) {
@@ -952,7 +952,7 @@ function UnMarkItemReadLaterWithoutSelectFeed(itemIndex) {
             requests.push({type: 'removeReadlaterinfoItem', waitResponse: false, data: { idOrigin: currentitem.idOrigin, itemID: currentitem.itemID }  });
             requests.push({type: 'export', responsetype: 'responseExport', tableName: 'ReadlaterinfoItem', waitResponse: true, subtype: 'ReadlaterinfoItem' });
             sendtoSQL('requests', 'UnMarkItemReadLaterWithoutSelectFeed', true, { requests: requests }, function(){
-                ResolveUnreafLaterInfo();
+                ResolveUnreadLaterInfo();
             });
 
             readlaterInfo[readLaterFeedID].items.splice(itemIndex, 1);
@@ -962,10 +962,10 @@ function UnMarkItemReadLaterWithoutSelectFeed(itemIndex) {
 
             UpdateFeedUnread(readLaterFeedID);
         } else {
-            ResolveUnreafLaterInfo();
+            ResolveUnreadLaterInfo();
         }
     } else {
-        ResolveUnreafLaterInfo();
+        ResolveUnreadLaterInfo();
     }
 
     return waitSqlUnreafLaterInfo;
@@ -986,6 +986,14 @@ function SelectFeedOrGroup(key, type) {
     if (typeof key === 'string') {
         key = parseInt(key);
     }
+
+    if (type == "Feed") {
+        if (feeds[key].id == readLaterFeedID) {
+            SelectFeedRL();
+            return;
+        }
+    }
+
     let feediframe = document.getElementById("contentNotFormated");
     if (feediframe != undefined) {
         document.getElementById("feedPreviewScroller").removeChild(feediframe);
@@ -1950,7 +1958,7 @@ function OpenAllFeedButton(feedID) {
             requests.push({type: 'clearReadlaterinfo', waitResponse: false });
             requests.push({type: 'export', responsetype: 'responseExport', tableName: 'ReadlaterinfoItem', waitResponse: true, subtype: 'ReadlaterinfoItem' });
             sendtoSQL('requests', 'MarkFeedRead', false, { requests: requests });
-            SelectFeed(0);
+            SelectFeedRL();
         } else {
             OpenAllFeedFromButton(feedID, container, itemID, className, listUnread);
         }
