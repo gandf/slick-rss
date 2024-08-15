@@ -909,7 +909,7 @@ function MarkItemReadLater(feedID, itemIndex) {
     let requests = [];
 
     for (let i = 0; i < readlaterInfo[readLaterFeedID].items.length; i++) {
-        if (readlaterInfo[readLaterFeedID].items[i].itemID == itemID) {
+        if ((readlaterInfo[readLaterFeedID].items[i].idOrigin == feedID) && (readlaterInfo[readLaterFeedID].items[i].itemID == itemID)) {
             itemExist = true;
             //update items
             readlaterInfo[readLaterFeedID].items[i] = currentItem;

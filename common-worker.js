@@ -101,7 +101,6 @@ function SearchTag(data, defaultValue, tag, level)
             let ret = SearchTag(val[i], defaultValue, tag, level + 1);
             if (ret != defaultValue)
             {
-                //console.log('|SearchTag level | ', level + 1);
                 return ret;
             }
         }
@@ -155,7 +154,6 @@ function SearchTags(data, defaultValue, tag, level)
             let ret = SearchTags(val[i], defaultValue, tag, level + 1);
             if (ret != defaultValue)
             {
-                //console.log('|SearchTags level | ', level + 1);
                 result.push(ret);
                 resultExist = true;
             }

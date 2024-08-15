@@ -792,12 +792,12 @@ function CheckForUnread(checkForUnreadCounterID) {
                                 }
                                 if (!item.guid) {
                                     if (useDateInID) {
-                                        item.itemID = sha256(item.title + item.date);
+                                        item.itemID = sha256(feedID + ':' + item.title + item.date);
                                     } else {
-                                        item.itemID = sha256(item.title);
+                                        item.itemID = sha256(feedID + ':' + item.title);
                                     }
                                 } else {
-                                    item.itemID = sha256(item.guid);
+                                    item.itemID = sha256(feedID + ':' + item.guid);
                                 }
                                 thumbnailurl = null;
                                 thumbnailtype = null;

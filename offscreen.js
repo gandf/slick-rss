@@ -12,7 +12,7 @@ function init() {
     log("Worker error: " + JSON.stringify(e, ["message", "arguments", "type", "name"]));
   });
   
-  log('Offscreen init & load database');
+  //log('Offscreen init & load database');
   
   worker.postMessage({ type: 'init' });
 
@@ -44,7 +44,7 @@ function init() {
       case 'event': {
         switch (e.data.msg) {
           case 'initialized': {
-            log('database loaded');
+            //log('database loaded');
             sqlReady = true;
             responseMessage('eventSqlReady');
             break;
@@ -239,7 +239,7 @@ function sendToBackground(type, data) {
 }
 
 window.addEventListener("beforeunload", function(e){
-  log(`Offscreen close.`);
+  //log(`Offscreen close.`);
   sendToBackground('close');
 });
 
