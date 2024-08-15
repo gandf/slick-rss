@@ -479,11 +479,11 @@ self.onmessage = async function(event) {
       }
       case 'removeReadlaterinfoItem':
       {
-        if (canWork && (request.itemID != undefined)) {
-          let item = alasql(`SELECT \`itemID\` FROM \`ReadlaterinfoItem\` WHERE (\`idOrigin\` = ?) AND (\`itemID\` = ?)`, [request.idOrigin, request.itemID]);
+        if (canWork && (request.data.itemID != undefined)) {
+          let item = alasql(`SELECT \`itemID\` FROM \`ReadlaterinfoItem\` WHERE (\`idOrigin\` = ?) AND (\`itemID\` = ?)`, [request.data.idOrigin, request.data.itemID]);
           if (item != undefined) {
-            let categories = alasql(`SELECT \`category_id\` FROM \`ItemCategories\` WHERE (\`idOrigin\` = ?) AND (\`itemID\` = ?)`, [request.idOrigin, request.itemID]);
-            alasql(`DELETE FROM \`ItemCategories\` WHERE (\`idOrigin\` = ?) AND (\`itemID\` = ?)`, [request.idOrigin, request.itemID]);
+            let categories = alasql(`SELECT \`category_id\` FROM \`ItemCategories\` WHERE (\`idOrigin\` = ?) AND (\`itemID\` = ?)`, [request.data.idOrigin, request.data.itemID]);
+            alasql(`DELETE FROM \`ItemCategories\` WHERE (\`idOrigin\` = ?) AND (\`itemID\` = ?)`, [request.data.idOrigin, request.data.itemID]);
             if (categories != undefined) {
               categories.forEach(category => {
                 let count = alasql(`SELECT COUNT(*) FROM \`ItemCategories\` WHERE \`category_id\` = ?`, [category.category_id]);
@@ -493,7 +493,7 @@ self.onmessage = async function(event) {
               });
             }
           }
-          alasql(`DELETE FROM \`ReadlaterinfoItem\` WHERE (\`idOrigin\` = ?) AND (\`itemID\` = ?)`, [request.idOrigin, request.itemID]);
+          let result = alasql(`DELETE FROM \`ReadlaterinfoItem\` WHERE (\`idOrigin\` = ?) AND (\`itemID\` = ?)`, [request.data.idOrigin, request.data.itemID]);
         }
         break;
       }
