@@ -507,42 +507,27 @@ function GetReadLaterFeed() {
 
 // updates, shows and hides the badge
 function UpdateUnreadBadge() {
-    if (unreadInfo == null) {
-        return;
-    }
-
-    let total = 0;
-    let str = "";
-
-    for (let key in unreadInfo) {
-        if ((key != readLaterFeedID) && (key != allFeedsID)) {
-            let filteredfeeds = feeds.find(function (el) {
-                return (el.id == key) && (el.excludeUnreadCount == 1);
-            });
-            if (filteredfeeds == undefined) {
-                total = total + unreadInfo[key].unreadtotal;
+    sendtoSQL('getUnreadCount', 'UpdateGroupUnread', true, { groupid: allFeedsID }, function(data){
+        if (data != null) {
+            let total = data;
+            let str = "";
+            if ((options.unreadtotaldisplay != 0) && (options.unreadtotaldisplay != 2)) {
+                if (total > 0) {
+                    str = total + "";
+                }
             }
+            unreadTotal = total;
+
+            // update badge
+            chrome.action.setBadgeText({text: str});
+
         }
-    }
-
-    if (total > 0) {
-        str = total + "";
-    }
-
-    // they don't want toolbar unread updates
-    if (options.unreadtotaldisplay == 0 || options.unreadtotaldisplay == 2) {
-        str = "";
-    }
+    });
 
     if (newNotif) {
         NotifyNew();
         newNotif = false;
     }
-
-    unreadTotal = total;
-
-    // update badge
-    chrome.action.setBadgeText({text: str});
 
     // update title
     if (viewerPort != null) {

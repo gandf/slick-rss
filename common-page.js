@@ -62,16 +62,19 @@ function GetGroupKeyByID(id) {
     }
 }
 
-function GetFeedInfoItem(feedID, itemIndex) {
-    let feedGroupInfo = feedInfo[feedID];
-
-    if (feedGroupInfo == null) {
-        feedGroupInfo = feedInfo[groupInfo[feedID].items[itemIndex].idOrigin].items.find(function (el) {
-            return (el.itemID == groupInfo[feedID].items[itemIndex].itemID);
-        });
-        return feedGroupInfo;
+function GetFeedInfoItem(IsFeed, feedID, itemIndex) {
+    if (IsFeed) {
+        let feedGroupInfo = feedInfo[feedID];
+        if (feedGroupInfo) {
+            return feedGroupInfo.items[itemIndex];
+        }
+    } else {
+        if (groupInfo[feedID]) {
+            if (groupInfo[feedID].items) {
+                return groupInfo[feedID].items[itemIndex];
+            }
+        }
     }
-    return feedGroupInfo.items[itemIndex];
 }
 
 function formatBytes(a,b=2){let textBytes=GetMessageText("Bytes");let textKB=GetMessageText("KB");let textMB=GetMessageText("MB");let textGB=GetMessageText("GB");let textTB=GetMessageText("TB");let textPB=GetMessageText("PB");let textEB=GetMessageText("EB");let textZB=GetMessageText("ZB");let textYB=GetMessageText("YB");if(0===a)return`0 ${textBytes}`;const c=0>b?0:b,d=Math.floor(Math.log(a)/Math.log(1024));return parseFloat((a/Math.pow(1024,d)).toFixed(c))+" "+[`${textBytes}`,`${textKB}`,`${textMB}`,`${textGB}`,`${textTB}`,`${textPB}`,`${textEB}`,`${textZB}`,`${textYB}`][d]}

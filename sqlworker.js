@@ -532,13 +532,6 @@ self.onmessage = async function(event) {
         }
         break;
       }
-      case 'getUnreadTotal':
-      {
-        if (canWork) {
-          result(responseName(request.type), request.id, request.waitResponse, alasql(`SELECT SUM(\`unreadtotal\`) FROM \`Unreadinfo\``));
-        }
-        break;
-      }
       case 'getUnreadCount':
       {
         if (canWork && (request.data != undefined)) {

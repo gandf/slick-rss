@@ -337,24 +337,28 @@ function UpdateLoadingProgress(currentFeeds, currentFeedsCount) {
 
 function UpdateTitle() {
     let title = "Slick RSS" + (selectedFeedKeyIsFeed ? (feeds[selectedFeedKey] ? " [" + feeds[selectedFeedKey].title + "]" : "") : (groups[selectedFeedKey] ? " [" + groups[selectedFeedKey].title + "]" : ""));
-
-    sendtoSQL('getUnreadTotal', 'UpdateTitle', true, undefined, function(data){
-        if (data != undefined)
-            unreadTotal = data;
-        if ((options.unreadtotaldisplay >= 2) && options.unreaditemtotaldisplay && unreadTotal > 0) {
-            title += " (" + unreadTotal + ")";
-        }
-
+    if (selectedFeedKey) {
+        sendtoSQL('getUnreadCount', 'UpdateTitle', true, selectedFeedKeyIsFeed ? { feedid: feeds[selectedFeedKey].id } : { groupid: groups[selectedFeedKey].id }, function(data){
+            if (data != undefined)
+                unreadTotal = data;
+            if ((options.unreadtotaldisplay >= 2) && options.unreaditemtotaldisplay && unreadTotal > 0) {
+                title += " (" + unreadTotal + ")";
+            }
+    
+            document.title = title;
+            document.getElementById("markAllRead").style.display = (unreadTotal > 0) ? "" : "none";
+        });
+    } else {
         document.title = title;
-        document.getElementById("markAllRead").style.display = (unreadTotal > 0) ? "" : "none";
-    });
+        document.getElementById("markAllRead").style.display = "none";
+    }
 }
 
 function ShowFeeds() {
-    /*if (readingFeeds) {
+    if (readingFeeds) {
         showingFeeds = true;
         return;
-    }*/
+    }
 
 	sendtoSQL('getLastSelectedFeed', 'ShowFeeds', true, undefined, function(data){
         let selectKey = null;
@@ -560,45 +564,40 @@ function UpdateFeedUnread(id) {
         return;
     }
 
-    let count;
-    if (id == readLaterFeedID) {
-        count = readlaterInfo[readLaterFeedID].items.length;
-    } else {
-        count = unreadInfo[id].unreadtotal;
-    }
+    sendtoSQL('getUnreadCount', 'UpdateReadAllIcon', true, { feedid: id }, function(data){
+        if (data != null) {
+            let count = data;
 
-    if (count > 0) {
-        if (document.getElementById("feedTitleFeed" + id) != null) {
-            document.getElementById("feedTitleFeed" + id).style.fontWeight = "bold";
-        }
-        if (document.getElementById("feedUnreadFeed" + id) != null) {
-            document.getElementById("feedUnreadFeed" + id).innerText = " (" + count + ")";
-        }
-    } else {
-        if (document.getElementById("feedTitleFeed" + id) != null) {
-            document.getElementById("feedTitleFeed" + id).style.fontWeight = "normal";
-        }
-        if (document.getElementById("feedUnreadFeed" + id) != null) {
-            document.getElementById("feedUnreadFeed" + id).innerText = "";
-        }
-    }
-    if (options.showallfeeds) {
-        UpdateGroupUnread(0);
-    }
-    let currentFeed = feeds.find(function (el) {
-        return (el.id == id);
-    });
-    if (currentFeed != null) {
-        if (currentFeed.group != "") {
-            for (let i = 0; i < groups.length; i++) {
-                if (groups[i].group == currentFeed.group) {
-                    UpdateGroupUnread(i);
-                    break;
+            if (count > 0) {
+                if (document.getElementById("feedTitleFeed" + id) != null) {
+                    document.getElementById("feedTitleFeed" + id).style.fontWeight = "bold";
+                }
+                if (document.getElementById("feedUnreadFeed" + id) != null) {
+                    document.getElementById("feedUnreadFeed" + id).innerText = " (" + count + ")";
+                }
+            } else {
+                if (document.getElementById("feedTitleFeed" + id) != null) {
+                    document.getElementById("feedTitleFeed" + id).style.fontWeight = "normal";
+                }
+                if (document.getElementById("feedUnreadFeed" + id) != null) {
+                    document.getElementById("feedUnreadFeed" + id).innerText = "";
                 }
             }
+            let currentFeed = feeds.find(function (el) {
+                return (el.id == id);
+            });
+            if (currentFeed != null) {
+                if (currentFeed.group != "") {
+                    let keys = Object.keys(groups);
+                    let key = keys.find(k => groups[k].title == currentFeed.group);
+                    if (key) {
+                        UpdateGroupUnread(key);
+                    }
+                }
+            }
+            FixFeedList();
         }
-    }
-    FixFeedList();
+    });
 }
 
 // updates a group item's unread count
@@ -676,6 +675,7 @@ function MarkAllFeedsRead() {
         }
     }
     if (refresh) {
+        UpdateUnreadBadge();
         ReloadViewer();
     }
 }
@@ -706,6 +706,7 @@ function MarkFeedRead(feedID) {
         SaveUnreadInfo(listUnread, true);
         UpdateFeedUnread(feedID);
         UpdateReadAllIcon("Feed");
+        UpdateUnreadBadge();
     } else {
         groupKey = GetGroupKeyByID(feedID);
         if (groupKey != null) {
@@ -815,6 +816,7 @@ function MarkItemRead(itemID) {
     SaveUnreadInfo(listUnread, true);
     UpdateFeedUnread(feedID);
     UpdateReadAllIcon((selectedFeedKeyIsFeed) ? "Feed" : "Group");
+    UpdateUnreadBadge();
 }
 
 function MarkItemUnread(itemID) {
@@ -876,6 +878,7 @@ function MarkItemUnread(itemID) {
         UpdateFeedUnread(readLaterFeedID);
         UpdateFeedUnread(feedID);
         UpdateReadAllIcon((selectedFeedKeyIsFeed) ? "Feed" : "Group");
+        UpdateUnreadBadge();
     }
 }
 
@@ -886,8 +889,6 @@ function ShowContent(numImg, containerId, feedID, itemIndex, sens) {
     let feedPreviewSummaryContent = container.querySelector('.feedPreviewSummaryContent');
     let feedPreviewSummary = container.querySelector('.feedPreviewSummary');
 
-    //currentImg.setAttribute("display", "none");
-    //otherImg.setAttribute("display", "");
     currentImg.style.display = "none";
     otherImg.style.display = "";
 
@@ -902,19 +903,18 @@ function ShowContent(numImg, containerId, feedID, itemIndex, sens) {
     }
 }
 
-function MarkItemReadLater(feedID, itemIndex) {
-    let currentItem = GetFeedInfoItem(feedID, itemIndex);
-    currentItem.idOrigin = feedID;
+function MarkItemReadLater(IsFeed, feedID, itemIndex) {
+    let currentItem = GetFeedInfoItem(IsFeed, feedID, itemIndex);
     let itemID = currentItem.itemID;
     let itemExist = false;
     let requests = [];
 
     for (let i = 0; i < readlaterInfo[readLaterFeedID].items.length; i++) {
-        if ((readlaterInfo[readLaterFeedID].items[i].idOrigin == feedID) && (readlaterInfo[readLaterFeedID].items[i].itemID == itemID)) {
+        if ((readlaterInfo[readLaterFeedID].items[i].idOrigin == currentItem.idOrigin) && (readlaterInfo[readLaterFeedID].items[i].itemID == itemID)) {
             itemExist = true;
             //update items
             readlaterInfo[readLaterFeedID].items[i] = currentItem;
-            requests.push({type: 'removeReadlaterinfoItem', waitResponse: false, data: { idOrigin: feedID, itemID: itemID }  });
+            requests.push({type: 'removeReadlaterinfoItem', waitResponse: false, data: { idOrigin: currentItem.idOrigin, itemID: itemID }  });
             requests.push({type: 'setReadlaterinfoItem', waitResponse: false, data: currentItem });
             break;
         }
@@ -1463,8 +1463,8 @@ function RenderFeed(type, feedsOrGroupsInfo) {
                 feedReadLater.setAttribute("title", GetMessageText("backReadLater"));
                 feedReadLater.addEventListener("mouseover", onmouseover);
                 feedReadLater.addEventListener("mouseout", onmouseout);
-                $(feedReadLater).click({feedID: feedID, i: i}, function (event) {
-                    MarkItemReadLater(event.data.feedID, event.data.i);
+                $(feedReadLater).click({IsFeed: type == "Feed", feedID: feedID, i: i}, function (event) {
+                    MarkItemReadLater(event.data.IsFeed, event.data.feedID, event.data.i);
                     return false;
                 });
                 feedTitle.appendChild(feedReadLater);
@@ -1968,6 +1968,7 @@ function OpenAllFeedButton(feedID) {
             SaveUnreadInfo(listUnread, true);
             UpdateFeedUnread(feedID);
             UpdateReadAllIcon("Feed");
+            UpdateUnreadBadge();
         }
     } else {
         groupKey = GetGroupKeyByID(feedID);
