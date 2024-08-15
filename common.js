@@ -12,6 +12,7 @@ var listCategoriesRegistered;
 var readlaterInfo;
 var senderSql;
 var optionFrom;
+var itemToNotif;
 
 var datacommoninitialized;
 if (datacommoninitialized !== true) {
@@ -119,9 +120,6 @@ function GetMessageText(value) {
     if (options.forcelangen) {
         return chrome.i18n.getMessage('en' + value);
     } else {
-        if (chrome.i18n.getMessage(value) == "") {
-            alert("Missing message: " + value); //**** To remove
-        }
         return chrome.i18n.getMessage(value);
     }
 }
@@ -621,10 +619,6 @@ function GetFeedsFilterByGroup(key) {
     return filteredFeeds;
 }
 
-function saveReadlaterInfo() {
-    return SetUnreadInfoWithPromise(unreadInfo);
-}
-
 function FormatDTWithMs(mseconds) {
     let seconds = Math.floor(mseconds / 1000);
     mseconds = mseconds - (seconds * 1000);
@@ -689,38 +683,17 @@ function NotifyNew() {
     if (options.playSoundNotif) {
         if (Notification.permission == "granted") {
             let NewItems = [];
-            let NewItemsCount = 0;
 
-            let keys = Object.keys(feeds);
-            for (let i = 0 ; i < keys.length ; i++) {
-                let feedTmp = feeds[keys[i]];
-                if (feedTmp.id != readLaterFeedID) {
-                    let keysInfo = Object.keys(feedInfo[feedTmp.id].items);
-                    for (let j = 0; j < keysInfo.length; j++) {
-                        let feedInfoTmp = feedInfo[feedTmp.id].items[keysInfo[j]];
-
-                        if (!ItemIsRead(feedTmp.id, feedInfoTmp.itemID)) {
-                            if (feedInfoTmp.title != undefined) {
-                                NewItemsCount++;
-                                NewItems.push({title: feedInfoTmp.title.substring(0,40) + '...', message: ""});
-                            } else {
-                                if (feedInfoTmp.description != undefined) {
-                                    NewItemsCount++;
-                                    NewItems.push({title: feedInfoTmp.description.substring(0,30) + '...', message: ""});
-                                }
-                            }
-                            if (NewItemsCount == 4) {
-                                break;
-                            }
-                        }
+            itemToNotif.forEach(function (item) {
+                if (item.title && typeof item.title === 'string') {
+                    NewItems.push({title: item.title.substring(0,40) + '...', message: ""});
+                } else {
+                    if (item.description && typeof item.description === 'string') {
+                        NewItems.push({title: item.description.substring(0,30) + '...', message: ""});
                     }
                 }
-                if (NewItemsCount == 4) {
-                    break;
-                }
-            }
-
-            if (NewItemsCount > 0) {
+            });
+            if (NewItems.length > 0) {
                 let NotOpt = {
                     type: "list",
                     title: GetMessageText("NotifyTitle"),
@@ -733,6 +706,7 @@ function NotifyNew() {
             }
         }
     }
+    itemToNotif = [];
 }
 
 function SetUnreadInfo(data, callback) {
@@ -757,19 +731,6 @@ function SetUnreadInfo(data, callback) {
         callback();
     });
 }
-
-function SetUnreadInfoWithPromise(data) {
-    let resolveSetUnreadInfo;
-    let waitSetUnreadInfo = new Promise((resolve) => {
-        resolveSetUnreadInfo = resolve;
-    });
-
-    SetUnreadInfo(data, function () {
-        resolveSetUnreadInfo();
-    });
-    return waitSetUnreadInfo;
-}
-
 
 // gets the feed array for everyone to use
 function GetFeedsSimple(callBack) {

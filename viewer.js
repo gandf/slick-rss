@@ -9,7 +9,8 @@ $(document).ready(function () {
     $('#refreshButton').click(function () {
         chrome.runtime.sendMessage({
             type: "checkForUnreadOnSelectedFeed",
-            selectedFeedKey: selectedFeedKey
+            FeedID: selectedFeedKeyIsFeed ? feeds[selectedFeedKey].id : groups[selectedFeedKey].id,
+            IsFeed: selectedFeedKeyIsFeed
         }).then(function () {
         });
     });
@@ -210,7 +211,7 @@ chrome.tabs.getCurrent(function(tab) {
         const currentTabId = tab.id;
         chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
             if (tabId === currentTabId) {
-                //Refresh data TODO *******
+                //Refresh data TODO ***
             }
         });
     }
@@ -690,7 +691,12 @@ function MarkFeedRead(feedID) {
         // for read later feeds, nuke the items instead of mark read
         if (feedID == readLaterFeedID) {
             readlaterInfo[readLaterFeedID].items = [];
-            saveReadlaterInfo();
+
+            let requests = [];
+            requests.push({type: 'clearReadlaterinfo', waitResponse: false });
+            requests.push({type: 'export', responsetype: 'responseExport', tableName: 'ReadlaterinfoItem', waitResponse: true, subtype: 'ReadlaterinfoItem' });
+            sendtoSQL('requests', 'MarkFeedRead', false, { requests: requests });
+
             SelectFeed(0);
         } else {
             MarkFeedReadSub(feedID, itemID, listUnread, className, container);
@@ -897,27 +903,32 @@ function ShowContent(numImg, containerId, feedID, itemIndex, sens) {
 
 function MarkItemReadLater(feedID, itemIndex) {
     let currentItem = GetFeedInfoItem(feedID, itemIndex);
+    currentItem.idOrigin = feedID;
     let itemID = currentItem.itemID;
     let itemExist = false;
+    let requests = [];
 
     for (let i = 0; i < readlaterInfo[readLaterFeedID].items.length; i++) {
         if (readlaterInfo[readLaterFeedID].items[i].itemID == itemID) {
             itemExist = true;
             //update items
             readlaterInfo[readLaterFeedID].items[i] = currentItem;
+            requests.push({type: 'removeReadlaterinfoItem', waitResponse: false, data: { idOrigin: feedID, itemID: itemID }  });
+            requests.push({type: 'setReadlaterinfoItem', waitResponse: false, data: currentItem });
             break;
         }
     }
     if (!itemExist) {
         readlaterInfo[readLaterFeedID].items.push(currentItem);
+        requests.push({type: 'setReadlaterinfoItem', waitResponse: false, data: currentItem });
     }
-//TODO ***
+
     unreadInfo[readLaterFeedID].unreadtotal = readlaterInfo[readLaterFeedID].items.length;
+    requests.push({type: 'export', responsetype: 'responseExport', tableName: 'ReadlaterinfoItem', waitResponse: true, subtype: 'ReadlaterinfoItem' });
+    sendtoSQL('requests', 'MarkItemReadLater', false, { requests: requests });
 
     MarkItemRead(itemID);
     UpdateFeedUnread(readLaterFeedID);
-
-    saveReadlaterInfo();
 }
 
 function UnMarkItemReadLater(itemIndex) {
@@ -929,18 +940,35 @@ function UnMarkItemReadLater(itemIndex) {
 }
 
 function UnMarkItemReadLaterWithoutSelectFeed(itemIndex) {
-    let promiseSaved = null;
+	let ResolveUnreafLaterInfo;
+    let waitSqlUnreafLaterInfo = new Promise((resolve) => {
+        ResolveUnreafLaterInfo = resolve;
+    });
+
     if (itemIndex >= 0) {
-        if (readlaterInfo[readLaterFeedID].items[itemIndex] != undefined) {
+        let currentitem = readlaterInfo[readLaterFeedID].items[itemIndex];
+        if (currentitem != undefined) {
+            let requests = [];
+            requests.push({type: 'removeReadlaterinfoItem', waitResponse: false, data: { idOrigin: currentitem.idOrigin, itemID: currentitem.itemID }  });
+            requests.push({type: 'export', responsetype: 'responseExport', tableName: 'ReadlaterinfoItem', waitResponse: true, subtype: 'ReadlaterinfoItem' });
+            sendtoSQL('requests', 'UnMarkItemReadLaterWithoutSelectFeed', true, { requests: requests }, function(){
+                ResolveUnreafLaterInfo();
+            });
+
             readlaterInfo[readLaterFeedID].items.splice(itemIndex, 1);
             unreadInfo[readLaterFeedID].unreadtotal = readlaterInfo[readLaterFeedID].items.length;
-            promiseSaved = saveReadlaterInfo();
+        
             UpdateUnreadBadge();
 
             UpdateFeedUnread(readLaterFeedID);
+        } else {
+            ResolveUnreafLaterInfo();
         }
+    } else {
+        ResolveUnreafLaterInfo();
     }
-    return promiseSaved;
+
+    return waitSqlUnreafLaterInfo;
 }
 
 function SelectFeed(key) {
@@ -952,6 +980,9 @@ function SelectGroup(key) {
 }
 
 function SelectFeedOrGroup(key, type) {
+    if (key == null) {
+        return;
+    }
     if (typeof key === 'string') {
         key = parseInt(key);
     }
@@ -988,19 +1019,24 @@ function SelectFeedOrGroup(key, type) {
 
     listPromise.push(waitGetInfo);
     if (type == "Feed") {
-        sendtoSQL('getCacheFeedInfo', 'ViewerShowFeeds', true, { feed_id: feeds[key].id }, function(data){
-            if (data != null) {
-                if (data.length > 0) {
-                    if (data[0].items != undefined) {
-                        feedsOrGroupsInfo = data[0];
-                        feedInfo[feeds[key].id].items = feedsOrGroupsInfo.items;
-                    }
-                }
-            }
-            resolveGetInfo();
-        });
         if (feeds[key].id == readLaterFeedID) {
             listPromise.push(loadReadlaterInfo());
+            resolveGetInfo();
+        } else {
+            sendtoSQL('getCacheFeedInfo', 'ViewerShowFeeds', true, { feed_id: feeds[key].id }, function(data){
+                if (data != null) {
+                    if (data.length > 0) {
+                        if (data[0].items != undefined) {
+                            feedsOrGroupsInfo = data[0];
+                            if (feedInfo[feeds[key].id] == undefined) {
+                                feedInfo[feeds[key].id] = feedsOrGroupsInfo;
+                            }
+                            feedInfo[feeds[key].id].items = feedsOrGroupsInfo.items;
+                        }
+                    }
+                }
+                resolveGetInfo();
+            });
         }
     } else {
         sendtoSQL('getGroupInfo', 'ViewerShowGroups', true, { group_id: key }, function(data){
@@ -1035,7 +1071,7 @@ function SelectFeedOrGroup(key, type) {
         lastSelectedFeed.lastSelectedFeedID = feedsOrGroups[key].id;
         lastSelectedFeed.lastSelectedFeedType = type;
 
-		requests = [];
+		let requests = [];
 		requests.push({type: 'setLastSelectedFeed', waitResponse: false, data: lastSelectedFeed });
 		requests.push({type: 'export', responsetype: 'responseExport', tableName: 'LastSelectedFeed', waitResponse: true, subtype: 'LastSelectedFeed' });
 		sendtoSQL('requests', 'SelectFeedOrGroup', false, { requests: requests });
@@ -1043,11 +1079,7 @@ function SelectFeedOrGroup(key, type) {
         document.getElementById("feedPreviewScroller").scrollTop = 0;
 
         clearTimeout(feedReadToID);
-
-        if ((selectedFeedKey != null) && (selectedFeedKey != undefined)) {
-            document.getElementById("feedTitle" + lastSelectedFeedType + lastSelectedFeedID).setAttribute("class", "");
-        }
-
+        unselectAllFeeds();
         document.getElementById("feedTitle" + type + feedsOrGroups[key].id).setAttribute("class", "selectedFeed");
 
         selectedFeedKey = key;
@@ -1182,11 +1214,7 @@ function SelectFeedRL() {
             document.getElementById("feedPreviewScroller").scrollTop = 0;
 
             clearTimeout(feedReadToID);
-
-            if ((selectedFeedKey != null) && (selectedFeedKey != undefined)) {
-                document.getElementById("feedTitle" + lastSelectedFeedType + lastSelectedFeedID).setAttribute("class", "");
-            }
-
+            unselectAllFeeds();
             document.getElementById("feedTitleFeed" + readLaterFeedID).setAttribute("class", "selectedFeed");
 
             selectedFeedKey = 0; //must change by id
@@ -1918,7 +1946,10 @@ function OpenAllFeedButton(feedID) {
             }
 
             readlaterInfo[readLaterFeedID].items = [];
-            saveReadlaterInfo();
+            let requests = [];
+            requests.push({type: 'clearReadlaterinfo', waitResponse: false });
+            requests.push({type: 'export', responsetype: 'responseExport', tableName: 'ReadlaterinfoItem', waitResponse: true, subtype: 'ReadlaterinfoItem' });
+            sendtoSQL('requests', 'MarkFeedRead', false, { requests: requests });
             SelectFeed(0);
         } else {
             OpenAllFeedFromButton(feedID, container, itemID, className, listUnread);
@@ -2054,7 +2085,7 @@ function ListAllCategories() {
             isAllFeed = (groups[selectedFeedKey].id == allFeedsID);
         }
     }
-    if ((selectedFeedKey != null) && !(isAllFeed)) {
+    if ((selectedFeedKey != null) && !isAllFeed) {
         if ((selectedFeedKey == readLaterFeedID) || (selectedFeedKey == 0)) {
             info = readlaterInfo[readLaterFeedID];
         } else {
@@ -2066,12 +2097,14 @@ function ListAllCategories() {
         }
 
         if (info != undefined) {
-            let nbItem = info.items.length;
-            for (let j = 0; j < nbItem; j++) {
-                let item = info.items[j];
-                resultCat = SearchCat(categoryArray, categoryArrayUpper, item);
-                categoryArray = resultCat.categoryArray;
-                categoryArrayUpper = resultCat.categoryArrayUpper;
+            if (info.items != undefined) {
+                let nbItem = info.items.length;
+                for (let j = 0; j < nbItem; j++) {
+                    let item = info.items[j];
+                    resultCat = SearchCat(categoryArray, categoryArrayUpper, item);
+                    categoryArray = resultCat.categoryArray;
+                    categoryArrayUpper = resultCat.categoryArrayUpper;
+                }
             }
         }
         return sortArrayStr(categoryArray);
@@ -2082,12 +2115,14 @@ function ListAllCategories() {
     for (let i = 0; i <nbKeys; i++) {
         if ((keys[i] != allFeedsID) && (keys[i] != readLaterFeedID)) {
             if (!feedInfo[keys[i]].loading) {
-                let nbItem = feedInfo[keys[i]].items.length;
-                for (let j = 0; j < nbItem; j++) {
-                    let item = feedInfo[keys[i]].items[j];
-                    resultCat = SearchCat(categoryArray, categoryArrayUpper, item);
-                    categoryArray = resultCat.categoryArray;
-                    categoryArrayUpper = resultCat.categoryArrayUpper;
+                if (feedInfo[keys[i]].items != undefined) {
+                    let nbItem = feedInfo[keys[i]].items.length;
+                    for (let j = 0; j < nbItem; j++) {
+                        let item = feedInfo[keys[i]].items[j];
+                        resultCat = SearchCat(categoryArray, categoryArrayUpper, item);
+                        categoryArray = resultCat.categoryArray;
+                        categoryArrayUpper = resultCat.categoryArrayUpper;
+                    }
                 }
             }
         }
@@ -2163,4 +2198,12 @@ function GetCurrentInfo() {
         }
     }
     return {info: info, id: id};
+}
+
+function unselectAllFeeds() {
+    let elements = document.querySelectorAll('.selectedFeed');
+
+    elements.forEach(element => {
+        element.classList.remove('selectedFeed');
+    });
 }

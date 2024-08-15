@@ -168,7 +168,19 @@ function OnMessageRequest(request, sender, sendResponse) {
         return;
     }
     if (request.type == "checkForUnreadOnSelectedFeed") {
-        CheckForUnreadStart(request.selectedFeedKey);
+        if (request.IsFeed) {
+            CheckForUnreadStart(request.FeedID);
+        } else {
+            let idgroup = groups.findIndex(function (el) {
+                return (el.id == request.selectedFeedKey);
+            });
+            let listfeeds = feeds.find(function (el) {
+                return (el.group == groups[idgroup].title);
+            });
+            listfeeds.forEach(function (feed) {
+                CheckForUnreadStart(feed.id);
+            });
+        }
         sendResponse({});
         if (options.log) {
             console.log('|checkForUnreadOnSelectedFeed | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
@@ -492,6 +504,8 @@ function CheckForUnreadStart(key) {
     if (checkingForUnread || feeds.length == 0) {
         return;
     }
+    
+    itemToNotif = [];
 
     checkForUnreadCounter = (key == null) ? 0 : key;
     allFeedsUnreadCounter = (key == null) ? -2 : -1; //-2 empty before
@@ -539,7 +553,12 @@ function CheckForUnreadStart(key) {
     // keep timer going on "refresh"
     if (key != null) {
         refreshFeed = true;
-        CheckForUnread(checkForUnreadCounter);
+        let checkForUnreadCounter = feeds.findIndex(function (el) {
+            return (el.id == key);
+        });
+        if (checkForUnreadCounter !== -1) {
+            CheckForUnread(checkForUnreadCounter);
+        }
     }
 }
 
@@ -747,13 +766,13 @@ function CheckForUnread(checkForUnreadCounterID) {
                                 item.idOrigin = feedID;
                                 item.updated = false;
                                 item.guid = SearchTag(entries[e], "", ["GUID"], 0);
-                                if (item.guid == "") {
+                                if (!item.guid) {
                                     item.guid = SearchTag(entries[e], "", ["ID"], 0);
                                 }
-                                if (item.guid == "") {
+                                if (!item.guid) {
                                     item.guid = null;
                                 }
-                                if (item.guid != undefined) {
+                                if (item.guid) {
                                     if (typeof item.guid == "object") {
                                         if (item.guid[0] != undefined) {
                                             if (item.guid[0][0] != undefined) {
@@ -762,12 +781,16 @@ function CheckForUnread(checkForUnreadCounterID) {
                                                 }
                                             }
                                         }
-                                        if (typeof item.guid != "string") {
+                                        if (item.guid) {
+                                            if (typeof item.guid != "string") {
+                                                item.guid = String(item.guid);
+                                            }
+                                        } else {
                                             item.guid = undefined;
                                         }
                                     }
                                 }
-                                if (item.guid == undefined) {
+                                if (!item.guid) {
                                     if (useDateInID) {
                                         item.itemID = sha256(item.title + item.date);
                                     } else {
@@ -1091,10 +1114,18 @@ function CheckForUnread(checkForUnreadCounterID) {
                         resolveCheckForUnreadUnreadInfo();
                     });
 
-                    for (let i = 0; i < feedInfo[feedID].items.length; i++) {
-                        if (!oldFeedInfoItems.includes(feedInfo[feedID].items[i].itemID)) {
-                            newNotif = true;
-                            break;
+                    let tmpItems = feedInfo[feedID].items;
+                    if (itemToNotif.length < 4) {
+                        for (let i = 0; i < tmpItems.length; i++) {
+                            if (!oldFeedInfoItems.includes(tmpItems[i].itemID)) {
+                                if (!ItemIsRead(feedID, tmpItems[i].itemID)) {
+                                    newNotif = true;
+                                    itemToNotif.push(tmpItems[i]);
+                                    if (itemToNotif.length == 4) {
+                                        break;
+                                    }
+                                }
+                            }
                         }
                     }
 

@@ -52,8 +52,8 @@ self.onmessage = async function(event) {
           CREATE TABLE `Options` (`value` JSON);");
 
         alasql("DROP TABLE IF EXISTS `ReadlaterinfoItem`;\
-          CREATE TABLE `ReadlaterinfoItem` (`readlaterinfo_id` INT, `itemiD` string, `title` string, `summary` string, `thumbnail` string, `content` string,\
-            `date` string, `guid` string, `order` INT, idOrigin string, `updated` boolean, `url` string, `author` string, `comments` string, PRIMARY KEY (`readlaterinfo_id`, `itemiD`));");
+          CREATE TABLE `ReadlaterinfoItem` (`itemID` string, `title` string, `summary` string, `thumbnail` string, `content` string,\
+            `date` string, `guid` string, `order` INT, idOrigin string, `updated` boolean, `url` string, `author` string, `comments` string, PRIMARY KEY (`idOrigin`, `itemID`));");
 
         alasql("DROP TABLE IF EXISTS `ItemCategories`;\
           CREATE TABLE `ItemCategories` (`idOrigin` INT, `itemID` string, `category_id` INT, PRIMARY KEY (`idOrigin`, `itemID`, `category_id`));");
@@ -457,7 +457,7 @@ self.onmessage = async function(event) {
       case 'setReadlaterinfoItem':
       {
         if (canWork && (request.data != undefined)) {
-          alasql(`INSERT INTO \`ReadlaterinfoItem\` VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [readLaterFeedID, request.data.itemID, request.data.title,
+          let result = alasql(`INSERT INTO \`ReadlaterinfoItem\` VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [request.data.itemID, request.data.title,
             request.data.summary, request.data.thumbnail, request.data.content, request.data.date, request.data.guid, request.data.order, 
             request.data.idOrigin, request.data.updated, request.data.url, request.data.author, request.data.comments]);
           if (request.data.category_names != undefined) {
@@ -480,10 +480,10 @@ self.onmessage = async function(event) {
       case 'removeReadlaterinfoItem':
       {
         if (canWork && (request.itemID != undefined)) {
-          let item = alasql(`SELECT \`readlaterinfo_id\` FROM \`ReadlaterinfoItem\` WHERE \`itemID\` = ?`, [request.itemID]);
+          let item = alasql(`SELECT \`itemID\` FROM \`ReadlaterinfoItem\` WHERE (\`idOrigin\` = ?) AND (\`itemID\` = ?)`, [request.idOrigin, request.itemID]);
           if (item != undefined) {
-            let categories = alasql(`SELECT \`category_id\` FROM \`ItemCategories\` WHERE \`itemID\` = ?`, [request.itemID]);
-            alasql(`DELETE FROM \`ItemCategories\` WHERE \`itemID\` = ?`, [request.itemID]);
+            let categories = alasql(`SELECT \`category_id\` FROM \`ItemCategories\` WHERE (\`idOrigin\` = ?) AND (\`itemID\` = ?)`, [request.idOrigin, request.itemID]);
+            alasql(`DELETE FROM \`ItemCategories\` WHERE (\`idOrigin\` = ?) AND (\`itemID\` = ?)`, [request.idOrigin, request.itemID]);
             if (categories != undefined) {
               categories.forEach(category => {
                 let count = alasql(`SELECT COUNT(*) FROM \`ItemCategories\` WHERE \`category_id\` = ?`, [category.category_id]);
@@ -493,7 +493,7 @@ self.onmessage = async function(event) {
               });
             }
           }
-          alasql(`DELETE FROM \`ReadlaterinfoItem\` WHERE \`itemID\` = ?`, [request.itemID]);
+          alasql(`DELETE FROM \`ReadlaterinfoItem\` WHERE (\`idOrigin\` = ?) AND (\`itemID\` = ?)`, [request.idOrigin, request.itemID]);
         }
         break;
       }
