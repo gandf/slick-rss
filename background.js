@@ -209,25 +209,6 @@ function OnMessageRequest(request, sender, sendResponse) {
         return;
     }
 
-    if (request.type == "getGroupCountUnread") {
-        let found = false;
-        if (request.data != null) {
-            if (groups[request.data] != undefined) {
-                if (groups[request.data].unreadCount != undefined) {
-                    sendResponse(groups[request.data].unreadCount);
-                    found = true;
-                }
-            }
-        }
-        if (!found) {
-            sendResponse(0);
-        }
-        if (options.log) {
-            console.log('|getGroupCountUnread | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
-        }
-        return;
-    }
-
     if (request.type == "refreshFeeds") {
         GetFeeds(function () {
             CheckForUnreadStart();
@@ -1335,7 +1316,6 @@ function UpdateGroups() {
             category: ""
         };
 
-        //***
         let keys = Object.keys(feedInfo);
         let info;
         for (let i = 0; i < keys.length; i++) {

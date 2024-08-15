@@ -607,12 +607,15 @@ function UpdateGroupUnread(key) {
         return;
     }
     let id = groups[key].id;
+    if (id == allFeedsID) {
+        return;
+    }
 
     if (!options.unreaditemtotaldisplay || (options.unreadtotaldisplay < 2)) {
         return;
     }
 
-    chrome.runtime.sendMessage({"type": "getGroupCountUnread", "data": key}).then(function (data) { //***
+    sendtoSQL('getUnreadCount', 'UpdateGroupUnread', true, { groupid: id }, function(data){
         if (data != null) {
             let count = data;
             if (document.getElementById("feedTitleGroup" + id) != null) {
@@ -632,18 +635,16 @@ function UpdateReadAllIcon(type) {
     let count = 0;
     if (unreadInfo != null) {
         if (type == "Feed") {
-            if (feeds[selectedFeedKey] != undefined) {
-                if (unreadInfo[feeds[selectedFeedKey].id] != null) {
-                    count = unreadInfo[feeds[selectedFeedKey].id].unreadtotal;
-                    if (count == 0) {
-                        count = GetUnreadCount(selectedFeedKey);
-                    }
+            sendtoSQL('getUnreadCount', 'UpdateReadAllIcon', true, { feedid: feeds[selectedFeedKey].id }, function(data){
+                if (data != null) {
+                    count = data;
                     document.getElementById("markFeedRead").style.display = (count > 0) ? "" : "none";
                     document.getElementById("openAllFeed").style.display = (count > 0) ? "" : "none";
                 }
-            }
+            });
         } else {
-            chrome.runtime.sendMessage({"type": "getGroupCountUnread", "data": selectedFeedKey}).then(function (data) { //***
+            let id = groups[selectedFeedKey].id;
+            sendtoSQL('getUnreadCount', 'UpdateReadAllIcon', true, { groupid: id }, function(data){
                 if (data != null) {
                     count = data;
                     document.getElementById("markFeedRead").style.display = (count > 0) ? "" : "none";
@@ -2087,7 +2088,7 @@ function ListAllCategories() {
     let resultCat;
     let info;
     let isAllFeed = false;
-//TODO ***
+
     if (!selectedFeedKeyIsFeed) {
         if (groups[selectedFeedKey] != undefined) {
             isAllFeed = (groups[selectedFeedKey].id == allFeedsID);

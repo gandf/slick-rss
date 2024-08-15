@@ -539,6 +539,41 @@ self.onmessage = async function(event) {
         }
         break;
       }
+      case 'getUnreadCount':
+      {
+        if (canWork && (request.data != undefined)) {
+          let resultdata;
+          if (request.data.feedid != undefined) {
+            if (request.data.feedid == readLaterFeedID) {
+              resultdata = alasql(`SELECT COUNT(*) AS nb FROM \`ReadlaterinfoItem\``);
+            } else {
+              resultdata = alasql(`SELECT COUNT(*) AS nb
+                FROM \`CacheFeedInfoItem\` AS feedinfo
+                LEFT JOIN \`UnreadinfoItem\` AS readitem ON (feedinfo.\`idOrigin\` = readitem.\`feed_id\`) AND (feedinfo.\`itemID\` = readitem.\`itemHash\`)
+                WHERE (readitem.\`itemHash\` IS NULL) AND (feedinfo.\`idOrigin\` = ?)`, [request.data.feedid]);
+              }
+          } else {
+            if (request.data.groupid != undefined) {
+              if (request.data.groupid == allFeedsID) {
+                resultdata = alasql(`SELECT COUNT(*) AS nb
+                  FROM \`Feeds\` AS feeds
+                  LEFT JOIN \`CacheFeedInfoItem\` AS feedinfo ON feedinfo.\`idOrigin\` = feeds.\`id\`
+                  LEFT JOIN \`UnreadinfoItem\` AS readitem ON (feedinfo.\`idOrigin\` = readitem.\`feed_id\`) AND (feedinfo.\`itemID\` = readitem.\`itemHash\`)
+                  WHERE (readitem.\`itemHash\` IS NULL) AND NOT(feedinfo.\`itemID\` IS NULL) AND NOT(feeds.\`id\` IS NULL)`);
+                } else {
+                resultdata = alasql(`SELECT COUNT(*) AS nb
+                  FROM \`Group\` AS gr
+                  LEFT JOIN \`Feeds\` AS feeds ON feeds.\`group_id\` = gr.\`id\`
+                  LEFT JOIN \`CacheFeedInfoItem\` AS feedinfo ON feedinfo.\`idOrigin\` = feeds.\`id\`
+                  LEFT JOIN \`UnreadinfoItem\` AS readitem ON (feedinfo.\`idOrigin\` = readitem.\`feed_id\`) AND (feedinfo.\`itemID\` = readitem.\`itemHash\`)
+                  WHERE (readitem.\`itemHash\` IS NULL) AND NOT(feedinfo.\`itemID\` IS NULL) AND NOT(feeds.\`id\` IS NULL) AND (gr.\`id\` = ?)`, [request.data.groupid]);
+                }
+            }
+          }
+          result(responseName(request.type), request.id, request.waitResponse, resultdata[0].nb);
+        }
+        break;
+      }
       case 'getUnreadinfo':
       {
         if (canWork) {
