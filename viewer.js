@@ -206,17 +206,6 @@ port.onMessage.addListener(function (msg) {
     }
 });
 
-chrome.tabs.getCurrent(function(tab) {
-    if (tab) {
-        const currentTabId = tab.id;
-        chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-            if (tabId === currentTabId) {
-                //Refresh data TODO ***
-            }
-        });
-    }
-});
-
 function ReloadViewer() {
     chrome.tabs.reload();
 }
@@ -1617,8 +1606,8 @@ function RenderFeed(type, feedsOrGroupsInfo) {
                 feedSummaryContent.style.display = "";
             }
 
-            if (options.usethumbnail && (item.thumbnail != null)) {
-                feedSummaryContent.innerHTML = '<div class="thumbnail">' + item.thumbnail + '</div>' + item.content; //***
+            if (options.usethumbnail && (item.thumbnail)) {
+                feedSummaryContent.innerHTML = '<div class="thumbnail">' + item.thumbnail + '</div>' + item.content;
             } else {
                 feedSummaryContent.innerHTML = item.content;
             }
@@ -1755,8 +1744,8 @@ function RenderFeed(type, feedsOrGroupsInfo) {
             feedSummary = document.createElement("div");
             feedSummary.setAttribute("class", "feedPreviewSummary");
             feedSummary.style.maxHeight = "none";
-            if (options.usethumbnail && (item.thumbnail != null)) {
-                feedSummary.innerHTML = '<div class="thumbnail">' + item.thumbnail + '</div>' + item.summary; //***
+            if (options.usethumbnail && (item.thumbnail)) {
+                feedSummary.innerHTML = '<div class="thumbnail">' + item.thumbnail + '</div>' + item.summary;
             } else {
                 feedSummary.innerHTML = item.summary;
             }

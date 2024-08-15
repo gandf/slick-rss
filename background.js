@@ -125,7 +125,7 @@ function ButtonClicked(tab) {
         chrome.tabs.query({url: chrome.runtime.getURL("viewer.html")}, function(tabs) {
             if (tabs.length > 0) {
                 viewerPort = chrome.tabs.connect(tabs[0].id);
-                chrome.tabs.update(tabs[0].id, {active: true});
+                chrome.tabs.reload(tabs[0].id, {bypassCache: true});
             } else {
                 chrome.tabs.create({url: chrome.runtime.getURL("viewer.html")});
             }
@@ -133,7 +133,7 @@ function ButtonClicked(tab) {
     } else {
         chrome.tabs.query({url: chrome.runtime.getURL("viewer.html")}, function(tabs) {
             if (tabs.length > 0) {
-                chrome.tabs.update(tabs[0].id, {active: true});
+                chrome.tabs.reload(tabs[0].id, {bypassCache: true});
             }
         });
     }
