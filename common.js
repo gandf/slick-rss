@@ -597,7 +597,7 @@ function GetFeedsFilterByGroup(key) {
         });
     } else {
         filteredFeeds = feeds.filter(function (el) {
-            return (el.group == groups[key].group) && (el.id != readLaterFeedID);
+            return (el.group == groups[key].title) && (el.id != readLaterFeedID);
         });
     }
 

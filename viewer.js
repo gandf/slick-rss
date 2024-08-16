@@ -674,7 +674,6 @@ function MarkFeedRead(feedID) {
     let container = null;
     let itemID = null;
     let className = (options.readitemdisplay == 0) ? " feedPreviewContainerRead" : " feedPreviewContainerRead feedPreviewContainerCondensed";
-    let groupKey = null;
     let listUnread = [];
 
     if (selectedFeedKeyIsFeed) {
@@ -689,7 +688,7 @@ function MarkFeedRead(feedID) {
 
             SelectFeedRL();
         } else {
-            MarkFeedReadSub(feedID, itemID, listUnread, className, container);
+            MarkFeedReadSub(true, feedID, itemID, undefined, listUnread, className, container);
         }
 
         SaveUnreadInfo(listUnread, true);
@@ -697,12 +696,11 @@ function MarkFeedRead(feedID) {
         UpdateReadAllIcon("Feed");
         UpdateUnreadBadge();
     } else {
-        groupKey = GetGroupKeyByID(feedID);
-        if (groupKey != null) {
-            if (groups[groupKey] != null) {
+        if (feedID != null) {
+            if (groups[feedID] != null) {
                 let feedFilteredList;
-                if (groups[groupKey].id != allFeedsID) {
-                    feedFilteredList = GetFeedsFilterByGroup(groupKey);
+                if (groups[feedID].id != allFeedsID) {
+                    feedFilteredList = GetFeedsFilterByGroup(feedID);
                 } else {
                     feedFilteredList = feeds.filter(function (el) {
                         return (el.id != readLaterFeedID);
@@ -710,7 +708,7 @@ function MarkFeedRead(feedID) {
                 }
                 if (feedFilteredList.length > 0) {
                     feedFilteredList.forEach((item) => {
-                        MarkFeedReadFromGroup(item.id);
+                        MarkFeedReadFromGroup(item.id, groups[feedID].id);
                     });
 
                     UpdateReadAllIcon("Group");
@@ -722,7 +720,7 @@ function MarkFeedRead(feedID) {
 }
 
 // marks a feed read from group.
-function MarkFeedReadFromGroup(feedID) {
+function MarkFeedReadFromGroup(feedID, groupid) {
     let container = null;
     let itemID = null;
     let className = (options.readitemdisplay == 0) ? " feedPreviewContainerRead" : " feedPreviewContainerRead feedPreviewContainerCondensed";
@@ -736,22 +734,37 @@ function MarkFeedReadFromGroup(feedID) {
         return;
     }
 
-    MarkFeedReadSub(feedID, itemID, listUnread, className, container);
+    MarkFeedReadSub(false, feedID, itemID, groupid, listUnread, className, container);
 
     SaveUnreadInfo(listUnread, true);
     UpdateFeedUnread(feedID);
 }
 
-function MarkFeedReadSub(feedID, itemID, listUnread, className, container) {
-    for (let i = 0; i < feedInfo[feedID].items.length; i++) {
-        itemID = feedInfo[feedID].items[i].itemID;
-        if (unreadInfo[feedID].readitems[itemID] == undefined) {
-            listUnread.push({id: feedID, key: itemID});
+function MarkFeedReadSub(FromFeed, feedID, itemID, groupid, listUnread, className, container) {
+    if (FromFeed) {
+        for (let i = 0; i < feedInfo[feedID].items.length; i++) {
+            itemID = feedInfo[feedID].items[i].itemID;
+            if (unreadInfo[feedID].readitems[itemID] == undefined) {
+                listUnread.push({id: feedID, key: itemID});
 
-            container = document.getElementById("item_" + feedID + "_" + itemID);
+                container = document.getElementById("item_" + feedID + "_" + itemID);
 
-            if (container != null) {
-                container.className = container.className + className;
+                if (container != null) {
+                    container.className = container.className + className;
+                }
+            }
+        }
+    } else {
+        for (let i = 0; i < groupInfo[groupid].items.length; i++) {
+            let newitem = groupInfo[groupid].items[i];
+            if (unreadInfo[newitem.idOrigin].readitems[newitem.itemID] == undefined) {
+                listUnread.push({id: newitem.idOrigin, key: newitem.itemID});
+
+                container = document.getElementById("item_" + newitem.idOrigin + "_" + newitem.itemID);
+
+                if (container != null) {
+                    container.className = container.className + className;
+                }
             }
         }
     }
@@ -1929,7 +1942,6 @@ function OpenAllFeedButton(feedID) {
     let container = null;
     let itemID = null;
     let className = (options.readitemdisplay == 0) ? " feedPreviewContainerRead" : " feedPreviewContainerRead feedPreviewContainerCondensed";
-    let groupKey = null;
     var listUnread = [];
 
     if (selectedFeedKeyIsFeed) {
@@ -1960,12 +1972,11 @@ function OpenAllFeedButton(feedID) {
             UpdateUnreadBadge();
         }
     } else {
-        groupKey = GetGroupKeyByID(feedID);
-        if (groupKey != null) {
-            if (groups[groupKey] != null) {
+        if (feedID != null) {
+            if (groups[feedID] != null) {
                 let feedFilteredList;
-                if (groups[groupKey].id != allFeedsID) {
-                    feedFilteredList = GetFeedsFilterByGroup(groupKey);
+                if (groups[feedID].id != allFeedsID) {
+                    feedFilteredList = GetFeedsFilterByGroup(feedID);
                 } else {
                     feedFilteredList = feeds.filter(function (el) {
                         return (el.id != readLaterFeedID);

@@ -51,17 +51,6 @@ function disableDarkMode() {
     }
 }
 
-function GetGroupKeyByID(id) {
-    if (groups == null) {
-        return null;
-    }
-    for (let i = 0; i < groups.length; i++) {
-        if (groups[i].id == id) {
-            return i;
-        }
-    }
-}
-
 function GetFeedInfoItem(IsFeed, feedID, itemIndex) {
     if (IsFeed) {
         let feedGroupInfo = feedInfo[feedID];

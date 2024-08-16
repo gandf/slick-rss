@@ -33,6 +33,7 @@ self.onmessage = async function(event) {
 
   for (let irequests = 0; irequests < requests.length; irequests++) {
     let request = requests[irequests];
+    try {
     switch (request.type) {
       case 'init':
       {
@@ -762,6 +763,9 @@ self.onmessage = async function(event) {
         }
         break;
       }
+    }
+  } catch (error) {
+    log(`error : ${error} request: ${JSON.stringify(request)}`);
     }
   };
   if (!canWork && initialized && tableInitialized === validTableNames.length) {
