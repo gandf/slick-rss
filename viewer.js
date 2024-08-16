@@ -760,7 +760,7 @@ function MarkFeedReadSub(FromFeed, feedID, itemID, groupid, listUnread, classNam
             if (unreadInfo[newitem.idOrigin].readitems[newitem.itemID] == undefined) {
                 listUnread.push({id: newitem.idOrigin, key: newitem.itemID});
 
-                container = document.getElementById("item_" + newitem.idOrigin + "_" + newitem.itemID);
+                container = document.getElementById("item_" + groupid + "_" + newitem.itemID);
 
                 if (container != null) {
                     container.className = container.className + className;
@@ -1962,7 +1962,7 @@ function OpenAllFeedButton(feedID) {
             sendtoSQL('requests', 'MarkFeedRead', false, { requests: requests });
             SelectFeedRL();
         } else {
-            OpenAllFeedFromButton(feedID, container, itemID, className, listUnread);
+            OpenAllFeedFromButton(true, feedID, container, undefined, itemID, className, listUnread);
         }
 
         if (listUnread.length > 0) {
@@ -1984,7 +1984,7 @@ function OpenAllFeedButton(feedID) {
                 }
                 if (feedFilteredList.length > 0) {
                     feedFilteredList.forEach((item) => {
-                        OpenAllFeedButtonFromGroup(item.id, listUnread);
+                        OpenAllFeedButtonFromGroup(item.id, listUnread, groups[feedID].id);
                     });
                     if (listUnread.length > 0) {
                         SaveUnreadInfo(listUnread, true);
@@ -1998,7 +1998,7 @@ function OpenAllFeedButton(feedID) {
     }
 }
 
-function OpenAllFeedButtonFromGroup(feedID, listUnread) {
+function OpenAllFeedButtonFromGroup(feedID, listUnread, groupid) {
     let container = null;
     let itemID = null;
     let className = (options.readitemdisplay == 0) ? " feedPreviewContainerRead" : " feedPreviewContainerRead feedPreviewContainerCondensed";
@@ -2006,22 +2006,40 @@ function OpenAllFeedButtonFromGroup(feedID, listUnread) {
     if (unreadInfo[feedID].unreadtotal == 0) {
         return;
     }
-    OpenAllFeedFromButton(feedID, container, itemID, className, listUnread);
+    OpenAllFeedFromButton(false, feedID, container, groupid, itemID, className, listUnread);
 }
 
-function OpenAllFeedFromButton(feedID, container, itemID, className, listUnread) {
-    for (let i = 0; i < feedInfo[feedID].items.length; i++) {
-        itemID = feedInfo[feedID].items[i].itemID;
+function OpenAllFeedFromButton(FromFeed, feedID, container, groupid, itemID, className, listUnread) {
+    if (FromFeed) {
+        for (let i = 0; i < feedInfo[feedID].items.length; i++) {
+            itemID = feedInfo[feedID].items[i].itemID;
 
-        if (unreadInfo[feedID].readitems[itemID] == undefined) {
-            LinkProxy(feedInfo[feedID].items[i].url);
+            if (unreadInfo[feedID].readitems[itemID] == undefined) {
+                LinkProxy(feedInfo[feedID].items[i].url);
 
-            listUnread.push({id: feedID, key: itemID});
+                listUnread.push({id: feedID, key: itemID});
 
-            container = document.getElementById("item_" + feedID + "_" + itemID);
+                container = document.getElementById("item_" + feedID + "_" + itemID);
 
-            if (container != null) {
-                container.className = container.className + className;
+                if (container != null) {
+                    container.className = container.className + className;
+                }
+            }
+        }
+    } else {
+        for (let i = 0; i < groupInfo[groupid].items.length; i++) {
+            let newitem = groupInfo[groupid].items[i];
+
+            if (unreadInfo[newitem.idOrigin].readitems[newitem.itemID] == undefined) {
+                LinkProxy(groupInfo[groupid].items[i].url);
+
+                listUnread.push({id: newitem.idOrigin, key: newitem.itemID});
+
+                container = document.getElementById("item_" + groupid + "_" + newitem.itemID);
+
+                if (container != null) {
+                    container.className = container.className + className;
+                }
             }
         }
     }
