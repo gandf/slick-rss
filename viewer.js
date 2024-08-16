@@ -1983,12 +1983,16 @@ function OpenAllFeedButton(feedID) {
                     });
                 }
                 if (feedFilteredList.length > 0) {
+                    listfeedtoupdate = [];
                     feedFilteredList.forEach((item) => {
-                        OpenAllFeedButtonFromGroup(item.id, listUnread, groups[feedID].id);
+                        OpenAllFeedButtonFromGroup(item.id, listUnread, groups[feedID].id, listfeedtoupdate);
                     });
                     if (listUnread.length > 0) {
                         SaveUnreadInfo(listUnread, true);
-                        UpdateFeedUnread(feedID);
+                        UpdateGroupUnread(feedID);
+                        listfeedtoupdate.forEach((item) => {
+                            UpdateFeedUnread(item);
+                        });
                         UpdateReadAllIcon("Group");
                         UpdateUnreadBadge();
                     }
@@ -1998,7 +2002,7 @@ function OpenAllFeedButton(feedID) {
     }
 }
 
-function OpenAllFeedButtonFromGroup(feedID, listUnread, groupid) {
+function OpenAllFeedButtonFromGroup(feedID, listUnread, groupid, listfeedtoupdate) {
     let container = null;
     let itemID = null;
     let className = (options.readitemdisplay == 0) ? " feedPreviewContainerRead" : " feedPreviewContainerRead feedPreviewContainerCondensed";
@@ -2006,10 +2010,10 @@ function OpenAllFeedButtonFromGroup(feedID, listUnread, groupid) {
     if (unreadInfo[feedID].unreadtotal == 0) {
         return;
     }
-    OpenAllFeedFromButton(false, feedID, container, groupid, itemID, className, listUnread);
+    OpenAllFeedFromButton(false, feedID, container, groupid, itemID, className, listUnread, listfeedtoupdate);
 }
 
-function OpenAllFeedFromButton(FromFeed, feedID, container, groupid, itemID, className, listUnread) {
+function OpenAllFeedFromButton(FromFeed, feedID, container, groupid, itemID, className, listUnread, listfeedtoupdate) {
     if (FromFeed) {
         for (let i = 0; i < feedInfo[feedID].items.length; i++) {
             itemID = feedInfo[feedID].items[i].itemID;
@@ -2030,6 +2034,7 @@ function OpenAllFeedFromButton(FromFeed, feedID, container, groupid, itemID, cla
         for (let i = 0; i < groupInfo[groupid].items.length; i++) {
             let newitem = groupInfo[groupid].items[i];
 
+
             if (unreadInfo[newitem.idOrigin].readitems[newitem.itemID] == undefined) {
                 LinkProxy(groupInfo[groupid].items[i].url);
 
@@ -2039,6 +2044,9 @@ function OpenAllFeedFromButton(FromFeed, feedID, container, groupid, itemID, cla
 
                 if (container != null) {
                     container.className = container.className + className;
+                }
+                if (listfeedtoupdate.indexOf(newitem.idOrigin) == -1) {
+                    listfeedtoupdate.push(newitem.idOrigin);
                 }
             }
         }
