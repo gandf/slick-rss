@@ -267,7 +267,7 @@ function UpdateDataFromWorker(id) {
                     title: GetMessageText("backAllFeeds"),
                     description: GetMessageText("backAllFeeds"),
                     group: "",
-                    loading: true,
+                    loading: false,
                     items: [],
                     error: "",
                     category: ""

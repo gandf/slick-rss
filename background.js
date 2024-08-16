@@ -12,6 +12,7 @@ var spamProtect;
 var listApiUrlToAdd;
 var eventRegistered;
 var dtCache;
+var refreshAfterUpgrade;
 
 var datainitialized;
 if (datainitialized !== true) {
@@ -29,6 +30,7 @@ if (datainitialized !== true) {
 
     datainitialized = true;
     dtCache = null;
+    refreshAfterUpgrade = false;
 }
 
 if (eventRegistered == undefined) {
@@ -46,28 +48,37 @@ waitOptionReady().then(function () {
             GetUnreadCounts().then(function () {
                 GetFeeds(function () {
                     CleanUpUnreadOrphans().then(function () {
-                        GetCache().then(function () {
-                            if ((options.checkinterval == 0) || (options.checkinterval == null)) {
-                                options.checkinterval = 60;
-                            }
-                            if (options.checkinterval < 1) {
-                                options.checkinterval = 1;
-                            }
-                            let currentDate = new Date();
-                            let CheckDT = new Date(currentDate.getTime() - options.checkinterval * 60000);
-                            if (dtCache <= CheckDT) {
-                                chrome.alarms.get('CheckForUnread', function (alarm) {
-                                    if (typeof alarm === 'undefined' || alarm.name !== 'CheckForUnread') {
-                                        CheckForUnreadStart();
-                                    }
-                                });
-                            } else {
-                                chrome.alarms.get('CheckForUnread', function (alarm) {
-                                    if (typeof alarm === 'undefined' || alarm.name !== 'CheckForUnread') {
-                                        chrome.alarms.create('CheckForUnread', {delayInMinutes: Number(Number(dtCache - CheckDT) / 60000), periodInMinutes: Number(options.checkinterval)});
-                                    }
-                                });
-                            }
+                        GetCacheFeedInfo().then(function () {
+                            GetCache().then(function () {
+                                if ((options.checkinterval == 0) || (options.checkinterval == null)) {
+                                    options.checkinterval = 60;
+                                }
+                                if (options.checkinterval < 1) {
+                                    options.checkinterval = 1;
+                                }
+                                let currentDate = new Date();
+                                let CheckDT = new Date(currentDate.getTime() - options.checkinterval * 60000);
+                                if (dtCache <= CheckDT) {
+                                    chrome.alarms.get('CheckForUnread', function (alarm) {
+                                        if (typeof alarm === 'undefined' || alarm.name !== 'CheckForUnread') {
+                                            CheckForUnreadStart();
+                                        } else {
+                                            if (refreshAfterUpgrade) {
+                                                CheckForUnreadStart();
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    chrome.alarms.get('CheckForUnread', function (alarm) {
+                                        if (typeof alarm === 'undefined' || alarm.name !== 'CheckForUnread') {
+                                            chrome.alarms.create('CheckForUnread', {delayInMinutes: Number(Number(dtCache - CheckDT) / 60000), periodInMinutes: Number(options.checkinterval)});
+                                            if (Object.keys(feedInfo).length == 0) {
+                                                CheckForUnreadStart();
+                                            }
+                                        }
+                                    });
+                                }
+                            });
                         });
                     });
                 });
@@ -472,6 +483,7 @@ async function DoUpgrades() {
             options.isOption = true;
             requests.push({type: 'saveAll', waitResponse: false, data: options });
             sendtoSQL('requests', 'DoUpgrades', false, { requests: requests });
+            refreshAfterUpgrade = true;
         });
     } else {
         resultPromise = Promise.allSettled(listPromise);
@@ -1553,4 +1565,23 @@ function updateFeedInfoLoading(id, loading) {
 
 function updateFeedInfoItem(item) {
     sendtoSQL('addCacheFeedInfoItem', 'updateFeedInfoItem', false, item);
+}
+
+function GetCacheFeedInfo() {
+    let resolveGetCacheFeedInfo;
+    let waitGetCacheFeedInfo = new Promise((resolve) => {
+        resolveGetCacheFeedInfo = resolve;
+    });
+    
+    sendtoSQL('getCacheFeedInfo', 'Viewer', true, undefined, function(data){
+        if (data != undefined) {
+            //format feedinfo
+            feedInfo = {};
+            for (let i = 0; i < data.length; i++) {
+                feedInfo[data[i].feed_id] = data[i];
+            }
+        }
+        resolveGetCacheFeedInfo();
+    });
+    return waitGetCacheFeedInfo;
 }
