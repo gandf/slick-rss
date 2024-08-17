@@ -1,9 +1,10 @@
 var table;
 var listdelete = [];
 
-$(document).ready(function()
-{
-	$('#save').click(function(){Save();});
+document.addEventListener('DOMContentLoaded', function () {
+	document.getElementById('save').addEventListener('click',  function(){
+		Save();
+	});
 
 	ShowFeeds();
 });
@@ -115,7 +116,7 @@ var IntegerEditor = function(cell, onRendered, success, cancel) {
 	input.style.width = "100%";
 	input.style.boxSizing = "border-box";
 	input.value = cell.getValue();
-	input.addEventListener("blur", function(e) {
+	input.addEventListener("blur", function() {
 		var value = input.value;
 		if (Number.isInteger(parseInt(value))) {
 			success(parseInt(value));

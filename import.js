@@ -1,7 +1,11 @@
-$(document).ready(function()
+document.addEventListener('DOMContentLoaded', function()
 {
-	$('#import').click(function(){Import();});
-	$('#cancel').click(function(){window.close();});
+	document.getElementById('import').addEventListener('click', function() {
+		Import();
+	});
+	document.getElementById('close').addEventListener('click', function() {
+		window.close();
+	});
 });
 
 document.documentElement.setAttribute('lang', GetMessageText('lang'));

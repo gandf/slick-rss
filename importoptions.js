@@ -1,6 +1,6 @@
-$(document).ready(function()
+document.addEventListener('DOMContentLoaded', function()
 {
-	$('#import').click(function(){
+	document.getElementById('import').addEventListener('click', function(){
 		if(document.getElementById("opml").value == "")
 		{
 			alert(GetMessageText("importAlertNothing"));
@@ -36,7 +36,9 @@ $(document).ready(function()
 			alert(GetMessageText("importAlertError") + e);
 		}
 	});
-	$('#cancel').click(function(){window.close();});
+	document.getElementById('cancel').addEventListener('click', function() {
+		window.close();
+	});
 });
 
 document.documentElement.setAttribute('lang', GetMessageText('lang'));
@@ -151,7 +153,7 @@ function ImportOptions(optionsToImport)
 		requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Options', waitResponse: true, subtype: 'Options' });
 		sendtoSQL('requests', 'ImportOptions', true, { requests: requests }, function(){
 			chrome.runtime.sendMessage({"type": "refreshOptionsAndRefreshFeeds"}).then(function(){
-				window.close();
+				refreshViewerTab();
 			});
 		});
 	});

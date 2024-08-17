@@ -1,6 +1,6 @@
-$(document).ready(function () {
+document.addEventListener('DOMContentLoaded', function () {
     waitOptionReady().then(function () {
-        var port = chrome.runtime.connect({name: $(location).attr('hash').replaceAll("#", "")});
+        var port = chrome.runtime.connect({name: location.hash.replaceAll("#", "")});
 
         port.onMessage.addListener(function (msg) {
             let title = "";

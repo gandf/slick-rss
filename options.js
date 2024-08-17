@@ -1,6 +1,6 @@
-$(document).ready(function()
+document.addEventListener('DOMContentLoaded', function()
 {
-	$('#save').click(function(){
+	document.getElementById('save').addEventListener('click', function(){
 		if (document.getElementById("enablePlaySound").selectedIndex == 1) {
 			if (Notification.permission != "granted") {
 				chrome.permissions.request({permissions: ['notifications']}, (granted) => {});
@@ -13,19 +13,34 @@ $(document).ready(function()
 
 		Save();
 	});
-	$('#cancel').click(function(){window.close();});
-	$('#importFeeds').click(function(){window.open(chrome.runtime.getURL("import.html"), 'height=250,width=550');});
-	$('#exportFeeds').click(function(){window.open(chrome.runtime.getURL("export.html"), 'height=250,width=550');});
-	$('#importOptions').click(function(){
+	document.getElementById('cancel').addEventListener('click', function() {
+		window.close();
+	});
+	document.getElementById('importFeeds').addEventListener('click', function() {
+		window.open(chrome.runtime.getURL("import.html"), 'height=250,width=550');
+	});
+	document.getElementById('exportFeeds').addEventListener('click', function() {
+		window.open(chrome.runtime.getURL("export.html"), 'height=250,width=550');
+	});
+	document.getElementById('importOptions').addEventListener('click', function() {
 		var w = window.open(chrome.runtime.getURL("importoptions.html"), 'height=250,width=550');
 		w.addEventListener('load', window.close(), true);
 	});
-	$('#exportOptions').click(function(){window.open(chrome.runtime.getURL("exportoptions.html"), 'height=250,width=550');});
-	$('#importCategories').click(function(){window.open(chrome.runtime.getURL("importcategories.html"), 'height=250,width=550');});
-	$('#exportCategories').click(function(){window.open(chrome.runtime.getURL("exportcategories.html"), 'height=250,width=550');});
-	$('#dateDone').click(function(){ShowDateSample(true);});
-	$('#dateFormat').focus(function(){EditDateFormat();});
-
+	document.getElementById('exportOptions').addEventListener('click', function() {
+		window.open(chrome.runtime.getURL("exportoptions.html"), 'height=250,width=550');
+	});
+	document.getElementById('importCategories').addEventListener('click', function() {
+		window.open(chrome.runtime.getURL("importcategories.html"), 'height=250,width=550');
+	});
+	document.getElementById('exportCategories').addEventListener('click', function() {
+		window.open(chrome.runtime.getURL("exportcategories.html"), 'height=250,width=550');
+	});
+	document.getElementById('dateDone').addEventListener('click', function() {
+		ShowDateSample(true);
+	});
+	document.getElementById('dateFormat').addEventListener('focus', function() {
+		EditDateFormat();
+	});
 });
 
 window.onload = SetupScreen;
@@ -190,7 +205,6 @@ function Save()
 	Promise.allSettled([promiseCheckForUnread]).then(function() {
 		chrome.runtime.sendMessage({"type": "refreshOptionsAndRefreshFeeds"}).then(function(){
 			refreshViewerTab();
-			window.close();
 		});
 	});
 }
@@ -212,12 +226,4 @@ function ShowDateSample(saveDate)
 	document.getElementById("dateFormat").value = GetFormattedDate(new Date());
 	document.getElementById("dateHelp").style.display = "none";
 	document.getElementById("dateDone").style.display = "none";
-}
-
-function refreshViewerTab() {
-    chrome.tabs.query({url: chrome.runtime.getURL("viewer.html")}, function(tabs) {
-        if (tabs.length > 0) {
-            chrome.tabs.reload(tabs[0].id);
-        }
-    });
 }

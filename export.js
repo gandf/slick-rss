@@ -1,6 +1,8 @@
-$(document).ready(function()
+document.addEventListener('DOMContentLoaded', function()
 {
-	$('#close').click(function(){window.close();});
+	document.getElementById('close').addEventListener('click', function() {
+		window.close();
+	});
 
 	ExportFeeds();
 });

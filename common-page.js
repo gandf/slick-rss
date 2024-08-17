@@ -166,3 +166,12 @@ function GetDefaultOptionsPage() {
         "useViewByCategory": false
     };
 }
+
+function refreshViewerTab() {
+    chrome.tabs.query({url: chrome.runtime.getURL("viewer.html")}, function(tabs) {
+        if (tabs.length > 0) {
+            chrome.tabs.reload(tabs[0].id, {bypassCache: true});
+        }
+		window.close();
+    });
+}

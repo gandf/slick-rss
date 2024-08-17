@@ -1,12 +1,12 @@
-$(document).ready(function () {
-    $('#refreshAll').click(function () {
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('refreshAll').addEventListener('click', function () {
         chrome.runtime.sendMessage({type: "checkForUnread"}).then(function () {
         });
     });
-    $('#markAllRead').click(function () {
+    document.getElementById('markAllRead').addEventListener('click', function () {
         MarkAllFeedsRead();
     });
-    $('#refreshButton').click(function () {
+    document.getElementById('refreshButton').addEventListener('click', function () {
         chrome.runtime.sendMessage({
             type: "checkForUnreadOnSelectedFeed",
             FeedID: selectedFeedKeyIsFeed ? feeds[selectedFeedKey].id : groups[selectedFeedKey].id,
@@ -14,13 +14,13 @@ $(document).ready(function () {
         }).then(function () {
         });
     });
-    $('#markFeedReadButton').click(function () {
+    document.getElementById('markFeedReadButton').addEventListener('click', function () {
         MarkFeedRead((selectedFeedKeyIsFeed ? feeds[selectedFeedKey].id : groups[selectedFeedKey].id));
     });
-    $('#openAllFeedButton').click(function () {
+    document.getElementById('openAllFeedButton').addEventListener('click', function () {
         OpenAllFeedButton((selectedFeedKeyIsFeed ? feeds[selectedFeedKey].id : groups[selectedFeedKey].id));
     });
-    $('#categoryFilter').on('input', function() {
+    document.getElementById('categoryFilter').addEventListener('input', function() {
         let enteredValue = document.getElementById("catFilterValue").value.toUpperCase();
         if (enteredValue == "") {
             categoryFilterUpper = "";
@@ -36,7 +36,7 @@ $(document).ready(function () {
             }
         }
     });
-    $('#addAuthNotif').click(function () {
+    document.getElementById('addAuthNotif').addEventListener('click', function () {
         if (options.playSoundNotif && (Notification.permission != "granted")) {
             chrome.permissions.request({permissions: ['notifications']}, (granted) => {});
         }
@@ -176,7 +176,6 @@ port.onMessage.addListener(function (msg) {
         if (options.log) {
             console.log('feedupdatecomplete');
         }
-
         UpdateDataFromWorker(msg.id);
         UpdateFeedUnread(msg.id);
 
@@ -477,10 +476,9 @@ function ShowFeedRL(key) {
         li.setAttribute("id", "feedTitleFeed" + readLaterFeedID);
         span.setAttribute("id", "feedUnreadFeed" + readLaterFeedID);
 
-        $(li).click(function (event) {
+        li.addEventListener('click', function () {
             selectedFeedKeyIsFeed = true;
             SelectFeedRL();
-            return false;
         });
 
         li.appendChild(span);
@@ -503,10 +501,9 @@ function ShowFeed(key) {
             li.setAttribute("data-key", key);
             span.setAttribute("id", "feedUnreadFeed" + feeds[key].id);
 
-            $(li).click(function (event) {
+            li.addEventListener('click', function (event) {
                 selectedFeedKeyIsFeed = true;
                 SelectFeed(event.target.getAttribute("data-key"));
-                return false;
             });
 
             li.appendChild(span);
@@ -529,10 +526,9 @@ function ShowGroup(key) {
         li.setAttribute("data-key", key);
         span.setAttribute("id", "feedUnreadGroup" + groups[key].id);
 
-        $(li).click(function () {
+        li.addEventListener('click', function (event) {
             selectedFeedKeyIsFeed = false;
             SelectGroup(event.target.getAttribute("data-key"));
-            return false;
         });
 
         li.appendChild(span);
@@ -692,9 +688,9 @@ function MarkFeedRead(feedID) {
         }
 
         SaveUnreadInfo(listUnread, true);
+        UpdateUnreadBadge();
         UpdateFeedUnread(feedID);
         UpdateReadAllIcon("Feed");
-        UpdateUnreadBadge();
     } else {
         if (feedID != null) {
             if (groups[feedID] != null) {
@@ -1136,32 +1132,36 @@ function SelectFeedOrGroup(key, type) {
 
                 if (type == "Feed") {
                     // must be a new feed with no content yet
-                    chrome.runtime.sendMessage({ //***
+                    chrome.runtime.sendMessage({
                         "type": "checkForUnreadOnSelectedFeedCompleted",
                         "selectedFeedKey": key
-                    }).then(function () {
-                        if (type == "Feed") {
-                            sendtoSQL('getCacheFeedInfo', 'ViewerShowFeeds', true, { feed_id: feeds[key].id }, function(data){
-                                if (data != null) {
-                                    if (data.length > 0) {
-                                        if (data[0].items != undefined) {
-                                            feedsOrGroupsInfo = data[0];
+                    }).then(function (data) {
+                        if (!data) {
+                            if (data.result) {
+                                if (type == "Feed") {
+                                    sendtoSQL('getCacheFeedInfo', 'ViewerShowFeeds', true, { feed_id: feeds[key].id }, function(data){
+                                        if (data != null) {
+                                            if (data.length > 0) {
+                                                if (data[0].items != undefined) {
+                                                    feedsOrGroupsInfo = data[0];
+                                                }
+                                            }
                                         }
-                                    }
-                                }
-                                RenderFeedFromSelect(type, key, feedsOrGroups, feedsOrGroupsInfo);
-                            });
-                        } else {
-                            sendtoSQL('getGroupInfo', 'ViewerShowGroups', true, { group_id: groups[key].id }, function(data){
-                                if (data != null) {
-                                    if (data.length > 0) {
-                                        if (data[0].items != undefined) {
-                                            feedsOrGroupsInfo = data[0];
+                                        RenderFeedFromSelect(type, key, feedsOrGroups, feedsOrGroupsInfo);
+                                    });
+                                } else {
+                                    sendtoSQL('getGroupInfo', 'ViewerShowGroups', true, { group_id: groups[key].id }, function(data){
+                                        if (data != null) {
+                                            if (data.length > 0) {
+                                                if (data[0].items != undefined) {
+                                                    feedsOrGroupsInfo = data[0];
+                                                }
+                                            }
                                         }
-                                    }
+                                        RenderFeedFromSelect(type, key, feedsOrGroups, feedsOrGroupsInfo);
+                                    });
                                 }
-                                RenderFeedFromSelect(type, key, feedsOrGroups, feedsOrGroupsInfo);
-                            });
+                            }
                         }
                     });
                     return;
@@ -1402,15 +1402,13 @@ function RenderFeed(type, feedsOrGroupsInfo) {
             feedMarkRead.addEventListener("mouseout", onmouseout);
 
             if (feedID == readLaterFeedID) {
-                $(feedMarkRead).click({i: i}, function (event) {
-                    UnMarkItemReadLater(event.data.i);
-                    return false;
-                });
+                feedMarkRead.addEventListener('click', function () {
+                    UnMarkItemReadLater(this.i);
+                }.bind({i:i}));
             } else {
-                $(feedMarkRead).click({itemID: itemID}, function (event) {
-                    MarkItemRead(event.data.itemID);
-                    return false;
-                });
+                feedMarkRead.addEventListener('click', function () {
+                    MarkItemRead(this.itemID);
+                }.bind({itemID: itemID}));
             }
 
             feedMarkRead.title = GetMessageText("backViewerMarkRead");
@@ -1430,28 +1428,25 @@ function RenderFeed(type, feedsOrGroupsInfo) {
 
             if (feedID == readLaterFeedID) {
                 if (options.readlaterremovewhenviewed) {
-                    $(feedLink).click({url: href, i: i}, function (event) {
-                        LinkProxy(event.data.url);
-                        UnMarkItemReadLater(event.data.i);
-                        return false;
-                    });
+                    feedLink.addEventListener('click', function () {
+                        LinkProxy(this.href);
+                        UnMarkItemReadLater(this.i);
+                    }.bind({href, i}));
                 } else {
-                    $(feedLink).click({url: href}, function (event) {
-                        LinkProxy(event.data.url);
-                        return false;
-                    });
+                    feedLink.addEventListener('click', function () {
+                        LinkProxy(this.href);
+                    }.bind({href}));
                 }
             } else {
-                $(feedLink).click({url: href, feedID: feedID, itemID: itemID}, function (event) {
-                    LinkProxy(event.data.url);
+                feedLink.addEventListener('click', function () {
+                    LinkProxy(this.href);
                     if (!options.dontreadontitleclick) {
-                        MarkItemRead(event.data.itemID);
+                        MarkItemRead(this.itemID);
                     }
                     if (options.markreadonclick) {
-                        MarkFeedRead(event.data.feedID);
+                        MarkFeedRead(this.feedID);
                     }
-                    return false;
-                });
+                }.bind({href, itemID, feedID}));
             }
 
             feedTitle = document.createElement("div");
@@ -1465,10 +1460,9 @@ function RenderFeed(type, feedsOrGroupsInfo) {
                 feedReadLater.setAttribute("title", GetMessageText("backReadLater"));
                 feedReadLater.addEventListener("mouseover", onmouseover);
                 feedReadLater.addEventListener("mouseout", onmouseout);
-                $(feedReadLater).click({IsFeed: type == "Feed", feedID: feedID, i: i}, function (event) {
-                    MarkItemReadLater(event.data.IsFeed, event.data.feedID, event.data.i);
-                    return false;
-                });
+                feedReadLater.addEventListener('click', function () {
+                    MarkItemReadLater(this.type === "Feed", this.feedID, this.i);
+                }.bind({type, feedID, i}));
                 feedTitle.appendChild(feedReadLater);
 
                 feedUnread = document.createElement("img");
@@ -1478,10 +1472,9 @@ function RenderFeed(type, feedsOrGroupsInfo) {
                 feedUnread.setAttribute("class", "feedPreviewUnread");
                 feedUnread.setAttribute("title", GetMessageText("backViewerMarkUnread"));
                 feedUnread.setAttribute("display", "none");
-                $(feedUnread).click({itemID: itemID}, function (event) {
-                    MarkItemUnread(event.data.itemID);
-                    return false;
-                });
+                feedUnread.addEventListener('click', function () {
+                    MarkItemUnread(this.itemID);
+                }.bind({itemID}));
 
                 feedTitle.appendChild(feedUnread);
             }
@@ -1503,17 +1496,9 @@ function RenderFeed(type, feedsOrGroupsInfo) {
                 feedSummaryImg.setAttribute("class", "feedPreviewSummaryImg");
                 feedSummaryImg.addEventListener("mouseover", onmouseover);
                 feedSummaryImg.addEventListener("mouseout", onmouseout);
-                if (sens) {
-                    $(feedSummaryImg).click({containerId: containerId, feedID: feedID, i: i}, function (event) {
-                        ShowContent("", event.data.containerId, event.data.feedID, event.data.i, true);
-                        return false;
-                    });
-                } else {
-                    $(feedSummaryImg).click({containerId: containerId, feedID: feedID, i: i}, function (event) {
-                        ShowContent("", event.data.containerId, event.data.feedID, event.data.i, false);
-                        return false;
-                    });
-                }
+                feedSummaryImg.addEventListener('click', function () {
+                    ShowContent("", this.containerId, this.feedID, this.i, this.sens);
+                }.bind({containerId, feedID, i, sens}));
                 feedTitle.appendChild(feedSummaryImg);
 
                 if (options.showfeedcontentsummary == 0) {
@@ -1529,17 +1514,9 @@ function RenderFeed(type, feedsOrGroupsInfo) {
                 feedSummaryImg2.addEventListener("mouseover", onmouseover);
                 feedSummaryImg2.addEventListener("mouseout", onmouseout);
                 feedSummaryImg2.style.display = "none";
-                if (sens) {
-                    $(feedSummaryImg2).click({containerId: containerId, feedID: feedID, i: i}, function (event) {
-                        ShowContent("2", event.data.containerId, event.data.feedID, event.data.i, true);
-                        return false;
-                    });
-                } else {
-                    $(feedSummaryImg2).click({containerId: containerId, feedID: feedID, i: i}, function (event) {
-                        ShowContent("2", event.data.containerId, event.data.feedID, event.data.i, false);
-                        return false;
-                    });
-                }
+                feedSummaryImg2.addEventListener('click', function () {
+                    ShowContent("2", this.containerId, this.feedID, this.i, this.sens);
+                }.bind({containerId, feedID, i, sens}));
                 feedTitle.appendChild(feedSummaryImg2);
             }
 
@@ -1547,16 +1524,16 @@ function RenderFeed(type, feedsOrGroupsInfo) {
                 let onefeed = document.createElement("img");
                 onefeed.setAttribute("src", "download.png");
                 onefeed.setAttribute("class", "onefeed");
-                $(onefeed).click({containerId: containerId}, function (event) {
-                    let refdoc = document.getElementById(event.data.containerId);
+                onefeed.addEventListener('click', function () {
+                    let refdoc = document.getElementById(this.containerId);
                     let docTitle = refdoc.querySelector('.feedPreviewTitle');
                     let docContent = refdoc.querySelector('.feedPreviewSummaryContent');
+                
+                    listonefeed[containerId] = {title: docTitle.innerHTML, content: docContent.innerHTML};
+                
+                    chrome.tabs.create({url: "showonefeed.html#" + containerId});
+                }.bind({containerId}));
 
-                    listonefeed[event.data.containerId] = {title: docTitle.innerHTML, content: docContent.innerHTML};
-
-                    chrome.tabs.create({url: "showonefeed.html#" + event.data.containerId});
-                    return false;
-                });
                 onefeed.addEventListener("mouseover", onmouseover);
                 onefeed.addEventListener("mouseout", onmouseout);
                 feedTitle.appendChild(onefeed);
@@ -1594,10 +1571,9 @@ function RenderFeed(type, feedsOrGroupsInfo) {
                 let feedCommentsLink = document.createElement("a");
                 feedCommentsLink.setAttribute("href", item.comments);
                 feedCommentsLink.innerText = GetMessageText("commentsLink");
-                $(feedCommentsLink).click({url: item.comments}, function (event) {
-                    LinkProxy(event.data.url);
-                    return false;
-                });
+                feedCommentsLink.addEventListener('click', function () {
+                    LinkProxy(this.comments);
+                }.bind({ comments: item.comments }));
                 feedComments.appendChild(feedCommentsLink);
             } else {
                 let feedEmpty = document.createElement("div");
@@ -1677,23 +1653,20 @@ function RenderFeed(type, feedsOrGroupsInfo) {
             for (let l = 0; l < summaryLinks.length; l++) {
                 href = summaryLinks[l].getAttribute("href");
 
-                $(summaryLinks[l]).click({href: href}, function (event) {
-                    LinkProxy(event.data.href);
-                    return false;
-                });
+                summaryLinks[l].addEventListener('click', function () {
+                    LinkProxy(this.href);
+                }.bind({ href }));
 
                 if (feedID == readLaterFeedID) {
                     if (options.readlaterremovewhenviewed) {
-                        $(summaryLinks[l]).click({i: i}, function (event) {
-                            UnMarkItemReadLater(event.data.i);
-                            return false;
-                        });
+                        summaryLinks[l].addEventListener('click', function () {
+                            UnMarkItemReadLater(this.i);
+                        }.bind({ i }));
                     }
                 } else {
-                    $(summaryLinks[l]).click({itemID: itemID}, function (event) {
-                        MarkItemRead(event.data.itemID);
-                        return false;
-                    });
+                    summaryLinks[l].addEventListener('click', function () {
+                        MarkItemRead(this.itemID);
+                    }.bind({ itemID }));                    
                 }
             }
 
@@ -1967,9 +1940,9 @@ function OpenAllFeedButton(feedID) {
 
         if (listUnread.length > 0) {
             SaveUnreadInfo(listUnread, true);
+            UpdateUnreadBadge();
             UpdateFeedUnread(feedID);
             UpdateReadAllIcon("Feed");
-            UpdateUnreadBadge();
         }
     } else {
         if (feedID != null) {
@@ -1989,12 +1962,12 @@ function OpenAllFeedButton(feedID) {
                     });
                     if (listUnread.length > 0) {
                         SaveUnreadInfo(listUnread, true);
+                        UpdateUnreadBadge();
                         UpdateGroupUnread(feedID);
                         listfeedtoupdate.forEach((item) => {
                             UpdateFeedUnread(item);
                         });
                         UpdateReadAllIcon("Group");
-                        UpdateUnreadBadge();
                     }
                 }
             }
@@ -2075,7 +2048,7 @@ function InternalConnection(port) {
     if (port != null) {
         for (let key in listonefeed) {
             if (port.name == key) {
-                port.postMessage(listonefeed[key]);
+                port.postMessage(listonefeed[key]); //***
                 //delete listonefeed[key];
             }
         }

@@ -200,23 +200,21 @@ function OnMessageRequest(request, sender, sendResponse) {
     }
 
     if (request.type == "checkForUnreadOnSelectedFeedCompleted") {
-        if ((feeds[request.selectedFeedKey].id != readLaterFeedID) && (feeds[request.selectedFeedKey].id != allFeedsID)) {
-            if (feedInfo[feeds[request.selectedFeedKey].id] != undefined) {
-                if (!feedInfo[feeds[request.selectedFeedKey].id].loading) {
-                    if (viewerPort != null) {
-                        viewerPort.postMessage({type: "feedupdatecomplete", id: feeds[request.selectedFeedKey].id});
-                    }
-                }
-            }
-        } else {
-            if (viewerPort != null) {
-                viewerPort.postMessage({type: "feedupdatecomplete", id: feeds[request.selectedFeedKey].id});
-            }
-        }
-        sendResponse({});
         if (options.log) {
             console.log('|checkForUnreadOnSelectedFeedCompleted | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
         }
+        if ((feeds[request.selectedFeedKey].id != readLaterFeedID) && (feeds[request.selectedFeedKey].id != allFeedsID)) {
+            if (feedInfo[feeds[request.selectedFeedKey].id] != undefined) {
+                if (!feedInfo[feeds[request.selectedFeedKey].id].loading) {
+                    sendResponse({ result: true });
+                    return;
+                }
+            }
+        } else {
+            sendResponse({ result: true });
+            return;
+        }
+        sendResponse({});
         return;
     }
 
@@ -241,7 +239,6 @@ function OnMessageRequest(request, sender, sendResponse) {
                 groupInfo[allFeedsID].title = GetMessageText("backAllFeeds");
             }
             forceRefresh = true;
-            RefreshViewer();
             GetFeeds(function () {
                 CheckForUnreadStart();
             });
@@ -379,7 +376,7 @@ function GetFeeds(callBack) {
     let getFeedsCallBack = callBack;
     GetFeedsSimple(function () {
         feeds.unshift(GetReadLaterFeed());
-        UpdateGroups();
+        //UpdateGroups();
 
         if (getFeedsCallBack != undefined) {
             getFeedsCallBack();
@@ -1207,12 +1204,12 @@ function CheckForUnreadComplete() {
         }
     }
 
-    UpdateGroups();
+    /*UpdateGroups(); //***
     for (let i = 0; i < groups.length; i++) {
         if (groups[i].id != allFeedsID) {
             CalcGroupCountUnread(i);
         }
-    }
+    }*/
 
     UpdateUnreadBadge();
 
@@ -1309,7 +1306,7 @@ function GetFeedLink2(node) {
     }
     return ""; // has links, but I can't read them?!
 }
-
+/*
 function UpdateGroups() {
     let oldgroups = groups;
     let oldgroupindex;
@@ -1369,7 +1366,7 @@ function UpdateGroups() {
             }
         }
     }
-}
+}*/
 
 function GetGroupItems(groupIndex, id, title, description) {
     let info, item;
@@ -1411,7 +1408,7 @@ function GetNewItem(title, date, order, content, idOrigin, itemID, url, author, 
         category: category
     };
 }
-
+/*
 function CalcGroupCountUnread(key) {
     let filteredFeeds = GetFeedsFilterByGroup(key);
     let count = 0;
@@ -1422,7 +1419,7 @@ function CalcGroupCountUnread(key) {
     }
     groups[key].unreadCount = count;
     return count;
-}
+}*/
 
 function UpdateLoadingProgress(currentFeeds, currentFeedsCount) {
     if (viewerPort != null) {

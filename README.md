@@ -33,7 +33,6 @@ http://opensource.org/licenses/MIT
 Using :
 - https://github.com/NaturalIntelligence/fast-xml-parser
 - https://github.com/localForage/localForage
-- https://jquery.com
 - https://github.com/emn178/js-sha256
 - https://tabulator.info
 - https://getbootstrap.com

@@ -2,9 +2,11 @@ var table;
 var listdelete = [];
 var listCategories = [];
 
-$(document).ready(function()
+document.addEventListener('DOMContentLoaded', function()
 {
-	$('#save').click(function(){Save();});
+	document.getElementById('save').addEventListener('click', function() {
+		Save();
+	});
 });
 
 waitOptionReady().then(function () {
@@ -24,7 +26,7 @@ var IntegerEditor = function(cell, onRendered, success, cancel) {
 	input.style.width = "100%";
 	input.style.boxSizing = "border-box";
 	input.value = cell.getValue();
-	input.addEventListener("blur", function(e) {
+	input.addEventListener("blur", function() {
 		var value = input.value;
 		if (Number.isInteger(parseInt(value))) {
 			success(parseInt(value));
@@ -52,7 +54,7 @@ var colorEditor = function(cell, onRendered, success, cancel){
 	var input = document.createElement("input");
 	input.setAttribute("type", "color");
 	input.value = cell.getValue();
-	input.addEventListener("change", function(e){
+	input.addEventListener("change", function(){
 		success(input.value);
 	});
 
