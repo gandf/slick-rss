@@ -1300,30 +1300,6 @@ function GetFeedLink2(node) {
     return ""; // has links, but I can't read them?!
 }
 
-function GetGroupItems(groupIndex, id, title, description) {
-    let info, item;
-    let filteredFeeds = feeds.filter(function (el) {
-        return (el.group == groups[groupIndex].group) && (el.id != readLaterFeedID);
-    });
-    if (filteredFeeds != null) {
-        if (groupInfo[id] == null) {
-            groupInfo[id] = {title: title, description: description, group: "", loading: true, items: [], error: "", category: ""};
-        }
-        for (let i = 0; i < filteredFeeds.length; i++) {
-            if (feedInfo[filteredFeeds[i].id] != null) {
-                info = feedInfo[filteredFeeds[i].id].items;
-                for (let j = 0; j < info.length; j++) {
-                    item = GetNewItem(info[j].title, info[j].date, info[j].order, info[j].content, info[j].idOrigin, info[j].itemID, info[j].url, info[j].author, info[j].thumbnail, info[j].summary, info[j].updated, info[j].category);
-                    groupInfo[id].items.push(item);
-                    if ((options.showallfeeds == true) && (id != allFeedsID)) {
-                        groupInfo[allFeedsID].items.push(item);
-                    }
-                }
-            }
-        }
-    }
-}
-
 function GetNewItem(title, date, order, content, idOrigin, itemID, url, author, thumbnail, summary, updated, category) {
     return {
         title: title,

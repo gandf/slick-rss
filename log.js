@@ -1,6 +1,6 @@
 function log(info) {
-    console.log(info);
-  
+    //console.log(info);
+  /*
     // Appel de la page PHP avec fetch
     fetch('http://localhost/log/index.php', {
       method: 'POST', // Méthode de la requête
@@ -8,7 +8,7 @@ function log(info) {
           'Content-Type': 'application/json', // Type de contenu envoyé
       },
       body: info // Conversion des données en chaîne JSON
-    });
+    });*/
   }
 
   export { log };
