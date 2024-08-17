@@ -182,14 +182,19 @@ function OnMessageRequest(request, sender, sendResponse) {
         if (request.IsFeed) {
             CheckForUnreadStart(request.FeedID);
         } else {
-            let idgroup = groups.findIndex(function (el) {
-                return (el.id == request.selectedFeedKey);
-            });
-            let listfeeds = feeds.find(function (el) {
-                return (el.group == groups[idgroup].title);
-            });
-            listfeeds.forEach(function (feed) {
-                CheckForUnreadStart(feed.id);
+            sendtoSQL('getGroups', 'BackgroundOnMessageRequest', true, undefined, function(data){
+                if (data != undefined) {
+                    groups = data;
+                    if (options.showallfeeds == true) {
+                        groups[allFeedsID] = GetAllFeedsGroup();
+                    }
+                    let listfeeds = feeds.filter(function (el) {
+                        return (el.group == groups[request.FeedID].title);
+                    });
+                    listfeeds.forEach(function (feed) {
+                        CheckForUnreadStart(feed.id);
+                    });
+                }
             });
         }
         sendResponse({});
