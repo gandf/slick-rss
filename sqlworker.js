@@ -1,7 +1,7 @@
 importScripts('alasql.min.js'); 
 importScripts('logworker.js'); 
 
-const validTableNames = ['Colors', 'Group', 'Feeds', 'LastSelectedFeed', 'Options', 'ReadlaterinfoItem', 'ItemCategories', 'Categories', 'Unreadinfo', 'UnreadinfoItem', 'Cache', 'CacheFeedInfo', 'CacheFeedInfoItem'];
+const validTableNames = ['Colors', 'Group', 'Feeds', 'LastSelectedFeed', 'Options', 'ReadlaterinfoItem', 'ItemCategories', 'Categories', 'UnreadinfoItem', 'Cache', 'CacheFeedInfo', 'CacheFeedInfoItem'];
 
 const readLaterFeedID = 9999999999;
 const allFeedsID = 9999999998;
@@ -62,9 +62,6 @@ self.onmessage = async function(event) {
         alasql("DROP TABLE IF EXISTS `Categories`;\
           CREATE TABLE `Categories` (`category_id` INT PRIMARY KEY, `name` string);");
     
-        alasql("DROP TABLE IF EXISTS `Unreadinfo`;\
-          CREATE TABLE `Unreadinfo` (`feed_id` INT PRIMARY KEY, `unreadtotal` INT);");
-
         alasql("DROP TABLE IF EXISTS `UnreadinfoItem`;\
           CREATE TABLE `UnreadinfoItem` (`feed_id` INT, `itemHash` string, `value` INT, PRIMARY KEY (`feed_id`, `itemHash`));");
 
@@ -571,7 +568,20 @@ self.onmessage = async function(event) {
       case 'getUnreadinfo':
       {
         if (canWork) {
-          result(responseName(request.type), request.id, request.waitResponse, alasql(`SELECT \`feed_id\`, \`unreadtotal\` FROM \`Unreadinfo\``));
+          let resultdata = alasql(`SELECT feeds.\`id\` AS feed_id, COALESCE(unread.unreadtotal, 0) AS unreadtotal
+            FROM Feeds AS feeds
+            LEFT JOIN (
+              SELECT feedinfo.\`idOrigin\` AS feed_id, COUNT(*) AS unreadtotal
+              FROM \`CacheFeedInfoItem\` AS feedinfo
+              LEFT JOIN \`UnreadinfoItem\` AS readitem ON (feedinfo.\`idOrigin\` = readitem.\`feed_id\`) AND (feedinfo.\`itemID\` = readitem.\`itemHash\`)
+              WHERE (readitem.\`itemHash\` IS NULL)
+              GROUP BY feedinfo.\`idOrigin\`
+            ) AS unread ON feeds.\`id\` = unread.\`feed_id\`
+            `).reduce((acc, item) => {
+              acc[item.feed_id] = { unreadtotal: item.unreadtotal, readitems: {} }
+              return acc;
+            }, {});
+          result(responseName(request.type), request.id, request.waitResponse, resultdata);
         }
         break;
       }
@@ -579,8 +589,15 @@ self.onmessage = async function(event) {
       {
         if (canWork) {
           let resultdata = alasql(`
-            SELECT \`feed_id\`, \`unreadtotal\`
-            FROM \`Unreadinfo\`
+            SELECT feeds.\`id\` AS feed_id, COALESCE(unread.unreadtotal, 0) AS unreadtotal
+            FROM Feeds AS feeds
+            LEFT JOIN (
+              SELECT feedinfo.\`idOrigin\` AS feed_id, COUNT(*) AS unreadtotal
+              FROM \`CacheFeedInfoItem\` AS feedinfo
+              LEFT JOIN \`UnreadinfoItem\` AS readitem ON (feedinfo.\`idOrigin\` = readitem.\`feed_id\`) AND (feedinfo.\`itemID\` = readitem.\`itemHash\`)
+              WHERE (readitem.\`itemHash\` IS NULL)
+              GROUP BY feedinfo.\`idOrigin\`
+            ) AS unread ON feeds.\`id\` = unread.\`feed_id\`
           `).reduce((acc, item) => {
             acc[item.feed_id] = { unreadtotal: item.unreadtotal, readitems: {} }
             return acc;
@@ -602,22 +619,12 @@ self.onmessage = async function(event) {
         }
         break;
       }
-      case 'setUnreadinfo':
-      {
-        if (canWork && (request.data != undefined)) {
-          alasql(`DELETE FROM \`Unreadinfo\` WHERE \`feed_id\` = ?`, [request.data.feed_id]);
-          alasql(`INSERT INTO \`Unreadinfo\` VALUES (?, ?)`, [request.data.feed_id, request.data.unreadtotal]);
-        }
-        break;
-      }
       case 'clearUnreadinfo':
       {
         if (canWork) {
           if ((request.data != undefined)) {
-            alasql(`DELETE FROM \`Unreadinfo\` WHERE \`feed_id\` = ?`, [request.data.feed_id]);
             alasql(`DELETE FROM \`UnreadinfoItem\` WHERE \`feed_id\` = ?`, [request.data.feed_id]);
           } else {
-            alasql(`DELETE FROM \`Unreadinfo\``);
             alasql(`DELETE FROM \`UnreadinfoItem\``);
           }
         }
@@ -653,8 +660,8 @@ self.onmessage = async function(event) {
             WHERE \`feed_id\` IN (
                 SELECT \`UnreadinfoItem\`.\`feed_id\`
                 FROM \`UnreadinfoItem\`
-                LEFT JOIN \`Unreadinfo\` ON \`UnreadinfoItem\`.\`feed_id\` = \`Unreadinfo\`.\`feed_id\`
-                WHERE \`Unreadinfo\`.\`feed_id\` IS NULL)`);
+                LEFT JOIN \`Feeds\` ON \`Feeds\`.\`id\` = \`UnreadinfoItem\`.\`feed_id\`
+                WHERE \`Feeds\`.\`id\` IS NULL)`);
         }
         break;
       }
@@ -662,20 +669,21 @@ self.onmessage = async function(event) {
       {
         if (canWork) {
           let resultdata = alasql(
-            `SELECT gr.\`name\`, gr.\`id\`, SUM(unread.\`unreadtotal\`) AS \`unreadCount\` 
+            `SELECT gr.\`name\`, gr.\`id\`, COALESCE(groupcount.nb, 0) AS \`unreadCount\` 
             FROM \`Group\` as gr
             LEFT JOIN (
-              SELECT \`group_id\`
-              FROM \`Feeds\`
-              WHERE \`excludeUnreadCount\` = false
-              ) AS feeds ON feeds.\`group_id\` = gr.\`id\`
-            LEFT JOIN \`Unreadinfo\` AS unread ON unread.\`feed_id\` = feeds.\`id\`
-            GROUP BY gr.\`name\`, gr.\`id\``
+                  SELECT gr.\`id\`, COUNT(*) AS nb
+                  FROM \`Group\` AS gr
+                  LEFT JOIN \`Feeds\` AS feeds ON (feeds.\`group_id\` = gr.\`id\`) AND (\`excludeUnreadCount\` = false)
+                  LEFT JOIN \`CacheFeedInfoItem\` AS feedinfo ON feedinfo.\`idOrigin\` = feeds.\`id\`
+                  LEFT JOIN \`UnreadinfoItem\` AS readitem ON (feedinfo.\`idOrigin\` = readitem.\`feed_id\`) AND (feedinfo.\`itemID\` = readitem.\`itemHash\`)
+                  WHERE (readitem.\`itemHash\` IS NULL) AND NOT(feedinfo.\`itemID\` IS NULL) AND NOT(feeds.\`id\` IS NULL)
+                  GROUP BY gr.\`name\`, gr.\`id\`
+              ) AS groupcount ON groupcount.\`id\` = gr.\`id\``
           ).reduce((acc, item) => {
             acc[item.id] = { title: item.name, url: groupurl, group: '', maxitems: 99999, order: 0, id: item.id, unreadCount: item.unreadCount == undefined ? 0 : item.unreadCount };
             return acc;
           }, {});
-  
           result(responseName(request.type), request.id, request.waitResponse, resultdata);
         }
         break;
@@ -754,7 +762,6 @@ self.onmessage = async function(event) {
             ReadlaterinfoItem: exportTableToJson('ReadlaterinfoItem'),
             ItemCategories: exportTableToJson('ItemCategories'),
             Categories: exportTableToJson('Categories'),
-            Unreadinfo: exportTableToJson('Unreadinfo'),
             UnreadinfoItem: exportTableToJson('UnreadinfoItem'),
             Cache: exportTableToJson('Cache'),
             CacheFeedInfo: exportTableToJson('CacheFeedInfo'),

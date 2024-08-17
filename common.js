@@ -696,11 +696,10 @@ function NotifyNew() {
 
 function SetUnreadInfo(data, callback) {
     let requests = [];
-    requests.push({type: 'clearUnreadinfo', tableName: 'Unreadinfo', waitResponse: false });
+    requests.push({type: 'clearUnreadinfo', waitResponse: false });
     let key = Object.keys(data);
     for (let i = 0; i <  key.length; i++) {
         if (key[i] != readLaterFeedID) {
-            requests.push({type: 'setUnreadinfo', waitResponse: false, data: { feed_id: key[i], unreadtotal: data[key[i]].unreadtotal } });
             let items = data[key[i]].readitems;
             if (items != undefined) {
                 let keysitem = Object.keys(items);
@@ -710,7 +709,6 @@ function SetUnreadInfo(data, callback) {
             }               
         }
     }
-    requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Unreadinfo', waitResponse: true, subtype: 'Unreadinfo' });
     requests.push({type: 'export', responsetype: 'responseExport', tableName: 'UnreadinfoItem', waitResponse: true, subtype: 'UnreadinfoItem' });
     sendtoSQL('requests', 'SetUnreadInfo', true, { requests: requests }, function () {
         callback();

@@ -381,7 +381,6 @@ function GetFeeds(callBack) {
     let getFeedsCallBack = callBack;
     GetFeedsSimple(function () {
         feeds.unshift(GetReadLaterFeed());
-        //UpdateGroups();
 
         if (getFeedsCallBack != undefined) {
             getFeedsCallBack();
@@ -468,10 +467,9 @@ async function DoUpgrades() {
             }
 
             //unreadinfo
-            requests.push({type: 'clearUnreadinfo', tableName: 'Unreadinfo', waitResponse: false });
+            requests.push({type: 'clearUnreadinfo', waitResponse: false });
             keys = Object.keys(unreadInfo);
             for (let i = 0; i <  keys.length; i++) {
-                requests.push({type: 'setUnreadinfo', waitResponse: false, data: { feed_id: keys[i], unreadtotal: unreadInfo[keys[i]].unreadtotal } });
                 let items = unreadInfo[keys[i]].readitems;
                 if (items != undefined) {
                     let keysitem = Object.keys(items);
@@ -1088,8 +1086,6 @@ function CheckForUnread(checkForUnreadCounterID) {
                                 }
                             }
                             unreadInfo[feedID].unreadtotal = entries.length - readItemCount;
-                            requests.push({type: 'setUnreadinfo', waitResponse: false, data: { feed_id: feedID, unreadtotal: unreadInfo[feedID].unreadtotal } });
-                            requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Unreadinfo', waitResponse: true, subtype: 'Unreadinfo' });
                         } else {
                             feedInfo[feedID].error = GetMessageText("backErrorXML");
                             updateFeedInfo(feedInfo[feedID], true);
@@ -1209,22 +1205,14 @@ function CheckForUnreadComplete() {
         }
     }
 
-    /*UpdateGroups(); //***
-    for (let i = 0; i < groups.length; i++) {
-        if (groups[i].id != allFeedsID) {
-            CalcGroupCountUnread(i);
-        }
-    }*/
-
     UpdateUnreadBadge();
 
     let requests = [];
     requests.push({type: 'export', responsetype: 'responseExport', tableName: 'UnreadinfoItem', waitResponse: true, subtype: 'UnreadinfoItem' });
-    requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Unreadinfo', waitResponse: true, subtype: 'Unreadinfo' });
     requests.push({type: 'export', responsetype: 'responseExport', tableName: 'CacheFeedInfo', waitResponse: true, subtype: 'CacheFeedInfo' });
     requests.push({type: 'export', responsetype: 'responseExport', tableName: 'CacheFeedInfoItem', waitResponse: true, subtype: 'CacheFeedInfoItem' });
     requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Cache', waitResponse: true, subtype: 'Cache' });
-    sendtoSQL('requests', 'SetUnreadInfo', true, { requests: requests });
+    sendtoSQL('requests', 'CheckForUnreadComplete', true, { requests: requests });
 
     if (forceRefresh) {
         forceRefresh = false;
@@ -1311,67 +1299,6 @@ function GetFeedLink2(node) {
     }
     return ""; // has links, but I can't read them?!
 }
-/*
-function UpdateGroups() {
-    let oldgroups = groups;
-    let oldgroupindex;
-    groups = [];
-    groupInfo = [];
-    if (options.showallfeeds == true) {
-        groups.push(GetAllFeedsGroup());
-
-        groupInfo[allFeedsID] = {
-            title: GetMessageText("backAllFeeds"),
-            description: GetMessageText("backAllFeeds"),
-            group: "",
-            loading: true,
-            items: [],
-            error: "",
-            category: ""
-        };
-
-        let keys = Object.keys(feedInfo);
-        let info;
-        for (let i = 0; i < keys.length; i++) {
-            if (feedInfo[keys[i]] != null) {
-                info = feedInfo[keys[i]].items;
-                for (let j = 0; j < info.length; j++) {
-                    item = GetNewItem(info[j].title, info[j].date, info[j].order, info[j].content, info[j].idOrigin, info[j].itemID, info[j].url, info[j].author, info[j].thumbnail, info[j].summary, info[j].updated, info[j].category);
-                    groupInfo[allFeedsID].items.push(item);
-                }
-            }
-        }
-    }
-    for (let i = 0; i < feeds.length; i++) {
-        if ((feeds[i].id != readLaterFeedID) && (feeds[i].group != "")) {
-            let filteredGroup = groups.find(function (el) {
-                return el.group == feeds[i].group;
-            });
-            if (filteredGroup == null) {
-                oldgroupindex = findWithAttr(oldgroups, 'group', feeds[i].group);
-                if (oldgroupindex == -1) {
-                    groups.push(CreateNewGroup(feeds[i].group, feeds[i].group, null, null, 0));
-                } else {
-                    groups.push(oldgroups[oldgroupindex]);
-                }
-            }
-        }
-    }
-    for (let i = 0; i < groups.length; i++) {
-        if (groups[i].id != allFeedsID) {
-            GetGroupItems(i, groups[i].id, groups[i].title, groups[i].title);
-        }
-    }
-
-    for (let i = 0; i < groups.length; i++) {
-        if (groups[i].id != allFeedsID) {
-            if (groupInfo[groups[i].id] != undefined) {
-                groupInfo[groups[i].id].loading = false;
-                SortByDate(groupInfo[groups[i].id].items);
-            }
-        }
-    }
-}*/
 
 function GetGroupItems(groupIndex, id, title, description) {
     let info, item;
@@ -1413,18 +1340,6 @@ function GetNewItem(title, date, order, content, idOrigin, itemID, url, author, 
         category: category
     };
 }
-/*
-function CalcGroupCountUnread(key) {
-    let filteredFeeds = GetFeedsFilterByGroup(key);
-    let count = 0;
-    for (let i = 0; i < filteredFeeds.length; i++) {
-        if (unreadInfo[filteredFeeds[i].id] != null) {
-            count += unreadInfo[filteredFeeds[i].id].unreadtotal;
-        }
-    }
-    groups[key].unreadCount = count;
-    return count;
-}*/
 
 function UpdateLoadingProgress(currentFeeds, currentFeedsCount) {
     if (viewerPort != null) {

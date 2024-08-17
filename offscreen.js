@@ -25,7 +25,6 @@ function init() {
     loadTable('ReadlaterinfoItem');
     loadTable('ItemCategories');
     loadTable('Categories');
-    loadTable('Unreadinfo');
     loadTable('UnreadinfoItem');
     loadTable('Cache');
     loadTable('CacheFeedInfo');
@@ -60,7 +59,6 @@ function init() {
         store.setItem('tableReadlaterinfoItem', e.data.msg.ReadlaterinfoItem);
         store.setItem('tableItemCategories', e.data.msg.ItemCategories);
         store.setItem('tableCategories', e.data.msg.Categories);
-        store.setItem('tableUnreadinfo', e.data.msg.Unreadinfo);
         store.setItem('tableUnreadinfoItem', e.data.msg.UnreadinfoItem);
         store.setItem('tableCache', e.data.msg.Cache);
         store.setItem('tableCacheFeedInfo', e.data.msg.CacheFeedInfo);
@@ -198,7 +196,7 @@ async function handleMessages(message, sender, sendResponse) {
       worker.postMessage({ type: 'modifyColor', waitResponse: message.waitResponse, data: message.data.data, name: message.data.name });
       break;
     }
-    case 'setOptions': case 'setLastSelectedFeed': case 'addFeed': case 'setReadlaterinfoItem': case 'addColor': case 'deleteColor': case 'setUnreadinfo':
+    case 'setOptions': case 'setLastSelectedFeed': case 'addFeed': case 'setReadlaterinfoItem': case 'addColor': case 'deleteColor': 
     case 'clearUnreadinfo': case 'addUnreadinfoItem': case 'clearUnreadinfoItem': case 'clearReadlaterinfo': case 'clearCacheFeedInfo': case 'addCacheFeedInfo':
     case 'updateCacheFeedInfoLoading': case 'updateCacheFeedInfo': case 'addCacheFeedInfoItem': case 'updateFeed': case 'cleanUpUnreadOrphans': {
       callWorker(false, null, message);
