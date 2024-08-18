@@ -590,9 +590,9 @@ function CheckForUnread(checkForUnreadCounterID) {
 
         feedInfo[feedID] = {
             feed_id: feedID,
-            title: "",
-            description: "",
-            group: "",
+            title: feedInfo[feedID] != undefined ? feedInfo[feedID].title : "",
+            description: feedInfo[feedID] != undefined ? feedInfo[feedID].description : "",
+            group: feeds[checkForUnreadCounterID].group,
             loading: true,
             items: [],
             error: "",
@@ -602,7 +602,7 @@ function CheckForUnread(checkForUnreadCounterID) {
             image: "",
             category: ""
         };
-        updateFeedInfo(feedInfo[feedID], false);
+        updateFeedInfo(feedInfo[feedID]);
 
         try {
             if (options.log) {
@@ -633,7 +633,7 @@ function CheckForUnread(checkForUnreadCounterID) {
                         feedInfo[feedID].errorContent = DecodeText(data);
                         feedInfo[feedID].showErrorContent = true;
 
-                        updateFeedInfo(feedInfo[feedID], true);
+                        updateFeedInfo(feedInfo[feedID]);
                         CheckReadFinish(checkForUnreadCounterID);
                     });
                     return;
@@ -676,7 +676,7 @@ function CheckForUnread(checkForUnreadCounterID) {
                                 feedInfo[feedID].errorContent = doc;
                                 feedInfo[feedID].showErrorContent = true;
 
-                                updateFeedInfo(feedInfo[feedID], true);
+                                updateFeedInfo(feedInfo[feedID]);
                                 CheckReadFinish(checkForUnreadCounterID);
                                 return;
                             }
@@ -709,6 +709,21 @@ function CheckForUnread(checkForUnreadCounterID) {
                                         feedInfo[feedID].date = SearchTag(rootNode, null, ["PUBDATE", "UPDATED", "DC:DATE", "DATE", "PUBLISHED"], 0);
                                     }
                                 }
+                                if (Array.isArray(feedInfo[feedID].title)) {
+                                    if (feedInfo[feedID].title.length > 0) {
+                                        feedInfo[feedID].title = feedInfo[feedID].title[0];
+                                    }
+                                }
+                                if (Array.isArray(feedInfo[feedID].description)) {
+                                    if (feedInfo[feedID].description.length > 0) {
+                                        feedInfo[feedID].description = feedInfo[feedID].description[0];
+                                    }
+                                }
+                                if (Array.isArray(feedInfo[feedID].image)) {
+                                    if (feedInfo[feedID].image.length > 0) {
+                                        feedInfo[feedID].image = feedInfo[feedID].image[0];
+                                    }
+                                }
                                 if (feedInfo[feedID].date != undefined) {
                                     if (typeof (feedInfo[feedID].date) != "string") {
                                         keys = Object.keys(feedInfo[feedID].date);
@@ -727,7 +742,7 @@ function CheckForUnread(checkForUnreadCounterID) {
                                     feedInfo[feedID].date = Date.now();
                                 }
                             }
-                            updateFeedInfo(feedInfo[feedID], true);
+                            updateFeedInfo(feedInfo[feedID]);
 
                             let nbItems = Math.min(entries.length, feeds[checkForUnreadCounterID].maxitems = 0 ? entries.length : feeds[checkForUnreadCounterID].maxitems);
                             for (let e = 0; e < nbItems; e++) {
@@ -1088,11 +1103,11 @@ function CheckForUnread(checkForUnreadCounterID) {
                             unreadInfo[feedID].unreadtotal = entries.length - readItemCount;
                         } else {
                             feedInfo[feedID].error = GetMessageText("backErrorXML");
-                            updateFeedInfo(feedInfo[feedID], true);
+                            updateFeedInfo(feedInfo[feedID]);
                         }
                     } else {
                         feedInfo[feedID].error = GetMessageText("backError200Part1") + status + GetMessageText("backError200Part2") + response.statusText + GetMessageText("backError200Part3");
-                        updateFeedInfo(feedInfo[feedID], true);
+                        updateFeedInfo(feedInfo[feedID]);
                     }
 
                     let resolveCheckForUnreadUnreadInfo;
@@ -1142,14 +1157,14 @@ function CheckForUnread(checkForUnreadCounterID) {
                     feedInfo[feedID].loading = false;
                     feedInfo[feedID].error = 'Fetch Error :';
                     feedInfo[feedID].errorContent = `${err.message}`;
-                    updateFeedInfo(feedInfo[feedID], true);
+                    updateFeedInfo(feedInfo[feedID]);
                     CheckReadFinish(checkForUnreadCounterID);
                 });
         } catch (err) {
             feedInfo[feedID].loading = false;
             feedInfo[feedID].error = 'Error :';
             feedInfo[feedID].errorContent = `${err}`;
-            updateFeedInfo(feedInfo[feedID], true);
+            updateFeedInfo(feedInfo[feedID]);
             CheckReadFinish(checkForUnreadCounterID);
         }
         CheckNextRead();
@@ -1444,12 +1459,10 @@ function cleanCatStr(catTxt) {
     return catTxt;
 }
 
-function updateFeedInfo(info, update) {
-    if (!update) {
-        sendtoSQL('addCacheFeedInfo', 'updateFeedInfo', false, info);
-    } else {
-        sendtoSQL('updateCacheFeedInfo', 'updateFeedInfo', false, info);
-    }
+function updateFeedInfo(info) {
+    console.log(info);
+
+    sendtoSQL('addCacheFeedInfo', 'updateFeedInfo', false, info);
 }
 
 function updateFeedInfoLoading(id, loading) {

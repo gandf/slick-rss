@@ -179,15 +179,6 @@ self.onmessage = async function(event) {
         }
         break;
       }
-      case 'updateCacheFeedInfo':
-      {
-        if (canWork && (request.data != undefined)) {
-          let data = request.data;
-          alasql(`UPDATE \`CacheFeedInfo\` SET \`title\` = ?, \`description\` = ?, \`loading\` = ?, \`error\` = ?, \`errorContent\` = ?, \`showErrorContent\` = ?, \`guid\` = ?, \`image\` = ?, \`category\` = ?, \`date\` = ? WHERE \`feed_id\` = ?`, [data.title,
-            data.description, data.loading, data.error, data.errorContent, data.showErrorContent, data.guid, data.image, data.category, data.feed_id, data.date]);
-        }
-        break;
-      }
       case 'getCacheFeedInfo':
       {
         if (canWork) {
