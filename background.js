@@ -145,6 +145,7 @@ function ButtonClicked(tab) {
         chrome.tabs.query({url: chrome.runtime.getURL("viewer.html")}, function(tabs) {
             if (tabs.length > 0) {
                 chrome.tabs.reload(tabs[0].id, {bypassCache: true});
+                viewerPort = chrome.tabs.connect(tabs[0].id);
             }
         });
     }
@@ -1233,7 +1234,7 @@ function CheckForUnreadComplete() {
         forceRefresh = false;
         RefreshViewer();
     } else {
-        if (viewerPort != null && !refreshFeed) {
+        if (viewerPort != null) {
             viewerPort.postMessage({type: "refreshallcomplete"});
         }
     }
@@ -1460,8 +1461,6 @@ function cleanCatStr(catTxt) {
 }
 
 function updateFeedInfo(info) {
-    console.log(info);
-
     sendtoSQL('addCacheFeedInfo', 'updateFeedInfo', false, info);
 }
 

@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', function () {
             type: "checkForUnreadOnSelectedFeed",
             FeedID: selectedFeedKeyIsFeed ? feeds[selectedFeedKey].id : groups[selectedFeedKey].id,
             IsFeed: selectedFeedKeyIsFeed
-        }).then(function () {
         });
     });
     document.getElementById('markFeedReadButton').addEventListener('click', function () {
@@ -86,24 +85,6 @@ waitOptionReady().then(function () {
     localStorage.setItem('forcelangen', options.forcelangen);
 });
 
-sendtoSQL('getUnreadinfoFull', 'Viewer', true, undefined, function(data){
-    if (data != null) {
-        unreadInfo = data;
-        unreadInfo[readLaterFeedID] = {unreadtotal: 0, readitems: {}};
-        if (unreadInfo[readLaterFeedID] != undefined) {
-            unreadInfo[readLaterFeedID].unreadtotal = readlaterInfo[readLaterFeedID].items.length;
-        }
-    }
-});
-
-GetFeedsSimple();
-
-sendtoSQL('getColors', 'Viewer', true, undefined, function(data){
-    if (data != null) {
-        category = data;
-    }
-});
-
 var selectedFeedKey = null;
 var selectedFeedKeyIsFeed = true;
 var feedReadToID = null;
@@ -114,9 +95,9 @@ var showingFeeds = false;
 var readingFeeds = false;
 var listonefeed = {};
 
-var port = chrome.runtime.connect({name: "viewerPort"});
-
 chrome.runtime.onConnect.addListener(InternalConnection);
+
+var port = chrome.runtime.connect({name: "viewerPort"});
 
 port.onMessage.addListener(function (msg) {
     if (msg.type == "feedschanged") {
@@ -158,10 +139,12 @@ port.onMessage.addListener(function (msg) {
             if (selectedFeedKeyIsFeed) {
                 if (msg.id == feeds[selectedFeedKey].id) {
                     document.getElementById("header").className = "";
+                    ShowFeeds();
                 }
             } else {
                 if (msg.id == groups[selectedFeedKey].id) {
                     document.getElementById("header").className = "";
+                    ShowFeeds();
                 }
             }
         }
@@ -176,6 +159,24 @@ port.onMessage.addListener(function (msg) {
 
     if (msg.type == "progressLoading") {
         UpdateLoadingProgress(msg.currentFeeds, msg.currentFeedsCount);
+    }
+});
+
+sendtoSQL('getUnreadinfoFull', 'Viewer', true, undefined, function(data){
+    if (data != null) {
+        unreadInfo = data;
+        unreadInfo[readLaterFeedID] = {unreadtotal: 0, readitems: {}};
+        if (unreadInfo[readLaterFeedID] != undefined) {
+            unreadInfo[readLaterFeedID].unreadtotal = readlaterInfo[readLaterFeedID].items.length;
+        }
+    }
+});
+
+GetFeedsSimple();
+
+sendtoSQL('getColors', 'Viewer', true, undefined, function(data){
+    if (data != null) {
+        category = data;
     }
 });
 
