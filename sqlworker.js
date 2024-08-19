@@ -712,6 +712,12 @@ self.onmessage = async function(event) {
               ${(key != allFeedsID) ? `WHERE feeds.\`group_id\` = ${key}` : ''}`);
             if (intermResult.length > 0) {
               resultdata[key] = { ...resultdata[key], ...intermResult[0] };
+              if (resultdata[key].error == undefined) {
+                resultdata[key].error = false;
+              }
+              if (resultdata[key].errorContent == undefined) {
+                resultdata[key].errorContent = '';
+              }
               resultdata[key].items = [];
               delete resultdata[key].maxitems;
               if (filterbygroup || getallfeedinfo) {

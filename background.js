@@ -33,14 +33,11 @@ if (datainitialized !== true) {
     refreshAfterUpgrade = false;
 }
 
-if (eventRegistered == undefined) {
-    chrome.action.onClicked.addListener(ButtonClicked);
-    chrome.runtime.onMessage.addListener(OnMessageRequest);
-    chrome.runtime.onConnect.addListener(InternalConnection);
-    chrome.alarms.onAlarm.addListener(AlarmRing);
-    chrome.runtime.onMessageExternal.addListener(ApiRequest);
-    eventRegistered = true;
-}
+chrome.action.onClicked.addListener(ButtonClicked);
+chrome.runtime.onMessage.addListener(OnMessageRequest);
+chrome.runtime.onConnect.addListener(InternalConnection);
+chrome.alarms.onAlarm.addListener(AlarmRing);
+chrome.runtime.onMessageExternal.addListener(ApiRequest);
 
 waitOptionReady().then(function () {
     DoUpgrades().then(function() {
@@ -123,11 +120,7 @@ function InternalConnection(port) {
 
 // tells viewer to reload, a feed changed
 function ReloadViewer() {
-    CleanUpUnreadOrphans().then(function () {
-        if (viewerPort != null) {
-            viewerPort.postMessage({type: "feedschanged"});
-        }
-    });
+    CleanUpUnreadOrphans();
 }
 
 // manage viewer spawning or focus

@@ -100,10 +100,6 @@ chrome.runtime.onConnect.addListener(InternalConnection);
 var port = chrome.runtime.connect({name: "viewerPort"});
 
 port.onMessage.addListener(function (msg) {
-    if (msg.type == "feedschanged") {
-        location = chrome.runtime.getURL("viewer.html");
-    }
-
     if (msg.type == "refreshallstarted") {
         UpdateSizeProgress(false);
         document.getElementById("feedsLoadingProgress").style.width = "0%";
@@ -142,7 +138,8 @@ port.onMessage.addListener(function (msg) {
                     ShowFeeds();
                 }
             } else {
-                if (msg.id == groups[selectedFeedKey].id) {
+                let feed = feeds.find(feed => feed.id === msg.id && feed.group === groups[selectedFeedKey].title);
+                if (feed) {
                     document.getElementById("header").className = "";
                     ShowFeeds();
                 }
