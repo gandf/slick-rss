@@ -1,14 +1,16 @@
+var table;
+feeds = [];
+
 document.addEventListener('DOMContentLoaded', function()
 {
 	document.getElementById('close').addEventListener('click', function() {
 		window.close();
 	});
+	
+	ShowFeeds();
 });
-feeds = [];
 
 document.documentElement.setAttribute('lang', GetMessageText('lang'));
-
-window.onload = ShowFeeds;
 
 var port = chrome.runtime.connect({name: "apiaddurlPort"});
 
@@ -18,146 +20,130 @@ port.onMessage.addListener(function (msg) {
 			if (data != undefined) {
 				let idCount = 0;
 				if (feeds.length > 0) {
-					idCount = feeds[feeds.length - 1].id + 1;
-				}
-				let startId = -1;
-				if (feeds.length > 0) {
-					let keys = Object.keys(feeds);
-					startId = feeds[keys[keys.length - 1]].id;
+					idCount = feeds.length;
 				}
 
 				let feedsToLoad = GetObjectFromStr(data);
+				let showthistab = false;
 				feedsToLoad.forEach(feedToLoad => {
-
 					if (!feeds.find(function (el) {return (el.url == feedToLoad.Url);})) {
-						feeds.push(CreateNewFeed((feedToLoad.Title == undefined) ? "" : feedToLoad.Title, feedToLoad.Url, (feedToLoad.Group == undefined) ? "" : feedToLoad.Group, options.maxitems, 0, 0, idCount));
+						let feed = CreateNewFeed((feedToLoad.Title == undefined) ? "" : feedToLoad.Title, feedToLoad.Url, (feedToLoad.Group == undefined) ? "" : feedToLoad.Group, options.maxitems, 1000 + idCount, 0, null);
+						feeds.push(feed);
 						idCount++;
+						table.addRow(feed);
+						showthistab = true;
 					}
 				});
-				let keys = Object.keys(feeds);
-				for (let i = 0; i < keys.length; i++) {
-					if (feeds[keys[i]].id > startId) {
-						AddRow(keys[i]);
-					}
+				if (showthistab) {
+					chrome.tabs.query({ url: chrome.runtime.getURL("apiaddurl.html") }, function(tabs) {
+                        if (tabs.length > 0) {
+                            chrome.tabs.update(tabs[0].id, { active: true });
+                        }
+                    });
 				}
 			}
 		});
 	}
 });
 
-function AddRow(feedKey)
-{
-	let grid;
-	let row;
-	let input;
-	let button;
-	let optionon;
-	let optionoff;
-	let select;
+var IntegerEditor = function(cell, onRendered, success, cancel) {
+	var input = document.createElement("input");
 
-	grid = document.getElementById("feedGrid");
-	row = grid.insertRow(grid.rows.length);
-	row.setAttribute("id", feedKey);
-	row.setAttribute("feedid" + feedKey, feedKey);
-	row.setAttribute("rowid", feedKey);
-
-	input = document.createElement('input');
-	input.setAttribute("type", "text");
-	input.setAttribute("class", "title");
-	input.setAttribute("id", "title" + feedKey);
-	input.setAttribute("value", feeds[feedKey].title);
-
-	row.insertCell(0).appendChild(input);
-
-	input = document.createElement('input');
-	input.setAttribute("type", "text");
-	input.setAttribute("class", "url");
-	input.setAttribute("id", "url" + feedKey);
-	input.setAttribute("value", feeds[feedKey].url);
-
-	row.insertCell(1).appendChild(input);
-
-	input = document.createElement('input');
-	input.setAttribute("type", "text");
-	input.setAttribute("class", "group");
-	input.setAttribute("id", "group" + feedKey);
-	input.setAttribute("value", feeds[feedKey].group);
-
-	row.insertCell(2).appendChild(input);
-
-	input = document.createElement('input');
-	input.setAttribute("type", "text");
-	input.setAttribute("class", "maxItems");
-	input.setAttribute("id", "maxItems" + feedKey);
-	input.setAttribute("value", feeds[feedKey].maxitems);
-
-	row.insertCell(3).appendChild(input);
-
-	optionoff = document.createElement("option");
-	optionoff.value = 0;
-	optionoff.text = GetMessageText("optionOff");
-
- 	optionon = document.createElement("option");
-	optionon.value = 1;
-	optionon.text = GetMessageText("optionOn");
-
-	select = document.createElement('select');
-	select.setAttribute("id", "excludeUnreadCount" + feedKey);
-	select.appendChild(optionoff);
-	select.appendChild(optionon);
-	select.selectedIndex = feeds[feedKey].excludeUnreadCount;
-
-	row.insertCell(4).appendChild(select);
-
-	button = document.createElement("button");
-	button.setAttribute("id", "add");
-	button.setAttribute("data-locale", "add");
-	button.innerText = GetMessageText("add");
-
-	button.addEventListener('click', function() {
-		this.style.display = "none";
-		let rowData = document.getElementById("title" + this.feedKey);
-		feeds[this.feedKey].title = rowData.value;
-		rowData = document.getElementById("url" + this.feedKey);
-		feeds[this.feedKey].url = rowData.value;
-		rowData = document.getElementById("group" + this.feedKey);
-		feeds[this.feedKey].group = rowData.value;
-		rowData = document.getElementById("maxItems" + this.feedKey);
-		feeds[this.feedKey].maxitems = rowData.value;
-		rowData = document.getElementById("excludeUnreadCount" + this.feedKey);
-		feeds[this.feedKey].excludeUnreadCount = rowData.selectedIndex;
-	
-		if (IsValid(feeds[this.feedKey].title, feeds[this.feedKey].url, feeds[this.feedKey].group, feeds[this.feedKey].maxitems, null)) {
-			let requests = [];
-			requests.push({type: 'addFeed', waitResponse: false, data: {title: feeds[this.feedKey].title, url: feeds[this.feedKey].url, group: feeds[this.feedKey].group, maxItems: feeds[this.feedKey].maxitems, excludeUnreadCount: feeds[this.feedKey].excludeUnreadCount} });
-			requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Group', waitResponse: true, subtype: 'Group' });
-			requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Feeds', waitResponse: true, subtype: 'Feeds' });
-			sendtoSQL('requests', 'ApiAddUrlRowClick', false, { requests: requests });
+	input.setAttribute("type", "number");
+	input.setAttribute("min", "0");
+	input.style.width = "100%";
+	input.style.boxSizing = "border-box";
+	input.value = cell.getValue();
+	input.addEventListener("blur", function() {
+		var value = input.value;
+		if (Number.isInteger(parseInt(value))) {
+			success(parseInt(value));
+		} else {
+			cancel();
 		}
-	}.bind({feedKey: feedKey}));
-	row.insertCell(5).appendChild(button);
-}
+	});
+
+	onRendered(function() {
+		input.focus();
+		input.style.height = "100%";
+	});
+	return input;
+};
 
 function ShowFeeds()
 {
+	let forcelangen = localStorage.getItem('forcelangen');
+    if ((forcelangen == undefined) || (forcelangen == null)) {
+        options.forcelangen = false;
+    }
+	else {
+		options.forcelangen = (forcelangen == "true");
+	}
+
+	//Build Tabulator
+	table = new Tabulator("#feedGrid-table", {
+		height:"90vh",
+		layout: "fitColumns",
+		index:"order",
+		keybindings:{
+			"navNext" : ["13"],
+		},
+		columns:[
+			{title:"", field:"id", visible:false},
+			{title:GetMessageText("manageName"), field:"title", width:300, editor:"input"},
+			{title:GetMessageText("manageUrl"), field:"url", width:400, editor:"input"},
+			{title:GetMessageText("manageGroup"), field:"group", width:200, editor:"list", editorParams:{autocomplete:"true", allowEmpty:true,listOnEmpty:true, valuesLookup:true, freetext:true}},
+			{title:GetMessageText("manageMaxItems"), field:"maxitems", width:120, editor:IntegerEditor, hozAlign:"center", headerHozAlign: "center"},
+			{title:GetMessageText("manageOrder"), field:"order", editor:IntegerEditor, hozAlign:"center", width:100, headerHozAlign: "center"},
+			{title:GetMessageText("excludeUnreadCount"), field:"excludeUnreadCount", hozAlign:"center", vertAlign:"middle", formatter:"toggle", width:200, headerHozAlign: "center", formatterParams:{
+				size:16,
+				onValue:1,
+				offValue:0,
+				onTruthy:true,
+				onColor:"#285491",
+				//offColor:"red",
+				clickable:true,
+			}},
+			{title: "", hozAlign: "center", formatter: function(cell, formatterParams, onRendered)
+				{
+					return '<button>' + GetMessageText("add") + '</button>';
+				}, cssClass: "no-background", headerSort:false, width: 100, cellClick:function(e, cell)
+				{
+					let rowdata = cell.getRow().getData();
+					if ((rowdata.id != undefined) && (rowdata.url != undefined) && (rowdata.url != "")) {
+						if (IsValid(rowdata.title, rowdata.url, rowdata.group, rowdata.maxitems, rowdata.order)) {
+							let requests = [];
+							requests.push({type: 'addFeed', waitResponse: false, data: { id: rowdata.id, title: rowdata.title, url: rowdata.url, group: rowdata.group, maxItems: rowdata.maxitems, excludeUnreadCount: rowdata.excludeUnreadCount} });
+							requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Group', waitResponse: true, subtype: 'Group' });
+							requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Feeds', waitResponse: true, subtype: 'Feeds' });
+							sendtoSQL('requests', 'ApiAddUrlRowClick', true, { requests: requests }, function() {
+								table.deleteRow(rowdata.id);
+							});
+						}
+					}
+				}
+			},
+		],
+		data:feeds
+	});
+
 	waitOptionReady().then(function () {
 		if (options.darkmode) {
 			activeDarkMode();
 		} else {
 			disableDarkMode();
 		}
+
 		chrome.runtime.sendMessage({"type": "getApiUrlToAdd" }).then(function(data){
 			if (data != undefined) {
 				let idCount = 0;
 				let feedsToLoad = GetObjectFromStr(data);
 				feedsToLoad.forEach(feedToLoad => {
-					feeds.push(CreateNewFeed((feedToLoad.Title == undefined) ? "" : feedToLoad.Title, feedToLoad.Url, (feedToLoad.Group == undefined) ? "" : feedToLoad.Group, options.maxitems, 0, 0, idCount));
+					let feed = CreateNewFeed((feedToLoad.Title == undefined) ? "" : feedToLoad.Title, feedToLoad.Url, (feedToLoad.Group == undefined) ? "" : feedToLoad.Group, options.maxitems, 1000 + idCount, 0, null);
+					feeds.push(feed);
+					table.addRow(feed);
 					idCount++;
 				});
-				for(let feedKey in feeds)
-				{
-					AddRow(feedKey);
-				}
 			}
 		});
 	});
