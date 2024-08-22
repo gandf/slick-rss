@@ -2023,8 +2023,8 @@ function InternalConnection(port) {
     if (port != null) {
         for (let key in listonefeed) {
             if (port.name == key) {
-                port.postMessage(listonefeed[key]); //***
-                //delete listonefeed[key];
+                port.postMessage(listonefeed[key]);
+                delete listonefeed[key];
             }
         }
     }

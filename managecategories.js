@@ -92,7 +92,11 @@ function GetCategoriesList() {
 				addRowPos:"top",
 				layout: "fitData",
 				index:"name",
-				keybindings:{
+				initialSort: [
+					{column: "order", dir: "asc"},
+					{column: "name", dir: "asc"}
+				],
+						keybindings:{
 					"navNext" : ["13"],
 				},
 				columns:[
@@ -102,7 +106,7 @@ function GetCategoriesList() {
 					{title:GetMessageText("manageCategory"), field:"name", width:200, editor:"input"},
 					{title:GetMessageText("manageColor"), field:"color", width:100, editor:colorEditor, formatter: colorFormatter},
 					{title:GetMessageText("manageFontColor"), field:"fontColor", width:100, editor:colorEditor, formatter: colorFormatter},
-					{title:GetMessageText("manageOrder"), field:"order", editor:IntegerEditor, hozAlign:"center", width:100, headerHozAlign: "center"},
+					{title:GetMessageText("manageOrder"), field:"order", editor:IntegerEditor, hozAlign:"center", width:100, headerHozAlign: "center", sorter: "number"},
 					{title:"", hozAlign:"center", vertAlign: "middle", formatter:deleteIcon, cssClass:"no-background", cellClick:function(e, cell)
 						{
 							if (cell.getRow().getData().newcat) {

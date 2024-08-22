@@ -160,7 +160,11 @@ function ShowFeeds()
 			height:"90vh",
 			addRowPos:"top",
 			layout: "fitData",
-			index:"order",
+			index:"id",
+			initialSort: [
+				{column: "order", dir: "asc"},
+				{column: "title", dir: "asc"}
+			],
 			keybindings:{
 				"navNext" : ["13"],
 			},
@@ -169,8 +173,8 @@ function ShowFeeds()
 				{title:GetMessageText("manageName"), field:"title", width:300, editor:"input"},
 				{title:GetMessageText("manageUrl"), field:"url", width:400, editor:"input"},
 				{title:GetMessageText("manageGroup"), field:"group", width:200, editor:"list", editorParams:{autocomplete:"true", allowEmpty:true,listOnEmpty:true, valuesLookup:true, freetext:true}},
-				{title:GetMessageText("manageMaxItems"), field:"maxitems", width:120, editor:IntegerEditor, hozAlign:"center", headerHozAlign: "center"},
-				{title:GetMessageText("manageOrder"), field:"order", editor:IntegerEditor, hozAlign:"center", width:100, headerHozAlign: "center"},
+				{title:GetMessageText("manageMaxItems"), field:"maxitems", width:120, editor:IntegerEditor, hozAlign:"center", headerHozAlign: "center", sorter: "number"},
+				{title:GetMessageText("manageOrder"), field:"order", editor:IntegerEditor, hozAlign:"center", width:100, headerHozAlign: "center", sorter: "number"},
 				{title:GetMessageText("excludeUnreadCount"), field:"excludeUnreadCount", hozAlign:"center", vertAlign:"middle", formatter:"toggle", width:200, headerHozAlign: "center", formatterParams:{
 					size:16,
 					onValue:1,

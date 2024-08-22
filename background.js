@@ -364,7 +364,7 @@ function openApiUrlPage() {
     if (apiaddurlPort != null) {
         apiaddurlPort.postMessage({type: "refresh"});
     } else {
-        chrome.tabs.create({url: chrome.runtime.getURL("apiaddurl.html")}, function (tab) {
+        chrome.tabs.create({url: chrome.runtime.getURL("apiaddurl.html"), active: false}, function (tab) {
             apiaddurlTabID = tab.id;
         });
     }

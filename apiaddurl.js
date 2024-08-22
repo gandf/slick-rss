@@ -24,23 +24,14 @@ port.onMessage.addListener(function (msg) {
 				}
 
 				let feedsToLoad = GetObjectFromStr(data);
-				let showthistab = false;
 				feedsToLoad.forEach(feedToLoad => {
 					if (!feeds.find(function (el) {return (el.url == feedToLoad.Url);})) {
 						let feed = CreateNewFeed((feedToLoad.Title == undefined) ? "" : feedToLoad.Title, feedToLoad.Url, (feedToLoad.Group == undefined) ? "" : feedToLoad.Group, options.maxitems, 1000 + idCount, 0, null);
 						feeds.push(feed);
 						idCount++;
 						table.addRow(feed);
-						showthistab = true;
 					}
 				});
-				if (showthistab) {
-					chrome.tabs.query({ url: chrome.runtime.getURL("apiaddurl.html") }, function(tabs) {
-                        if (tabs.length > 0) {
-                            chrome.tabs.update(tabs[0].id, { active: true });
-                        }
-                    });
-				}
 			}
 		});
 	}
@@ -84,7 +75,11 @@ function ShowFeeds()
 	table = new Tabulator("#feedGrid-table", {
 		height:"90vh",
 		layout: "fitColumns",
-		index:"order",
+		index:"id",
+		initialSort: [
+			{column: "order", dir: "asc"},
+			{column: "title", dir: "asc"}
+		],
 		keybindings:{
 			"navNext" : ["13"],
 		},
@@ -93,8 +88,8 @@ function ShowFeeds()
 			{title:GetMessageText("manageName"), field:"title", width:300, editor:"input"},
 			{title:GetMessageText("manageUrl"), field:"url", width:400, editor:"input"},
 			{title:GetMessageText("manageGroup"), field:"group", width:200, editor:"list", editorParams:{autocomplete:"true", allowEmpty:true,listOnEmpty:true, valuesLookup:true, freetext:true}},
-			{title:GetMessageText("manageMaxItems"), field:"maxitems", width:120, editor:IntegerEditor, hozAlign:"center", headerHozAlign: "center"},
-			{title:GetMessageText("manageOrder"), field:"order", editor:IntegerEditor, hozAlign:"center", width:100, headerHozAlign: "center"},
+			{title:GetMessageText("manageMaxItems"), field:"maxitems", width:120, editor:IntegerEditor, hozAlign:"center", headerHozAlign: "center", sorter: "number"},
+			{title:GetMessageText("manageOrder"), field:"order", editor:IntegerEditor, hozAlign:"center", width:100, headerHozAlign: "center", sorter: "number"},
 			{title:GetMessageText("excludeUnreadCount"), field:"excludeUnreadCount", hozAlign:"center", vertAlign:"middle", formatter:"toggle", width:200, headerHozAlign: "center", formatterParams:{
 				size:16,
 				onValue:1,
@@ -110,14 +105,22 @@ function ShowFeeds()
 				}, cssClass: "no-background", headerSort:false, width: 100, cellClick:function(e, cell)
 				{
 					let rowdata = cell.getRow().getData();
+					let rowdatasaved = cell.getRow().getData();
 					if ((rowdata.id != undefined) && (rowdata.url != undefined) && (rowdata.url != "")) {
 						if (IsValid(rowdata.title, rowdata.url, rowdata.group, rowdata.maxitems, rowdata.order)) {
-							let requests = [];
-							requests.push({type: 'addFeed', waitResponse: false, data: { id: rowdata.id, title: rowdata.title, url: rowdata.url, group: rowdata.group, maxItems: rowdata.maxitems, excludeUnreadCount: rowdata.excludeUnreadCount} });
-							requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Group', waitResponse: true, subtype: 'Group' });
-							requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Feeds', waitResponse: true, subtype: 'Feeds' });
-							sendtoSQL('requests', 'ApiAddUrlRowClick', true, { requests: requests }, function() {
-								table.deleteRow(rowdata.id);
+							sendtoSQL('getFeeds', 'ApiAddUrlRowClick', true, undefined, function(datafeeds) {
+								if (datafeeds != null) {
+									while (datafeeds.find(function (el) {return (el.id == rowdata.id);})) {
+										rowdata.id = GetRandomID();
+									}
+								}
+								let requests = [];
+								requests.push({type: 'addFeed', waitResponse: false, data: { id: rowdata.id, title: rowdata.title, url: rowdata.url, group: rowdata.group, order: rowdata.order, maxitems: rowdata.maxitems, excludeUnreadCount: rowdata.excludeUnreadCount} });
+								requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Group', waitResponse: true, subtype: 'Group' });
+								requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Feeds', waitResponse: true, subtype: 'Feeds' });
+								sendtoSQL('requests', 'ApiAddUrlRowClick', true, { requests: requests }, function() {
+									cell.getRow().delete();
+								});
 							});
 						}
 					}

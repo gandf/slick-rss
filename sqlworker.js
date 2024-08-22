@@ -386,8 +386,8 @@ self.onmessage = async function(event) {
       }
       case 'deleteFeed':
       {
-        if (canWork && (request.feed_id != undefined)) {
-          deleteFeed(request.feed_id);
+        if (canWork && (request.data.feed_id != undefined)) {
+          deleteFeed(request.data.feed_id);
         }
         break;
       }
@@ -824,8 +824,14 @@ function importJsonToTable(jsonData, tableName) {
 }
 
 function deleteFeed(feed_id) {
-  var feedIdInt = parseInt(feed_id, 10);
-  alasql(`DELETE FROM \`Feeds\` WHERE \`id\` = ?`, [feedIdInt]);
+  try {
+    let feedIdInt = feed_id;
+    if (isNaN(feedIdInt)) {
+      feedIdInt = parseInt(feed_id, 10);
+    }
+    alasql(`DELETE FROM \`Feeds\` WHERE \`id\` = ?`, [feedIdInt]);
+  } catch (error) {
+  }
 }
 
 function responseName(id) {

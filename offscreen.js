@@ -12,8 +12,6 @@ function init() {
     log("Worker error: " + JSON.stringify(e, ["message", "arguments", "type", "name"]));
   });
   
-  //log('Offscreen init & load database');
-  
   worker.postMessage({ type: 'init' });
 
   try{
@@ -43,7 +41,6 @@ function init() {
       case 'event': {
         switch (e.data.msg) {
           case 'initialized': {
-            //log('database loaded');
             sqlReady = true;
             responseMessage('eventSqlReady');
             break;
@@ -67,7 +64,6 @@ function init() {
         break;
       }
       default: {
-        //log(`worker type :=> '${e.data.type}.`);
         let request = listRequest.find((element) => (element.type === e.data.type) && (element.id === e.data.id));
         if (request) {
           switch (request.type) {
@@ -114,7 +110,6 @@ async function handleMessages(message, sender, sendResponse) {
     sendResponse({ sqlReady });
     return true;
   }
-  //log(`handleMessages :=> '${message.type}'.`);
 
   // Dispatch the message to an appropriate handler.
   switch (message.type) {
@@ -238,7 +233,6 @@ function sendToBackground(type, data) {
 }
 
 window.addEventListener("beforeunload", function(e){
-  //log(`Offscreen close.`);
   sendToBackground('close');
 });
 
