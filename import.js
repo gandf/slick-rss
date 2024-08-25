@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function()
 	document.getElementById('import').addEventListener('click', function() {
 		Import();
 	});
-	document.getElementById('close').addEventListener('click', function() {
+	document.getElementById('cancel').addEventListener('click', function() {
 		window.close();
 	});
 });
