@@ -93,8 +93,7 @@ function GetCategoriesList() {
 				layout: "fitData",
 				index:"name",
 				initialSort: [
-					{column: "order", dir: "asc"},
-					{column: "name", dir: "asc"}
+					{column: "order", dir: "asc"}
 				],
 						keybindings:{
 					"navNext" : ["13"],

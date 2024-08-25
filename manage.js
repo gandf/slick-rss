@@ -162,8 +162,7 @@ function ShowFeeds()
 			layout: "fitData",
 			index:"id",
 			initialSort: [
-				{column: "order", dir: "asc"},
-				{column: "title", dir: "asc"}
+				{column: "order", dir: "asc"}
 			],
 			keybindings:{
 				"navNext" : ["13"],
