@@ -8,12 +8,6 @@ if (options.darkmode) {
 	disableDarkMode();
 }
 
-function GetSenderSql() {
-    var url = window.location.href;
-    var fileName = url.substring(url.lastIndexOf('/') + 1, url.includes('?') ? url.indexOf('?') : url.length);
-    return fileName.substring(0, fileName.lastIndexOf('.')) || fileName;
-}
-
 function CommWithSQL(request, sender, sendResponse) {
 
 }

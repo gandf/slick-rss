@@ -2,12 +2,17 @@ const OFFSCREEN_DOCUMENT_PATH = 'offscreen.html';
 let creatingOffscreen;
 let OffscreenReady = false;
 let resolveOffscreenReady;
+var senderSql;
 let waitOffscreenReady = new Promise((resolve) => {
   resolveOffscreenReady = resolve;
 });
 
 let listPromiseSqlReady = [];
 let listCallback = [];
+
+if (senderSql == undefined) {
+  senderSql = GetSenderSql();
+}
 
 async function closeOffscreenDocument() {
   const offscreenUrl = chrome.runtime.getURL(OFFSCREEN_DOCUMENT_PATH);
@@ -113,4 +118,17 @@ async function eventSql(message) {
 
 function genererIdAleatoire() {
   return Date.now().toString(36) + Math.random().toString(36).substring(2);
+}
+
+function GetSenderSql() {
+  if (isServiceWorkerContext()) {
+    return 'background';
+  }
+  var url = window.location.href;
+  var fileName = url.substring(url.lastIndexOf('/') + 1, url.includes('?') ? url.indexOf('?') : url.length);
+  return fileName.substring(0, fileName.lastIndexOf('.')) || fileName;
+}
+
+function isServiceWorkerContext() {
+  return typeof self !== 'undefined' && typeof ServiceWorkerGlobalScope !== 'undefined' && self instanceof ServiceWorkerGlobalScope;
 }

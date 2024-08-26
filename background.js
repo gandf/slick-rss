@@ -26,7 +26,6 @@ if (datainitialized !== true) {
     forceRefresh = false;
     spamProtect = [];
     listApiUrlToAdd = [];
-    senderSql = GetSenderSql();
 
     datainitialized = true;
     dtCache = null;

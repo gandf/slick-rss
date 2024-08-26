@@ -213,7 +213,3 @@ function RemoveTag() {
     }
     return node;
 }
-
-function GetSenderSql() {
-    return 'background';
-}

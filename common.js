@@ -10,7 +10,6 @@ var groups;
 var unreadTotal;
 var listCategoriesRegistered;
 var readlaterInfo;
-var senderSql;
 var optionFrom;
 var itemToNotif;
 
@@ -350,9 +349,6 @@ function GetDefaultOptions() {
 
 // gets all or some options, filling in defaults when needed
 function GetOptions() {
-    if (senderSql == undefined) {
-        senderSql = GetSenderSql();
-    }
     let resolveOptionsReady;
     let waitOptionsReady = new Promise((resolve) => {
         resolveOptionsReady = resolve;
