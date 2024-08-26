@@ -1,12 +1,25 @@
 var table;
 var listdelete = [];
+var listpromiseStart = [];
+
+let resolveStartLoad;
+let waitStartLoad = new Promise((resolve) => {
+	resolveStartLoad = resolve;
+});
+listpromiseStart.push(waitStartLoad);
+
+let resolveOptionStart;
+let waitOptionStart = new Promise((resolve) => {
+	resolveOptionStart = resolve;
+});
+listpromiseStart.push(waitOptionStart);
+
 
 document.addEventListener('DOMContentLoaded', function () {
 	document.getElementById('save').addEventListener('click',  function(){
 		Save();
 	});
-
-	ShowFeeds();
+	resolveStartLoad();
 });
 
 waitOptionReady().then(function () {
@@ -16,8 +29,12 @@ waitOptionReady().then(function () {
 		disableDarkMode();
 	}
 	document.documentElement.setAttribute('lang', GetMessageText('lang'));
+	resolveOptionStart();
 });
 
+Promise.all(listpromiseStart).then(function() {
+	ShowFeeds();
+});
 
 function IsValid(title, url, group, maxItems, order)
 {
