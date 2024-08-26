@@ -56,11 +56,7 @@ async function setupOffscreenDocument() {
   }
 }
 
-setupOffscreenDocument().then(async () => {
-  if (options.log) {
-    console.log('Offscreen document is ready');
-  }
-});
+setupOffscreenDocument();
 
 async function sendtoSQL(type, fromID, waitResponse, data, callback, callbackAlreadyRegistered) {
   if (OffscreenReady == false) {

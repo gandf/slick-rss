@@ -163,7 +163,7 @@ function OnMessageRequest(request, sender, sendResponse) {
         return;
     }
 
-    if (request.type == "checkForUnread") {
+    if (request.type == 'checkForUnread') {
         CheckForUnreadStart();
         sendResponse({});
         if (options.log) {
@@ -171,7 +171,7 @@ function OnMessageRequest(request, sender, sendResponse) {
         }
         return;
     }
-    if (request.type == "checkForUnreadOnSelectedFeed") {
+    if (request.type == 'checkForUnreadOnSelectedFeed') {
         if (request.IsFeed) {
             CheckForUnreadStart(request.FeedID);
         } else {
@@ -197,7 +197,7 @@ function OnMessageRequest(request, sender, sendResponse) {
         return;
     }
 
-    if (request.type == "checkForUnreadOnSelectedFeedCompleted") {
+    if (request.type == 'checkForUnreadOnSelectedFeedCompleted') {
         if (options.log) {
             console.log('|checkForUnreadOnSelectedFeedCompleted | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
         }
@@ -216,7 +216,7 @@ function OnMessageRequest(request, sender, sendResponse) {
         return;
     }
 
-    if (request.type == "refreshFeeds") {
+    if (request.type == 'refreshFeeds') {
         GetFeeds(function () {
             CheckForUnreadStart();
         });
@@ -227,7 +227,7 @@ function OnMessageRequest(request, sender, sendResponse) {
         return;
     }
 
-    if (request.type == "refreshOptionsAndRefreshFeeds") {
+    if (request.type == 'refreshOptionsAndRefreshFeeds') {
         GetOptions().then(function () {
             if (readlaterInfo[readLaterFeedID] != undefined) {
                 readlaterInfo[readLaterFeedID].title = GetMessageText("backReadLater");
@@ -248,7 +248,7 @@ function OnMessageRequest(request, sender, sendResponse) {
         return;
     }
 
-    if (request.type == "getApiUrlToAdd") {
+    if (request.type == 'getApiUrlToAdd') {
         sendResponse(GetStrFromObject(listApiUrlToAdd));
         if (options.log) {
             console.log('|getApiUrlToAdd | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
@@ -257,7 +257,7 @@ function OnMessageRequest(request, sender, sendResponse) {
         return;
     }
 
-    if (request.type == "addFeed") {
+    if (request.type == 'addFeed') {
         sendResponse();
 
         if (request.feedData != undefined) {
@@ -384,6 +384,7 @@ function GetFeeds(callBack) {
 // as this project gets larger there will be upgrades to storage items this will help
 async function DoUpgrades() {
     let listPromise = [];
+    let listPromiseInterm = [];
     let resultPromise;
 
     // update the last version to now
@@ -393,18 +394,18 @@ async function DoUpgrades() {
         var feedsUpgrade = [];
         var readlaterInfoUpgrade = [];
         var lastSelectedFeedUpgrade = {};
-        listPromise.push(store.getItem('categories').then(function (data) { //DoUpgrades;
+        listPromiseInterm.push(store.getItem('categories').then(function (data) { //DoUpgrades;
             if (data != null) {
                 listCategoriesRegistered = data;
             }
         }));
-        listPromise.push(store.getItem('unreadinfo').then(function (data) { //DoUpgrades
+        listPromiseInterm.push(store.getItem('unreadinfo').then(function (data) { //DoUpgrades
             if (data != null) {
                 unreadInfo = data;
             }
         }));
         
-        listPromise.push(store.getItem('feeds').then(function (datafeeds) { //DoUpgrades
+        listPromiseInterm.push(store.getItem('feeds').then(function (datafeeds) { //DoUpgrades
             if (datafeeds != null) {
                 datafeeds.forEach(datafeed => {
                     if (datafeed.excludeUnreadCount == undefined) {
@@ -417,20 +418,26 @@ async function DoUpgrades() {
                 });
             }
         }));
-        listPromise.push(store.getItem('readlaterinfo').then(function(data) { //DoUpgrades
+        listPromiseInterm.push(store.getItem('readlaterinfo').then(function(data) { //DoUpgrades
             if (data != null) {
                 if (data[readLaterFeedID].items.length > 0) {
                     readlaterInfoUpgrade = data;
                 }
             }
         }));
-        listPromise.push(store.getItem('lastSelectedFeed').then(function (data) { //DoUpgrades
+        listPromiseInterm.push(store.getItem('lastSelectedFeed').then(function (data) { //DoUpgrades
             if (data != null) {
                 lastSelectedFeedUpgrade = data;
             }
         }));
 
-        resultPromise = Promise.allSettled(listPromise).then(function () {
+        let waitFinish = new Promise((resolve) => {
+            resolveFinish = resolve;
+        });
+
+        listPromise.push(waitFinish);
+    
+        Promise.allSettled(listPromiseInterm).then(function () {
             let requests = [];
             //categories
             requests.push({type: 'deleteColor', waitResponse: false });
@@ -475,12 +482,15 @@ async function DoUpgrades() {
             //options & save all
             options.isOption = true;
             requests.push({type: 'saveAll', waitResponse: false, data: options });
-            sendtoSQL('requests', 'DoUpgrades', false, { requests: requests });
+            sendtoSQL('requests', 'DoUpgrades', true, { requests: requests }, function () {
+                GetOptions().then(function () {
+                    resolveFinish();
+                });
+            });
             refreshAfterUpgrade = true;
         });
-    } else {
-        resultPromise = Promise.allSettled(listPromise);
     }
+    resultPromise = Promise.allSettled(listPromise);
     return resultPromise;
 }
 

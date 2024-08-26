@@ -63,6 +63,11 @@ function init() {
         store.setItem('tableOptions', e.data.msg.Options);
         break;
       }
+      case 'responseRequestsFinished': {
+        let request = listRequest.find((element) => (element.type === e.data.type) && (element.id === e.data.id));
+        responseMessage('requestsFinished', e.data.id, request.from, request.fromID, e.data.msg);
+        break;
+      }
       default: {
         let request = listRequest.find((element) => (element.type === e.data.type) && (element.id === e.data.id));
         if (request) {
@@ -202,12 +207,15 @@ async function handleMessages(message, sender, sendResponse) {
       break;
     }
     case 'requests': {
-      let id = addRequest('responseRequestsFinished', message.from, message.fromID, null);
-      for (var i = 0; i < message.data.requests.length; i++) {
+      for (let i = 0; i < message.data.requests.length; i++) {
         if (message.data.requests[i].waitResponse) {
           let id = addRequest(message.data.requests[i].responsetype, message.from, message.fromID, null);
           message.data.requests[i].id = id;
         }
+      }
+      let id;
+      if (message.waitResponse) {
+        id = addRequest('responseRequestsFinished', message.from, message.fromID, null);
       }
       worker.postMessage({ type: 'requests', waitResponse: message.waitResponse, data: message.data, id });
       break;

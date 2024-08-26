@@ -776,8 +776,8 @@ self.onmessage = async function(event) {
     canWork = true;
     result('event', null, true, 'initialized');
   }
-  if (event.type == 'requests') {
-    result('responseRequestsFinished', event.id, true, null);
+  if (event.data.type == 'requests') {
+    result('responseRequestsFinished', event.data.id, event.data.waitResponse, null);
   }
 };
 
