@@ -829,8 +829,25 @@ function deleteFeed(feed_id) {
     if (isNaN(feedIdInt)) {
       feedIdInt = parseInt(feed_id, 10);
     }
+
+    let group = alasql(`SELECT \`group_id\` FROM \`Feeds\` WHERE \`id\` = ?`, [feedIdInt]);
+    if (group.length > 0) {
+      group = group[0].group_id;
+    }
+
     alasql(`DELETE FROM \`Feeds\` WHERE \`id\` = ?`, [feedIdInt]);
+
+    if ((group != null) && (group != undefined)) {
+      let count = alasql(`SELECT COUNT(*) as nb FROM \`Feeds\` WHERE \`group_id\` = ?`, [group]);
+      if (count.length > 0) {
+        count = count[0].nb;
+      }
+      if (count == 0) {
+        alasql(`DELETE FROM \`Group\` WHERE \`id\` = ?`, [group]);
+      }
+    }
   } catch (error) {
+    log(`deleteFeed error ${error}`);
   }
 }
 
