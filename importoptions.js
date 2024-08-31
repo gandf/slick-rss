@@ -152,7 +152,7 @@ function ImportOptions(optionsToImport)
 		requests.push({type: 'setOptions', tableName: 'Options', waitResponse: false, subtype: 'Options', data: options });
 		requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Options', waitResponse: true, subtype: 'Options' });
 		sendtoSQL('requests', 'ImportOptions', true, { requests: requests }, function(){
-			chrome.runtime.sendMessage({"type": "refreshOptionsAndRefreshFeeds"}).then(function(){
+			chrome.runtime.sendMessage({ type: 'refreshOptionsAndRefreshFeeds', target: 'background' }).then(function(){
 				refreshViewerTab();
 			});
 		});

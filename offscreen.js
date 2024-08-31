@@ -226,18 +226,14 @@ async function handleMessages(message, sender, sendResponse) {
 }
 
 function responseMessage(type, requestId, from, fromID, data) {
-  chrome.runtime.sendMessage({ type, target: from, targetID: fromID, data });
+  chrome.runtime.sendMessage({ type, offTarget: 'offscrmgr', target: from, targetID: fromID, data });
   if (requestId != undefined) {
     listRequest = listRequest.filter(request => request.id !== requestId);
   }
 }
 
 function sendToBackground(type, data) {
-  chrome.runtime.sendMessage({
-    type,
-    target: 'background',
-    data
-  });
+  chrome.runtime.sendMessage({ type, target: 'background', data });
 }
 
 window.addEventListener("beforeunload", function(e){

@@ -152,15 +152,14 @@ function RefreshViewer() {
 }
 
 function OnMessageRequest(request, sender, sendResponse) {
+    if (request.target !== 'background') {
+        return false;
+      }
+    
     let now;
     if (options.log) {
         now = new Date();
         console.log(request.type);
-    }
-
-    if (request.type == undefined) {
-        sendResponse({});
-        return;
     }
 
     if (request.type == 'checkForUnread') {
@@ -169,7 +168,7 @@ function OnMessageRequest(request, sender, sendResponse) {
         if (options.log) {
             console.log('|checkForUnread | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
         }
-        return;
+        return true;
     }
     if (request.type == 'checkForUnreadOnSelectedFeed') {
         if (request.IsFeed) {
@@ -194,7 +193,7 @@ function OnMessageRequest(request, sender, sendResponse) {
         if (options.log) {
             console.log('|checkForUnreadOnSelectedFeed | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
         }
-        return;
+        return true;
     }
 
     if (request.type == 'checkForUnreadOnSelectedFeedCompleted') {
@@ -205,26 +204,26 @@ function OnMessageRequest(request, sender, sendResponse) {
             if (feedInfo[feeds[request.selectedFeedKey].id] != undefined) {
                 if (!feedInfo[feeds[request.selectedFeedKey].id].loading) {
                     sendResponse({ result: true });
-                    return;
+                    return true;
                 }
             }
         } else {
             sendResponse({ result: true });
-            return;
+            return true;
         }
         sendResponse({});
-        return;
+        return true;
     }
 
     if (request.type == 'refreshFeeds') {
         GetFeeds(function () {
             CheckForUnreadStart();
         });
-        sendResponse({});
         if (options.log) {
             console.log('|refreshFeeds | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
         }
-        return;
+        sendResponse({});
+        return true;
     }
 
     if (request.type == 'refreshOptionsAndRefreshFeeds') {
@@ -241,56 +240,28 @@ function OnMessageRequest(request, sender, sendResponse) {
                 CheckForUnreadStart();
             });
         });
-        sendResponse({});
         if (options.log) {
             console.log('|refreshOptionsAndRefreshFeeds | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
         }
-        return;
+        sendResponse({});
+        return true;
     }
 
     if (request.type == 'getApiUrlToAdd') {
-        sendResponse(GetStrFromObject(listApiUrlToAdd));
         if (options.log) {
             console.log('|getApiUrlToAdd | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
         }
+        sendResponse(GetStrFromObject(listApiUrlToAdd));
         listApiUrlToAdd = [];
-        return;
-    }
-
-    if (request.type == 'addFeed') {
-        sendResponse();
-
-        if (request.feedData != undefined) {
-            let maxOrderFeed = 1;
-            let itemOrder;
-
-            for (feedKey in feeds) {
-                itemOrder = parseInt(feeds[feedKey].order, 10);
-
-                if (itemOrder > maxOrderFeed) {
-                    maxOrderFeed = itemOrder;
-                }
-            }
-            maxOrderFeed++;
-            let newfeed = CreateNewFeed(request.feedData.title, request.feedData.url, request.feedData.group, request.feedData.maxItems, maxOrderFeed, request.feedData.excludeUnreadCount, null);
-            feeds.push(newfeed);
-            sendtoSQL('addFeed', 'BackgroundAddFeed', true, newfeed, function () {
-                GetFeeds(function () {
-                    CheckForUnreadStart();
-                });
-            });
-        }
-        if (options.log) {
-            console.log('|addFeed | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
-        }
-        return;
+        return true;
     }
 
     if (request.type == "cleanListApiUrlToAdd") {
         listApiUrlToAdd = [];
         sendResponse();
-        return;
+        return true;
     }
+    return false;
 }
 
 function ApiRequest(request, sender, sendResponse) {
@@ -386,109 +357,115 @@ async function DoUpgrades() {
     let listPromise = [];
     let listPromiseInterm = [];
     let resultPromise;
+    let waitFinish = new Promise((resolve) => {
+        resolveFinish = resolve;
+    });
+
+    listPromise.push(waitFinish);
 
     // update the last version to now
     if ((options.lastversion != manifest.version) || (optionFrom == 'direct')) {
-        
-        options.lastversion = manifest.version;
-        var feedsUpgrade = [];
-        var readlaterInfoUpgrade = [];
-        var lastSelectedFeedUpgrade = {};
-        listPromiseInterm.push(store.getItem('categories').then(function (data) { //DoUpgrades;
-            if (data != null) {
-                listCategoriesRegistered = data;
-            }
-        }));
-        listPromiseInterm.push(store.getItem('unreadinfo').then(function (data) { //DoUpgrades
-            if (data != null) {
-                unreadInfo = data;
-            }
-        }));
-        
-        listPromiseInterm.push(store.getItem('feeds').then(function (datafeeds) { //DoUpgrades
-            if (datafeeds != null) {
-                datafeeds.forEach(datafeed => {
-                    if (datafeed.excludeUnreadCount == undefined) {
-                        datafeed.excludeUnreadCount = 0;
+        GetOptions().then(function () {
+            if ((options.lastversion != manifest.version) || ((optionFrom == 'direct') && (!options.isOption))) {
+                options.lastversion = manifest.version;
+                var feedsUpgrade = [];
+                var readlaterInfoUpgrade = [];
+                var lastSelectedFeedUpgrade = {};
+                listPromiseInterm.push(store.getItem('categories').then(function (data) { //DoUpgrades;
+                    if (data != null) {
+                        listCategoriesRegistered = data;
                     }
-                });
-    
-                feedsUpgrade = datafeeds.sort(function (a, b) {
-                    return a.order - b.order;
-                });
-            }
-        }));
-        listPromiseInterm.push(store.getItem('readlaterinfo').then(function(data) { //DoUpgrades
-            if (data != null) {
-                if (data[readLaterFeedID].items.length > 0) {
-                    readlaterInfoUpgrade = data;
-                }
-            }
-        }));
-        listPromiseInterm.push(store.getItem('lastSelectedFeed').then(function (data) { //DoUpgrades
-            if (data != null) {
-                lastSelectedFeedUpgrade = data;
-            }
-        }));
-
-        let waitFinish = new Promise((resolve) => {
-            resolveFinish = resolve;
-        });
-
-        listPromise.push(waitFinish);
-    
-        Promise.allSettled(listPromiseInterm).then(function () {
-            let requests = [];
-            //categories
-            requests.push({type: 'deleteColor', waitResponse: false });
-            let keys = Object.keys(listCategoriesRegistered);
-            for (let i = 0 ; i < keys.length ; i++) {
-                let order = keys[i];
-                if (isNaN(order)) {
-                    order = parseInt(order, 10);
-                }
-                order++;
-                requests.push({type: 'addColor', waitResponse: false, data: { id: GetRandomID(), name: listCategoriesRegistered[keys[i]].category, color: listCategoriesRegistered[keys[i]].color, fontColor: options.darkmode ? "#4D5460" : "#0000EE", order: order }});
-            }
-            //lastSelectedFeed
-            requests.push({type: 'setLastSelectedFeed', waitResponse: false, data: lastSelectedFeedUpgrade});
-
-            //feeds
-            feedsUpgrade.forEach(function (feed) {
-                requests.push({type: 'addFeed', waitResponse: false, data: feed});
-            });
-
-            //readlaterinfo
-            keys = Object.keys(readlaterInfoUpgrade);
-            for (let i = 0 ; i < keys.length ; i++) {
-                readlaterInfoUpgrade[keys[i]].items.forEach(function (item) {
-                    requests.push({type: 'setReadlaterinfoItem', waitResponse: false, data: item });
-                });
-            }
-
-            //unreadinfo
-            requests.push({type: 'clearUnreadinfo', waitResponse: false });
-            keys = Object.keys(unreadInfo);
-            for (let i = 0; i <  keys.length; i++) {
-                let items = unreadInfo[keys[i]].readitems;
-                if (items != undefined) {
-                    let keysitem = Object.keys(items);
-                    for (let j = 0; j < keysitem.length; j++) {
-                        requests.push({type: 'addUnreadinfoItem', waitResponse: false, data: { feed_id: keys[i], itemHash: keysitem[j], value: items[keysitem[j]] } });
+                }));
+                listPromiseInterm.push(store.getItem('unreadinfo').then(function (data) { //DoUpgrades
+                    if (data != null) {
+                        unreadInfo = data;
                     }
-                }               
-            }
-
-            //options & save all
-            options.isOption = true;
-            requests.push({type: 'saveAll', waitResponse: false, data: options });
-            sendtoSQL('requests', 'DoUpgrades', true, { requests: requests }, function () {
-                GetOptions().then(function () {
-                    resolveFinish();
+                }));
+                
+                listPromiseInterm.push(store.getItem('feeds').then(function (datafeeds) { //DoUpgrades
+                    if (datafeeds != null) {
+                        datafeeds.forEach(datafeed => {
+                            if (datafeed.excludeUnreadCount == undefined) {
+                                datafeed.excludeUnreadCount = 0;
+                            }
+                        });
+            
+                        feedsUpgrade = datafeeds.sort(function (a, b) {
+                            return a.order - b.order;
+                        });
+                    }
+                }));
+                listPromiseInterm.push(store.getItem('readlaterinfo').then(function(data) { //DoUpgrades
+                    if (data != null) {
+                        if (data[readLaterFeedID].items.length > 0) {
+                            readlaterInfoUpgrade = data;
+                        }
+                    }
+                }));
+                listPromiseInterm.push(store.getItem('lastSelectedFeed').then(function (data) { //DoUpgrades
+                    if (data != null) {
+                        lastSelectedFeedUpgrade = data;
+                    }
+                }));
+        
+                Promise.allSettled(listPromiseInterm).then(function () {
+                    let requests = [];
+                    //categories
+                    requests.push({type: 'deleteColor', waitResponse: false });
+                    let keys = Object.keys(listCategoriesRegistered);
+                    for (let i = 0 ; i < keys.length ; i++) {
+                        let order = keys[i];
+                        if (isNaN(order)) {
+                            order = parseInt(order, 10);
+                        }
+                        order++;
+                        requests.push({type: 'addColor', waitResponse: false, data: { id: GetRandomID(), name: listCategoriesRegistered[keys[i]].category, color: listCategoriesRegistered[keys[i]].color, fontColor: options.darkmode ? "#4D5460" : "#0000EE", order: order }});
+                    }
+                    //lastSelectedFeed
+                    requests.push({type: 'setLastSelectedFeed', waitResponse: false, data: lastSelectedFeedUpgrade});
+        
+                    //feeds
+                    feedsUpgrade.forEach(function (feed) {
+                        requests.push({type: 'addFeed', fromID: 'DoUpgrades', waitResponse: false, data: feed});
+                    });
+        
+                    //readlaterinfo
+                    keys = Object.keys(readlaterInfoUpgrade);
+                    for (let i = 0 ; i < keys.length ; i++) {
+                        readlaterInfoUpgrade[keys[i]].items.forEach(function (item) {
+                            requests.push({type: 'setReadlaterinfoItem', waitResponse: false, data: item });
+                        });
+                    }
+        
+                    //unreadinfo
+                    requests.push({type: 'clearUnreadinfo', waitResponse: false });
+                    keys = Object.keys(unreadInfo);
+                    for (let i = 0; i <  keys.length; i++) {
+                        let items = unreadInfo[keys[i]].readitems;
+                        if (items != undefined) {
+                            let keysitem = Object.keys(items);
+                            for (let j = 0; j < keysitem.length; j++) {
+                                requests.push({type: 'addUnreadinfoItem', waitResponse: false, data: { feed_id: keys[i], itemHash: keysitem[j], value: items[keysitem[j]] } });
+                            }
+                        }               
+                    }
+        
+                    //options & save all
+                    options.isOption = true;
+                    requests.push({type: 'saveAll', waitResponse: false, data: options });
+                    sendtoSQL('requests', 'DoUpgrades', true, { requests: requests }, function () {
+                        GetOptions().then(function () {
+                            resolveFinish();
+                        });
+                    });
+                    refreshAfterUpgrade = true;
                 });
-            });
-            refreshAfterUpgrade = true;
+            } else {
+                resolveFinish();
+            }
         });
+    } else {
+        resolveFinish();
     }
     resultPromise = Promise.allSettled(listPromise);
     return resultPromise;
@@ -1082,8 +1059,10 @@ function CheckForUnread(checkForUnreadCounterID) {
                                     }
                                 }
 
-                                feedInfo[feedID].items.push(item);
-                                updateFeedInfoItem(item);
+                                if (feedInfo[feedID].items != undefined) {
+                                    feedInfo[feedID].items.push(item);
+                                    updateFeedInfoItem(item);
+                                }
                                 entryIDs[item.itemID] = 1;
                             }
 

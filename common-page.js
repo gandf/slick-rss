@@ -142,7 +142,7 @@ function GetDefaultOptionsPage() {
         "unreadtotaldisplay": 3,
         "columns": 2,
         "readlaterenabled": true,
-        "readlaterremovewhenviewed": true,
+        "readlaterremovewhenviewed": false,
         "loadlinksinbackground": true,
         "showallfeeds": false,
         "usethumbnail": true,

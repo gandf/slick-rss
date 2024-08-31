@@ -4,7 +4,13 @@ feeds = [];
 document.addEventListener('DOMContentLoaded', function()
 {
 	document.getElementById('close').addEventListener('click', function() {
-		window.close();
+		if (feedsToLoad.length > 0) {
+			chrome.runtime.sendMessage({ type: 'cleanListApiUrlToAdd', target: 'background' }).then(function(){
+				window.close();
+			});
+		} else {
+			window.close();
+		}
 	});
 	
 	ShowFeeds();
@@ -16,7 +22,7 @@ var port = chrome.runtime.connect({name: "apiaddurlPort"});
 
 port.onMessage.addListener(function (msg) {
 	if (msg.type == "refresh") {
-		chrome.runtime.sendMessage({"type": "getApiUrlToAdd" }).then(function(data){
+		chrome.runtime.sendMessage({ type: 'getApiUrlToAdd', target: 'background' }).then(function(data){
 			if (data != undefined) {
 				let idCount = 0;
 				if (feeds.length > 0) {
@@ -114,7 +120,7 @@ function ShowFeeds()
 									}
 								}
 								let requests = [];
-								requests.push({type: 'addFeed', waitResponse: false, data: { id: rowdata.id, title: rowdata.title, url: rowdata.url, group: rowdata.group, order: rowdata.order, maxitems: rowdata.maxitems, excludeUnreadCount: rowdata.excludeUnreadCount} });
+								requests.push({type: 'addFeed', fromID: 'ApiAddUrlRowClick', waitResponse: false, data: { id: rowdata.id, title: rowdata.title, url: rowdata.url, group: rowdata.group, order: rowdata.order, maxitems: rowdata.maxitems, excludeUnreadCount: rowdata.excludeUnreadCount} });
 								requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Group', waitResponse: true, subtype: 'Group' });
 								requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Feeds', waitResponse: true, subtype: 'Feeds' });
 								sendtoSQL('requests', 'ApiAddUrlRowClick', true, { requests: requests }, function() {
@@ -136,7 +142,7 @@ function ShowFeeds()
 			disableDarkMode();
 		}
 
-		chrome.runtime.sendMessage({"type": "getApiUrlToAdd" }).then(function(data){
+		chrome.runtime.sendMessage({ type: 'getApiUrlToAdd', target: 'background' }).then(function(data){
 			if (data != undefined) {
 				let idCount = 0;
 				let feedsToLoad = GetObjectFromStr(data);

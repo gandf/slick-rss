@@ -364,7 +364,10 @@ self.onmessage = async function(event) {
             id++;
           } else {
             id = request.data.id;
-            deleteFeed(id);
+            if (isNaN(id)) {
+              id = parseInt(id, 10);
+            }
+            deleteFeed(id, false);
           }
           let idgroup = null;
           if ((request.data.group == '') || (request.data.group == null) || (request.data.group == undefined)) {
@@ -387,7 +390,7 @@ self.onmessage = async function(event) {
       case 'deleteFeed':
       {
         if (canWork && (request.data.feed_id != undefined)) {
-          deleteFeed(request.data.feed_id);
+          deleteFeed(request.data.feed_id, true);
         }
         break;
       }
@@ -446,9 +449,19 @@ self.onmessage = async function(event) {
       case 'setReadlaterinfoItem':
       {
         if (canWork && (request.data != undefined)) {
-          let result = alasql(`INSERT INTO \`ReadlaterinfoItem\` VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [request.data.itemID, request.data.title,
-            request.data.summary, request.data.thumbnail, request.data.content, request.data.date, request.data.guid, request.data.order, 
-            request.data.idOrigin, request.data.updated, request.data.url, request.data.author, request.data.comments]);
+          let idOrigin = request.data.idOrigin;
+          if (isNaN(idOrigin)) {
+            idOrigin = parseInt(idOrigin, 10);
+          }
+          let item = alasql(`SELECT \`itemID\` FROM \`ReadlaterinfoItem\` WHERE (\`idOrigin\` = ?) AND (\`itemID\` = ?)`, [idOrigin, request.data.itemID]);
+          if (item.length > 0) {
+            alasql(`UPDATE \`ReadlaterinfoItem\` SET \`title\` = ?, \`summary\` = ?, \`thumbnail\` = ?, \`content\` = ?, \`date\` = ?, \`guid\` = ?, \`order\` = ?, \`updated\` = ?, \`url\` = ?, \`author\` = ?, \`comments\` = ? WHERE (\`idOrigin\` = ?) AND (\`itemID\` = ?)`, [request.data.title,
+              request.data.summary, request.data.thumbnail, request.data.content, request.data.date, request.data.guid, request.data.order, request.data.updated, request.data.url, request.data.author, request.data.comments, idOrigin, request.data.itemID]);
+          } else {
+            let result = alasql(`INSERT INTO \`ReadlaterinfoItem\` VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [request.data.itemID, request.data.title,
+              request.data.summary, request.data.thumbnail, request.data.content, request.data.date, request.data.guid, request.data.order, 
+              idOrigin, request.data.updated, request.data.url, request.data.author, request.data.comments]);
+          }
           if (request.data.category_names != undefined) {
             request.data.category_names.forEach(category_name => {
               let category_id = alasql(`SELECT \`category_id\` FROM \`Categories\` WHERE \`name\` = ?`, [category_name]);
@@ -823,7 +836,7 @@ function importJsonToTable(jsonData, tableName) {
   return result;
 }
 
-function deleteFeed(feed_id) {
+function deleteFeed(feed_id, deletefeedinfo) {
   try {
     let feedIdInt = feed_id;
     if (isNaN(feedIdInt)) {
@@ -845,6 +858,11 @@ function deleteFeed(feed_id) {
       if (count == 0) {
         alasql(`DELETE FROM \`Group\` WHERE \`id\` = ?`, [group]);
       }
+    }
+
+    if (deletefeedinfo) {
+      alasql(`DELETE FROM \`CacheFeedInfo\` WHERE \`feed_id\` = ?`, [feedIdInt]);
+      alasql(`DELETE FROM \`CacheFeedInfoItem\` WHERE \`idOrigin\` = ?`, [feedIdInt]);
     }
   } catch (error) {
     log(`deleteFeed error ${error}`);

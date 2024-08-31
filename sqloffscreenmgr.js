@@ -69,7 +69,7 @@ async function sendtoSQL(type, fromID, waitResponse, data, callback, callbackAlr
     }
   }
   if (OffscreenReady == true) {
-    chrome.runtime.sendMessage({type, target: 'offscreen', from: senderSql, fromID, waitResponse, data}, response => {
+    chrome.runtime.sendMessage( {type, target: 'offscreen', from: senderSql, fromID, waitResponse, data }, response => {
       if (response != undefined) {
         if ((response.sqlReady != undefined) && (response.sqlReady == false)) {
           createAndStorePromiseSqlready().then(() => {
@@ -94,6 +94,10 @@ function createAndStorePromiseSqlready() {
 chrome.runtime.onMessage.addListener(eventSql);
 
 async function eventSql(message) {
+  if (message.offTarget !== 'offscrmgr') {
+    return false;
+  }
+
   if (message.type == 'eventSqlReady') {
     listPromiseSqlReady.forEach((resolve) => resolve());
     listPromiseSqlReady = [];
@@ -118,11 +122,11 @@ function genererIdAleatoire() {
 
 function GetSenderSql() {
   if (isServiceWorkerContext()) {
-    return 'background';
+    return 'sqlbackground';
   }
   var url = window.location.href;
   var fileName = url.substring(url.lastIndexOf('/') + 1, url.includes('?') ? url.indexOf('?') : url.length);
-  return fileName.substring(0, fileName.lastIndexOf('.')) || fileName;
+  return 'sql' + (fileName.substring(0, fileName.lastIndexOf('.')) || fileName);
 }
 
 function isServiceWorkerContext() {

@@ -1,14 +1,13 @@
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('refreshAll').addEventListener('click', function () {
-        chrome.runtime.sendMessage({type: "checkForUnread"}).then(function () {
+        chrome.runtime.sendMessage({ type: 'checkForUnread', target: 'background' }).then(function () {
         });
     });
     document.getElementById('markAllRead').addEventListener('click', function () {
         MarkAllFeedsRead();
     });
     document.getElementById('refreshButton').addEventListener('click', function () {
-        chrome.runtime.sendMessage({
-            type: "checkForUnreadOnSelectedFeed",
+        chrome.runtime.sendMessage({ type: 'checkForUnreadOnSelectedFeed', target: 'background',
             FeedID: selectedFeedKeyIsFeed ? feeds[selectedFeedKey].id : groups[selectedFeedKey].id,
             IsFeed: selectedFeedKeyIsFeed
         });
@@ -48,6 +47,11 @@ var showFeedsWork = false;
 var listCategoriesRegisteredUpper;
 var categoryFilterUpper = '';
 
+let resolveOptionReadyViewer;
+let waitOptionReadyViewer = new Promise((resolve) => {
+    resolveOptionReadyViewer = resolve;
+});
+
 waitOptionReady().then(function () {
     if (options.darkmode) {
         activeDarkMode();
@@ -55,6 +59,11 @@ waitOptionReady().then(function () {
         disableDarkMode();
     }
 
+    let resolveGetCategoriesRegistered;
+    let waitGetCategoriesRegistered = new Promise((resolve) => {
+        resolveGetCategoriesRegistered = resolve;
+    });
+    
     GetCategoriesRegistered().then(function () {
         if (listCategoriesRegistered != undefined) {
             listCategoriesRegisteredUpper = [];
@@ -64,9 +73,9 @@ waitOptionReady().then(function () {
                 }
             }
         }
-
+        let listPromiserlinfo = [];
         if (options.readlaterenabled) {
-            loadReadlaterInfo();
+            listPromiserlinfo.push(loadReadlaterInfo());
         }
         if (options.showGetRSSFeedUrl) {
             document.getElementById("getToolFindFeed").style.display = "";
@@ -79,10 +88,16 @@ waitOptionReady().then(function () {
         } else {
             document.getElementById("addAuthNotif").style.display = "none";
         }
+        Promise.allSettled(listPromiserlinfo).then(function () {
+            resolveGetCategoriesRegistered();
+        });
     });
     localStorage.setItem('darkmode', options.darkmode);
     localStorage.setItem('fontSize', options.fontSize);
     localStorage.setItem('forcelangen', options.forcelangen);
+    waitGetCategoriesRegistered.then(function () {
+        resolveOptionReadyViewer();
+    });
 });
 
 var selectedFeedKey = null;
@@ -183,8 +198,14 @@ function ReloadViewer() {
 
 UpdateDataFromWorker(undefined);
 
-window.onload = ShowFeeds;
+window.onload = pageOnLoad;
 window.onresize = FixFeedList;
+
+function pageOnLoad() {
+    Promise.allSettled([waitOptionReadyViewer]).then(function () {
+        ShowFeeds();
+    });
+}
 
 function UpdateDataFromWorker(id) {
     readingFeeds = true;
@@ -385,7 +406,17 @@ function ShowFeeds() {
         showFeedsWork = true;
         if (lastSelectedType != "Group") {
             if ((feeds.length == 0) || ((feeds.length == 1) && (feedInfo[readLaterFeedID] == undefined))) {
-                showNoFeeds = true;
+                if ((feeds.length == 1) && (feeds[0].id == readLaterFeedID)) {
+                    if (readlaterInfo[readLaterFeedID] == undefined) {
+                        showNoFeeds = true;
+                    } else {
+                        if (readlaterInfo[readLaterFeedID].items.length == 0) {
+                            showNoFeeds = true;
+                        }
+                    }
+                } else {
+                    showNoFeeds = true;
+                }
             }
             if (!showNoFeeds && (feedInfo[readLaterFeedID] != undefined)) {
                 showNoFeeds = (feeds.length == 1) && (feedInfo[readLaterFeedID].items.length == 0);
@@ -1020,10 +1051,12 @@ function SelectFeedOrGroup(key, type) {
     } else {
         sendtoSQL('getGroupInfo', 'ViewerShowGroups', true, { group_id: key }, function(data){
             if (data != null) {
-                if (data[key].items != undefined) {
-                    feedsOrGroupsInfo = data[key];
-                    feedsOrGroupsInfo.title = groups[key].title;
-                    groupInfo[key] = feedsOrGroupsInfo;
+                if (data[key] != undefined) {
+                    if (data[key].items != undefined) {
+                        feedsOrGroupsInfo = data[key];
+                        feedsOrGroupsInfo.title = groups[key].title;
+                        groupInfo[key] = feedsOrGroupsInfo;
+                    }
                 }
             }
             resolveGetInfo();
@@ -1104,10 +1137,7 @@ function SelectFeedOrGroup(key, type) {
 
                 if (type == "Feed") {
                     // must be a new feed with no content yet
-                    chrome.runtime.sendMessage({
-                        "type": "checkForUnreadOnSelectedFeedCompleted",
-                        "selectedFeedKey": key
-                    }).then(function (data) {
+                    chrome.runtime.sendMessage({ type: 'checkForUnreadOnSelectedFeedCompleted', target: 'background', selectedFeedKey: key }).then(function (data) {
                         if (!data) {
                             if (data.result) {
                                 if (type == "Feed") {
@@ -1276,18 +1306,20 @@ function RenderFeed(type, feedsOrGroupsInfo) {
         feedsOrGroupsInfo = readlaterInfo[readLaterFeedID];
     }
 
+    headerMessage = feedsOrGroups[selectedFeedKey].title;
+    if (feedsOrGroupsInfo) {
+        if (feedsOrGroupsInfo.title != "") {
+            headerMessage = feedsOrGroupsInfo.title;
+        }
+        if (feedsOrGroupsInfo.description != "" && options.showdescriptions) {
+            headerMessage += "<span> : " + feedsOrGroupsInfo.description + "</span>";
+        }
+    }
+    document.getElementById("headerMessage").innerHTML = headerMessage;
+
     if (feedsOrGroupsInfo == null) {
         return;
     }
-
-    headerMessage = feedsOrGroups[selectedFeedKey].title;
-    if (feedsOrGroupsInfo.title != "") {
-        headerMessage = feedsOrGroupsInfo.title;
-    }
-    if (feedsOrGroupsInfo.description != "" && options.showdescriptions) {
-        headerMessage += "<span> : " + feedsOrGroupsInfo.description + "</span>";
-    }
-    document.getElementById("headerMessage").innerHTML = headerMessage;
 
     let logoUsed = false;
     if (feedsOrGroupsInfo.image != undefined) {
@@ -1402,18 +1434,16 @@ function RenderFeed(type, feedsOrGroupsInfo) {
             }
 
             if (feedID == readLaterFeedID) {
-                if (options.readlaterremovewhenviewed) {
-                    feedLink.addEventListener('click', function () {
-                        LinkProxy(this.href);
+                feedLink.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    LinkProxy(this.href);
+                    if (options.readlaterremovewhenviewed) {
                         UnMarkItemReadLater(this.i);
-                    }.bind({href, i}));
-                } else {
-                    feedLink.addEventListener('click', function () {
-                        LinkProxy(this.href);
-                    }.bind({href}));
-                }
+                    }
+                }.bind({href, i}));
             } else {
-                feedLink.addEventListener('click', function () {
+                feedLink.addEventListener('click', function (event) {
+                    event.preventDefault();
                     LinkProxy(this.href);
                     if (!options.dontreadontitleclick) {
                         MarkItemRead(this.itemID);

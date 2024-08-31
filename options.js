@@ -203,7 +203,7 @@ function Save()
 		});
 	}
 	Promise.allSettled([promiseCheckForUnread]).then(function() {
-		chrome.runtime.sendMessage({"type": "refreshOptionsAndRefreshFeeds"}).then(function(){
+		chrome.runtime.sendMessage({ type: 'refreshOptionsAndRefreshFeeds', target: 'background' }).then(function(){
 			refreshViewerTab();
 		});
 	});

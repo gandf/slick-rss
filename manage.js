@@ -99,8 +99,12 @@ function Save()
 		if (!IsValid(feed.title, feed.url, feed.group, feed.maxitems, feed.order)) {
 			return;
 		}
+		let feeddeleted = listdelete.filter(x => x == feed.id);
+		if (feeddeleted.length > 0) {
+			continue;
+		}
 		if (feed.id < 0) {
-			requests.push({type: 'addFeed', waitResponse: false, data: CreateNewFeed(feed.title, feed.url, feed.group, feed.maxitems, feed.order, feed.excludeUnreadCount) });
+			requests.push({type: 'addFeed', fromID: 'ManageImport', waitResponse: false, data: CreateNewFeed(feed.title, feed.url, feed.group, feed.maxitems, feed.order, feed.excludeUnreadCount) });
 		} else {
 			let onefeed = feeds.filter(x => x.id == feed.id);
 			if (onefeed.length > 0) {
@@ -115,10 +119,14 @@ function Save()
 	if (requests.length > 0) {
 		requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Group', waitResponse: true, subtype: 'Group' });
 		requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Feeds', waitResponse: true, subtype: 'Feeds' });
+		if (listdelete.length > 0) {
+			requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Feeds', waitResponse: true, subtype: 'CacheFeedInfo' });
+			requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Feeds', waitResponse: true, subtype: 'CacheFeedInfoItem' });
+		}
 		sendtoSQL('requests', 'ManageImport', true, { requests: requests }, function(){
 			GetUnreadCounts();
 			CleanUpUnreadOrphans();
-			chrome.runtime.sendMessage({"type": "refreshFeeds" }).then(function(){
+			chrome.runtime.sendMessage({ type: 'refreshFeeds', target: 'background' }).then(function(){
 				window.location = chrome.runtime.getURL("viewer.html");
 			});
 		});

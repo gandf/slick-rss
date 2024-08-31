@@ -103,7 +103,7 @@ function ImportFeeds()
 			let feed = feedfiltered[i];
 			let feedid = parseInt(feed.id, 10);
 			if (!feedids.includes(feedid)) {
-				requests.push({type: 'addFeed', waitResponse: false, data: feed });
+				requests.push({type: 'addFeed', fromID: 'Import', waitResponse: false, data: feed });
 				feedids.push(feedid);
 			}
 		}
@@ -111,8 +111,8 @@ function ImportFeeds()
 			requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Group', waitResponse: true, subtype: 'Group' });
 			requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Feeds', waitResponse: true, subtype: 'Feeds' });
 			sendtoSQL('requests', 'Import', true, { requests: requests }, function(){
-				alert(GetMessageText("importAlertImportedFeeds1") + importCount + GetMessageText("importAlertImportedFeeds2"));
-				chrome.runtime.sendMessage({"type": "checkForUnread"}).then(function(){
+				chrome.runtime.sendMessage({ type: 'refreshFeeds', target: 'background' }).then(function(){
+					alert(GetMessageText("importAlertImportedFeeds1") + importCount + GetMessageText("importAlertImportedFeeds2"));
 					window.close();
 			 	});
 			});

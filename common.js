@@ -328,7 +328,7 @@ function GetDefaultOptions() {
         "unreadtotaldisplay": 3,
         "columns": 2,
         "readlaterenabled": true,
-        "readlaterremovewhenviewed": true,
+        "readlaterremovewhenviewed": false,
         "loadlinksinbackground": true,
         "showallfeeds": false,
         "usethumbnail": true,
@@ -353,6 +353,9 @@ function GetOptions() {
     let waitOptionsReady = new Promise((resolve) => {
         resolveOptionsReady = resolve;
     });
+    if (optionFrom != 'sql') {
+        options = '';
+    }
     sendtoSQL('getOptions', 'GetOptions', true, null, 
         function (data) {
             if (data != null) {
