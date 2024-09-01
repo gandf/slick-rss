@@ -166,6 +166,7 @@ function Save()
 	options.showsavethisfeed = (document.getElementById("showsavethisfeed").selectedIndex == 1);
 	options.dontreadontitleclick = (document.getElementById("dontReadOnTitleClick").selectedIndex == 1);
 	options.useViewByCategory = (document.getElementById("useViewByCategory").selectedIndex == 1);
+	options.isOption = true;
 
 	localStorage.setItem('darkmode', options.darkmode);
     localStorage.setItem('fontSize', options.fontSize);

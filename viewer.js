@@ -69,7 +69,7 @@ waitOptionReady().then(function () {
             listCategoriesRegisteredUpper = [];
             for(let key in listCategoriesRegistered) {
                 if ((listCategoriesRegistered[key].name != undefined) && (listCategoriesRegistered[key].name != "")) {
-                    listCategoriesRegisteredUpper.push({category: listCategoriesRegistered[key].name.toUpperCase(), color: listCategoriesRegistered[key].color});
+                    listCategoriesRegisteredUpper.push({ category: listCategoriesRegistered[key].name.toUpperCase(), color: listCategoriesRegistered[key].color, fontColor: listCategoriesRegistered[key].fontColor, priority: listCategoriesRegistered[key].order });
                 }
             }
         }
@@ -1427,11 +1427,13 @@ function RenderFeed(type, feedsOrGroupsInfo) {
                 href.startsWith("/") && !href.startsWith("//") && (href = feedBaseUrl + href);
             }
             feedLink.setAttribute("href", href);
+            let feedlinktitle;
             if (item.title != undefined) {
-                feedLink.innerHTML = itemNo + ". " + item.title;
+                feedlinktitle = item.title;
             } else {
-                feedLink.innerHTML = itemNo + ". " + item.description
+                feedlinktitle = item.description
             }
+            feedLink.innerHTML =  itemNo + ". " + feedlinktitle;
 
             if (feedID == readLaterFeedID) {
                 feedLink.addEventListener('click', function (event) {
@@ -1621,6 +1623,8 @@ function RenderFeed(type, feedsOrGroupsInfo) {
 
             if (options.useViewByCategory) {
                 let categoryColor = undefined;
+                let categoryFontColor = undefined;
+                let priorityCatColor = undefined;
                 if ((listCategoriesRegisteredUpper != undefined) && (item.category != undefined)) {
                     if (item.category.constructor === Array) {
                         for (let cat of item.category) {
@@ -1630,6 +1634,8 @@ function RenderFeed(type, feedsOrGroupsInfo) {
                                     let catColor = listCategoriesRegisteredUpper.find(obj => obj.category == catUpper);
                                     if (catColor) {
                                         categoryColor = catColor.color;
+                                        categoryFontColor = catColor.fontColor;
+                                        priorityCatColor = catColor.priority;
                                         break;
                                     }
                                 }
@@ -1642,14 +1648,30 @@ function RenderFeed(type, feedsOrGroupsInfo) {
                                 let catColor = listCategoriesRegisteredUpper.find(obj => obj.category == catUpper);
                                 if (catColor) {
                                     categoryColor = catColor.color;
+                                    categoryFontColor = catColor.fontColor;
+                                    priorityCatColor = catColor.priority;
                                 }
                             }
                         }
                     }
                 }
+
+                let titleUpper = feedlinktitle.toUpperCase();
+                let titleColor = listCategoriesRegisteredUpper.find(obj => titleUpper.includes(obj.category));
+                if (titleColor) {
+                    if (titleColor.priority < priorityCatColor) {
+                        categoryColor = titleColor.color;
+                        categoryFontColor = titleColor.fontColor;
+                        priorityCatColor = titleColor.priority;
+                    }
+                }
+
                 if (categoryColor != undefined) {
                     feedContainer.style.borderColor = categoryColor;
                     feedTitle.style.backgroundColor = categoryColor;
+                }
+                if (categoryFontColor != undefined) {
+                    feedLink.style.color = categoryFontColor;
                 }
             }
 

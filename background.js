@@ -13,6 +13,8 @@ var listApiUrlToAdd;
 var eventRegistered;
 var dtCache;
 var refreshAfterUpgrade;
+const controller = new AbortController();
+const signal = controller.signal;
 
 var datainitialized;
 if (datainitialized !== true) {
@@ -163,7 +165,9 @@ function OnMessageRequest(request, sender, sendResponse) {
     }
 
     if (request.type == 'checkForUnread') {
-        CheckForUnreadStart();
+        StopCheckForUnread().then(function () {
+            CheckForUnreadStart();
+        });
         sendResponse({});
         if (options.log) {
             console.log('|checkForUnread | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
@@ -217,7 +221,9 @@ function OnMessageRequest(request, sender, sendResponse) {
 
     if (request.type == 'refreshFeeds') {
         GetFeeds(function () {
-            CheckForUnreadStart();
+            StopCheckForUnread().then(function () {
+                CheckForUnreadStart();
+            });
         });
         if (options.log) {
             console.log('|refreshFeeds | ' + now.toLocaleString() + ' ' + now.getMilliseconds() + 'ms');
@@ -237,7 +243,9 @@ function OnMessageRequest(request, sender, sendResponse) {
             }
             forceRefresh = true;
             GetFeeds(function () {
-                CheckForUnreadStart();
+                StopCheckForUnread().then(function () {
+                    CheckForUnreadStart();
+                });
             });
         });
         if (options.log) {
@@ -364,9 +372,9 @@ async function DoUpgrades() {
     listPromise.push(waitFinish);
 
     // update the last version to now
-    if ((options.lastversion != manifest.version) || (optionFrom == 'direct')) {
+    if ((options.lastversion != manifest.version) || (optionFrom == 'direct') || (optionFrom == 'default')) {
         GetOptions().then(function () {
-            if ((options.lastversion != manifest.version) || ((optionFrom == 'direct') && (!options.isOption))) {
+            if ((options.lastversion != manifest.version) || ((optionFrom == 'direct') && (!options.isOption)) || (optionFrom == 'default')) {
                 options.lastversion = manifest.version;
                 var feedsUpgrade = [];
                 var readlaterInfoUpgrade = [];
@@ -474,6 +482,7 @@ async function DoUpgrades() {
 // starts the checking for unread (and now loading of data)
 // if key is filled in, then only that feed will be refreshed
 function CheckForUnreadStart(key) {
+    console.log('CheckForUnreadStart : ' + new Date() + ' checkingForUnread : ' + checkingForUnread + ' key : ' + key);
     if (checkingForUnread || feeds.length == 0) {
         return;
     }
@@ -592,6 +601,7 @@ function CheckForUnread(checkForUnreadCounterID) {
             }
             fetch(feeds[checkForUnreadCounterID].url.replace(/feed:\/\//i, "http://"), {
                 method: 'GET',
+                signal: signal,
                 headers: {
                     'Content-Type': 'text/xml',
                     'Accept-Charset': 'utf-8'
@@ -635,6 +645,9 @@ function CheckForUnread(checkForUnreadCounterID) {
 
                     let requests = [];
                     if ((status >= 200) && (status <= 299)) {
+                        if (!checkingForUnread) {
+                            CheckForUnreadComplete();
+                        }
                         let doc = DecodeText(data);
                         if (doc) {
                             let readItemCount = 0;
@@ -726,6 +739,9 @@ function CheckForUnread(checkForUnreadCounterID) {
 
                             let nbItems = Math.min(entries.length, feeds[checkForUnreadCounterID].maxitems = 0 ? entries.length : feeds[checkForUnreadCounterID].maxitems);
                             for (let e = 0; e < nbItems; e++) {
+                                if (!checkingForUnread) {
+                                    CheckForUnreadComplete();
+                                }
                                 useDateInID = true;
                                 getDummyDate = true;
                                 item = {};
@@ -1092,6 +1108,10 @@ function CheckForUnread(checkForUnreadCounterID) {
                         updateFeedInfo(feedInfo[feedID]);
                     }
 
+                    if (!checkingForUnread) {
+                        CheckForUnreadComplete();
+                    }
+
                     let resolveCheckForUnreadUnreadInfo;
                     let waitCheckForUnreadUnreadInfo = new Promise((resolve) => {
                         resolveCheckForUnreadUnreadInfo = resolve;
@@ -1160,17 +1180,23 @@ function CheckNextRead() {
             checkForUnreadFeeds[checkForUnreadCounter] = true;
             checkForUnreadCounter++;
         }
+    } else {
+        CheckReadFinish(checkForUnreadCounter);
     }
-    if (checkForUnreadCounter < feeds.length && !refreshFeed) {
-        setTimeout(function () {
-            CheckForUnread(checkForUnreadCounter);
-        }, 20);
+    if (checkingForUnread) {
+        if (checkForUnreadCounter < feeds.length && !refreshFeed) {
+            setTimeout(function () {
+                CheckForUnread(checkForUnreadCounter);
+            }, 20);
+        }
+    } else {
+        CheckForUnreadComplete();
     }
 }
 
 function CheckReadFinish(checkForUnreadCounterID) {
     checkForUnreadFeeds[checkForUnreadCounterID] = true;
-    if (refreshFeed) {
+    if (refreshFeed || !checkingForUnread) {
         CheckForUnreadComplete();
     } else {
         if (checkForUnreadCounter >= feeds.length) {
@@ -1193,30 +1219,32 @@ function CheckReadFinish(checkForUnreadCounterID) {
 function CheckForUnreadComplete() {
     updateFeedInfoLoading(undefined, false);
 
-    checkingForUnread = false;
-    refreshFeed = false;
-
-    for (let i = 0; i < feeds.length; i++) {
-        if (feedInfo[feeds[i].id] != undefined) {
-            SortByDate(feedInfo[feeds[i].id].items);
+    if (checkingForUnread) {
+        checkingForUnread = false;
+        refreshFeed = false;
+    
+        for (let i = 0; i < feeds.length; i++) {
+            if (feedInfo[feeds[i].id] != undefined) {
+                SortByDate(feedInfo[feeds[i].id].items);
+            }
         }
-    }
-
-    UpdateUnreadBadge();
-
-    let requests = [];
-    requests.push({type: 'export', responsetype: 'responseExport', tableName: 'UnreadinfoItem', waitResponse: true, subtype: 'UnreadinfoItem' });
-    requests.push({type: 'export', responsetype: 'responseExport', tableName: 'CacheFeedInfo', waitResponse: true, subtype: 'CacheFeedInfo' });
-    requests.push({type: 'export', responsetype: 'responseExport', tableName: 'CacheFeedInfoItem', waitResponse: true, subtype: 'CacheFeedInfoItem' });
-    requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Cache', waitResponse: true, subtype: 'Cache' });
-    sendtoSQL('requests', 'CheckForUnreadComplete', true, { requests: requests });
-
-    if (forceRefresh) {
-        forceRefresh = false;
-        RefreshViewer();
-    } else {
-        if (viewerPort != null) {
-            viewerPort.postMessage({type: "refreshallcomplete"});
+    
+        UpdateUnreadBadge();
+    
+        let requests = [];
+        requests.push({type: 'export', responsetype: 'responseExport', tableName: 'UnreadinfoItem', waitResponse: true, subtype: 'UnreadinfoItem' });
+        requests.push({type: 'export', responsetype: 'responseExport', tableName: 'CacheFeedInfo', waitResponse: true, subtype: 'CacheFeedInfo' });
+        requests.push({type: 'export', responsetype: 'responseExport', tableName: 'CacheFeedInfoItem', waitResponse: true, subtype: 'CacheFeedInfoItem' });
+        requests.push({type: 'export', responsetype: 'responseExport', tableName: 'Cache', waitResponse: true, subtype: 'Cache' });
+        sendtoSQL('requests', 'CheckForUnreadComplete', true, { requests: requests });
+    
+        if (forceRefresh) {
+            forceRefresh = false;
+            RefreshViewer();
+        } else {
+            if (viewerPort != null) {
+                viewerPort.postMessage({type: "refreshallcomplete"});
+            }
         }
     }
 }
@@ -1470,4 +1498,37 @@ function GetCacheFeedInfo() {
         resolveGetCacheFeedInfo();
     });
     return waitGetCacheFeedInfo;
+}
+
+function StopCheckForUnread() {
+    let listpromise = [];
+    if (checkingForUnread) {
+        checkingForUnread = false;
+        refreshFeed = false;
+        checkForUnreadCounter = 0;
+        checkForUnreadFeeds = [];
+    
+         controller.abort();
+        
+        listpromise.push(updateFeedInfoLoading(undefined, false));
+        listpromise.push(Sleep(250));
+    }
+
+    let resolveStopCheckForUnread;
+    let waitStopCheckForUnread = new Promise((resolve) => {
+        resolveStopCheckForUnread = resolve;
+    });
+    
+    Promise.allSettled(listpromise).then(function () {
+        checkingForUnread = false;
+        refreshFeed = false;
+        checkForUnreadCounter = 0;
+        checkForUnreadFeeds = [];
+        resolveStopCheckForUnread();
+    });
+    return waitStopCheckForUnread;
+}
+
+function Sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }

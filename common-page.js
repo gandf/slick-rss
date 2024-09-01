@@ -157,7 +157,7 @@ function GetDefaultOptionsPage() {
         "showGetRSSFeedUrl": true,
         "showsavethisfeed": true,
         "dontreadontitleclick": false,
-        "useViewByCategory": false
+        "useViewByCategory": true
     };
 }
 
