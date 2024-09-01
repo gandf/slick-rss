@@ -153,6 +153,10 @@ function GetDate(txtDate) {
 function FormatDate(dt, format) {
     let isLocal = true;
 
+    if ((typeof format !== 'string') || (format == "")) {
+        format = GetDefaultOptions().dateformat;
+    }
+
     if (format.lastIndexOf("[u]") != -1) {
         isLocal = false;
         format = format.replace("[u]", "");
@@ -380,12 +384,15 @@ function GetOptions() {
                 if (data != null) {
                     options = data;
                     optionFrom = 'direct';
-        
-                    // fill in defaults for new options
-                    for (let key in GetDefaultOptions()) {
-                        if (options[key] == undefined) {
-                            options[key] = defaultOptions[key];
-                        }
+                }
+                if (options == "") {
+                    options = GetDefaultOptions();
+                    optionFrom = 'default';
+                }
+                // fill in defaults for new options
+                for (let key in GetDefaultOptions()) {
+                    if (options[key] == undefined) {
+                        options[key] = defaultOptions[key];
                     }
                 }
                 resolveOptionsReady();
