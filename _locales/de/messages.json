@@ -96,7 +96,7 @@
     "message": "Feed-Management"
   },
   "optionColumns": {
-    "message": "Säulen"
+    "message": "Spalten"
   },
   "optionImportFeeds": {
     "message": "Feeds importieren"
@@ -144,7 +144,7 @@
     "message": "Datumsformat"
   },
   "optionDone": {
-    "message": "Erledigt"
+    "message": "OK"
   },
   "optionGMT": {
     "message": "Bewirkt, dass die Ausgabe GMT verwendet. (ansonsten lokal)"
@@ -156,55 +156,55 @@
     "message": "2-stelliges Jahr"
   },
   "optionMfullText": {
-    "message": "Monat im Volltext"
+    "message": "Monat (Januar)"
   },
   "optionM3Letters": {
-    "message": "Monat mit 3 Buchstaben"
+    "message": "Monat (Jan)"
   },
   "optionM0": {
-    "message": "Null aufgefüllter Monat"
+    "message": "Monat (01)"
   },
   "optionM": {
     "message": "Monat"
   },
   "optionDWithSuffix": {
-    "message": "Der Tag mit Suffix"
+    "message": "Tag (Mo)"
   },
   "optionD0": {
-    "message": "Null gepolsterter Tag"
+    "message": "Tag (01)"
   },
   "optionD": {
     "message": "Tag"
   },
   "optionH0": {
-    "message": "Null aufgefüllte Stunden"
+    "message": "Stunde (01)"
   },
   "optionH": {
     "message": "Std"
   },
   "optionH012": {
-    "message": "Stunden im mit Nullen aufgefüllten 12-Stunden-Format"
+    "message": "Stunde im 12-Stunden-Format (01)"
   },
   "optionH12": {
-    "message": "Die Stunde im 12-Stunden-Format"
+    "message": "Stunde im 12-Stunden-Format"
   },
   "optionMin0": {
-    "message": "Null aufgefüllte Minuten"
+    "message": "Minuten (01)"
   },
   "optionMin": {
     "message": "Minuten"
   },
   "optionS0": {
-    "message": "Null aufgefüllte Sekunden"
+    "message": "Sekunden (01)"
   },
   "optionS": {
     "message": "Sekunden"
   },
   "optionWFullText": {
-    "message": "Wochentag im Volltext"
+    "message": "Wochentag (Montag)"
   },
   "optionW3": {
-    "message": "Wochentag mit 3 Buchstaben"
+    "message": "Wochentag (Mon)"
   },
   "optionAM": {
     "message": "AM/PM"
@@ -219,10 +219,10 @@
     "message": " Minuten"
   },
   "optionSecondDisabled": {
-    "message": " sekunden (0 = behindert)"
+    "message": " Sekunden (0 = ausgeschaltet)"
   },
   "optionMarkAllRead": {
-    "message": "Alles als gelesen markieren danach"
+    "message": "Alles danach als gelesen markieren"
   },
   "optionMarkAllReadTitleClick": {
     "message": "Nach Titelklick als gelesen markieren"
@@ -270,7 +270,7 @@
     "message": "'Aktualisierungsintervall' scheint ungültig zu sein. Es ist die Anzahl der Minuten zwischen dem Abrufen der ungelesenen Zählungen."
   },
   "optionAlertUpdateIntervalSup0": {
-    "message": "'Aktualisierungsintervall' muss sein > 0."
+    "message": "'Aktualisierungsintervall' muss > 0 sein"
   },
   "optionAlertMarkFeedReadInvalid": {
     "message": "'Feed als gelesen markieren nach' scheint ungültig zu sein. Es ist die Anzahl der Sekunden, nachdem Sie einen Feed angesehen haben, bevor er als gelesen markiert wird."
@@ -366,16 +366,16 @@
     "message": "Als ungelesen markieren"
   },
   "openAllFeed": {
-    "message": "Alle ungelesen öffnen"
+    "message": "Alle ungelesenen öffnen"
   },
   "backViewerFeedIssue": {
     "message": "Feed-Probleme"
   },
   "backViewerRefreshing": {
-    "message": "Erfrischend"
+    "message": "Neu laden"
   },
   "backViewerRefreshAll": {
-    "message": "Alle erfrischen"
+    "message": "Alle neu laden"
   },
   "backViewerMarkAllRead": {
     "message": "Markiere alles Gelesene"
@@ -417,7 +417,7 @@
     "message": "Februar"
   },
   "monthMarch": {
-    "message": "Marsch"
+    "message": "März"
   },
   "monthApril": {
     "message": "April"
@@ -486,13 +486,13 @@
     "message": "Aus"
   },
   "optionOn": {
-    "message": "Auf"
+    "message": "An"
   },
   "close": {
     "message": "Schließen"
   },
   "cancel": {
-    "message": "Absagen"
+    "message": "Zurück"
   },
   "save": {
     "message": "Speichern"
@@ -564,13 +564,13 @@
     "message": "Zusammenfassung nicht anzeigen"
   },
   "backSummaryShow": {
-      "message": "Vollständigen Inhalt anzeigen"
+    "message": "Vollständigen Inhalt anzeigen"
   },
   "backSummaryHide": {
-      "message": "Zusammenfassung anzeigen"
+    "message": "Zusammenfassung anzeigen"
   },
   "bell": {
-      "message": "Artikel bereits gelesen aktualisiert"
+    "message": "Artikel bereits gelesen aktualisiert"
   },
   "optionOptionsManagement": {
     "message": "Verwaltung der Optionen"
